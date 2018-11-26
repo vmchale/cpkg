@@ -1,4 +1,4 @@
-module Lib
+module Package.C
     ( exec
     , head'
     ) where

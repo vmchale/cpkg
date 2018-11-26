@@ -1,7 +1,7 @@
 module Main (main) where
 
 import           Criterion.Main
-import           Lib
+import           Package.C
 
 main :: IO ()
 main =

@@ -1,6 +1,6 @@
 module Main (main) where
 
-import           Lib (exec)
+import           Package.C (exec)
 
 main :: IO ()
 main = exec

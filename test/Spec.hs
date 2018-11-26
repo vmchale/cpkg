@@ -1,4 +1,4 @@
-import           Lib
+import           Package.C
 import           Test.Hspec
 
 main :: IO ()
