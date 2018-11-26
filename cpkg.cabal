@@ -30,7 +30,7 @@ library
     exposed-modules:
         Package.C
     other-modules:
-        Package.C.Type
+        Package.C.Dhall.Type
     hs-source-dirs: src
     default-language: Haskell2010
     ghc-options: -Wall
