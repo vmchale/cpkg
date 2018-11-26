@@ -1,0 +1,32 @@
+---
+- functions:
+  - {name: unsafePerformIO, within: []}
+  - {name: error, within: []}
+  - {name: undefined, within: []}
+  - {name: fromJust, within: []}
+  - {name: foldl, within: []}
+
+- error: {lhs: "hylo embed", rhs: "ana", name: "Use anamorphism"}
+- error: {lhs: "hylo f project", rhs: "cata f", name: "Use catamorphism"}
+- error: {lhs: "hyloM (pure . embed)", rhs: "anaM", name: "Use monadic anamorphism"}
+- error: {lhs: "hyloM f (pure . project)", rhs: "cataM f", name: "Use monadic catamorphism"}
+- error: {lhs: "do { x <- y ; pure (f x) }", rhs: "f =<< y", name: "Avoid do-notation"}
+- error: {lhs: "concat", rhs: "join", name: "Generalize concat"}
+- error: {lhs: "concatMap", rhs: "(=<<)", name: "Generalize concatMap"}
+- error: {lhs: "f >> pure ()", rhs: "void f", name: "Use void"}
+- error: {lhs: "over _1 f x", rhs: "first f x", name: "Use arrows"}
+- error: {lhs: "over _2 f x", rhs: "second f x", name: "Use arrows"}
+- error: {lhs: "bool x x p", rhs: "x", name: "Redundant bool"}
+- error: {lhs: "const f", rhs: "pure f", name: "Generalize const"}
+- error: {lhs: "maybe mempty", rhs: "foldMap", name: "Use foldMap"}
+- error: {lhs: "mconcat", rhs: "fold", name: "Generalize mconcat"}
+- error: {lhs: "sequence", rhs: "sequenceA", name: "Generalize sequence"}
+- error: {lhs: "sequence_", rhs: "sequenceA_", name: "Generalize sequence_"}
+- error: {lhs: "if p then x else pure ()", rhs: "when p x"}
+- error: {lhs: "if p then pure () else x", rhs: "when (not p) x"}
+- error: {lhs: "(>>)", rhs: "(*>)", name: "Generalize >>"}
+- error: {lhs: "fmap (pure ())", rhs: "void", name: "Use void"}
+
+- fixity: infixr 3 ***
+- fixity: infixr 3 &&&
+- fixity: infixr 1 <=<

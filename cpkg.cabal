@@ -1,0 +1,87 @@
+name:                cpkg
+version:             0.1.0.0
+-- synopsis:
+-- description:
+homepage:            https://github.com/vmchale/cpkg#readme
+license:             BSD3
+license-file:        LICENSE
+author:              Vanessa McHale
+maintainer:          vanessa.mchale@iohk.io
+copyright:           Copyright: (c) 2018 Vanessa McHale
+--category:            Data
+build-type:          Simple
+extra-doc-files:     README.md
+                     CHANGELOG.md
+extra-source-files:  stack.yaml
+                   , cabal.project.local
+cabal-version:       1.18
+
+Flag development {
+  Description: Enable `-Werror`
+  manual: True
+  default: False
+}
+
+library
+  hs-source-dirs:      src
+  exposed-modules:     Lib
+  build-depends:       base >= 4.3 && < 5
+  default-language:    Haskell2010
+  if flag(development)
+    ghc-options:       -Werror
+  if impl(ghc >= 8.0)
+    ghc-options:       -Wincomplete-uni-patterns -Wincomplete-record-updates -Wredundant-constraints -Widentities
+  if impl(ghc >= 8.4)
+    ghc-options:       -Wmissing-export-lists
+  ghc-options:         -Wall
+
+executable cpkg
+  hs-source-dirs:      app
+  main-is:             Main.hs
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  build-depends:       base
+                     , cpkg
+  default-language:    Haskell2010
+  if flag(development)
+    ghc-options:       -Werror
+  if impl(ghc >= 8.0)
+    ghc-options:       -Wincomplete-uni-patterns -Wincomplete-record-updates -Wredundant-constraints -Widentities
+  if impl(ghc >= 8.4)
+    ghc-options:       -Wmissing-export-lists
+  ghc-options:         -Wall
+
+test-suite cpkg-test
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test
+  main-is:             Spec.hs
+  build-depends:       base
+                     , cpkg
+                     , hspec
+  if flag(development)
+    ghc-options:       -Werror
+  if impl(ghc >= 8.0)
+    ghc-options:       -Wincomplete-uni-patterns -Wincomplete-record-updates -Wredundant-constraints -Widentities
+  if impl(ghc >= 8.4)
+    ghc-options:       -Wmissing-export-lists
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N -Wall
+  default-language:    Haskell2010
+
+benchmark cpkg-bench
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      bench
+  main-is:             Bench.hs
+  build-depends:       base
+                     , cpkg
+                     , criterion
+  if flag(development)
+    ghc-options:       -Werror
+  if impl(ghc >= 8.0)
+    ghc-options:       -Wincomplete-uni-patterns -Wincomplete-record-updates -Wredundant-constraints -Widentities
+  if impl(ghc >= 8.4)
+    ghc-options:       -Wmissing-export-lists
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N -O3 -Wall
+  default-language:    Haskell2010
+
+source-repository head
+  type:     git
+  location: https://github.com/vmchale/cpkg
