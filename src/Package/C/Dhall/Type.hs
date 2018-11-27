@@ -4,7 +4,8 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 module Package.C.Dhall.Type ( CPkg (..)
-                      ) where
+                            , ConfigureVars (..)
+                            ) where
 
 import qualified Data.Text as T
 import           Dhall
