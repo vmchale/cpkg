@@ -11,11 +11,10 @@ import           Dhall
 
 -- TODO: do we want to
 newtype ConfigureVars = ConfigureVars { _installDir :: T.Text
-                                      } deriving newtype (Inject, Interpret)
+                                      } deriving newtype (Inject)
 
-data CPkg = CPkg { _environmentVars  :: [(T.Text, T.Text)]
+data CPkg = CPkg { _pkgUrl           :: T.Text
                  , _configureCommand :: ConfigureVars -> [ T.Text ]
                  , _buildCommand     :: [ T.Text ]
                  , _installCommand   :: [ T.Text ]
-                 , _uninstallCommand :: [ T.Text ]
                  } deriving (Generic, Interpret)
