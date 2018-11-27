@@ -14,8 +14,9 @@ import           Dhall
 newtype ConfigureVars = ConfigureVars { _installDir :: T.Text
                                       } deriving newtype (Inject)
 
-data CPkg = CPkg { _pkgUrl           :: T.Text
+data CPkg = CPkg { _pkgName          :: T.Text
+                 , _pkgUrl           :: T.Text
                  , _configureCommand :: ConfigureVars -> [ T.Text ]
-                 , _buildCommand     :: [ T.Text ]
+                 , _buildCommand     :: [ T.Text ] -- TODO: should take number of cores as an argument
                  , _installCommand   :: [ T.Text ]
                  } deriving (Generic, Interpret)
