@@ -54,7 +54,10 @@ library
         zip-archive -any,
         prettyprinter,
         http-client,
-        http-client-tls
+        http-client-tls,
+        directory,
+        filepath,
+        process
 
     if flag(development)
         ghc-options: -Werror
