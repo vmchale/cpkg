@@ -8,7 +8,7 @@ let bison =
       , pkgVersion = v
       , pkgUrl = "https://ftp.gnu.org/gnu/bison/bison-${prelude.showVersion v}.tar.xz"
       , pkgSubdir = "bison-${prelude.showVersion v}"
-      , executableFiles = [ "configure", "build-aux/move-if-change" ]
+      , executableFiles = [ "configure" ]
       }
 in
 

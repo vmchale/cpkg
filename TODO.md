@@ -16,6 +16,7 @@
 # Documentation
 - [ ] Write a manpage
 # Tests
-- [ ] Build `libgc`
+- [ ] Nontrivial example where we have to link w/ another package installed by
+  `cpkg`.
 # Packages
 - [ ] GMP
