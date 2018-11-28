@@ -16,11 +16,11 @@ import           Package.C.Type.Shared
 data ConfigureVars = ConfigureVars { installDir   :: T.Text
                                    , targetTriple :: Maybe T.Text
                                    , includeDirs  :: [ T.Text ]
-                                   , configOs     :: OS
+                                   , configOS     :: OS
                                    } deriving (Generic, Inject)
 
 data BuildVars = BuildVars { cpus    :: Natural
-                           , buildOs :: OS
+                           , buildOS :: OS
                            }
                 deriving (Generic, Inject)
 

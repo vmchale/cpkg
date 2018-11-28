@@ -19,4 +19,4 @@ import           Package.C.Build
 import           Package.C.Dhall
 import           Package.C.Monad
 import           Package.C.Type
-import           Package.C.Version
+import           Package.C.Type.Version

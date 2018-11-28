@@ -7,10 +7,10 @@ module Package.C.Type ( CPkg (..)
                       , cPkgDhallToCPkg
                       ) where
 
-import qualified Data.Text             as T
-import qualified Package.C.Dhall.Type  as Dhall
+import qualified Data.Text              as T
+import qualified Package.C.Dhall.Type   as Dhall
 import           Package.C.Type.Shared
-import           Package.C.Version
+import           Package.C.Type.Version
 
 data Verbosity = Silent -- ^ Display nothing
                | Normal -- ^ Display progress information

@@ -10,7 +10,7 @@ import           Package.C.Error
 import           Package.C.Fetch
 import           Package.C.Monad
 import           Package.C.Type
-import           Package.C.Version
+import           Package.C.Type.Version
 import           System.Directory
 import           System.FilePath        ((</>))
 import           System.IO.Temp         (withSystemTempDirectory)

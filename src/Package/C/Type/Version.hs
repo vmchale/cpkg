@@ -1,6 +1,6 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
-module Package.C.Version ( Version (..)
+module Package.C.Type.Version ( Version (..)
                          , showVersion
                          ) where
 
