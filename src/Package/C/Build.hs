@@ -1,7 +1,9 @@
 module Package.C.Build ( buildCPkg
                        ) where
 
+import           Control.Monad          (void)
 import           Control.Monad.IO.Class (MonadIO (liftIO))
+import           Control.Monad.Reader   (ask)
 import           Data.Foldable          (traverse_)
 import           Package.C.Error
 import           Package.C.Fetch
@@ -12,7 +14,8 @@ import           System.Directory       (createDirectoryIfMissing, getAppUserDat
 import           System.Exit            (ExitCode (ExitSuccess), exitWith)
 import           System.FilePath        ((</>))
 import           System.IO.Temp         (withSystemTempDirectory)
-import           System.Process         (CreateProcess (cwd, std_in), StdStream (CreatePipe), createProcess, proc, waitForProcess)
+import           System.Process         (CreateProcess (cwd, std_err, std_in, std_out), StdStream (CreatePipe, Inherit), createProcess, proc, readCreateProcess,
+                                         waitForProcess)
 
 mkExecutable :: FilePath -> IO ()
 mkExecutable fp = do
@@ -34,12 +37,20 @@ stepToProc fp s = case words s of
     x:xs -> pure $ (proc x xs) { cwd = Just fp, std_in = CreatePipe }
     _    -> badCommand
 
-waitProcess :: MonadIO m => CreateProcess -> m ()
-waitProcess proc' = liftIO $ do
-    (_, _, _, r) <- createProcess proc'
-    handleExit =<< waitForProcess r
+verbosityErr :: Verbosity -> StdStream
+verbosityErr v | v >= Verbose = Inherit
+verbosityErr _ = CreatePipe
 
-processSteps :: (Traversable t, MonadIO m) => FilePath -> t String -> m ()
+waitProcess :: CreateProcess -> PkgM ()
+waitProcess proc' = do
+    v <- ask
+    if v >= Loud
+        then do
+            (_, _, _, r) <- liftIO $ createProcess (proc' { std_out = Inherit, std_err = Inherit })
+            liftIO (handleExit =<< waitForProcess r)
+        else void $ liftIO $ readCreateProcess (proc' { std_err = verbosityErr v }) mempty
+
+processSteps :: (Traversable t) => FilePath -> t String -> PkgM ()
 processSteps pkgDir steps = traverse_ waitProcess =<< traverse (stepToProc pkgDir) steps
 
 configureInDir :: CPkg -> FilePath -> FilePath -> PkgM ()
