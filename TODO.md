@@ -14,3 +14,7 @@
 - [ ] Executable should actually do something
 # Tests
 - [ ] Build `libgc`
+# Packages
+- [ ] SSH
+- [ ] SSL
+- [ ] Git

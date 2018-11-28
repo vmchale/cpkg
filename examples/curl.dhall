@@ -1,6 +1,3 @@
--- https://curl.haxx.se/download/curl-7.62.0.tar.xz
--- TODO: ssl, ssh, git2?
-
 let prelude = https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-prelude.dhall
 in
 

@@ -21,9 +21,9 @@ let makeGnuPackage =
     , pkgVersion = pkg.version
     , pkgUrl = "https://mirrors.ocf.berkeley.edu/gnu/lib${pkg.name}/lib${pkg.name}-${showVersion pkg.version}.tar.xz"
     , pkgSubdir = "lib${pkg.name}-${showVersion pkg.version}"
-    , configureCommand = configure
+    , configureCommand = configureGnu
     , executableFiles = [ "configure" ]
-    , buildCommand = build
+    , buildCommand = buildGnu
     , installCommand = [ "make install" ]
     }
 in
