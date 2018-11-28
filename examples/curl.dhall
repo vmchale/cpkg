@@ -13,14 +13,11 @@ in
 
 let curl =
   λ(v : List Natural) →
+    prelude.defaultPackage ⫽
     { pkgName = "curl"
     , pkgVersion = v
     , pkgUrl = "https://curl.haxx.se/download/curl-${prelude.showVersion v}.tar.xz"
     , pkgSubdir = "curl-${prelude.showVersion v}"
-    , configureCommand = configure
-    , executableFiles = [ "configure" ]
-    , buildCommand = build
-    , installCommand = [ "make install" ]
     }
 in
 

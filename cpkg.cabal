@@ -31,6 +31,7 @@ library
         Package.C
     hs-source-dirs: src
     other-modules:
+        Package.C.Dhall
         Package.C.Dhall.Type
         Package.C.Type
         Package.C.Build
@@ -82,7 +83,6 @@ executable cpkg
     build-depends:
         base -any,
         cpkg -any,
-        dhall -any,
         optparse-applicative -any,
         directory -any
 

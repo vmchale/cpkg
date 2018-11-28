@@ -1,7 +1,7 @@
 module Main (main) where
 
+import           Control.Monad       (void)
 import qualified Data.Version        as V
-import           Dhall               (auto, inputFile)
 import           Options.Applicative hiding (auto)
 import           Package.C
 import qualified Paths_cpkg          as P
@@ -26,6 +26,7 @@ versionInfo = infoOption ("atspkg version: " ++ V.showVersion cpkgVersion) (shor
 userCmd :: Parser Command
 userCmd = hsubparser
     (command "install" (info install (progDesc "Install a package defined by a Dhall expression"))
+    <> command "check" (info check (progDesc "Check a Dhall expression to ensure it can be used to build a package"))
     <> command "nuke" (info (pure Nuke) (progDesc "Remove all globally installed libraries"))
     )
 
@@ -51,11 +52,9 @@ dhallFile =
 
 run :: Command -> IO ()
 run (Install file) = do
-    unistring <- cPkgDhallToCPkg <$> inputFile auto file
+    unistring <- cPkgDhallToCPkg <$> getCPkg file
     runPkgM Loud (buildCPkg unistring)
-run (Check file) = do
-    (_ :: CPkg) <- cPkgDhallToCPkg <$> inputFile autoFile
-    mempty
+run (Check file) = void $ getCPkg file
 run Nuke = do
     pkgDir <- globalPkgDir
     removeDirectoryRecursive pkgDir
