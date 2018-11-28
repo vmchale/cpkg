@@ -12,12 +12,11 @@ import           Package.C.Fetch
 import           Package.C.Monad
 import           Package.C.Type
 import           Package.C.Version
-import           System.Directory       (createDirectoryIfMissing, getAppUserDataDirectory, getPermissions, setOwnerExecutable, setPermissions)
+import           System.Directory
 import           System.Exit            (ExitCode (ExitSuccess), exitWith)
 import           System.FilePath        ((</>))
 import           System.IO.Temp         (withSystemTempDirectory)
-import           System.Process         (CreateProcess (cwd, std_err, std_in, std_out), StdStream (CreatePipe, Inherit), createProcess, proc, readCreateProcess,
-                                         waitForProcess)
+import           System.Process
 
 mkExecutable :: FilePath -> IO ()
 mkExecutable fp = do
