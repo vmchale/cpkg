@@ -41,6 +41,7 @@ library
         Package.C.Fetch
         Package.C.Version
         Package.C.Monad
+        System.Process.Ext
     default-language: Haskell2010
     other-extensions: DeriveGeneric DeriveAnyClass OverloadedStrings
     ghc-options: -Wall

@@ -3,9 +3,7 @@ module Package.C.Build ( buildCPkg
                        ) where
 
 import           Control.Concurrent     (getNumCapabilities)
-import           Control.Monad          (void)
 import           Control.Monad.IO.Class (MonadIO (liftIO))
-import           Control.Monad.Reader   (ask)
 import           Data.Foldable          (traverse_)
 import           Package.C.Error
 import           Package.C.Fetch
@@ -13,19 +11,15 @@ import           Package.C.Monad
 import           Package.C.Type
 import           Package.C.Version
 import           System.Directory
-import           System.Exit            (ExitCode (ExitSuccess), exitWith)
 import           System.FilePath        ((</>))
 import           System.IO.Temp         (withSystemTempDirectory)
 import           System.Process
+import           System.Process.Ext
 
 mkExecutable :: FilePath -> IO ()
 mkExecutable fp = do
     perms <- getPermissions fp
     setPermissions fp (setOwnerExecutable True perms)
-
-handleExit :: ExitCode -> IO ()
-handleExit ExitSuccess = mempty
-handleExit x           = exitWith x
 
 globalPkgDir :: MonadIO m => m FilePath
 globalPkgDir = liftIO (getAppUserDataDirectory "cpkg")
@@ -42,19 +36,6 @@ stepToProc :: MonadIO m
 stepToProc fp s = case words s of
     x:xs -> pure $ (proc x xs) { cwd = Just fp, std_in = CreatePipe }
     _    -> badCommand
-
-verbosityErr :: Verbosity -> StdStream
-verbosityErr v | v >= Verbose = Inherit
-verbosityErr _ = CreatePipe
-
-waitProcess :: CreateProcess -> PkgM ()
-waitProcess proc' = do
-    v <- ask
-    if v >= Loud
-        then do
-            (_, _, _, r) <- liftIO $ createProcess (proc' { std_out = Inherit, std_err = Inherit })
-            liftIO (handleExit =<< waitForProcess r)
-        else void $ liftIO $ readCreateProcess (proc' { std_err = verbosityErr v }) mempty
 
 processSteps :: (Traversable t) => FilePath -> t String -> PkgM ()
 processSteps pkgDir steps = traverse_ waitProcess =<< traverse (stepToProc pkgDir) steps
