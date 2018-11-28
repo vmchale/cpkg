@@ -7,7 +7,9 @@
 - [ ] Cross-compilation
 - [ ] Nix-style builds
   - [ ] Garbage collection
+- [ ] Package database
 # Deficiencies
+- [ ] Check that `configure` exists before running script?
 - [ ] Build command should take number of cores as an argument
 - [ ] Should cache package downloads globally
 - [ ] Take verbosity as argument
