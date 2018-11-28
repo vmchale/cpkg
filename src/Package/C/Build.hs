@@ -47,11 +47,10 @@ buildInDir cpkg p = processSteps p (_buildCommand cpkg)
 installInDir :: CPkg -> FilePath -> IO ()
 installInDir cpkg p = processSteps p (_installCommand cpkg)
 
--- https://mirrors.ocf.berkeley.edu/gnu/libunistring/libunistring-0.9.10.tar.xz
 fetchCPkg :: CPkg
           -> FilePath -- ^ Directory for intermediate build files
           -> IO ()
-fetchCPkg = fetchUrl . _pkgUrl
+fetchCPkg cpkg = fetchUrl (_pkgUrl cpkg) (_pkgName cpkg)
 
 -- TODO: more complicated solver, garbage collector, and all that.
 -- Basically nix-style builds for C libraries
@@ -66,6 +65,8 @@ buildCPkg cpkg = do
     createDirectoryIfMissing True pkgDir
 
     withSystemTempDirectory "cpkg" $ \p -> do
+
+        putStrLn ("unpacking to " ++ p)
 
         fetchCPkg cpkg p
 

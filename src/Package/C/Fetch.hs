@@ -18,14 +18,19 @@ urlToCompression s | ".tar.gz" `isSuffixOf` s || ".tgz" `isSuffixOf` s = pure $ 
                    | otherwise = unrecognized s
 
 fetchUrl :: String -- ^ URL
+         -> String -- ^ Package name
          -> FilePath -- ^ Directory to unpack to
          -> IO ()
-fetchUrl url dirName = do
+fetchUrl url name dirName = do
 
         compression <- urlToCompression url
+
+        putStrLn ("Downloading " ++ name)
 
         manager <- newManager tlsManagerSettings
         initialRequest <- parseRequest url
         response <- responseBody <$> httpLbs (initialRequest { method = "GET" }) manager
+
+        putStrLn ("Unpacking " ++ name)
 
         unpackResponse compression dirName response

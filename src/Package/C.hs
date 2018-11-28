@@ -1,11 +1,7 @@
-module Package.C
-    ( exec
-    , head'
-    ) where
+module Package.C ( buildCPkg
+                 , CPkg (..)
+                 , ConfigureVars (..)
+                 ) where
 
-head' :: [a] -> Maybe a
-head' []    = Nothing
-head' (x:_) = Just x
-
-exec :: IO ()
-exec = putStrLn "cpkg from template"
+import           Package.C.Build
+import           Package.C.Type

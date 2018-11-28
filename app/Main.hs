@@ -1,6 +1,10 @@
 module Main (main) where
 
-import           Package.C (exec)
+import           Package.C
+
+unistring :: CPkg
+unistring = CPkg "unistring" "https://mirrors.ocf.berkeley.edu/gnu/libunistring/libunistring-0.9.10.tar.xz" configure [ "make" ] [ "make", "install" ]
+    where configure (ConfigureVars dir _) = ["./configure", "--prefix=" ++ dir]
 
 main :: IO ()
-main = exec
+main = buildCPkg unistring
