@@ -11,17 +11,22 @@ let build =
     [ "make -j" ++ Natural/show cpus ]
 in
 
+let makeGnuPackage =
+  λ(pkg : { name : Text, version : List Natural}) →
+    { pkgName = pkg.name
+    , pkgVersion = pkg.version
+    , pkgUrl = "https://mirrors.ocf.berkeley.edu/gnu/lib${pkg.name}/lib${pkg.name}-${prelude.showVersion pkg.version}.tar.xz"
+    , pkgSubdir = "lib${pkg.name}-${prelude.showVersion pkg.version}"
+    }
+
 let unistring =
   λ(v : List Natural) →
-    { pkgName = "unistring"
-    , pkgVersion = v
-    , pkgUrl = "https://mirrors.ocf.berkeley.edu/gnu/libunistring/libunistring-${prelude.showVersion v}.tar.xz"
-    , pkgSubdir = "libunistring-${prelude.showVersion v}"
-    , configureCommand = configure
-    , executableFiles = [ "configure" ]
-    , buildCommand = build
-    , installCommand = [ "make install" ]
-    }
+    makeGnuPackage { name = "unistring", version = v } ⫽
+      { configureCommand = configure
+      , executableFiles = [ "configure" ]
+      , buildCommand = build
+      , installCommand = [ "make install" ]
+      }
 in
 
 unistring [0,9,10]
