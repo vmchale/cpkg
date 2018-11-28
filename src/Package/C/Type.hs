@@ -7,8 +7,9 @@ module Package.C.Type ( CPkg (..)
 import qualified Data.Text            as T
 import qualified Package.C.Dhall.Type as Dhall
 
-newtype ConfigureVars = ConfigureVars { _installDir :: String
-                                      }
+data ConfigureVars = ConfigureVars { _installDir  :: String
+                                   , _includeDirs :: [ String ]
+                                   }
 
 -- TODO: handle linking against various libraries in weird include dirs
 -- TODO: versions
@@ -20,7 +21,7 @@ data CPkg = CPkg { _pkgName          :: String
                  }
 
 cfgVarsToDhallCfgVars :: ConfigureVars -> Dhall.ConfigureVars
-cfgVarsToDhallCfgVars (ConfigureVars dir) = Dhall.ConfigureVars (T.pack dir)
+cfgVarsToDhallCfgVars (ConfigureVars dir incls) = Dhall.ConfigureVars (T.pack dir) (T.pack <$> incls)
 
 cPkgDhallToCPkg :: Dhall.CPkg -> CPkg
 cPkgDhallToCPkg (Dhall.CPkg name url cfgCmd buildCmd installCmd) =

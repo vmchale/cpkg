@@ -1,7 +1,5 @@
-{-# LANGUAGE DeriveAnyClass             #-}
-{-# LANGUAGE DeriveGeneric              #-}
-{-# LANGUAGE DerivingStrategies         #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE DeriveAnyClass #-}
+{-# LANGUAGE DeriveGeneric  #-}
 
 module Package.C.Dhall.Type ( CPkg (..)
                             , ConfigureVars (..)
@@ -11,8 +9,9 @@ import qualified Data.Text as T
 import           Dhall
 
 -- TODO: do we want to
-newtype ConfigureVars = ConfigureVars { _installDir :: T.Text
-                                      } deriving newtype (Inject)
+data ConfigureVars = ConfigureVars { _installDir  :: T.Text
+                                   , _includeDirs :: [ T.Text ]
+                                   } deriving (Generic, Inject)
 
 data CPkg = CPkg { _pkgName          :: T.Text
                  , _pkgUrl           :: T.Text
