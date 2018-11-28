@@ -77,11 +77,10 @@ buildCPkg cpkg = do
 
         fetchCPkg cpkg p
 
-        let toExes = (p </>) <$> _executableFiles cpkg
+        let p' = p </> _pkgSubdir cpkg
+            toExes = (p' </>) <$> _executableFiles cpkg
 
         traverse_ mkExecutable toExes
-
-        let p' = p </> _pkgSubdir cpkg
 
         configureInDir cpkg pkgDir p'
 

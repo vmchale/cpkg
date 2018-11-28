@@ -1,11 +1,18 @@
 module Package.C.Type ( CPkg (..)
                       , ConfigureVars (..)
+                      , Verbosity (..)
                       -- * Helper functions
                       , cPkgDhallToCPkg
                       ) where
 
 import qualified Data.Text            as T
 import qualified Package.C.Dhall.Type as Dhall
+
+data Verbosity = Silent -- ^ Display nothing
+               | Normal -- ^ Display progress information
+               | Verbose -- ^ Display stderr from builds
+               | Loud -- ^ Display stdout and stderr from builds
+               | Diagnostic -- ^ Display stdout and stderr from builds, and display debug information
 
 data ConfigureVars = ConfigureVars { _installDir  :: FilePath
                                    , _includeDirs :: [ FilePath ]
