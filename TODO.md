@@ -12,7 +12,6 @@
 # Deficiencies
 - [ ] Build command should take number of cores as an argument
 - [ ] Should cache package downloads globally
-- [ ] Take verbosity as argument
 - [ ] Executable should actually do something
 # Documentation
 - [ ] Write a manpage

@@ -43,7 +43,7 @@ processSteps pkgDir steps = traverse_ waitProcess =<< traverse (stepToProc pkgDi
 configureInDir :: CPkg -> FilePath -> FilePath -> PkgM ()
 configureInDir cpkg pkgDir p =
 
-    let cfg = ConfigureVars pkgDir []
+    let cfg = ConfigureVars pkgDir Nothing []
         steps = configureCommand cpkg cfg
     in
         putNormal ("Configuring " ++ pkgName cpkg) *>

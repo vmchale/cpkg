@@ -17,8 +17,9 @@ data Verbosity = Silent -- ^ Display nothing
                | Diagnostic -- ^ Display stdout and stderr from builds, and display debug information
                deriving (Eq, Ord)
 
-data ConfigureVars = ConfigureVars { installDir  :: FilePath
-                                   , includeDirs :: [ FilePath ]
+data ConfigureVars = ConfigureVars { installDir   :: FilePath
+                                   , targetTriple :: Maybe String
+                                   , includeDirs  :: [ FilePath ]
                                    }
 
 newtype BuildVars = BuildVars { _cpus :: Word }
@@ -34,7 +35,7 @@ data CPkg = CPkg { pkgName          :: String
                  }
 
 cfgVarsToDhallCfgVars :: ConfigureVars -> Dhall.ConfigureVars
-cfgVarsToDhallCfgVars (ConfigureVars dir incls) = Dhall.ConfigureVars (T.pack dir) (T.pack <$> incls)
+cfgVarsToDhallCfgVars (ConfigureVars dir tgt incls) = Dhall.ConfigureVars (T.pack dir) (T.pack <$> tgt) (T.pack <$> incls)
 
 buildVarsToDhallBuildVars :: BuildVars -> Dhall.BuildVars
 buildVarsToDhallBuildVars (BuildVars cpus) = Dhall.BuildVars (fromIntegral cpus)

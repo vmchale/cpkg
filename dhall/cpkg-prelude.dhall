@@ -6,7 +6,7 @@ let showVersion =
 in
 
 let defaultConfigure =
-  λ(cfg : { installDir : Text, includeDirs : List Text}) →
+  λ(cfg : { installDir : Text, targetTriple : Optional Text, includeDirs : List Text}) →
     [ "./configure --prefix=" ++ cfg.installDir ]
 in
 

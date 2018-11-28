@@ -12,8 +12,9 @@ import qualified Data.Text   as T
 import           Dhall
 import           GHC.Natural (Natural)
 
-data ConfigureVars = ConfigureVars { installDir  :: T.Text
-                                   , includeDirs :: [ T.Text ]
+data ConfigureVars = ConfigureVars { installDir   :: T.Text
+                                   , targetTriple :: Maybe T.Text
+                                   , includeDirs  :: [ T.Text ]
                                    } deriving (Generic, Inject)
 
 newtype BuildVars = BuildVars { cpus :: Natural }
