@@ -1,13 +1,17 @@
-module Package.C ( buildCPkg
-                 , CPkg (..)
+module Package.C (
+                 -- * Types
+                   CPkg (..)
                  , ConfigureVars (..)
                  , BuildVars (..)
                  , Version (..)
                  , Verbosity (..)
                  , PkgM
+                 -- * Functions
+                 , buildCPkg
                  , runPkgM
-                 , cPkgDhallToCPkg
                  , globalPkgDir
+                 -- * Dhall functionality
+                 , cPkgDhallToCPkg
                  ) where
 
 import           Package.C.Build
