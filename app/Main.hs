@@ -10,9 +10,20 @@ import           System.Directory    (removeDirectoryRecursive)
 cpkgVersion :: V.Version
 cpkgVersion = P.version
 
-data Command = Install { _dhallFile :: String }
+data Command = Install { _dhallFile :: String, _verbosity :: Verbosity }
              | Check { _dhallFile :: String }
              | Nuke
+
+verbosity :: Parser Int
+verbosity = length <$>
+    many (flag' () (short 'v' <> long "verbose" <> help "Turn up verbosity"))
+
+intToVerbosity :: Int -> Verbosity
+intToVerbosity 0 = Normal
+intToVerbosity 1 = Verbose
+intToVerbosity 2 = Loud
+intToVerbosity 3 = Diagnostic
+intToVerbosity _ = Normal
 
 wrapper :: ParserInfo Command
 wrapper = info (helper <*> versionInfo <*> userCmd)
@@ -37,7 +48,7 @@ dhallCompletions :: Mod ArgumentFields a
 dhallCompletions = ftypeCompletions "dhall"
 
 install :: Parser Command
-install = Install <$> dhallFile
+install = Install <$> dhallFile <*> fmap intToVerbosity verbosity
 
 check :: Parser Command
 check = Check <$> dhallFile
@@ -51,9 +62,9 @@ dhallFile =
     )
 
 run :: Command -> IO ()
-run (Install file) = do
+run (Install file v) = do
     unistring <- cPkgDhallToCPkg <$> getCPkg file
-    runPkgM Loud (buildCPkg unistring)
+    runPkgM v (buildCPkg unistring)
 run (Check file) = void $ getCPkg file
 run Nuke = do
     pkgDir <- globalPkgDir
