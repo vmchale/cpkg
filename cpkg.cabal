@@ -34,6 +34,7 @@ library
         Package.C.Dhall.Type
         Package.C.Type
         Package.C.Build
+        Package.C.Unpack
     default-language: Haskell2010
     other-extensions: DeriveGeneric DeriveAnyClass
     ghc-options: -Wall
@@ -42,7 +43,8 @@ library
         containers -any,
         dhall -any,
         text -any,
-        temporary -any
+        temporary -any,
+        bytestring
 
     if flag(development)
         ghc-options: -Werror
