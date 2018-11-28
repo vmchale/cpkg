@@ -11,6 +11,7 @@ cpkgVersion :: V.Version
 cpkgVersion = P.version
 
 data Command = Install { _dhallFile :: String }
+             | Check { _dhallFile :: String }
              | Nuke
 
 wrapper :: ParserInfo Command
@@ -35,17 +36,26 @@ dhallCompletions :: Mod ArgumentFields a
 dhallCompletions = ftypeCompletions "dhall"
 
 install :: Parser Command
-install = Install
-    <$> argument str
-        (metavar "EXPRESSION"
-        <> help "File containing a Dhall expression"
-        <> dhallCompletions
-        )
+install = Install <$> dhallFile
+
+check :: Parser Command
+check = Check <$> dhallFile
+
+dhallFile :: Parser String
+dhallFile =
+    argument str
+    (metavar "EXPRESSION"
+    <> help "File containing a Dhall expression"
+    <> dhallCompletions
+    )
 
 run :: Command -> IO ()
 run (Install file) = do
     unistring <- cPkgDhallToCPkg <$> inputFile auto file
     runPkgM Loud (buildCPkg unistring)
+run (Check file) = do
+    (_ :: CPkg) <- cPkgDhallToCPkg <$> inputFile autoFile
+    mempty
 run Nuke = do
     pkgDir <- globalPkgDir
     removeDirectoryRecursive pkgDir

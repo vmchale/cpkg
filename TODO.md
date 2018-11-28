@@ -17,6 +17,4 @@
 # Tests
 - [ ] Build `libgc`
 # Packages
-- [ ] SSH
-- [ ] SSL
-- [ ] Git
+- [ ] GMP

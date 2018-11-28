@@ -5,29 +5,35 @@ let showVersion =
   λ(x : List Natural) → concatMapSep "." Natural Natural/show x
 in
 
-let configureGnu =
+let defaultConfigure =
   λ(cfg : { installDir : Text, includeDirs : List Text}) →
     [ "./configure --prefix=" ++ cfg.installDir ]
 in
 
-let buildGnu =
+let defaultBuild =
   λ(cpus : Natural) →
     [ "make -j" ++ Natural/show cpus ]
 in
 
-let makeGnuPackage =
-  λ(pkg : { name : Text, version : List Natural}) →
-    { pkgName = pkg.name
-    , pkgVersion = pkg.version
-    , pkgUrl = "https://mirrors.ocf.berkeley.edu/gnu/lib${pkg.name}/lib${pkg.name}-${showVersion pkg.version}.tar.xz"
-    , pkgSubdir = "lib${pkg.name}-${showVersion pkg.version}"
-    , configureCommand = configureGnu
-    , executableFiles = [ "configure" ]
-    , buildCommand = buildGnu
-    , installCommand = [ "make install" ]
-    }
+let defaultPackage =
+  { configureCommand = defaultConfigure
+  , executableFiles  = [ "configure" ]
+  , buildCommand     = defaultBuild
+  , installCommand   = [ "make install" ]
+  }
 in
 
-{ showVersion = showVersion
+let makeGnuPackage =
+  λ(pkg : { name : Text, version : List Natural}) →
+    defaultPackage ⫽
+      { pkgName = pkg.name
+      , pkgVersion = pkg.version
+      , pkgUrl = "https://mirrors.ocf.berkeley.edu/gnu/lib${pkg.name}/lib${pkg.name}-${showVersion pkg.version}.tar.xz"
+      , pkgSubdir = "lib${pkg.name}-${showVersion pkg.version}"
+      }
+in
+
+{ showVersion    = showVersion
 , makeGnuPackage = makeGnuPackage
+, defaultPackage = defaultPackage
 }
