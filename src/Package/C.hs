@@ -7,6 +7,7 @@ module Package.C ( buildCPkg
                  , PkgM
                  , runPkgM
                  , cPkgDhallToCPkg
+                 , globalPkgDir
                  ) where
 
 import           Package.C.Build

@@ -12,6 +12,8 @@
 - [ ] Should cache package downloads globally
 - [ ] Take verbosity as argument
 - [ ] Executable should actually do something
+# Documentation
+- [ ] Write a manpage
 # Tests
 - [ ] Build `libgc`
 # Packages

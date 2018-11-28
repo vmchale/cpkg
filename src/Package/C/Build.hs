@@ -1,4 +1,5 @@
 module Package.C.Build ( buildCPkg
+                       , globalPkgDir
                        ) where
 
 import           Control.Concurrent     (getNumCapabilities)
@@ -27,8 +28,13 @@ handleExit :: ExitCode -> IO ()
 handleExit ExitSuccess = mempty
 handleExit x           = exitWith x
 
+globalPkgDir :: MonadIO m => m FilePath
+globalPkgDir = liftIO (getAppUserDataDirectory "cpkg")
+
 cPkgToDir :: MonadIO m => CPkg -> m FilePath
-cPkgToDir cpkg = liftIO $ getAppUserDataDirectory ("cpkg" </> pkgName cpkg ++ "-" ++ showVersion (pkgVersion cpkg))
+cPkgToDir cpkg = do
+    global <- globalPkgDir
+    pure (global </> pkgName cpkg ++ "-" ++ showVersion (pkgVersion cpkg))
 
 stepToProc :: MonadIO m
            => FilePath -- ^ Working directory

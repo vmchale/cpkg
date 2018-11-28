@@ -74,13 +74,16 @@ library
 
 executable cpkg
     main-is: Main.hs
+    other-modules: Paths_cpkg
     hs-source-dirs: app
     default-language: Haskell2010
     ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall
     build-depends:
         base -any,
         cpkg -any,
-        dhall
+        dhall,
+        optparse-applicative,
+        directory
 
     if flag(development)
         ghc-options: -Werror
