@@ -1,15 +1,16 @@
 module Package.C.Build ( buildCPkg
                        ) where
 
-import           Data.Foldable    (traverse_)
+import           Data.Foldable     (traverse_)
 import           Package.C.Error
 import           Package.C.Fetch
 import           Package.C.Type
-import           System.Directory (createDirectoryIfMissing, getAppUserDataDirectory, getPermissions, setOwnerExecutable, setPermissions)
-import           System.Exit      (ExitCode (ExitSuccess), exitWith)
-import           System.FilePath  ((</>))
-import           System.IO.Temp   (withSystemTempDirectory)
-import           System.Process   (CreateProcess (cwd, std_in), StdStream (CreatePipe), createProcess, proc, waitForProcess)
+import           Package.C.Version
+import           System.Directory  (createDirectoryIfMissing, getAppUserDataDirectory, getPermissions, setOwnerExecutable, setPermissions)
+import           System.Exit       (ExitCode (ExitSuccess), exitWith)
+import           System.FilePath   ((</>))
+import           System.IO.Temp    (withSystemTempDirectory)
+import           System.Process    (CreateProcess (cwd, std_in), StdStream (CreatePipe), createProcess, proc, waitForProcess)
 
 mkExecutable :: FilePath -> IO ()
 mkExecutable fp = do
@@ -21,7 +22,7 @@ handleExit ExitSuccess = mempty
 handleExit x           = exitWith x
 
 cPkgToDir :: CPkg -> IO FilePath
-cPkgToDir cpkg = getAppUserDataDirectory ("cpkg" </> _pkgName cpkg)
+cPkgToDir cpkg = getAppUserDataDirectory ("cpkg" </> _pkgName cpkg ++ "-" ++ showVersion (_pkgVersion cpkg))
 
 stepToProc :: FilePath -- ^ Working directory
            -> String -- ^ Steo

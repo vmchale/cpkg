@@ -5,14 +5,16 @@ module Package.C.Dhall.Type ( CPkg (..)
                             , ConfigureVars (..)
                             ) where
 
-import qualified Data.Text as T
+import qualified Data.Text   as T
 import           Dhall
+import           GHC.Natural (Natural)
 
 data ConfigureVars = ConfigureVars { _installDir  :: T.Text
                                    , _includeDirs :: [ T.Text ]
                                    } deriving (Generic, Inject)
 
 data CPkg = CPkg { _pkgName          :: T.Text
+                 , _pkgVersion       :: [ Natural ]
                  , _pkgUrl           :: T.Text
                  , _pkgSubdir        :: T.Text
                  , _configureCommand :: ConfigureVars -> [ T.Text ]
