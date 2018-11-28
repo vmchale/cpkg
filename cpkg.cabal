@@ -44,12 +44,12 @@ library
         dhall -any,
         text -any,
         temporary -any,
-        bytestring,
-        zlib,
-        bzlib,
-        lzma,
-        tar,
-        zip-archive
+        bytestring -any,
+        zlib -any,
+        bzlib -any,
+        lzma -any,
+        tar -any,
+        zip-archive -any
 
     if flag(development)
         ghc-options: -Werror
