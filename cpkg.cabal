@@ -35,8 +35,10 @@ library
         Package.C.Type
         Package.C.Build
         Package.C.Unpack
+        Package.C.Error
+        Package.C.Fetch
     default-language: Haskell2010
-    other-extensions: DeriveGeneric DeriveAnyClass
+    other-extensions: DeriveGeneric DeriveAnyClass OverloadedStrings
     ghc-options: -Wall
     build-depends:
         base >=4.3 && <5,
@@ -49,7 +51,10 @@ library
         bzlib -any,
         lzma -any,
         tar -any,
-        zip-archive -any
+        zip-archive -any,
+        prettyprinter,
+        http-client,
+        http-client-tls
 
     if flag(development)
         ghc-options: -Werror

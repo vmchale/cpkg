@@ -1,4 +1,7 @@
-module Package.C.Unpack ( unpackResponse ) where
+module Package.C.Unpack ( unpackResponse
+                        , Compression (..)
+                        , TarCompress (..)
+                        ) where
 
 import qualified Codec.Archive.Tar      as Tar
 import           Codec.Archive.Zip      (ZipOption (..),
