@@ -1,26 +1,28 @@
-{-# LANGUAGE DeriveAnyClass             #-}
-{-# LANGUAGE DeriveGeneric              #-}
-{-# LANGUAGE DerivingStrategies         #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE DeriveAnyClass #-}
+{-# LANGUAGE DeriveGeneric  #-}
 
 module Package.C.Dhall.Type ( CPkg (..)
                             , ConfigureVars (..)
                             , BuildVars (..)
+                            , InstallVars (..)
                             , Dep (..)
                             ) where
 
-import qualified Data.Text         as T
+import qualified Data.Text             as T
 import           Dhall
-import           GHC.Natural       (Natural)
-import           Package.C.Version
+import           GHC.Natural           (Natural)
+import           Package.C.Type.Shared
 
 data ConfigureVars = ConfigureVars { installDir   :: T.Text
                                    , targetTriple :: Maybe T.Text
                                    , includeDirs  :: [ T.Text ]
+                                   , configOs     :: OS
                                    } deriving (Generic, Inject)
 
-newtype BuildVars = BuildVars { cpus :: Natural }
-                  deriving newtype Inject
+data BuildVars = BuildVars { cpus    :: Natural
+                           , buildOs :: OS
+                           }
+                deriving (Generic, Inject)
 
 data Dep = Dep { name  :: T.Text
                , bound :: VersionBound
@@ -35,5 +37,5 @@ data CPkg = CPkg { pkgName          :: T.Text
                  , configureCommand :: ConfigureVars -> [ T.Text ]
                  , executableFiles  :: [ T.Text ]
                  , buildCommand     :: BuildVars -> [ T.Text ]
-                 , installCommand   :: [ T.Text ]
+                 , installCommand   :: InstallVars -> [ T.Text ]
                  } deriving (Generic, Interpret)

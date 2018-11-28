@@ -2,11 +2,12 @@ let prelude = https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-p
 in
 
 let gmpBuild =
-  λ(cpus : Natural) →
+  λ(cfg : { cpus : Natural, buildOS : OS } ) →
     let
-      cpuString = Natural/show cpus
+      cpuString  = Natural/show cfg.cpus
+      makeString = makeExe cfg.buildOS
     in
-      [ "make -j${cpuString}", "make -j${cpuString} check" ]
+      [ "${makeString} -j${cpuString}", "${makeString} -j${cpuString} check" ]
 in
 
 let gmp =

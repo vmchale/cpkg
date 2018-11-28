@@ -5,6 +5,7 @@ module Package.C.Build ( buildCPkg
 import           Control.Concurrent     (getNumCapabilities)
 import           Control.Monad.IO.Class (MonadIO (liftIO))
 import           Data.Foldable          (traverse_)
+import           Package.C.Build.OS
 import           Package.C.Error
 import           Package.C.Fetch
 import           Package.C.Monad
@@ -43,7 +44,7 @@ processSteps pkgDir steps = traverse_ waitProcess =<< traverse (stepToProc pkgDi
 configureInDir :: CPkg -> FilePath -> FilePath -> PkgM ()
 configureInDir cpkg pkgDir p =
 
-    let cfg = ConfigureVars pkgDir Nothing []
+    let cfg = ConfigureVars pkgDir Nothing [] dhallOS
         steps = configureCommand cpkg cfg
     in
         putNormal ("Configuring " ++ pkgName cpkg) *>
@@ -53,13 +54,13 @@ buildInDir :: CPkg -> FilePath -> PkgM ()
 buildInDir cpkg p = do
     nproc <- liftIO getNumCapabilities
     putNormal ("Building " ++ pkgName cpkg)
-    let cfg = BuildVars nproc
+    let cfg = BuildVars nproc dhallOS
     processSteps p (buildCommand cpkg cfg)
 
 installInDir :: CPkg -> FilePath -> PkgM ()
 installInDir cpkg p =
     putNormal ("Installing " ++ pkgName cpkg) *>
-    processSteps p (installCommand cpkg)
+    processSteps p (installCommand cpkg (InstallVars dhallOS))
 
 fetchCPkg :: CPkg
           -> FilePath -- ^ Directory for intermediate build files
@@ -69,7 +70,6 @@ fetchCPkg cpkg = fetchUrl (pkgUrl cpkg) (pkgName cpkg)
 -- TODO: more complicated solver, garbage collector, and all that.
 -- Basically nix-style builds for C libraries
 --
--- TODO: This should take a verbosity
 -- TODO: play nicely with cross-compilation (lol)
 buildCPkg :: CPkg -> PkgM ()
 buildCPkg cpkg = do
@@ -78,7 +78,6 @@ buildCPkg cpkg = do
 
     liftIO $ createDirectoryIfMissing True pkgDir
 
-    -- FIXME: can't use withSystemTempDirectory for... reasons
     withSystemTempDirectory "cpkg" $ \p -> do
 
         putDiagnostic ("Setting up temporary directory in " ++ p)

@@ -10,14 +10,57 @@ let mkTarget =
     Optional/fold Text x Text (λ(tgt : Text) → " --target=${tgt}") ""
 in
 
+let OS = < FreeBSD : {}
+         | OpenBSD : {}
+         | NetBSD : {}
+         | Solaris : {}
+         | Dragonfly : {}
+         | Linux : {}
+         | Darwin : {}
+         | Windows : {}
+         >
+in
+
+let makeExe =
+  λ(os : OS) →
+
+    let gmake = λ(_ : {}) → "gmake"
+    in
+    let make  = λ(_ : {}) → "make"
+    in
+
+    merge
+      { FreeBSD   = gmake
+      , OpenBSD   = gmake
+      , NetBSD    = gmake
+      , Solaris   = gmake
+      , Dragonfly = gmake
+      , Linux     = make
+      , Darwin    = make
+      , Windows   = make
+      }
+      os
+in
+
+let ConfigureVars = { installDir : Text, targetTriple : Optional Text, includeDirs : List Text, configOS : OS }
+in
+
+let BuildVars = { cpus : Natural, buildOS : OS }
+in
+
 let defaultConfigure =
-  λ(cfg : { installDir : Text, targetTriple : Optional Text, includeDirs : List Text}) →
+  λ(cfg : ConfigureVars) →
     [ "./configure --prefix=" ++ cfg.installDir ++ mkTarget cfg.targetTriple ]
 in
 
 let defaultBuild =
-  λ(cpus : Natural) →
-    [ "make -j" ++ Natural/show cpus ]
+  λ(cfg : BuildVars) →
+    [ "${makeExe cfg.buildOS} -j${Natural/show cfg.cpus}"]
+in
+
+let defaultInstall =
+  λ(os : OS) →
+    [ "${makeExe os} install" ]
 in
 
 let VersionBound = < Lower : { lower : List Natural }
@@ -39,7 +82,7 @@ let defaultPackage =
   { configureCommand = defaultConfigure
   , executableFiles  = [ "configure" ]
   , buildCommand     = defaultBuild
-  , installCommand   = [ "make install" ]
+  , installCommand   = defaultInstall
   , pkgBuildDeps     = [] : List Dep
   , pkgDeps          = [] : List Dep
   }
@@ -59,4 +102,5 @@ in
 , makeGnuPackage = makeGnuPackage
 , defaultPackage = defaultPackage
 , unbounded      = unbounded
+, makeExe        = makeExe
 }

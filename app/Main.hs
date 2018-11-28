@@ -1,6 +1,7 @@
 module Main (main) where
 
 import           Control.Monad       (void, when)
+import           Data.Semigroup
 import qualified Data.Version        as V
 import           Options.Applicative hiding (auto)
 import           Package.C
