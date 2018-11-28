@@ -23,12 +23,14 @@ data ConfigureVars = ConfigureVars { installDir   :: FilePath
                                    , includeDirs  :: [ FilePath ]
                                    }
 
-newtype BuildVars = BuildVars { _cpus :: Word }
+newtype BuildVars = BuildVars { cpus :: Int }
 
 data CPkg = CPkg { pkgName          :: String
                  , pkgVersion       :: Version
                  , pkgUrl           :: String
                  , pkgSubdir        :: String
+                 , pkgBuildDeps     :: [ Dhall.Dep ]
+                 , pkgDeps          :: [ Dhall.Dep ]
                  , configureCommand :: ConfigureVars -> [ String ]
                  , executableFiles  :: [ String ]
                  , buildCommand     :: BuildVars -> [ String ]
@@ -39,11 +41,11 @@ cfgVarsToDhallCfgVars :: ConfigureVars -> Dhall.ConfigureVars
 cfgVarsToDhallCfgVars (ConfigureVars dir tgt incls) = Dhall.ConfigureVars (T.pack dir) (T.pack <$> tgt) (T.pack <$> incls)
 
 buildVarsToDhallBuildVars :: BuildVars -> Dhall.BuildVars
-buildVarsToDhallBuildVars (BuildVars cpus) = Dhall.BuildVars (fromIntegral cpus)
+buildVarsToDhallBuildVars (BuildVars nproc) = Dhall.BuildVars (fromIntegral nproc)
 
 cPkgDhallToCPkg :: Dhall.CPkg -> CPkg
-cPkgDhallToCPkg (Dhall.CPkg name v url subdir cfgCmd exes buildCmd installCmd) =
-    CPkg (T.unpack name) (Version (fromIntegral <$> v)) (T.unpack url) (T.unpack subdir) configure (T.unpack <$> exes) build (T.unpack <$> installCmd)
+cPkgDhallToCPkg (Dhall.CPkg name v url subdir bldDeps deps cfgCmd exes buildCmd installCmd) =
+    CPkg (T.unpack name) (Version v) (T.unpack url) (T.unpack subdir) bldDeps deps configure (T.unpack <$> exes) build (T.unpack <$> installCmd)
 
     where configure cfg = T.unpack <$> cfgCmd (cfgVarsToDhallCfgVars cfg)
           build cfg = T.unpack <$> buildCmd (buildVarsToDhallBuildVars cfg)

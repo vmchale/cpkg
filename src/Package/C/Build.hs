@@ -51,9 +51,9 @@ configureInDir cpkg pkgDir p =
 
 buildInDir :: CPkg -> FilePath -> PkgM ()
 buildInDir cpkg p = do
-    cpus <- liftIO getNumCapabilities
+    nproc <- liftIO getNumCapabilities
     putNormal ("Building " ++ pkgName cpkg)
-    let cfg = BuildVars (fromIntegral cpus)
+    let cfg = BuildVars nproc
     processSteps p (buildCommand cpkg cfg)
 
 installInDir :: CPkg -> FilePath -> PkgM ()

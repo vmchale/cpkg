@@ -20,11 +20,28 @@ let defaultBuild =
     [ "make -j" ++ Natural/show cpus ]
 in
 
+let VersionBound = < Lower : { lower : List Natural }
+                   | Upper : { upper : List Natural }
+                   | LowerUpper : { lower : List Natural, upper : List Natural }
+                   | NoBound : {} >
+
+let Dep = { name : Text, bound : VersionBound }
+in
+
+let unbounded =
+  λ(x : Text) →
+    { name = x
+    , bound = VersionBound.NoBound
+    }
+in
+
 let defaultPackage =
   { configureCommand = defaultConfigure
   , executableFiles  = [ "configure" ]
   , buildCommand     = defaultBuild
   , installCommand   = [ "make install" ]
+  , pkgBuildDeps     = [] : List Dep
+  , pkgDeps          = [] : List Dep
   }
 in
 
@@ -41,4 +58,5 @@ in
 { showVersion    = showVersion
 , makeGnuPackage = makeGnuPackage
 , defaultPackage = defaultPackage
+, unbounded      = unbounded
 }
