@@ -30,18 +30,22 @@ waitProcess proc' = do
     (_, _, _, r) <- createProcess proc'
     handleExit =<< waitForProcess r
 
-configureInDir :: CPkg -> FilePath -> FilePath -> IO ()
-configureInDir cpkg pkgDir _ = do
+processSteps :: Traversable t => FilePath -> t String -> IO ()
+processSteps pkgDir steps = traverse_ waitProcess =<< traverse (stepToProc pkgDir) steps
 
-    createDirectoryIfMissing True pkgDir
+configureInDir :: CPkg -> FilePath -> FilePath -> IO ()
+configureInDir cpkg pkgDir p =
 
     let cfg = ConfigureVars pkgDir []
         steps = _configureCommand cpkg cfg
-
-    traverse_ waitProcess =<< traverse (stepToProc pkgDir) steps
+    in
+        processSteps p steps
 
 buildInDir :: CPkg -> FilePath -> IO ()
-buildInDir _ _ = mempty
+buildInDir cpkg p = processSteps p (_buildCommand cpkg)
+
+installInDir :: CPkg -> FilePath -> IO ()
+installInDir cpkg p = processSteps p (_installCommand cpkg)
 
 -- https://mirrors.ocf.berkeley.edu/gnu/libunistring/libunistring-0.9.10.tar.xz
 fetchCPkg :: CPkg
@@ -59,6 +63,8 @@ buildCPkg cpkg = do
 
     pkgDir <- cPkgToDir cpkg
 
+    createDirectoryIfMissing True pkgDir
+
     withSystemTempDirectory "cpkg" $ \p -> do
 
         fetchCPkg cpkg p
@@ -66,3 +72,5 @@ buildCPkg cpkg = do
         configureInDir cpkg pkgDir p
 
         buildInDir cpkg p
+
+        installInDir cpkg p
