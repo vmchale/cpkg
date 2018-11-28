@@ -4,8 +4,7 @@ module Package.C.Unpack ( unpackResponse
                         ) where
 
 import qualified Codec.Archive.Tar      as Tar
-import           Codec.Archive.Zip      (ZipOption (..),
-                                         extractFilesFromArchive, toArchive)
+import           Codec.Archive.Zip      (ZipOption (..), extractFilesFromArchive, toArchive)
 import qualified Codec.Compression.BZip as Bzip
 import qualified Codec.Compression.GZip as Gzip
 import qualified Codec.Compression.Lzma as Lzma

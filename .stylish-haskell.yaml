@@ -19,6 +19,6 @@ steps:
       remove_redundant: false
 
   - trailing_whitespace: {}
-columns: 80
+columns: 160
 newline: native
 language_extensions: []
