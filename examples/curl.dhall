@@ -1,16 +1,6 @@
 let prelude = https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-prelude.dhall
 in
 
-let configure =
-  λ(cfg : { installDir : Text, includeDirs : List Text}) →
-    [ "./configure --prefix=" ++ cfg.installDir ]
-in
-
-let build =
-  λ(cpus : Natural) →
-    [ "make -j" ++ Natural/show cpus ]
-in
-
 let curl =
   λ(v : List Natural) →
     prelude.defaultPackage ⫽
