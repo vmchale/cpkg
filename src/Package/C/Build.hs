@@ -51,11 +51,15 @@ configureInDir cpkg pkgDir p =
         putNormal ("Configuring " ++ _pkgName cpkg) *>
         processSteps p steps
 
-buildInDir :: MonadIO m => CPkg -> FilePath -> m ()
-buildInDir cpkg p = processSteps p (_buildCommand cpkg)
+buildInDir :: CPkg -> FilePath -> PkgM ()
+buildInDir cpkg p =
+    putNormal ("Building " ++ _pkgName cpkg) *>
+    processSteps p (_buildCommand cpkg)
 
-installInDir ::MonadIO m => CPkg -> FilePath -> m ()
-installInDir cpkg p = processSteps p (_installCommand cpkg)
+installInDir :: CPkg -> FilePath -> PkgM ()
+installInDir cpkg p =
+    putNormal ("Installing " ++ _pkgName cpkg) *>
+    processSteps p (_installCommand cpkg)
 
 fetchCPkg :: CPkg
           -> FilePath -- ^ Directory for intermediate build files
@@ -77,7 +81,7 @@ buildCPkg cpkg = do
     -- FIXME: can't use withSystemTempDirectory for... reasons
     withSystemTempDirectory "cpkg" $ \p -> do
 
-        putNormal ("Setting up temporary directory in " ++ p)
+        putDiagnostic ("Setting up temporary directory in " ++ p)
 
         fetchCPkg cpkg p
 
