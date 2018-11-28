@@ -28,7 +28,7 @@ handleExit ExitSuccess = mempty
 handleExit x           = exitWith x
 
 cPkgToDir :: MonadIO m => CPkg -> m FilePath
-cPkgToDir cpkg = liftIO $ getAppUserDataDirectory ("cpkg" </> _pkgName cpkg ++ "-" ++ showVersion (_pkgVersion cpkg))
+cPkgToDir cpkg = liftIO $ getAppUserDataDirectory ("cpkg" </> pkgName cpkg ++ "-" ++ showVersion (pkgVersion cpkg))
 
 stepToProc :: MonadIO m
            => FilePath -- ^ Working directory
@@ -58,27 +58,27 @@ configureInDir :: CPkg -> FilePath -> FilePath -> PkgM ()
 configureInDir cpkg pkgDir p =
 
     let cfg = ConfigureVars pkgDir []
-        steps = _configureCommand cpkg cfg
+        steps = configureCommand cpkg cfg
     in
-        putNormal ("Configuring " ++ _pkgName cpkg) *>
+        putNormal ("Configuring " ++ pkgName cpkg) *>
         processSteps p steps
 
 buildInDir :: CPkg -> FilePath -> PkgM ()
 buildInDir cpkg p = do
     cpus <- liftIO getNumCapabilities
-    putNormal ("Building " ++ _pkgName cpkg)
+    putNormal ("Building " ++ pkgName cpkg)
     let cfg = BuildVars (fromIntegral cpus)
-    processSteps p (_buildCommand cpkg cfg)
+    processSteps p (buildCommand cpkg cfg)
 
 installInDir :: CPkg -> FilePath -> PkgM ()
 installInDir cpkg p =
-    putNormal ("Installing " ++ _pkgName cpkg) *>
-    processSteps p (_installCommand cpkg)
+    putNormal ("Installing " ++ pkgName cpkg) *>
+    processSteps p (installCommand cpkg)
 
 fetchCPkg :: CPkg
           -> FilePath -- ^ Directory for intermediate build files
           -> PkgM ()
-fetchCPkg cpkg = fetchUrl (_pkgUrl cpkg) (_pkgName cpkg)
+fetchCPkg cpkg = fetchUrl (pkgUrl cpkg) (pkgName cpkg)
 
 -- TODO: more complicated solver, garbage collector, and all that.
 -- Basically nix-style builds for C libraries
@@ -99,8 +99,8 @@ buildCPkg cpkg = do
 
         fetchCPkg cpkg p
 
-        let p' = p </> _pkgSubdir cpkg
-            toExes = (p' </>) <$> _executableFiles cpkg
+        let p' = p </> pkgSubdir cpkg
+            toExes = (p' </>) <$> executableFiles cpkg
 
         liftIO $ traverse_ mkExecutable toExes
 

@@ -17,20 +17,20 @@ data Verbosity = Silent -- ^ Display nothing
                | Diagnostic -- ^ Display stdout and stderr from builds, and display debug information
                deriving (Eq, Ord)
 
-data ConfigureVars = ConfigureVars { _installDir  :: FilePath
-                                   , _includeDirs :: [ FilePath ]
+data ConfigureVars = ConfigureVars { installDir  :: FilePath
+                                   , includeDirs :: [ FilePath ]
                                    }
 
 newtype BuildVars = BuildVars { _cpus :: Word }
 
-data CPkg = CPkg { _pkgName          :: String
-                 , _pkgVersion       :: Version
-                 , _pkgUrl           :: String
-                 , _pkgSubdir        :: String
-                 , _configureCommand :: ConfigureVars -> [ String ]
-                 , _executableFiles  :: [ String ]
-                 , _buildCommand     :: BuildVars -> [ String ]
-                 , _installCommand   :: [ String ]
+data CPkg = CPkg { pkgName          :: String
+                 , pkgVersion       :: Version
+                 , pkgUrl           :: String
+                 , pkgSubdir        :: String
+                 , configureCommand :: ConfigureVars -> [ String ]
+                 , executableFiles  :: [ String ]
+                 , buildCommand     :: BuildVars -> [ String ]
+                 , installCommand   :: [ String ]
                  }
 
 cfgVarsToDhallCfgVars :: ConfigureVars -> Dhall.ConfigureVars

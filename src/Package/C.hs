@@ -6,6 +6,7 @@ module Package.C ( buildCPkg
                  , Verbosity (..)
                  , PkgM
                  , runPkgM
+                 , cPkgDhallToCPkg
                  ) where
 
 import           Package.C.Build
