@@ -1,6 +1,6 @@
 packages: ./
 constraints: cpkg +development
 
-tests: true
-benchmarks: true
-documentation: true
+-- tests: true
+-- benchmarks: true
+-- documentation: true
