@@ -10,11 +10,14 @@
   - [ ] Garbage collection
 - [ ] Package database
 # Deficiencies
+- [ ] Symlink into a common directory (`~/.cpkg/bin`?)
 - [ ] Build command should take number of cores as an argument
 - [ ] Should cache package downloads globally
-- [ ] Executable should actually do something
 # Documentation
 - [ ] Write a manpage
+- [ ] Documentation in
+  - [ ] French
+  - [ ] German
 # Dhall Libraries
 - [ ] Use something other than `Optional Text` for target architectures
 # Tests
