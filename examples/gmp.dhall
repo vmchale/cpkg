@@ -1,12 +1,17 @@
+let types = https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-types.dhall
+in
+
 let prelude = https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-prelude.dhall
 in
 
 let gmpBuild =
-  λ(cfg : { cpus : Natural, buildOS : OS } ) →
-    let
-      cpuString  = Natural/show cfg.cpus
-      makeString = makeExe cfg.buildOS
+  λ(cfg : { cpus : Natural, buildOS : types.OS } ) →
+
+    let cpuString  = Natural/show cfg.cpus
     in
+    let makeString = prelude.makeExe cfg.buildOS
+    in
+
       [ "${makeString} -j${cpuString}", "${makeString} -j${cpuString} check" ]
 in
 

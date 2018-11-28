@@ -1,6 +1,9 @@
 let concatMapSep = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/Text/concatMapSep
 in
 
+let types = https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-types.dhall
+in
+
 let showVersion =
   λ(x : List Natural) → concatMapSep "." Natural Natural/show x
 in
@@ -10,19 +13,8 @@ let mkTarget =
     Optional/fold Text x Text (λ(tgt : Text) → " --target=${tgt}") ""
 in
 
-let OS = < FreeBSD : {}
-         | OpenBSD : {}
-         | NetBSD : {}
-         | Solaris : {}
-         | Dragonfly : {}
-         | Linux : {}
-         | Darwin : {}
-         | Windows : {}
-         >
-in
-
 let makeExe =
-  λ(os : OS) →
+  λ(os : types.OS) →
 
     let gmake = λ(_ : {}) → "gmake"
     in
@@ -42,39 +34,25 @@ let makeExe =
       os
 in
 
-let ConfigureVars = { installDir : Text, targetTriple : Optional Text, includeDirs : List Text, configOS : OS }
-in
-
-let BuildVars = { cpus : Natural, buildOS : OS }
-in
-
 let defaultConfigure =
-  λ(cfg : ConfigureVars) →
-    [ "./configure --prefix=" ++ cfg.installDir ++ mkTarget cfg.targetTriple ]
+  λ(cfg : types.ConfigureVars) →
+    [ "./configure --prefix=${cfg.installDir}" ++ mkTarget cfg.targetTriple ]
 in
 
 let defaultBuild =
-  λ(cfg : BuildVars) →
+  λ(cfg : types.BuildVars) →
     [ "${makeExe cfg.buildOS} -j${Natural/show cfg.cpus}"]
 in
 
 let defaultInstall =
-  λ(os : OS) →
+  λ(os : types.OS) →
     [ "${makeExe os} install" ]
-in
-
-let VersionBound = < Lower : { lower : List Natural }
-                   | Upper : { upper : List Natural }
-                   | LowerUpper : { lower : List Natural, upper : List Natural }
-                   | NoBound : {} >
-
-let Dep = { name : Text, bound : VersionBound }
 in
 
 let unbounded =
   λ(x : Text) →
     { name = x
-    , bound = VersionBound.NoBound
+    , bound = types.VersionBound.NoBound
     }
 in
 
@@ -83,8 +61,8 @@ let defaultPackage =
   , executableFiles  = [ "configure" ]
   , buildCommand     = defaultBuild
   , installCommand   = defaultInstall
-  , pkgBuildDeps     = [] : List Dep
-  , pkgDeps          = [] : List Dep
+  , pkgBuildDeps     = [] : List types.Dep
+  , pkgDeps          = [] : List types.Dep
   }
 in
 
