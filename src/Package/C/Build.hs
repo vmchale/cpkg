@@ -1,6 +1,7 @@
 module Package.C.Build ( buildCPkg
                        ) where
 
+import           Control.Concurrent     (getNumCapabilities)
 import           Control.Monad          (void)
 import           Control.Monad.IO.Class (MonadIO (liftIO))
 import           Control.Monad.Reader   (ask)
@@ -63,9 +64,11 @@ configureInDir cpkg pkgDir p =
         processSteps p steps
 
 buildInDir :: CPkg -> FilePath -> PkgM ()
-buildInDir cpkg p =
-    putNormal ("Building " ++ _pkgName cpkg) *>
-    processSteps p (_buildCommand cpkg)
+buildInDir cpkg p = do
+    cpus <- liftIO getNumCapabilities
+    putNormal ("Building " ++ _pkgName cpkg)
+    let cfg = BuildVars (fromIntegral cpus)
+    processSteps p (_buildCommand cpkg cfg)
 
 installInDir :: CPkg -> FilePath -> PkgM ()
 installInDir cpkg p =

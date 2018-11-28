@@ -1,5 +1,6 @@
 module Package.C.Type ( CPkg (..)
                       , ConfigureVars (..)
+                      , BuildVars (..)
                       , Verbosity (..)
                       -- * Helper functions
                       , cPkgDhallToCPkg
@@ -20,19 +21,27 @@ data ConfigureVars = ConfigureVars { _installDir  :: FilePath
                                    , _includeDirs :: [ FilePath ]
                                    }
 
+newtype BuildVars = BuildVars { _cpus :: Word }
+
 data CPkg = CPkg { _pkgName          :: String
                  , _pkgVersion       :: Version
                  , _pkgUrl           :: String
                  , _pkgSubdir        :: String
                  , _configureCommand :: ConfigureVars -> [ String ]
                  , _executableFiles  :: [ String ]
-                 , _buildCommand     :: [ String ]
+                 , _buildCommand     :: BuildVars -> [ String ]
                  , _installCommand   :: [ String ]
                  }
 
 cfgVarsToDhallCfgVars :: ConfigureVars -> Dhall.ConfigureVars
 cfgVarsToDhallCfgVars (ConfigureVars dir incls) = Dhall.ConfigureVars (T.pack dir) (T.pack <$> incls)
 
+buildVarsToDhallBuildVars :: BuildVars -> Dhall.BuildVars
+buildVarsToDhallBuildVars (BuildVars cpus) = Dhall.BuildVars (fromIntegral cpus)
+
 cPkgDhallToCPkg :: Dhall.CPkg -> CPkg
 cPkgDhallToCPkg (Dhall.CPkg name v url subdir cfgCmd exes buildCmd installCmd) =
-    CPkg (T.unpack name) (Version (fromIntegral <$> v)) (T.unpack url) (T.unpack subdir) (\cfg -> T.unpack <$> cfgCmd (cfgVarsToDhallCfgVars cfg)) (T.unpack <$> exes) (T.unpack <$> buildCmd) (T.unpack <$> installCmd)
+    CPkg (T.unpack name) (Version (fromIntegral <$> v)) (T.unpack url) (T.unpack subdir) configure (T.unpack <$> exes) build (T.unpack <$> installCmd)
+
+    where configure cfg = T.unpack <$> cfgCmd (cfgVarsToDhallCfgVars cfg)
+          build cfg = T.unpack <$> buildCmd (buildVarsToDhallBuildVars cfg)

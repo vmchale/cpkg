@@ -3,8 +3,9 @@ module Main (main) where
 import           Package.C
 
 unistring :: CPkg
-unistring = CPkg "unistring" (Version [0,9,10]) "https://mirrors.ocf.berkeley.edu/gnu/libunistring/libunistring-0.9.10.tar.xz" "libunistring-0.9.10" configure [ "configure" ] [ "make" ] [ "make install" ]
+unistring = CPkg "unistring" (Version [0,9,10]) "https://mirrors.ocf.berkeley.edu/gnu/libunistring/libunistring-0.9.10.tar.xz" "libunistring-0.9.10" configure [ "configure" ] build [ "make install" ]
     where configure (ConfigureVars dir _) = ["./configure --prefix=" ++ dir]
+          build (BuildVars cpus) = ["make -j" ++ show cpus]
 
 main :: IO ()
 main = runPkgM Normal (buildCPkg unistring)

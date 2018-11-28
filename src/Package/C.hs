@@ -1,6 +1,7 @@
 module Package.C ( buildCPkg
                  , CPkg (..)
                  , ConfigureVars (..)
+                 , BuildVars (..)
                  , Version (..)
                  , Verbosity (..)
                  , PkgM
