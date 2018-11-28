@@ -26,6 +26,7 @@ let makeGnuPackage =
     , buildCommand = build
     , installCommand = [ "make install" ]
     }
+in
 
 { showVersion = showVersion
 , makeGnuPackage = makeGnuPackage

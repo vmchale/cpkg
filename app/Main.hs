@@ -5,5 +5,5 @@ import           Package.C
 
 main :: IO ()
 main = do
-    unistring <- cPkgDhallToCPkg <$> inputFile auto "examples/unistring.dhall"
+    unistring <- cPkgDhallToCPkg <$> inputFile auto "examples/curl.dhall"
     runPkgM Loud (buildCPkg unistring)
