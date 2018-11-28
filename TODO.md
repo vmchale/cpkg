@@ -15,6 +15,8 @@
 - [ ] Executable should actually do something
 # Documentation
 - [ ] Write a manpage
+# Dhall Libraries
+- [ ] Use something other than `Optional Text` for target architectures
 # Tests
 - [ ] Nontrivial example where we have to link w/ another package installed by
   `cpkg`.

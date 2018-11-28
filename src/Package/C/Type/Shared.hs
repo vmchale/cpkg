@@ -6,8 +6,10 @@
 module Package.C.Type.Shared ( OS (..)
                              , VersionBound (..)
                              , InstallVars (..)
+                             , Dep (..)
                              ) where
 
+import qualified Data.Text              as T
 import           Dhall
 import           Package.C.Type.Version
 
@@ -20,6 +22,10 @@ data VersionBound = Lower { lower :: Version }
 newtype InstallVars = InstallVars { installOS :: OS }
                     deriving newtype Inject
 
+data Dep = Dep { name  :: T.Text
+               , bound :: VersionBound
+               } deriving (Generic, Interpret)
+
 data OS = Darwin
         | Dragonfly
         | FreeBSD
@@ -28,4 +34,4 @@ data OS = Darwin
         | NetBSD
         | Solaris
         | Windows
-        deriving (Generic, Inject, Interpret)
+        deriving (Generic, Inject)

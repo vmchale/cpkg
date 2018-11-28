@@ -19,7 +19,6 @@ data Verbosity = Silent -- ^ Display nothing
                | Diagnostic -- ^ Display stdout and stderr from builds, and display debug information
                deriving (Eq, Ord)
 
--- TODO: hashable?
 data ConfigureVars = ConfigureVars { installDir   :: FilePath
                                    , targetTriple :: Maybe String
                                    , includeDirs  :: [ FilePath ]
@@ -36,8 +35,8 @@ data CPkg = CPkg { pkgName          :: String
                  , pkgVersion       :: Version
                  , pkgUrl           :: String
                  , pkgSubdir        :: String
-                 , pkgBuildDeps     :: [ Dhall.Dep ]
-                 , pkgDeps          :: [ Dhall.Dep ]
+                 , pkgBuildDeps     :: [ Dep ]
+                 , pkgDeps          :: [ Dep ]
                  , configureCommand :: ConfigureVars -> [ String ]
                  , executableFiles  :: [ String ]
                  , buildCommand     :: BuildVars -> [ String ]
@@ -51,8 +50,8 @@ buildVarsToDhallBuildVars :: BuildVars -> Dhall.BuildVars
 buildVarsToDhallBuildVars (BuildVars nproc os) = Dhall.BuildVars (fromIntegral nproc) os
 
 cPkgDhallToCPkg :: Dhall.CPkg -> CPkg
-cPkgDhallToCPkg (Dhall.CPkg name v url subdir bldDeps deps cfgCmd exes buildCmd installCmd) =
-    CPkg (T.unpack name) (Version v) (T.unpack url) (T.unpack subdir) bldDeps deps configure (T.unpack <$> exes) build install
+cPkgDhallToCPkg (Dhall.CPkg n v url subdir bldDeps deps cfgCmd exes buildCmd installCmd) =
+    CPkg (T.unpack n) (Version v) (T.unpack url) (T.unpack subdir) bldDeps deps configure (T.unpack <$> exes) build install
 
     where configure cfg = T.unpack <$> cfgCmd (cfgVarsToDhallCfgVars cfg)
           build cfg = T.unpack <$> buildCmd (buildVarsToDhallBuildVars cfg)

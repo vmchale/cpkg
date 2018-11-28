@@ -5,7 +5,6 @@ module Package.C.Dhall.Type ( CPkg (..)
                             , ConfigureVars (..)
                             , BuildVars (..)
                             , InstallVars (..)
-                            , Dep (..)
                             ) where
 
 import qualified Data.Text             as T
@@ -23,10 +22,6 @@ data BuildVars = BuildVars { cpus    :: Natural
                            , buildOS :: OS
                            }
                 deriving (Generic, Inject)
-
-data Dep = Dep { name  :: T.Text
-               , bound :: VersionBound
-               } deriving (Generic, Interpret)
 
 data CPkg = CPkg { pkgName          :: T.Text
                  , pkgVersion       :: [ Natural ]
