@@ -1,11 +1,11 @@
 module Main (main) where
 
-import           Control.Monad       (void)
+import           Control.Monad       (void, when)
 import qualified Data.Version        as V
 import           Options.Applicative hiding (auto)
 import           Package.C
 import qualified Paths_cpkg          as P
-import           System.Directory    (removeDirectoryRecursive)
+import           System.Directory    (doesDirectoryExist, removeDirectoryRecursive)
 
 cpkgVersion :: V.Version
 cpkgVersion = P.version
@@ -68,7 +68,9 @@ run (Install file v) = do
 run (Check file) = void $ getCPkg file
 run Nuke = do
     pkgDir <- globalPkgDir
-    removeDirectoryRecursive pkgDir
+    exists <- doesDirectoryExist pkgDir
+    when exists $
+        removeDirectoryRecursive pkgDir
 
 main :: IO ()
 main = execParser wrapper >>= run
