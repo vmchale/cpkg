@@ -14,7 +14,9 @@ data ConfigureVars = ConfigureVars { _installDir  :: T.Text
 
 data CPkg = CPkg { _pkgName          :: T.Text
                  , _pkgUrl           :: T.Text
+                 , _pkgSubdir        :: T.Text
                  , _configureCommand :: ConfigureVars -> [ T.Text ]
+                 , _executableFiles  :: [ T.Text ]
                  , _buildCommand     :: [ T.Text ]
                  , _installCommand   :: [ T.Text ]
                  } deriving (Generic, Interpret)

@@ -13,7 +13,9 @@ data ConfigureVars = ConfigureVars { _installDir  :: FilePath
 
 data CPkg = CPkg { _pkgName          :: String
                  , _pkgUrl           :: String
+                 , _pkgSubdir        :: String
                  , _configureCommand :: ConfigureVars -> [ String ]
+                 , _executableFiles  :: [ String ]
                  , _buildCommand     :: [ String ]
                  , _installCommand   :: [ String ]
                  }
@@ -22,5 +24,5 @@ cfgVarsToDhallCfgVars :: ConfigureVars -> Dhall.ConfigureVars
 cfgVarsToDhallCfgVars (ConfigureVars dir incls) = Dhall.ConfigureVars (T.pack dir) (T.pack <$> incls)
 
 cPkgDhallToCPkg :: Dhall.CPkg -> CPkg
-cPkgDhallToCPkg (Dhall.CPkg name url cfgCmd buildCmd installCmd) =
-    CPkg (T.unpack name) (T.unpack url) (\cfg -> T.unpack <$> cfgCmd (cfgVarsToDhallCfgVars cfg)) (T.unpack <$> buildCmd) (T.unpack <$> installCmd)
+cPkgDhallToCPkg (Dhall.CPkg name url subdir cfgCmd exes buildCmd installCmd) =
+    CPkg (T.unpack name) (T.unpack url) (T.unpack subdir) (\cfg -> T.unpack <$> cfgCmd (cfgVarsToDhallCfgVars cfg)) (T.unpack <$> exes) (T.unpack <$> buildCmd) (T.unpack <$> installCmd)

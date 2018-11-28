@@ -5,24 +5,29 @@ import           Data.Foldable    (traverse_)
 import           Package.C.Error
 import           Package.C.Fetch
 import           Package.C.Type
-import           System.Directory (createDirectoryIfMissing, getAppUserDataDirectory)
+import           System.Directory (createDirectoryIfMissing, getAppUserDataDirectory, getPermissions, setOwnerExecutable, setPermissions)
 import           System.Exit      (ExitCode (ExitSuccess), exitWith)
 import           System.FilePath  ((</>))
 import           System.IO.Temp   (withSystemTempDirectory)
-import           System.Process   (CreateProcess (cwd, std_in), StdStream (NoStream), createProcess, proc, waitForProcess)
+import           System.Process   (CreateProcess (cwd, std_in), StdStream (CreatePipe), createProcess, proc, waitForProcess)
+
+mkExecutable :: FilePath -> IO ()
+mkExecutable fp = do
+    perms <- getPermissions fp
+    setPermissions fp (setOwnerExecutable True perms)
 
 handleExit :: ExitCode -> IO ()
 handleExit ExitSuccess = mempty
 handleExit x           = exitWith x
 
 cPkgToDir :: CPkg -> IO FilePath
-cPkgToDir cpkg = getAppUserDataDirectory (".cpkg" </> _pkgName cpkg)
+cPkgToDir cpkg = getAppUserDataDirectory ("cpkg" </> _pkgName cpkg)
 
-stepToProc :: String -- ^ Step
-           -> FilePath -- ^ Working directory
+stepToProc :: FilePath -- ^ Working directory
+           -> String -- ^ Steo
            -> IO CreateProcess
-stepToProc s fp = case words s of
-    x:xs -> pure $ (proc x xs) { cwd = Just fp, std_in = NoStream }
+stepToProc fp s = case words s of
+    x:xs -> pure $ (proc x xs) { cwd = Just fp, std_in = CreatePipe }
     _    -> badCommand
 
 waitProcess :: CreateProcess -> IO ()
@@ -39,6 +44,7 @@ configureInDir cpkg pkgDir p =
     let cfg = ConfigureVars pkgDir []
         steps = _configureCommand cpkg cfg
     in
+        putStrLn ("Configuring " ++ _pkgName cpkg) *>
         processSteps p steps
 
 buildInDir :: CPkg -> FilePath -> IO ()
@@ -64,14 +70,21 @@ buildCPkg cpkg = do
 
     createDirectoryIfMissing True pkgDir
 
+    -- FIXME: can't use withSystemTempDirectory for... reasons
     withSystemTempDirectory "cpkg" $ \p -> do
 
-        putStrLn ("unpacking to " ++ p)
+        putStrLn ("Setting up temporary directory in " ++ p)
 
         fetchCPkg cpkg p
 
-        configureInDir cpkg pkgDir p
+        let toExes = (p </>) <$> _executableFiles cpkg
 
-        buildInDir cpkg p
+        traverse_ mkExecutable toExes
 
-        installInDir cpkg p
+        let p' = p </> _pkgSubdir cpkg
+
+        configureInDir cpkg pkgDir p'
+
+        buildInDir cpkg p'
+
+        installInDir cpkg p'
