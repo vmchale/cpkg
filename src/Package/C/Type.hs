@@ -14,6 +14,7 @@ data Verbosity = Silent -- ^ Display nothing
                | Verbose -- ^ Display stderr from builds
                | Loud -- ^ Display stdout and stderr from builds
                | Diagnostic -- ^ Display stdout and stderr from builds, and display debug information
+               deriving (Eq, Ord)
 
 data ConfigureVars = ConfigureVars { _installDir  :: FilePath
                                    , _includeDirs :: [ FilePath ]

@@ -38,6 +38,7 @@ library
         Package.C.Error
         Package.C.Fetch
         Package.C.Version
+        Package.C.Monad
     default-language: Haskell2010
     other-extensions: DeriveGeneric DeriveAnyClass OverloadedStrings
     ghc-options: -Wall
@@ -58,7 +59,8 @@ library
         http-client-tls,
         directory,
         filepath,
-        process
+        process,
+        mtl
 
     if flag(development)
         ghc-options: -Werror

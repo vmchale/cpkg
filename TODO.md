@@ -3,6 +3,8 @@
   - [ ] Add typechecking benchmarks
 # Features
 - [ ] Constraint solver
+- [ ] Build/handle preprocessors
+- [ ] Cross-compilation
 - [ ] Nix-style builds
   - [ ] Garbage collection
 # Deficiencies

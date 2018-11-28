@@ -3,13 +3,15 @@
 module Package.C.Fetch ( fetchUrl
                        ) where
 
+import           Control.Monad.IO.Class  (MonadIO (liftIO))
 import           Data.List               (isSuffixOf)
 import           Network.HTTP.Client
 import           Network.HTTP.Client.TLS (tlsManagerSettings)
 import           Package.C.Error
+import           Package.C.Monad
 import           Package.C.Unpack
 
-urlToCompression :: String -> IO Compression
+urlToCompression :: MonadIO m => String -> m Compression
 urlToCompression s | ".tar.gz" `isSuffixOf` s || ".tgz" `isSuffixOf` s = pure $ Tar Gz
                    | ".tar.xz" `isSuffixOf` s = pure $ Tar Xz
                    | ".tar.bz2" `isSuffixOf` s = pure $ Tar Bz2
@@ -20,17 +22,17 @@ urlToCompression s | ".tar.gz" `isSuffixOf` s || ".tgz" `isSuffixOf` s = pure $ 
 fetchUrl :: String -- ^ URL
          -> String -- ^ Package name
          -> FilePath -- ^ Directory to unpack to
-         -> IO ()
+         -> PkgM ()
 fetchUrl url name dirName = do
 
         compression <- urlToCompression url
 
-        putStrLn ("Downloading " ++ name)
+        putNormal ("Downloading " ++ name)
 
-        manager <- newManager tlsManagerSettings
-        initialRequest <- parseRequest url
-        response <- responseBody <$> httpLbs (initialRequest { method = "GET" }) manager
+        manager <- liftIO $ newManager tlsManagerSettings
+        initialRequest <- liftIO $ parseRequest url
+        response <- liftIO $ responseBody <$> httpLbs (initialRequest { method = "GET" }) manager
 
-        putStrLn ("Unpacking " ++ name)
+        putNormal ("Unpacking " ++ name)
 
-        unpackResponse compression dirName response
+        liftIO $ unpackResponse compression dirName response

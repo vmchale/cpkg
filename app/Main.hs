@@ -7,4 +7,4 @@ unistring = CPkg "unistring" (Version [0,9,10]) "https://mirrors.ocf.berkeley.ed
     where configure (ConfigureVars dir _) = ["./configure --prefix=" ++ dir]
 
 main :: IO ()
-main = buildCPkg unistring
+main = runPkgM Normal (buildCPkg unistring)
