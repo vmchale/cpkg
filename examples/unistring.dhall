@@ -6,7 +6,6 @@ in
 let build =
   λ(cpus : Natural) →
     [ "make -j" ++ Natural/show cpus ]
-
 in
 
 { pkgName = "unistring"
