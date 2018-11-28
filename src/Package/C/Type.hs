@@ -17,6 +17,7 @@ data Verbosity = Silent -- ^ Display nothing
                | Diagnostic -- ^ Display stdout and stderr from builds, and display debug information
                deriving (Eq, Ord)
 
+-- TODO: hashable?
 data ConfigureVars = ConfigureVars { installDir   :: FilePath
                                    , targetTriple :: Maybe String
                                    , includeDirs  :: [ FilePath ]

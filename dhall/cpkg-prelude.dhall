@@ -5,9 +5,14 @@ let showVersion =
   λ(x : List Natural) → concatMapSep "." Natural Natural/show x
 in
 
+let mkTarget =
+  λ(x : Optional Text) →
+    Optional/fold Text x Text (λ(tgt : Text) → " --target=${tgt}") ""
+in
+
 let defaultConfigure =
   λ(cfg : { installDir : Text, targetTriple : Optional Text, includeDirs : List Text}) →
-    [ "./configure --prefix=" ++ cfg.installDir ]
+    [ "./configure --prefix=" ++ cfg.installDir ++ mkTarget cfg.targetTriple ]
 in
 
 let defaultBuild =
