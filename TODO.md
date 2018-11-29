@@ -2,6 +2,7 @@
 - [ ] Fix Dhall parser
   - [ ] Add typechecking benchmarks
 - [ ] More helpful error in `System.Process` when `configure` doesn't exist
+- [ ] Maybe fix `acid-state`?
 # Features
 - [ ] Constraint solver
 - [ ] Build/handle preprocessors
@@ -10,9 +11,9 @@
   - [ ] Garbage collection
 - [ ] Package database
 # Deficiencies
-- [ ] Symlink into a common directory (`~/.cpkg/bin`?)
-- [ ] Build command should take number of cores as an argument
-- [ ] Should cache package downloads globally
+- [ ] Symlink built artifacts into a common directory (`~/.cpkg/bin`?)
+- [ ] Cache package downloads globally
+- [ ] No database right now
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in

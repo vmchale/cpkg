@@ -7,17 +7,11 @@ module Package.C.Type ( CPkg (..)
                       , cPkgDhallToCPkg
                       ) where
 
-import qualified Data.Text              as T
-import qualified Package.C.Dhall.Type   as Dhall
+import qualified Data.Text                as T
+import qualified Package.C.Dhall.Type     as Dhall
 import           Package.C.Type.Shared
+import           Package.C.Type.Verbosity
 import           Package.C.Type.Version
-
-data Verbosity = Silent -- ^ Display nothing
-               | Normal -- ^ Display progress information
-               | Verbose -- ^ Display stderr from builds
-               | Loud -- ^ Display stdout and stderr from builds
-               | Diagnostic -- ^ Display stdout and stderr from builds, and display debug information
-               deriving (Eq, Ord)
 
 data ConfigureVars = ConfigureVars { installDir   :: FilePath
                                    , targetTriple :: Maybe String

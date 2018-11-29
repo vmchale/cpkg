@@ -5,10 +5,10 @@ module Package.C.Monad ( PkgM
                        , putDiagnostic
                        ) where
 
-import           Control.Monad          (when)
-import           Control.Monad.IO.Class (liftIO)
+import           Control.Monad            (when)
+import           Control.Monad.IO.Class   (liftIO)
 import           Control.Monad.Reader
-import           Package.C.Type
+import           Package.C.Type.Verbosity
 
 putVerbosity :: Verbosity -> String -> PkgM ()
 putVerbosity verb s = do

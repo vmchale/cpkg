@@ -19,4 +19,5 @@ packageSetDhallToPackageSet :: PackageSetDhall -> PackageSet
 packageSetDhallToPackageSet (PackageSetDhall pkgs) =
     let names = Dhall.pkgName <$> pkgs
         pkgs' = cPkgDhallToCPkg <$> pkgs
+
         in PackageSet $ M.fromList (zip names pkgs')
