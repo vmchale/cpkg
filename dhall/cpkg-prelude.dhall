@@ -38,6 +38,15 @@ let printArch =
       arch
 in
 
+let printManufacturer =
+  λ(x : types.Manufacturer) →
+    merge
+      { Unkown = λ(_ : {}) → "unknown"
+      , Apple  = λ(_ : {}) → "apple"
+      }
+      x
+in
+
 let makeExe =
   λ(os : types.OS) →
 

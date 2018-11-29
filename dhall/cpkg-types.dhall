@@ -55,4 +55,5 @@ in
 , VersionBound  = VersionBound
 , Dep           = Dep
 , Arch          = Arch
+, Manufacturer  = Manufacturer
 }
