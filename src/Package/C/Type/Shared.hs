@@ -35,4 +35,5 @@ data OS = Darwin
         | Solaris
         | Windows
         | Redox
+        | NoOs
         deriving (Generic, Inject)

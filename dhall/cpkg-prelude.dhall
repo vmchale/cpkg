@@ -41,8 +41,10 @@ in
 let printManufacturer =
   λ(x : types.Manufacturer) →
     merge
-      { Unkown = λ(_ : {}) → "unknown"
-      , Apple  = λ(_ : {}) → "apple"
+      { Unknown = λ(_ : {}) → "unknown"
+      , Apple   = λ(_ : {}) → "apple"
+      , IBM     = λ(_ : {}) → "ibm"
+      , PC      = λ(_ : {}) → "pc"
       }
       x
 in
@@ -111,9 +113,11 @@ let makeGnuPackage =
       }
 in
 
-{ showVersion    = showVersion
-, makeGnuPackage = makeGnuPackage
-, defaultPackage = defaultPackage
-, unbounded      = unbounded
-, makeExe        = makeExe
+{ showVersion       = showVersion
+, makeGnuPackage    = makeGnuPackage
+, defaultPackage    = defaultPackage
+, unbounded         = unbounded
+, makeExe           = makeExe
+, printArch         = printArch
+, printManufacturer = printManufacturer
 }

@@ -7,6 +7,7 @@ let OS = < FreeBSD : {}
          | Darwin : {}
          | Windows : {}
          | Redox : {}
+         | NoOs : {}
          >
 in
 
@@ -32,7 +33,16 @@ in
 
 let Manufacturer = < Unknown : {}
                    | Apple : {}
+                   | IBM : {}
+                   | PC : {}
                    >
+in
+
+let ABI = < GNU : {}
+          | Eabi : {}
+          | GNUeabi : {}
+          | GNUeabihf : {}
+          >
 in
 
 let ConfigureVars = { installDir : Text, targetTriple : Optional Text, includeDirs : List Text, configOS : OS }
@@ -56,4 +66,5 @@ in
 , Dep           = Dep
 , Arch          = Arch
 , Manufacturer  = Manufacturer
+, ABI           = ABI
 }
