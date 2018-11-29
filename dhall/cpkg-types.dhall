@@ -14,9 +14,9 @@ let Arch = < X64 : {}
            | AArch : {}
            | Arm : {}
            | RISCV64 : {}
+           | PowerPc : {}
            | PowerPC64 : {}
            | PowerPC64le : {}
-           | PowerPc : {}
            | Sparc64 : {}
            | S390x : {}
            | Alpha : {}
@@ -28,6 +28,12 @@ let Arch = < X64 : {}
            | X86 : {}
            | SH4 : {}
            | HPPA : {} >
+in
+
+let Manufacturer = < Unknown : {}
+                   | Apple : {}
+                   >
+in
 
 let ConfigureVars = { installDir : Text, targetTriple : Optional Text, includeDirs : List Text, configOS : OS }
 in
