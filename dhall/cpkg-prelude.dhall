@@ -67,6 +67,7 @@ let makeExe =
       , Darwin    = make
       , Windows   = make
       , Redox     = make
+      , NoOs      = make -- this is bad but it's meaningless in this context
       }
       os
 in

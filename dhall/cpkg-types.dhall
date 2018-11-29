@@ -45,7 +45,18 @@ let ABI = < GNU : {}
           >
 in
 
-let ConfigureVars = { installDir : Text, targetTriple : Optional Text, includeDirs : List Text, configOS : OS }
+let TargetTriple = { arch : Arch
+                   , manufacturer : Optional Manufacturer
+                   , os : OS
+                   , abi : Optional ABI
+                   }
+in
+
+let ConfigureVars = { installDir : Text
+                    , targetTriple : Optional Text
+                    , includeDirs : List Text
+                    , configOS : OS
+                    }
 in
 
 let BuildVars = { cpus : Natural, buildOS : OS }
@@ -67,4 +78,5 @@ in
 , Arch          = Arch
 , Manufacturer  = Manufacturer
 , ABI           = ABI
+, TargetTriple  = TargetTriple
 }
