@@ -55,6 +55,7 @@ let makeExe =
       , Linux     = make
       , Darwin    = make
       , Windows   = make
+      , Redox     = make
       }
       os
 in

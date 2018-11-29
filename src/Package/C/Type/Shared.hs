@@ -34,4 +34,5 @@ data OS = Darwin
         | NetBSD
         | Solaris
         | Windows
+        | Redox
         deriving (Generic, Inject)
