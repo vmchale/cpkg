@@ -13,6 +13,31 @@ let mkTarget =
     Optional/fold Text x Text (λ(tgt : Text) → " --target=${tgt}") ""
 in
 
+let printArch =
+  λ(arch : types.Arch) →
+    merge
+      { X64         = λ(_ : {}) → "x86_64"
+      , AArch       = λ(_ : {}) → "aarch64"
+      , Arm         = λ(_ : {}) → "arm"
+      , RISCV64     = λ(_ : {}) → "riscv64"
+      , PowerPC64   = λ(_ : {}) → "powerpc64"
+      , PowerPC64le = λ(_ : {}) → "powerpc64le"
+      , PowerPc     = λ(_ : {}) → "powerpc"
+      , Sparc64     = λ(_ : {}) → "sparc64"
+      , S390x       = λ(_ : {}) → "s390x"
+      , Aplha       = λ(_ : {}) → "alpha"
+      , M68k        = λ(_ : {}) → "m68k"
+      , Mips        = λ(_ : {}) → "mips"
+      , MipsEl      = λ(_ : {}) → "mipsel"
+      , Mips64      = λ(_ : {}) → "mips64"
+      , Mips64El    = λ(_ : {}) → "mips64el"
+      , X86         = λ(_ : {}) → "i686"
+      , SH4         = λ(_ : {}) → "sh4"
+      , HPPA        = λ(_ : {}) → "hppa"
+      }
+      arch
+in
+
 let makeExe =
   λ(os : types.OS) →
 

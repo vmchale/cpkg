@@ -9,6 +9,25 @@ let OS = < FreeBSD : {}
          >
 in
 
+let Arch = < X64
+           | AArch
+           | Arm
+           | RISCV64
+           | PowerPC64
+           | PowerPC64le
+           | PowerPc
+           | Sparc64
+           | S390x
+           | Alpha
+           | M68k
+           | Mips
+           | MipsEl
+           | Mips64
+           | Mips64El
+           | X86
+           | SH4
+           | HPPA >
+
 let ConfigureVars = { installDir : Text, targetTriple : Optional Text, includeDirs : List Text, configOS : OS }
 in
 
@@ -28,4 +47,5 @@ in
 , BuildVars     = BuildVars
 , VersionBound  = VersionBound
 , Dep           = Dep
+, Arch          = Arch
 }
