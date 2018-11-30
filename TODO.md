@@ -21,6 +21,7 @@
 - [ ] Symlink built artifacts into a common directory (`~/.cpkg/bin`?)
 - [ ] Cache package downloads globally
 - [ ] No database right now
+- [ ] Build step should take OS as an argument
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in
@@ -31,5 +32,8 @@
 # Tests
 - [ ] Nontrivial example where we have to link w/ another package installed by
   `cpkg`.
+- [ ] Figure out something w/ Lua
+  - [ ] Use `sed` to delete 13th line
+  - [ ] Then set `INSTALL_TOP` using an environment var?
 # Packages
 - [ ] GMP

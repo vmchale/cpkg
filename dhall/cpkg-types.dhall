@@ -70,10 +70,16 @@ let VersionBound = < Lower : { lower : List Natural }
 let Dep = { name : Text, bound : VersionBound }
 in
 
+let EnvVar = { var : Text, value : Text }
+in
+
 let Command = < ChangeDirectory : { dir : Text }
               | CreateDirectory : { dir : Text }
               | MakeExecutable : { file : Text }
-              | Call : { program : Text, arguments : List Text }
+              | Call : { program : Text
+                       , arguments : List Text
+                       , environment : Optional (List EnvVar)
+                       }
               >
 in
 
