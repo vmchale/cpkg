@@ -75,6 +75,7 @@ let Command = < ChangeDirectory : { dir : Text }
               | MakeExecutable : { file : Text }
               | Call : { program : Text, arguments : List Text }
               >
+in
 
 { OS            = OS
 , ConfigureVars = ConfigureVars
