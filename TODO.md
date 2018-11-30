@@ -1,8 +1,11 @@
 # Upstream
 - [ ] Fix Dhall parser
   - [ ] Add typechecking benchmarks
+- [ ] Ask how to implement `init`/`tail` in Dhall
 - [ ] More helpful error in `System.Process` when `configure` doesn't exist
 - [ ] Maybe fix `acid-state`?
+- [ ] Investigate possible upstream bug when downloading `fltk` and unpacking
+  the `.tar.gz`
 # Features
 - [ ] Constraint solver
 - [ ] Build/handle preprocessors

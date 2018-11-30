@@ -21,3 +21,7 @@ packageSetDhallToPackageSet (PackageSetDhall pkgs) =
         pkgs' = cPkgDhallToCPkg <$> pkgs
 
         in PackageSet $ M.fromList (zip names pkgs')
+
+-- PackageError type?
+-- pkgPlan :: PackageSet -> T.Text -> Maybe Tree [CPkg]
+-- pkgPlan _ _ = Nothing

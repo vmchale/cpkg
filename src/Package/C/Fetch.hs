@@ -29,6 +29,8 @@ fetchUrl url name dirName = do
 
         putNormal ("Downloading " ++ name)
 
+        putDiagnostic ("from URL " ++ url)
+
         manager <- liftIO $ newManager tlsManagerSettings
         initialRequest <- liftIO $ parseRequest url
         response <- liftIO $ responseBody <$> httpLbs (initialRequest { method = "GET" }) manager

@@ -6,13 +6,7 @@ in
 
 let gmpBuild =
   λ(cfg : { cpus : Natural, buildOS : types.OS } ) →
-
-    let cpuString  = Natural/show cfg.cpus
-    in
-    let makeString = prelude.makeExe cfg.buildOS
-    in
-
-      [ "${makeString} -j${cpuString}", "${makeString} -j${cpuString} check" ]
+    [ "${prelude.makeExe cfg.buildOS} -j${Natural/show cfg.cpus}" ]
 in
 
 let gmp =
