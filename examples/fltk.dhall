@@ -11,10 +11,9 @@ let fltk =
 
     prelude.defaultPackage ⫽
       { pkgName = "fltk"
-      , pkgVersion = cfg.version
+      , pkgVersion = cfg.version # [ cfg.patch ]
       , pkgUrl = "http://fltk.org/pub/fltk/${versionString}/fltk-${versionString}-${patchString}-source.tar.bz2"
       , pkgSubdir = "fltk-${versionString}-${patchString}"
-      , executableFiles = [ "configure" ]
       }
 in
 

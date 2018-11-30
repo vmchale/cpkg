@@ -10,6 +10,10 @@ dependencies. It is configured using
 cabal new-install cpkg
 ```
 
+## Security
+
+This tool is insecure.
+
 ## Contents
 
 Lovingly provided by [polyglot](https://github.com/vmchale/polyglot):
@@ -20,11 +24,11 @@ Lovingly provided by [polyglot](https://github.com/vmchale/polyglot):
 -------------------------------------------------------------------------------
  Cabal                    1         149          131            0           18
  Cabal Project            1           2            2            0            0
- Dhall                    8         302          262            0           40
- Haskell                 19         600          478            6          116
- Markdown                 4          72           64            0            8
+ Dhall                    9         317          275            0           42
+ Haskell                 19         606          479            9          118
+ Markdown                 4          75           67            0            8
  YAML                     2          55           52            0            3
 -------------------------------------------------------------------------------
- Total                   35        1180          989            6          185
+ Total                   36        1204         1006            9          189
 -------------------------------------------------------------------------------
 ```
