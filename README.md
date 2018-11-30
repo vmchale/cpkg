@@ -14,6 +14,34 @@ cabal new-install cpkg
 
 This tool is insecure.
 
+## Example
+
+Put the following in a file called `valgrind.dhall`:
+
+```dhall
+let prelude = https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-prelude.dhall
+in
+
+let valgrind =
+  λ(v : List Natural) →
+    prelude.defaultPackage ⫽
+      { pkgName = "valgrind"
+      , pkgVersion = v
+      , pkgUrl = "http://www.valgrind.org/downloads/valgrind-${prelude.showVersion v}.tar.bz2"
+      , pkgSubdir = "valgrind-${prelude.showVersion v}"
+      , executableFiles = [ "configure", "auxprogs/make_or_upd_vgversion_h" ]
+      }
+in
+
+valgrind [3,14,0]
+```
+
+Then you can install Valgrind to `~/.cpkg/valgrind-3.14.0` with:
+
+```
+cpkg install valgrind.dhall
+```
+
 ## Contents
 
 Lovingly provided by [polyglot](https://github.com/vmchale/polyglot):
