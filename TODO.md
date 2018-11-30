@@ -13,6 +13,9 @@
 - [ ] Nix-style builds
   - [ ] Garbage collection
 - [ ] Package database
+- [ ] `unpack` subcommand for packages
+- [ ] Sublanguage in Dhall/interpreted in Haskell with `ChangeDirectory` and
+  `MkDirectory` primitives?
 # Deficiencies
 - [ ] Symlink built artifacts into a common directory (`~/.cpkg/bin`?)
 - [ ] Cache package downloads globally

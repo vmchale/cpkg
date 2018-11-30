@@ -70,6 +70,12 @@ let VersionBound = < Lower : { lower : List Natural }
 let Dep = { name : Text, bound : VersionBound }
 in
 
+let Command = < ChangeDirectory : { dir : Text }
+              | CreateDirectory : { dir : Text }
+              | MakeExecutable : { file : Text }
+              | Call : { program : Text, arguments : List Text }
+              >
+
 { OS            = OS
 , ConfigureVars = ConfigureVars
 , BuildVars     = BuildVars
