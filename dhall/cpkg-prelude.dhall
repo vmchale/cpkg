@@ -148,7 +148,7 @@ in
 
 let createDir =
   λ(x : Text) →
-    Command.CreateDirectory { file = x }
+    Command.CreateDirectory { dir = x }
 in
 
 { showVersion       = showVersion
