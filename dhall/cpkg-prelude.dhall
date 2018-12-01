@@ -159,7 +159,7 @@ in
 , printArch         = printArch
 , printManufacturer = printManufacturer
 , call              = Command.Call
-, mkExe             = mkExe
+, mkExe             = mkExe -- TODO: rename this so it's not so confusing
 , createDir         = createDir
 , mkTarget          = mkTarget
 , defaultConfigure  = defaultConfigure

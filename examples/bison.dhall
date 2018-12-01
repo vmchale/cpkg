@@ -1,7 +1,7 @@
-let prelude = https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-prelude.dhall
+let types = https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-types.dhall
 in
 
-let types = https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-types.dhall
+let prelude = https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-prelude.dhall
 in
 
 let bisonConfigure =

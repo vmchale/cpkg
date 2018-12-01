@@ -16,6 +16,8 @@
 - [ ] Package database
 - [ ] `unpack` subcommand for packages
 - [ ] Cabal integration?
+# Bugs
+- [ ] `mkExe` and `makeExe` are too similar
 # Deficiencies
 - [ ] Symlink built artifacts into a common directory (`~/.cpkg/bin`?)
 - [ ] Cache package downloads globally
