@@ -78,7 +78,7 @@ let Command = < CreateDirectory : { dir : Text }
               | Call : { program : Text
                        , arguments : List Text
                        , environment : Optional (List EnvVar)
-                       , procDir : Maybe Text
+                       , procDir : Optional Text
                        }
               >
 in

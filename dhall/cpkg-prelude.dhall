@@ -10,7 +10,7 @@ in
 
 let mkTarget =
   λ(x : Optional Text) →
-    Optional/fold Text x Text (λ(tgt : Text) → " --target=${tgt}") ""
+    Optional/fold Text x Text (λ(tgt : Text) → "--target=${tgt}") ""
 in
 
 let printArch =
@@ -74,17 +74,34 @@ in
 
 let defaultConfigure =
   λ(cfg : types.ConfigureVars) →
-    [ "./configure --prefix=${cfg.installDir}" ++ mkTarget cfg.targetTriple ]
+    [ types.Command.Call { program = "./configure"
+                         , arguments = [ "--prefix=${cfg.installDir}"
+                                       , mkTarget cfg.targetTriple
+                                       ]
+                         , environment = None
+                         , procDir = None
+                         }
+    ]
 in
 
 let defaultBuild =
   λ(cfg : types.BuildVars) →
-    [ "${makeExe cfg.buildOS} -j${Natural/show cfg.cpus}"]
+    [ types.Command.Call { program = makeExe cfg.buildOs
+                         , arguments = [ "-j${Natural/show cfg.cpus}" ]
+                         , environment = None
+                         , procDir = None
+                         }
+    ]
 in
 
 let defaultInstall =
   λ(os : types.OS) →
-    [ "${makeExe os} install" ]
+    [ types.Command.Call { program = makeExe cfg.buildOs
+                         , arguments = [ "install" ]
+                         , environment = None
+                         , procDir = None
+                         }
+    ]
 in
 
 let unbounded =
