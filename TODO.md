@@ -7,6 +7,7 @@
 - [ ] Maybe fix `acid-state`?
 - [ ] Investigate possible upstream bug when downloading `fltk` and unpacking
   the `.tar.gz`
+- [ ] Fix tar library and/or rewrite it
 # Features
 - [ ] Constraint solver
 - [ ] Build/handle preprocessors
