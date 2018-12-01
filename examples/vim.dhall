@@ -9,7 +9,8 @@ in
 
 let vimConfigure =
   λ(cfg : types.ConfigureVars) →
-    [ prelude.mkExe "src/configure", prelude.mkExe "src/auto/configure", prelude.mkExe "src/which.sh" ] # prelude.defaultConfigure cfg
+    prelude.mkExes [ "src/configure", "src/auto/configure", "src/which.sh" ]
+      # prelude.defaultConfigure cfg
 in
 let squishVersion =
   λ(x : List Natural) → concatMap Natural Natural/show x

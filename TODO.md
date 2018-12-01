@@ -34,6 +34,10 @@
 - [ ] GraphViz
 - [ ] Ruby
 - [ ] Lua
+- [ ] Emacs
+- [ ] DBus
+- [ ] librsvg
+- [ ] ImageMagick
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in
