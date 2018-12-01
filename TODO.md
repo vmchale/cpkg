@@ -23,6 +23,8 @@
 - [ ] Cache package downloads globally
 - [ ] No database right now
 - [ ] Build step should take OS as an argument
+# Packages
+- [ ] Lua
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in
