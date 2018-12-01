@@ -5,6 +5,8 @@ module Package.C.Dhall.Type ( CPkg (..)
                             , ConfigureVars (..)
                             , BuildVars (..)
                             , InstallVars (..)
+                            , EnvVar (..)
+                            , Command (..)
                             ) where
 
 import qualified Data.Text             as T
@@ -23,14 +25,25 @@ data BuildVars = BuildVars { cpus    :: Natural
                            }
                 deriving (Generic, Inject)
 
+data EnvVar = EnvVar { var :: T.Text, value :: T.Text }
+            deriving (Generic, Interpret)
+
+data Command = CreateDirectory T.Text
+             | MakeExecutable T.Text
+             | Call { program     :: T.Text
+                    , arguments   :: [T.Text]
+                    , environment :: Maybe [EnvVar]
+                    , dir         :: Maybe T.Text
+                    }
+             deriving (Generic, Interpret)
+
 data CPkg = CPkg { pkgName          :: T.Text
                  , pkgVersion       :: [ Natural ]
                  , pkgUrl           :: T.Text
                  , pkgSubdir        :: T.Text
                  , pkgBuildDeps     :: [ Dep ]
                  , pkgDeps          :: [ Dep ]
-                 , configureCommand :: ConfigureVars -> [ T.Text ]
-                 , executableFiles  :: [ T.Text ]
-                 , buildCommand     :: BuildVars -> [ T.Text ]
-                 , installCommand   :: InstallVars -> [ T.Text ]
+                 , configureCommand :: ConfigureVars -> [ Command ]
+                 , buildCommand     :: BuildVars -> [ Command ]
+                 , installCommand   :: InstallVars -> [ Command ]
                  } deriving (Generic, Interpret)

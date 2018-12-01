@@ -6,7 +6,6 @@ import           Control.Concurrent     (getNumCapabilities)
 import           Control.Monad.IO.Class (MonadIO (liftIO))
 import           Data.Foldable          (traverse_)
 import           Package.C.Build.OS
-import           Package.C.Error
 import           Package.C.Fetch
 import           Package.C.Monad
 import           Package.C.Type
@@ -35,16 +34,21 @@ cPkgToDir cpkg = do
     global <- globalPkgDir
     pure (global </> pkgName cpkg ++ "-" ++ showVersion (pkgVersion cpkg))
 
-stepToProc :: MonadIO m
-           => FilePath -- ^ Working directory
-           -> String -- ^ Steo
-           -> m CreateProcess
-stepToProc fp s = case words s of
-    x:xs -> pure $ (proc x xs) { cwd = Just fp, std_in = CreatePipe }
-    _    -> badCommand
+envVarSplit :: EnvVar -> (String, String)
+envVarSplit (EnvVar ev x) = (ev, x)
 
-processSteps :: (Traversable t) => FilePath -> t String -> PkgM ()
-processSteps pkgDir steps = traverse_ waitProcess =<< traverse (stepToProc pkgDir) steps
+stepToProc :: FilePath -- ^ Package directory
+           -> Command
+           -> PkgM ()
+stepToProc fp (Call p as envs dir') =
+    waitProcess $ (proc p as) { cwd = Just (maybe fp (fp </>) dir'), std_in = CreatePipe, env = fmap envVarSplit <$> envs }
+stepToProc dir' (MakeExecutable fp) =
+    liftIO $ mkExecutable (dir' </> fp)
+stepToProc dir' (CreateDirectory d) =
+    liftIO $ createDirectoryIfMissing True (dir' </> d)
+
+processSteps :: (Traversable t) => FilePath -> t Command -> PkgM ()
+processSteps pkgDir = traverse_ (stepToProc pkgDir)
 
 configureInDir :: CPkg -> FilePath -> FilePath -> PkgM ()
 configureInDir cpkg pkgDir p =
@@ -90,9 +94,6 @@ buildCPkg cpkg = do
         fetchCPkg cpkg p
 
         let p' = p </> pkgSubdir cpkg
-            toExes = (p' </>) <$> executableFiles cpkg
-
-        liftIO $ traverse_ mkExecutable toExes
 
         configureInDir cpkg pkgDir p'
 
