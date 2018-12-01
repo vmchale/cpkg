@@ -4,6 +4,16 @@ in
 let types = https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-types.dhall
 in
 
+let Command = < CreateDirectory : { dir : Text }
+              | MakeExecutable : { file : Text }
+              | Call : { program : Text
+                       , arguments : List Text
+                       , environment : Optional (List types.EnvVar)
+                       , procDir : Optional Text
+                       }
+              >
+in
+
 let showVersion =
   λ(x : List Natural) → concatMapSep "." Natural Natural/show x
 in
@@ -74,33 +84,33 @@ in
 
 let defaultConfigure =
   λ(cfg : types.ConfigureVars) →
-    [ types.Command.Call { program = "./configure"
+    [ Command.Call { program = "./configure"
                          , arguments = [ "--prefix=${cfg.installDir}"
                                        , mkTarget cfg.targetTriple
                                        ]
-                         , environment = None
-                         , procDir = None
+                         , environment = [] : Optional (List types.EnvVar)
+                         , procDir = [] : Optional Text
                          }
     ]
 in
 
 let defaultBuild =
   λ(cfg : types.BuildVars) →
-    [ types.Command.Call { program = makeExe cfg.buildOs
+    [ Command.Call { program = makeExe cfg.buildOS
                          , arguments = [ "-j${Natural/show cfg.cpus}" ]
-                         , environment = None
-                         , procDir = None
+                         , environment = [] : Optional (List types.EnvVar)
+                         , procDir = [] : Optional Text
                          }
     ]
 in
 
 let defaultInstall =
   λ(os : types.OS) →
-    [ types.Command.Call { program = makeExe cfg.buildOs
-                         , arguments = [ "install" ]
-                         , environment = None
-                         , procDir = None
-                         }
+    [ Command.Call { program = makeExe os
+                   , arguments = [ "install" ]
+                   , environment = [] : Optional (List types.EnvVar)
+                   , procDir = [] : Optional Text
+                   }
     ]
 in
 
