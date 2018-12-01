@@ -40,7 +40,8 @@ envVarSplit (EnvVar ev x) = (ev, x)
 stepToProc :: FilePath -- ^ Package directory
            -> Command
            -> PkgM ()
-stepToProc fp (Call p as envs dir') =
+stepToProc fp (Call p as envs dir') = do
+    putDiagnostic ("Running " ++ p ++ " with arguments " ++ (unwords as))
     waitProcess $ (proc p as) { cwd = Just (maybe fp (fp </>) dir'), std_in = CreatePipe, env = fmap envVarSplit <$> envs }
 stepToProc dir' (MakeExecutable fp) = do
     putDiagnostic ("Marking " ++ (dir' </> fp) ++ " as executable...")
