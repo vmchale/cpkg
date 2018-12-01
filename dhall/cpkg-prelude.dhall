@@ -1,6 +1,9 @@
 let concatMapSep = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/Text/concatMapSep
 in
 
+let map = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/List/map
+in
+
 let types = https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-types.dhall
 in
 
@@ -85,6 +88,11 @@ in
 let mkExe =
   λ(x : Text) →
     Command.MakeExecutable { file = x }
+in
+
+let mkExes =
+  λ(xs : List Text) →
+    map Text types.Command mkExe xs
 in
 
 let defaultCall =
@@ -218,6 +226,7 @@ in
 , printManufacturer = printManufacturer
 , call              = call
 , mkExe             = mkExe -- TODO: rename this so it's not so confusing
+, mkExes            = mkExes
 , createDir         = createDir
 , mkTarget          = mkTarget
 , defaultConfigure  = defaultConfigure
