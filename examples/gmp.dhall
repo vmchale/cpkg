@@ -4,9 +4,9 @@ in
 let prelude = https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-prelude.dhall
 in
 
-let gmpBuild =
-  λ(cfg : { cpus : Natural, buildOS : types.OS } ) →
-    [ "${prelude.makeExe cfg.buildOS} -j${Natural/show cfg.cpus}" ]
+let gmpConfigure =
+  λ(cfg : types.ConfigureVars) →
+    prelude.defaultConfigure cfg # [ prelude.mkExe "mpn/m4-ccas" ]
 in
 
 let gmp =
@@ -16,8 +16,7 @@ let gmp =
       , pkgVersion = v
       , pkgUrl = "https://gmplib.org/download/gmp/gmp-${prelude.showVersion v}.tar.xz"
       , pkgSubdir = "gmp-${prelude.showVersion v}"
-      , executableFiles = [ "configure", "mpn/m4-ccas" ]
-      , buildCommand = gmpBuild
+      , configureCommand = gmpConfigure
       }
 in
 
