@@ -82,9 +82,15 @@ let makeExe =
       os
 in
 
+let mkExe =
+  λ(x : Text) →
+    Command.MakeExecutable { file = x }
+in
+
 let defaultConfigure =
   λ(cfg : types.ConfigureVars) →
-    [ Command.Call { program = "./configure"
+    [ mkExe "configure"
+    , Command.Call { program = "./configure"
                    , arguments = [ "--prefix=${cfg.installDir}"
                                  , mkTarget cfg.targetTriple
                                  ]
@@ -123,7 +129,6 @@ in
 
 let defaultPackage =
   { configureCommand = defaultConfigure
-  , executableFiles  = [ "configure" ]
   , buildCommand     = defaultBuild
   , installCommand   = defaultInstall
   , pkgBuildDeps     = [] : List types.Dep
@@ -141,11 +146,6 @@ let makeGnuPackage =
       }
 in
 
-let mkExe =
-  λ(x : Text) →
-    Command.MakeExecutable { file = x }
-in
-
 let createDir =
   λ(x : Text) →
     Command.CreateDirectory { dir = x }
@@ -158,7 +158,11 @@ in
 , makeExe           = makeExe
 , printArch         = printArch
 , printManufacturer = printManufacturer
-, call              = mkExe
-, mkExe             = Command.MakeExecutable
+, call              = Command.Call
+, mkExe             = mkExe
 , createDir         = createDir
+, mkTarget          = mkTarget
+, defaultConfigure  = defaultConfigure
+, defaultBuild      = defaultBuild
+, defaultInstall    = defaultInstall
 }

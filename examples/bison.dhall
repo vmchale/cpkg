@@ -6,17 +6,9 @@ in
 
 let bisonConfigure =
   λ(cfg : types.ConfigureVars) →
-    [ prelude.mkExe "configure"
-    , prelude.call { program = "./configure"
-                   , arguments = [ "--prefix=${cfg.installDir}"
-                                 , mkTarget cfg.targetTriple
-                                 ]
-                   , environment = [] : Optional (List types.EnvVar)
-                   , procDir = [] : Optional Text
-                   }
-    , prelude.mkExe "build-aux/move-if-change"
-    ]
+    prelude.defaultConfigure cfg # [ prelude.mkExe "build-aux/move-if-change" ]
 in
+
 let bison =
   λ(v : List Natural) →
     prelude.defaultPackage ⫽
@@ -24,6 +16,7 @@ let bison =
       , pkgVersion = v
       , pkgUrl = "https://ftp.gnu.org/gnu/bison/bison-${prelude.showVersion v}.tar.xz"
       , pkgSubdir = "bison-${prelude.showVersion v}"
+      , configureCommand = bisonConfigure
       }
 in
 

@@ -42,9 +42,11 @@ stepToProc :: FilePath -- ^ Package directory
            -> PkgM ()
 stepToProc fp (Call p as envs dir') =
     waitProcess $ (proc p as) { cwd = Just (maybe fp (fp </>) dir'), std_in = CreatePipe, env = fmap envVarSplit <$> envs }
-stepToProc dir' (MakeExecutable fp) =
+stepToProc dir' (MakeExecutable fp) = do
+    putDiagnostic ("Marking " ++ (dir' </> fp) ++ "as executable...")
     liftIO $ mkExecutable (dir' </> fp)
-stepToProc dir' (CreateDirectory d) =
+stepToProc dir' (CreateDirectory d) = do
+    putDiagnostic ("Creating directory " ++ (dir' </> d) ++ "...")
     liftIO $ createDirectoryIfMissing True (dir' </> d)
 
 processSteps :: (Traversable t) => FilePath -> t Command -> PkgM ()

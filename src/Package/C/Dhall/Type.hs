@@ -28,12 +28,12 @@ data BuildVars = BuildVars { cpus    :: Natural
 data EnvVar = EnvVar { var :: T.Text, value :: T.Text }
             deriving (Generic, Interpret)
 
-data Command = CreateDirectory T.Text
-             | MakeExecutable T.Text
+data Command = CreateDirectory { dir :: T.Text }
+             | MakeExecutable { file :: T.Text }
              | Call { program     :: T.Text
                     , arguments   :: [T.Text]
                     , environment :: Maybe [EnvVar]
-                    , dir         :: Maybe T.Text
+                    , procDir     :: Maybe T.Text
                     }
              deriving (Generic, Interpret)
 
