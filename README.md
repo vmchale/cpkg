@@ -16,6 +16,14 @@ The goal is to provide something like `cabal new-build` for C.
 cabal new-install cpkg
 ```
 
+### Shell Completions
+
+Add the following to your `~/.bashrc` for shell completions:
+
+```
+eval "$(cpkg --bash-completion-script cpkg)"
+```
+
 ## Security
 
 This tool is insecure.
