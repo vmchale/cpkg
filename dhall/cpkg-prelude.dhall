@@ -152,7 +152,7 @@ let createDir =
 in
 
 let call =
-  λ(proc : { program : Text, arguments : List Text, environment : Optional (List types.EnvVar), procDir : Optional Text }) →
+  λ(proc : types.Proc) →
     Command.Call proc
 in
 
@@ -212,4 +212,5 @@ in
 , cmakeConfigure    = cmakeConfigure
 , cmakeBuild        = cmakeBuild
 , cmakeInstall      = cmakeInstall
+, cmakePackage      = cmakePackage
 }
