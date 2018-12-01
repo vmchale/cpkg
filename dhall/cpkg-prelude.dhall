@@ -7,16 +7,6 @@ in
 let types = https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-types.dhall
 in
 
-let Command = < CreateDirectory : { dir : Text }
-              | MakeExecutable : { file : Text }
-              | Call : { program : Text
-                       , arguments : List Text
-                       , environment : Optional (List types.EnvVar)
-                       , procDir : Optional Text
-                       }
-              >
-in
-
 let showVersion =
   λ(x : List Natural) → concatMapSep "." Natural Natural/show x
 in
@@ -87,7 +77,7 @@ in
 
 let mkExe =
   λ(x : Text) →
-    Command.MakeExecutable { file = x }
+    types.Command.MakeExecutable { file = x }
 in
 
 let mkExes =
@@ -105,32 +95,32 @@ in
 let defaultConfigure =
   λ(cfg : types.ConfigureVars) →
     [ mkExe "configure"
-    , Command.Call { program = "./configure"
-                   , arguments = [ "--prefix=${cfg.installDir}"
-                                 ]
-                   , environment = [] : Optional (List types.EnvVar)
-                   , procDir = [] : Optional Text
-                   }
+    , types.Command.Call { program = "./configure"
+                         , arguments = [ "--prefix=${cfg.installDir}"
+                                       ]
+                         , environment = [] : Optional (List types.EnvVar)
+                         , procDir = [] : Optional Text
+                         }
     ]
 in
 
 let defaultBuild =
   λ(cfg : types.BuildVars) →
-    [ Command.Call { program = makeExe cfg.buildOS
-                   , arguments = [ "-j${Natural/show cfg.cpus}" ]
-                   , environment = [] : Optional (List types.EnvVar)
-                   , procDir = [] : Optional Text
-                   }
+    [ types.Command.Call { program = makeExe cfg.buildOS
+                         , arguments = [ "-j${Natural/show cfg.cpus}" ]
+                         , environment = [] : Optional (List types.EnvVar)
+                         , procDir = [] : Optional Text
+                         }
     ]
 in
 
 let defaultInstall =
   λ(os : types.OS) →
-    [ Command.Call { program = makeExe os
-                   , arguments = [ "install" ]
-                   , environment = [] : Optional (List types.EnvVar)
-                   , procDir = [] : Optional Text
-                   }
+    [ types.Command.Call { program = makeExe os
+                         , arguments = [ "install" ]
+                         , environment = [] : Optional (List types.EnvVar)
+                         , procDir = [] : Optional Text
+                         }
     ]
 in
 
@@ -162,12 +152,12 @@ in
 
 let createDir =
   λ(x : Text) →
-    Command.CreateDirectory { dir = x }
+    types.Command.CreateDirectory { dir = x }
 in
 
 let call =
   λ(proc : types.Proc) →
-    Command.Call proc
+    types.Command.Call proc
 in
 
 let cmakeConfigure =

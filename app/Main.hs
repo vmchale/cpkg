@@ -12,12 +12,15 @@ cpkgVersion :: V.Version
 cpkgVersion = P.version
 
 data Command = Install { _dhallFile :: String, _verbosity :: Verbosity }
-             | Check { _dhallFile :: String }
+             | Check { _dhallFile :: String, _verbosity :: Verbosity }
              | Nuke
 
-verbosity :: Parser Int
-verbosity = length <$>
+verbosityInt :: Parser Int
+verbosityInt = length <$>
     many (flag' () (short 'v' <> long "verbose" <> help "Turn up verbosity"))
+
+verbosity :: Parser Verbosity
+verbosity = fmap intToVerbosity verbosityInt
 
 intToVerbosity :: Int -> Verbosity
 intToVerbosity 0 = Normal
@@ -49,10 +52,10 @@ dhallCompletions :: Mod ArgumentFields a
 dhallCompletions = ftypeCompletions "dhall"
 
 install :: Parser Command
-install = Install <$> dhallFile <*> fmap intToVerbosity verbosity
+install = Install <$> dhallFile <*> verbosity
 
 check :: Parser Command
-check = Check <$> dhallFile
+check = Check <$> dhallFile <*> verbosity
 
 dhallFile :: Parser String
 dhallFile =
@@ -64,9 +67,9 @@ dhallFile =
 
 run :: Command -> IO ()
 run (Install file v) = do
-    unistring <- cPkgDhallToCPkg <$> getCPkg file
+    unistring <- cPkgDhallToCPkg <$> getCPkg v file
     runPkgM v (buildCPkg unistring)
-run (Check file) = void $ getCPkg file
+run (Check file v) = void $ getCPkg v file
 run Nuke = do
     pkgDir <- globalPkgDir
     exists <- doesDirectoryExist pkgDir

@@ -66,6 +66,7 @@ let VersionBound = < Lower : { lower : List Natural }
                    | Upper : { upper : List Natural }
                    | LowerUpper : { lower : List Natural, upper : List Natural }
                    | NoBound : {} >
+in
 
 let Dep = { name : Text, bound : VersionBound }
 in

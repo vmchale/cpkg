@@ -8,6 +8,7 @@ let jpegTurbo =
       , pkgVersion = v
       , pkgUrl = "https://downloads.sourceforge.net/libjpeg-turbo/libjpeg-turbo-${prelude.showVersion v}.tar.gz"
       , pkgSubdir = "libjpeg-turbo-${prelude.showVersion v}"
+      , pkgBuildDeps = [ prelude.unbounded "cmake" ]
       }
 in
 
