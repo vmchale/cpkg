@@ -1,4 +1,4 @@
-let prelude = ../dhall/cpkg-prelude.dhall -- https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-prelude.dhall
+let prelude = https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-prelude.dhall
 in
 
 let types = https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-types.dhall
