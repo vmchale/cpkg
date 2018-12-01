@@ -1,6 +1,9 @@
 let prelude = https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-prelude.dhall
 in
 
+let types = https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-types.dhall
+in
+
 let bisonConfigure =
   λ(cfg : types.ConfigureVars) →
     [ prelude.mkExe "configure"

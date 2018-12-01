@@ -141,6 +141,16 @@ let makeGnuPackage =
       }
 in
 
+let mkExe =
+  λ(x : Text) →
+    Command.MakeExecutable { file = x }
+in
+
+let createDir =
+  λ(x : Text) →
+    Command.CreateDirectory { file = x }
+in
+
 { showVersion       = showVersion
 , makeGnuPackage    = makeGnuPackage
 , defaultPackage    = defaultPackage
@@ -148,7 +158,7 @@ in
 , makeExe           = makeExe
 , printArch         = printArch
 , printManufacturer = printManufacturer
-, call              = Command.Call
+, call              = mkExe
 , mkExe             = Command.MakeExecutable
-, createDir         = Command.CreateDirectory
+, createDir         = createDir
 }
