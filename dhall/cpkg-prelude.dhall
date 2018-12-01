@@ -92,7 +92,6 @@ let defaultConfigure =
     [ mkExe "configure"
     , Command.Call { program = "./configure"
                    , arguments = [ "--prefix=${cfg.installDir}"
-                                 , mkTarget cfg.targetTriple
                                  ]
                    , environment = [] : Optional (List types.EnvVar)
                    , procDir = [] : Optional Text
