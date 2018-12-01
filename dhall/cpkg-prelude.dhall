@@ -85,22 +85,22 @@ in
 let defaultConfigure =
   λ(cfg : types.ConfigureVars) →
     [ Command.Call { program = "./configure"
-                         , arguments = [ "--prefix=${cfg.installDir}"
-                                       , mkTarget cfg.targetTriple
-                                       ]
-                         , environment = [] : Optional (List types.EnvVar)
-                         , procDir = [] : Optional Text
-                         }
+                   , arguments = [ "--prefix=${cfg.installDir}"
+                                 , mkTarget cfg.targetTriple
+                                 ]
+                   , environment = [] : Optional (List types.EnvVar)
+                   , procDir = [] : Optional Text
+                   }
     ]
 in
 
 let defaultBuild =
   λ(cfg : types.BuildVars) →
     [ Command.Call { program = makeExe cfg.buildOS
-                         , arguments = [ "-j${Natural/show cfg.cpus}" ]
-                         , environment = [] : Optional (List types.EnvVar)
-                         , procDir = [] : Optional Text
-                         }
+                   , arguments = [ "-j${Natural/show cfg.cpus}" ]
+                   , environment = [] : Optional (List types.EnvVar)
+                   , procDir = [] : Optional Text
+                   }
     ]
 in
 
@@ -148,4 +148,7 @@ in
 , makeExe           = makeExe
 , printArch         = printArch
 , printManufacturer = printManufacturer
+, call              = Command.Call
+, mkExe             = Command.MakeExecutable
+, createDir         = Command.CreateDirectory
 }
