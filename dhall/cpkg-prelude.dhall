@@ -87,6 +87,13 @@ let mkExe =
     Command.MakeExecutable { file = x }
 in
 
+let defaultCall =
+  { arguments = [] : List Text
+  , environment = [] : Optional (List types.EnvVar)
+  , procDir = [] : Optional Text
+  }
+in
+
 let defaultConfigure =
   λ(cfg : types.ConfigureVars) →
     [ mkExe "configure"
@@ -194,6 +201,14 @@ let cmakePackage =
   }
 in
 
+let autogenConfigure =
+  λ(cfg : types.ConfigureVars) →
+    [ mkExe "autogen.sh"
+    , call (defaultCall ⫽ { program = "./autogen.sh"
+                          , arguments = [] : List Text })
+    ] # defaultConfigure cfg
+in
+
 { showVersion       = showVersion
 , makeGnuPackage    = makeGnuPackage
 , defaultPackage    = defaultPackage
@@ -212,4 +227,5 @@ in
 , cmakeBuild        = cmakeBuild
 , cmakeInstall      = cmakeInstall
 , cmakePackage      = cmakePackage
+, autogenConfigure  = autogenConfigure
 }
