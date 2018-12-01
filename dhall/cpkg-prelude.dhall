@@ -127,7 +127,7 @@ in
 let unbounded =
   λ(x : Text) →
     { name = x
-    , bound = types.VersionBound.NoBound
+    , bound = types.VersionBound.NoBound {=}
     }
 in
 
