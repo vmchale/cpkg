@@ -151,6 +151,50 @@ let createDir =
     Command.CreateDirectory { dir = x }
 in
 
+let call =
+  λ(proc : { program : Text, arguments : List Text, environment : Optional (List types.EnvVar), procDir : Optional Text }) →
+    Command.Call proc
+in
+
+let cmakeConfigure =
+  λ(cfg : types.ConfigureVars) →
+    [ createDir "build"
+    , call { program = "cmake"
+           , arguments = [ "../", "-DCMAKE_INSTALL_PREFIX:PATH=${cfg.installDir}" ]
+           , environment = [] : Optional (List types.EnvVar)
+           , procDir = [ "build" ] : Optional Text
+           }
+    ]
+in
+
+let cmakeBuild =
+  λ(cfg : types.BuildVars) →
+    [ call { program = "cmake"
+           , arguments = [ "--build", ".", "--config", "Release", "--", "-j", Natural/show cfg.cpus ]
+           , environment = [] : Optional (List types.EnvVar)
+           , procDir = [ "build" ] : Optional Text
+           }
+    ]
+in
+
+let cmakeInstall =
+  λ(os : types.OS) →
+    [ call { program = "cmake"
+           , arguments = [ "--build", ".", "--target", "install", "--config", "Release" ]
+           , environment = [] : Optional (List types.EnvVar)
+           , procDir = [ "build" ] : Optional Text
+           }
+    ]
+in
+
+let cmakePackage =
+  defaultPackage ⫽
+  { configureCommand = cmakeConfigure
+  , buildCommand     = cmakeBuild
+  , installCommand   = cmakeInstall
+  }
+in
+
 { showVersion       = showVersion
 , makeGnuPackage    = makeGnuPackage
 , defaultPackage    = defaultPackage
@@ -158,11 +202,14 @@ in
 , makeExe           = makeExe
 , printArch         = printArch
 , printManufacturer = printManufacturer
-, call              = Command.Call
+, call              = call
 , mkExe             = mkExe -- TODO: rename this so it's not so confusing
 , createDir         = createDir
 , mkTarget          = mkTarget
 , defaultConfigure  = defaultConfigure
 , defaultBuild      = defaultBuild
 , defaultInstall    = defaultInstall
+, cmakeConfigure    = cmakeConfigure
+, cmakeBuild        = cmakeBuild
+, cmakeInstall      = cmakeInstall
 }

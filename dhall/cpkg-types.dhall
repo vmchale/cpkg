@@ -73,13 +73,16 @@ in
 let EnvVar = { var : Text, value : Text }
 in
 
+let Proc = { program : Text
+           , arguments : List Text
+           , environment : Optional (List types.EnvVar)
+           , procDir : Optional Text
+           }
+in
+
 let Command = < CreateDirectory : { dir : Text }
               | MakeExecutable : { file : Text }
-              | Call : { program : Text
-                       , arguments : List Text
-                       , environment : Optional (List EnvVar)
-                       , procDir : Optional Text
-                       }
+              | Call : Proc
               >
 in
 
@@ -94,4 +97,5 @@ in
 , TargetTriple  = TargetTriple
 , Command       = Command
 , EnvVar        = EnvVar
+, Proc          = Proc
 }

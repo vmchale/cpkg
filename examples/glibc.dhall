@@ -1,4 +1,3 @@
--- FIXME this is sorta broken
 let types = https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-types.dhall
 in
 
