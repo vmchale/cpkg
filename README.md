@@ -4,6 +4,10 @@ cpkg is a package manager for C.
 It is configured using
 [Dhall](http://github.com/dhall-lang/dhall-haskell).
 
+By considering a package to be a *function* taking a `cpkg`-supplied
+installation directory to a series of instructions, we can effectively manage
+C projects with diverse build systems.
+
 The goal is to provide something like `cabal new-build` for C.
 
 ## Installation

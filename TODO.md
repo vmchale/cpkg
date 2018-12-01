@@ -26,6 +26,7 @@
 - [ ] Build step should take OS as an argument
 # Packages
 - [ ] Lua (`http://www.lua.org/ftp/lua-5.3.5.tar.gz`)
+- [ ] jemalloc
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in
