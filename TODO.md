@@ -18,13 +18,14 @@
 - [ ] Cabal integration?
 # Bugs
 - [ ] `mkExe` and `makeExe` are too similar
+- [ ] `glibc` example is broken
 # Deficiencies
 - [ ] Symlink built artifacts into a common directory (`~/.cpkg/bin`?)
 - [ ] Cache package downloads globally
 - [ ] No database right now
 - [ ] Build step should take OS as an argument
 # Packages
-- [ ] Lua
+- [ ] Lua (`http://www.lua.org/ftp/lua-5.3.5.tar.gz`)
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in
