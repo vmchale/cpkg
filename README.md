@@ -1,8 +1,10 @@
 # cpkg
 
-cpkg is a build tool and Haskell library for building C projects with
-dependencies. It is configured using
+cpkg is a package manager for C.
+It is configured using
 [Dhall](http://github.com/dhall-lang/dhall-haskell).
+
+The goal is to provide something like `cabal new-build` for C.
 
 ## Installation
 
