@@ -85,42 +85,41 @@ let mkExes =
     map Text types.Command mkExe xs
 in
 
+let defaultEnv =
+  [] : Optional (List types.EnvVar)
+in
+
 let defaultCall =
   { arguments = [] : List Text
-  , environment = [] : Optional (List types.EnvVar)
+  , environment = defaultEnv
   , procDir = [] : Optional Text
   }
+in
+
+let call =
+  λ(proc : types.Proc) →
+    types.Command.Call proc
 in
 
 let defaultConfigure =
   λ(cfg : types.ConfigureVars) →
     [ mkExe "configure"
-    , types.Command.Call { program = "./configure"
-                         , arguments = [ "--prefix=${cfg.installDir}"
-                                       ]
-                         , environment = [] : Optional (List types.EnvVar)
-                         , procDir = [] : Optional Text
-                         }
+    , call (defaultCall ⫽ { program = "./configure"
+                          , arguments = [ "--prefix=${cfg.installDir}" ] })
     ]
 in
 
 let defaultBuild =
   λ(cfg : types.BuildVars) →
-    [ types.Command.Call { program = makeExe cfg.buildOS
-                         , arguments = [ "-j${Natural/show cfg.cpus}" ]
-                         , environment = [] : Optional (List types.EnvVar)
-                         , procDir = [] : Optional Text
-                         }
+    [ call (defaultCall ⫽ { program = makeExe cfg.buildOS
+                          , arguments = [ "-j${Natural/show cfg.cpus}" ] })
     ]
 in
 
 let defaultInstall =
   λ(os : types.OS) →
-    [ types.Command.Call { program = makeExe os
-                         , arguments = [ "install" ]
-                         , environment = [] : Optional (List types.EnvVar)
-                         , procDir = [] : Optional Text
-                         }
+    [ call (defaultCall ⫽ { program = makeExe os
+                          , arguments = [ "install" ] })
     ]
 in
 
@@ -155,17 +154,12 @@ let createDir =
     types.Command.CreateDirectory { dir = x }
 in
 
-let call =
-  λ(proc : types.Proc) →
-    types.Command.Call proc
-in
-
 let cmakeConfigure =
   λ(cfg : types.ConfigureVars) →
     [ createDir "build"
     , call { program = "cmake"
            , arguments = [ "../", "-DCMAKE_INSTALL_PREFIX:PATH=${cfg.installDir}" ]
-           , environment = [] : Optional (List types.EnvVar)
+           , environment = defaultEnv
            , procDir = [ "build" ] : Optional Text
            }
     ]
@@ -175,7 +169,7 @@ let cmakeBuild =
   λ(cfg : types.BuildVars) →
     [ call { program = "cmake"
            , arguments = [ "--build", ".", "--config", "Release", "--", "-j", Natural/show cfg.cpus ]
-           , environment = [] : Optional (List types.EnvVar)
+           , environment = defaultEnv
            , procDir = [ "build" ] : Optional Text
            }
     ]
@@ -185,7 +179,7 @@ let cmakeInstall =
   λ(os : types.OS) →
     [ call { program = "cmake"
            , arguments = [ "--build", ".", "--target", "install", "--config", "Release" ]
-           , environment = [] : Optional (List types.EnvVar)
+           , environment = defaultEnv
            , procDir = [ "build" ] : Optional Text
            }
     ]
@@ -227,4 +221,6 @@ in
 , cmakeInstall      = cmakeInstall
 , cmakePackage      = cmakePackage
 , autogenConfigure  = autogenConfigure
+, defaultCall       = defaultCall
+, defaultEnv        = defaultEnv
 }
