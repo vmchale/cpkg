@@ -92,4 +92,6 @@ in
 , Manufacturer  = Manufacturer
 , ABI           = ABI
 , TargetTriple  = TargetTriple
+, Command       = Command
+, EnvVar        = EnvVar
 }
