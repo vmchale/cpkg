@@ -75,7 +75,7 @@ in
 
 let Proc = { program : Text
            , arguments : List Text
-           , environment : Optional (List types.EnvVar)
+           , environment : Optional (List EnvVar)
            , procDir : Optional Text
            }
 in
