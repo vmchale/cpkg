@@ -9,6 +9,7 @@ let glibcConfigure =
   λ(cfg : types.ConfigureVars) →
     [ prelude.mkExe "configure"
     , prelude.mkExe "scripts/mkinstalldirs"
+    , prelude.mkExe "scripts/rellns-sh"
     , prelude.createDir "build"
     , prelude.call { program = "../configure"
                    , arguments = [ "--prefix=${cfg.installDir}" ]
