@@ -17,10 +17,15 @@ import           System.IO.Temp         (withSystemTempDirectory)
 import           System.Process
 import           System.Process.Ext
 
+#ifdef mingw32_HOST_OS
+mkExecutable :: FilePath -> IO ()
+mkExecutable = mempty
+#else
 mkExecutable :: FilePath -> IO ()
 mkExecutable fp = do
     perms <- getPermissions fp
     setPermissions fp (setOwnerExecutable True perms)
+#endif
 
 globalPkgDir :: MonadIO m => m FilePath
 globalPkgDir = liftIO (getAppUserDataDirectory "cpkg")

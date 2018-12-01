@@ -31,6 +31,7 @@ flag development
 library
     exposed-modules:
         Package.C
+    build-tools: cpphs -any
     hs-source-dirs: src
     other-modules:
         Package.C.Dhall
