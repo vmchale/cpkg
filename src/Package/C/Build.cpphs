@@ -41,8 +41,9 @@ stepToProc :: FilePath -- ^ Package directory
            -> Command
            -> PkgM ()
 stepToProc fp (Call p as envs dir') = do
-    putDiagnostic ("Running " ++ p ++ " with arguments " ++ (unwords as))
-    waitProcess $ (proc p as) { cwd = Just (maybe fp (fp </>) dir'), std_in = CreatePipe, env = fmap envVarSplit <$> envs }
+    let dir'' = maybe fp (fp </>) dir'
+    putDiagnostic ("Running " ++ p ++ " with arguments " ++ unwords as ++ " in directory " ++ dir'')
+    waitProcess $ (proc p as) { cwd = Just dir'', std_in = CreatePipe, env = fmap envVarSplit <$> envs }
 stepToProc dir' (MakeExecutable fp) = do
     putDiagnostic ("Marking " ++ (dir' </> fp) ++ " as executable...")
     liftIO $ mkExecutable (dir' </> fp)
@@ -78,6 +79,9 @@ fetchCPkg :: CPkg
           -> FilePath -- ^ Directory for intermediate build files
           -> PkgM ()
 fetchCPkg cpkg = fetchUrl (pkgUrl cpkg) (pkgName cpkg)
+
+-- diagnosticDirectory :: String -> (FilePath -> m a) -> m a
+-- diagnosticDirectory s f = f (s ++ "-diagnostic")
 
 -- TODO: more complicated solver, garbage collector, and all that.
 -- Basically nix-style builds for C libraries

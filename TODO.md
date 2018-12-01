@@ -28,6 +28,12 @@
 # Packages
 - [ ] Lua (`http://www.lua.org/ftp/lua-5.3.5.tar.gz`)
 - [ ] jemalloc
+- [ ] Cairo
+- [ ] Pango
+- [ ] GTK+
+- [ ] GraphViz
+- [ ] Ruby
+- [ ] Lua
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in
