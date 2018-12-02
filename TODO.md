@@ -17,6 +17,7 @@
 - [ ] Package database
 - [ ] `unpack` subcommand for packages
 - [ ] Cabal integration?
+- [ ] Generate something like pkg-config files?
 # Bugs
 - [ ] `mkExe` and `makeExe` are too similar
 - [ ] `glibc` example is broken

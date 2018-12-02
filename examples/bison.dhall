@@ -6,7 +6,7 @@ in
 
 let bisonConfigure =
   λ(cfg : types.ConfigureVars) →
-    prelude.defaultConfigure cfg # [ prelude.mkExe "build-aux/move-if-change" ]
+    prelude.defaultConfigure cfg # [ prelude.mkExe "check_bindir" ]
 in
 
 let bison =
