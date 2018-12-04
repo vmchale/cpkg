@@ -1,5 +1,4 @@
 module Package.C.Build ( buildCPkg
-                       , globalPkgDir
                        ) where
 
 import           Control.Concurrent     (getNumCapabilities)
@@ -9,12 +8,12 @@ import           Package.C.Build.OS
 import           Package.C.Fetch
 import           Package.C.Monad
 import           Package.C.Type
-import           Package.C.Type.Version
 import           System.Directory
 import           System.FilePath        ((</>))
 import           System.IO.Temp         (withSystemTempDirectory)
 import           System.Process
 import           System.Process.Ext
+import           Package.C.Db.Register
 
 #ifdef mingw32_HOST_OS
 mkExecutable :: FilePath -> IO ()
@@ -26,15 +25,8 @@ mkExecutable fp = do
     setPermissions fp (setOwnerExecutable True perms)
 #endif
 
-globalPkgDir :: MonadIO m => m FilePath
-globalPkgDir = liftIO (getAppUserDataDirectory "cpkg")
-
-cPkgToDir :: MonadIO m => CPkg -> m FilePath
-cPkgToDir cpkg = do
-    global <- globalPkgDir
-    pure (global </> pkgName cpkg ++ "-" ++ showVersion (pkgVersion cpkg))
-
 envVarSplit :: EnvVar -> (String, String)
+
 envVarSplit (EnvVar ev x) = (ev, x)
 
 stepToProc :: FilePath -- ^ Package directory
@@ -107,3 +99,5 @@ buildCPkg cpkg = do
         buildInDir cpkg p'
 
         installInDir cpkg p'
+
+        registerPkg cpkg

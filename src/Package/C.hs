@@ -18,5 +18,6 @@ module Package.C (
 import           Package.C.Build
 import           Package.C.Dhall
 import           Package.C.Monad
+import           Package.C.Db.Register
 import           Package.C.Type
 import           Package.C.Type.Version

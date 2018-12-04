@@ -7,11 +7,14 @@ module Package.C.Type.Shared ( OS (..)
                              , VersionBound (..)
                              , InstallVars (..)
                              , Dep (..)
+                             , Platform
                              ) where
 
 import qualified Data.Text              as T
 import           Dhall
 import           Package.C.Type.Version
+
+type Platform = String
 
 data VersionBound = Lower { lower :: Version }
                   | Upper { upper :: Version }
@@ -20,7 +23,7 @@ data VersionBound = Lower { lower :: Version }
                   deriving (Generic, Interpret)
 
 newtype InstallVars = InstallVars { installOS :: OS }
-                    deriving newtype Inject
+                    deriving newtype (Inject)
 
 data Dep = Dep { name  :: T.Text
                , bound :: VersionBound

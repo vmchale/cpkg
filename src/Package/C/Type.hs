@@ -12,18 +12,9 @@ module Package.C.Type ( CPkg (..)
 import qualified Data.Text                as T
 import qualified Package.C.Dhall.Type     as Dhall
 import           Package.C.Type.Shared
+import           Package.C.Type.Vars
 import           Package.C.Type.Verbosity
 import           Package.C.Type.Version
-
-data ConfigureVars = ConfigureVars { installDir   :: FilePath
-                                   , targetTriple :: Maybe String
-                                   , includeDirs  :: [ FilePath ]
-                                   , configOS     :: OS
-                                   }
-
-data BuildVars = BuildVars { cpus    :: Int
-                           , osBuild :: OS
-                           }
 
 data EnvVar = EnvVar { var :: String, value :: String }
 
