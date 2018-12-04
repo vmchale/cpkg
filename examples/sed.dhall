@@ -3,12 +3,7 @@ in
 
 let sed =
   λ(v : List Natural) →
-    prelude.defaultPackage ⫽
-      { pkgName = "sed"
-      , pkgVersion = v
-      , pkgUrl = "https://ftp.gnu.org/gnu/sed/sed-${prelude.showVersion v}.tar.xz"
-      , pkgSubdir = "sed-${prelude.showVersion v}"
-      }
+    prelude.makeGnuExe { name = "sed", version = v }
 in
 
 sed [4,5]
