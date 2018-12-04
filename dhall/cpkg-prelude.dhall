@@ -152,7 +152,17 @@ let defaultPackage =
   }
 in
 
-let makeGnuPackage =
+let makeGnuExe =
+  λ(pkg : { name : Text, version : List Natural}) →
+    defaultPackage ⫽
+      { pkgName = pkg.name
+      , pkgVersion = pkg.version
+      , pkgUrl = "https://ftp.gnu.org/gnu/${pkg.name}/${pkg.name}-${prelude.showVersion v}.tar.xz"
+      , pkgSubdir = "${pkg.name}-${prelude.showVersion v}"
+      }
+in
+
+let makeGnuLibrary =
   λ(pkg : { name : Text, version : List Natural}) →
     defaultPackage ⫽
       { pkgName = pkg.name
@@ -215,7 +225,8 @@ let autogenConfigure =
 in
 
 { showVersion       = showVersion
-, makeGnuPackage    = makeGnuPackage
+, makeGnuLibrary    = makeGnuLibrary
+, makeGnuExe        = makeGnuExe
 , defaultPackage    = defaultPackage
 , unbounded         = unbounded
 , makeExe           = makeExe

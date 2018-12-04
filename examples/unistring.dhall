@@ -3,7 +3,7 @@ in
 
 let unistring =
   λ(v : List Natural) →
-    prelude.makeGnuPackage { name = "unistring", version = v }
+    prelude.makeGnuLibrary { name = "unistring", version = v }
 in
 
 unistring [0,9,10]
