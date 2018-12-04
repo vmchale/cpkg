@@ -1,7 +1,13 @@
 let concatMapSep = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/Text/concatMapSep
 in
 
+let concat = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/List/concat
+in
+
 let map = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/List/map
+in
+
+let mapOptional = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/Optional/map
 in
 
 let types = https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-types.dhall
@@ -11,9 +17,16 @@ let showVersion =
   λ(x : List Natural) → concatMapSep "." Natural Natural/show x
 in
 
-let mkTarget =
+let mkHost =
   λ(x : Optional Text) →
-    Optional/fold Text x Text (λ(tgt : Text) → "--target=${tgt}") ""
+    mapOptional Text Text (λ(tgt : Text) → "--host=${tgt}")
+in
+
+let maybeConcat =
+  λ(a : Type) →
+  λ(x : Optional a) →
+  λ(xs : List a) →
+    Optional/fold a x (List a) (λ(x : a) → concat a [[x], xs]) xs
 in
 
 let printArch =
@@ -212,7 +225,7 @@ in
 , mkExe             = mkExe -- TODO: rename this so it's not so confusing
 , mkExes            = mkExes
 , createDir         = createDir
-, mkTarget          = mkTarget
+, mkHost            = mkHost
 , defaultConfigure  = defaultConfigure
 , defaultBuild      = defaultBuild
 , defaultInstall    = defaultInstall
@@ -223,4 +236,5 @@ in
 , autogenConfigure  = autogenConfigure
 , defaultCall       = defaultCall
 , defaultEnv        = defaultEnv
+, maybeConcat       = maybeConcat
 }

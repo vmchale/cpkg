@@ -39,6 +39,7 @@
 - [ ] DBus
 - [ ] librsvg
 - [ ] ImageMagick
+- [ ] GHC cross-compiler?
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in
