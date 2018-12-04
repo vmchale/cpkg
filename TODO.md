@@ -18,6 +18,7 @@
 - [ ] `unpack` subcommand for packages
 - [ ] Cabal integration?
 - [ ] Generate something like pkg-config files?
+- [ ] Bootstrap "fancy" tar?
 # Bugs
 - [ ] `mkExe` and `makeExe` are too similar
 - [ ] `glibc` example is broken
