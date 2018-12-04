@@ -11,12 +11,8 @@ in
 
 let bison =
   λ(v : List Natural) →
-    prelude.defaultPackage ⫽
-      { pkgName = "bison"
-      , pkgVersion = v
-      , pkgUrl = "https://ftp.gnu.org/gnu/bison/bison-${prelude.showVersion v}.tar.xz"
-      , pkgSubdir = "bison-${prelude.showVersion v}"
-      , configureCommand = bisonConfigure
+    prelude.makeGnuExe { name = "bison", version = v } ⫽
+      { configureCommand = bisonConfigure
       }
 in
 
