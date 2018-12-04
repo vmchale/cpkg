@@ -12,8 +12,7 @@ in
 let bison =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "bison", version = v } ⫽
-      { configureCommand = bisonConfigure
-      }
+      { configureCommand = bisonConfigure }
 in
 
 bison [3,2,2]

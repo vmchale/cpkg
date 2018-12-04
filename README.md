@@ -1,5 +1,8 @@
 # cpkg
 
+[![Build Status](https://travis-ci.org/vmchale/cpkg.svg?branch=master)](https://travis-ci.org/vmchale/cpkg)
+[![Windows build status](https://ci.appveyor.com/api/projects/status/github/vmchale/cpkg?svg=true)](https://ci.appveyor.com/project/vmchale/cpkg)
+
 cpkg is a package manager for C.
 It is configured using
 [Dhall](http://github.com/dhall-lang/dhall-haskell).
@@ -8,7 +11,7 @@ By considering a package to be a *function* taking a `cpkg`-supplied
 installation directory to a series of instructions, we can effectively package
 C projects with diverse build systems and handle dependencies between them.
 
-The goal is to eventually provide something like `cabal new-build` for C.
+The goal is to eventually provide something like `cabal new-install` for C.
 
 ## Installation
 
@@ -93,11 +96,11 @@ Lovingly provided by [polyglot](https://github.com/vmchale/polyglot):
 -------------------------------------------------------------------------------
  Cabal                    1         150          132            0           18
  Cabal Project            1           2            2            0            0
- Dhall                   26         810          694            0          116
+ Dhall                   26         807          691            0          116
  Haskell                 19         649          516            8          125
  Markdown                 4         175          146            0           29
  YAML                     2          55           52            0            3
 -------------------------------------------------------------------------------
- Total                   53        1841         1542            8          291
+ Total                   53        1838         1539            8          291
 -------------------------------------------------------------------------------
 ```
