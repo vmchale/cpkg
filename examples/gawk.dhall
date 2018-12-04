@@ -14,11 +14,8 @@ in
 
 let gawk =
   λ(v : List Natural) →
-    prelude.defaultPackage ⫽
+    prelude.makeGnuExe { name = "gawk", version = v } ⫽
       { pkgName = "awk"
-      , pkgVersion = v
-      , pkgUrl = "https://ftp.gnu.org/gnu/gawk/gawk-${prelude.showVersion v}.tar.xz"
-      , pkgSubdir = "gawk-${prelude.showVersion v}"
       , configureCommand = gawkConfigure
       }
 in
