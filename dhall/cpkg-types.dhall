@@ -59,7 +59,10 @@ let ConfigureVars = { installDir : Text
                     }
 in
 
-let BuildVars = { cpus : Natural, buildOS : OS }
+let BuildVars = { cpus : Natural
+                , buildTriple : Optional Text
+                , buildOS : OS
+                }
 in
 
 let VersionBound = < Lower : { lower : List Natural }
