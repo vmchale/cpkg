@@ -77,7 +77,7 @@ library
         hashable -any,
         binary,
         microlens,
-        composition-prelude
+        composition-prelude >= 1.0.0.0
 
     if flag(development)
         ghc-options: -Werror

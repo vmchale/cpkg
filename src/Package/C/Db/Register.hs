@@ -58,7 +58,13 @@ strictIndex = do
         then decode . BSL.fromStrict <$> liftIO (BS.readFile indexFile)
         else pure mempty
 
-packageInstalled :: MonadIO m => CPkg -> Maybe Platform -> ConfigureVars -> BuildVars -> InstallVars -> m Bool
+packageInstalled :: MonadIO m
+                 => CPkg
+                 -> Maybe Platform
+                 -> ConfigureVars
+                 -> BuildVars
+                 -> InstallVars
+                 -> m Bool
 packageInstalled pkg host c b i = do
 
     indexContents <- strictIndex
@@ -74,7 +80,13 @@ lookupPackage name host = do
 
     pure (S.lookupMax matches)
 
-unregisterPkg :: MonadIO m => CPkg -> Maybe Platform -> ConfigureVars -> BuildVars -> InstallVars -> m ()
+unregisterPkg :: MonadIO m
+              => CPkg
+              -> Maybe Platform
+              -> ConfigureVars
+              -> BuildVars
+              -> InstallVars
+              -> m ()
 unregisterPkg cpkg host c b i = do
 
     indexFile <- pkgIndex
@@ -86,7 +98,13 @@ unregisterPkg cpkg host c b i = do
     liftIO $ BSL.writeFile indexFile (encode newIndex)
 
 -- TODO: replace this with a proper/sensible database
-registerPkg :: MonadIO m => CPkg -> Maybe Platform -> ConfigureVars -> BuildVars -> InstallVars -> m ()
+registerPkg :: MonadIO m
+            => CPkg
+            -> Maybe Platform
+            -> ConfigureVars
+            -> BuildVars
+            -> InstallVars
+            -> m ()
 registerPkg cpkg host c b i = do
 
     indexFile <- pkgIndex
@@ -97,7 +115,12 @@ registerPkg cpkg host c b i = do
 
     liftIO $ BSL.writeFile indexFile (encode newIndex)
 
-pkgToBuildCfg :: CPkg -> Maybe Platform -> ConfigureVars -> BuildVars -> InstallVars -> BuildCfg
+pkgToBuildCfg :: CPkg
+              -> Maybe Platform
+              -> ConfigureVars
+              -> BuildVars
+              -> InstallVars
+              -> BuildCfg
 pkgToBuildCfg (CPkg n v _ _ _ _ cCmd bCmd iCmd) host cVar bVar iVar =
     BuildCfg n v mempty mempty host (cCmd cVar) (bCmd bVar) (iCmd iVar) -- TODO: fix pinned build deps &c.
 
@@ -118,5 +141,11 @@ buildCfgToDir buildCfg = do
         (<?>) = platformString (targetArch buildCfg)
     pure (global <?> buildName buildCfg ++ "-" ++ showVersion (buildVersion buildCfg) ++ "-" ++ hashed)
 
-cPkgToDir :: MonadIO m => CPkg -> Maybe Platform -> ConfigureVars -> BuildVars -> InstallVars -> m FilePath
+cPkgToDir :: MonadIO m
+          => CPkg
+          -> Maybe Platform
+          -> ConfigureVars
+          -> BuildVars
+          -> InstallVars
+          -> m FilePath
 cPkgToDir = buildCfgToDir .**** pkgToBuildCfg

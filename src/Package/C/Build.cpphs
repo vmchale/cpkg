@@ -108,10 +108,14 @@ getVars host = do
         installVars = InstallVars dhallOS
     pure (configureVars, buildVars, installVars)
 
-
 -- TODO: more complicated solver, garbage collector, and all that.
 -- Basically nix-style builds for C libraries
-forceBuildCPkg :: CPkg -> Maybe Platform -> ConfigureVars -> BuildVars -> InstallVars -> PkgM ()
+forceBuildCPkg :: CPkg
+               -> Maybe Platform
+               -> ConfigureVars
+               -> BuildVars
+               -> InstallVars
+               -> PkgM ()
 forceBuildCPkg cpkg host configureVars buildVars installVars = do
 
     pkgDir <- cPkgToDir cpkg host configureVars buildVars installVars
