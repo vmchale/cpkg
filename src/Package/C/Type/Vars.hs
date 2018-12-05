@@ -10,7 +10,6 @@ data ConfigureVars = ConfigureVars { installDir   :: FilePath
                                    , configOS     :: OS
                                    }
 
-data BuildVars = BuildVars { cpus        :: Int
-                           , buildTriple :: Maybe Platform
-                           , osBuild     :: OS
+data BuildVars = BuildVars { cpus    :: Int
+                           , osBuild :: OS
                            }

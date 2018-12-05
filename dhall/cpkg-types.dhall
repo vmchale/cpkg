@@ -60,7 +60,6 @@ let ConfigureVars = { installDir : Text
 in
 
 let BuildVars = { cpus : Natural
-                , buildTriple : Optional Text
                 , buildOS : OS
                 }
 in

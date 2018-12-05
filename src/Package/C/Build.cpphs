@@ -56,11 +56,11 @@ configureInDir cpkg host pkgDir p =
         putNormal ("Configuring " ++ pkgName cpkg) *>
         processSteps p steps
 
-buildInDir :: CPkg -> Maybe FilePath -> FilePath -> PkgM ()
-buildInDir cpkg host p = do
+buildInDir :: CPkg -> FilePath -> PkgM ()
+buildInDir cpkg p = do
     nproc <- liftIO getNumCapabilities
     putNormal ("Building " ++ pkgName cpkg)
-    let cfg = BuildVars nproc host dhallOS
+    let cfg = BuildVars nproc dhallOS
     processSteps p (buildCommand cpkg cfg)
 
 installInDir :: CPkg -> FilePath -> PkgM ()
@@ -97,7 +97,7 @@ buildCPkg cpkg host = do
 
         configureInDir cpkg host pkgDir p'
 
-        buildInDir cpkg host p'
+        buildInDir cpkg p'
 
         installInDir cpkg p'
 
