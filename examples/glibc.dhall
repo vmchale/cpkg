@@ -10,11 +10,17 @@ in
 
 let glibcConfigure =
   λ(cfg : types.ConfigureVars) →
+
+    let maybeHost = prelude.mkHost cfg.targetTriple
+    in
+    let modifyArgs = λ(xs : List Text) → prelude.maybeAppend Text maybeHost xs
+    in
+
     prelude.mkExes
       [ "configure", "scripts/mkinstalldirs", "scripts/rellns-sh" ]
         # [ prelude.createDir "build"
           , prelude.call { program = "../configure"
-                         , arguments = [ "--prefix=${cfg.installDir}" ]
+                         , arguments = modifyArgs [ "--prefix=${cfg.installDir}" ]
                          , environment = prelude.defaultEnv
                          , procDir = buildDir
                          }

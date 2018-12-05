@@ -17,7 +17,7 @@ let gmp =
       , pkgUrl = "https://gmplib.org/download/gmp/gmp-${prelude.showVersion v}.tar.xz"
       , pkgSubdir = "gmp-${prelude.showVersion v}"
       , configureCommand = gmpConfigure
-      -- TODO: we should run 'make check' if not cross-compiling
+      -- TODO: run 'make check' if not cross-compiling?
       }
 in
 

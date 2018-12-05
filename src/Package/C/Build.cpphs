@@ -78,8 +78,6 @@ fetchCPkg cpkg = fetchUrl (pkgUrl cpkg) (pkgName cpkg)
 
 -- TODO: more complicated solver, garbage collector, and all that.
 -- Basically nix-style builds for C libraries
---
--- TODO: play nicely with cross-compilation (lol)
 buildCPkg :: CPkg -> Maybe Platform -> PkgM ()
 buildCPkg cpkg host = do
 
