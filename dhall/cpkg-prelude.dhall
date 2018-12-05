@@ -257,6 +257,7 @@ in
 , defaultPackage    = defaultPackage
 , unbounded         = unbounded
 , lowerBound        = lowerBound
+, upperBound        = upperBound
 , makeExe           = makeExe
 , printArch         = printArch
 , printManufacturer = printManufacturer
