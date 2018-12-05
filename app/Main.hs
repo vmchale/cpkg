@@ -11,8 +11,9 @@ import           System.Directory    (doesDirectoryExist, removeDirectoryRecursi
 cpkgVersion :: V.Version
 cpkgVersion = P.version
 
-data Command = Install { _dhallFile :: String, _verbosity :: Verbosity }
+data Command = Install { _dhallFile :: String, _verbosity :: Verbosity, _host :: Maybe Platform }
              | Check { _dhallFile :: String, _verbosity :: Verbosity }
+             | Dump { _pkgName :: String }
              | Nuke
 
 verbosityInt :: Parser Int
@@ -42,6 +43,7 @@ userCmd :: Parser Command
 userCmd = hsubparser
     (command "install" (info install (progDesc "Install a package defined by a Dhall expression"))
     <> command "check" (info check (progDesc "Check a Dhall expression to ensure it can be used to build a package"))
+    <> command "dump" (info dump (progDesc "Display flags to link against a particular library"))
     <> command "nuke" (info (pure Nuke) (progDesc "Remove all globally installed libraries"))
     )
 
@@ -52,10 +54,25 @@ dhallCompletions :: Mod ArgumentFields a
 dhallCompletions = ftypeCompletions "dhall"
 
 install :: Parser Command
-install = Install <$> dhallFile <*> verbosity
+install = Install <$> dhallFile <*> verbosity <*> host
 
 check :: Parser Command
 check = Check <$> dhallFile <*> verbosity
+
+host :: Parser (Maybe Platform)
+host = optional
+    (strOption
+    (metavar "HOST"
+    <> long "host"
+    <> help "Host platform, e.g. arm-linux-gnueabihf"
+    ))
+
+dump :: Parser Command
+dump = Dump <$>
+    argument str
+    (metavar "PACKAGE"
+    <> help "Name of package you want to link against"
+    )
 
 dhallFile :: Parser String
 dhallFile =
@@ -66,10 +83,11 @@ dhallFile =
     )
 
 run :: Command -> IO ()
-run (Install file v) = do
+run (Install file v host') = do
     unistring <- cPkgDhallToCPkg <$> getCPkg v file
-    runPkgM v (buildCPkg unistring)
+    runPkgM v (buildCPkg unistring host')
 run (Check file v) = void $ getCPkg v file
+run (Dump name) = printFlags name
 run Nuke = do
     pkgDir <- globalPkgDir
     exists <- doesDirectoryExist pkgDir

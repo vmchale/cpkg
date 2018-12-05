@@ -4,10 +4,10 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 module Package.C.Db.Type ( BuildCfg (..)
-                               , InstallDb (..)
-                               -- * Lenses
-                               , installedPackages
-                               ) where
+                         , InstallDb (..)
+                         -- * Lenses
+                         , installedPackages
+                         ) where
 
 import           Data.Binary            (Binary)
 import           Data.Hashable          (Hashable)

@@ -2,6 +2,8 @@
 
 module Package.C.Error ( printErr
                        , unrecognized
+                       , indexError
+                       , corruptedDatabase
                        , PackageError (..)
                        ) where
 
@@ -15,13 +17,23 @@ infixr 5 <#>
 (<#>) :: Doc a -> Doc a -> Doc a
 (<#>) a b = a <> line <> b
 
-newtype PackageError = Unrecognized String
+data PackageError = Unrecognized String
+                  | IndexError String -- package name
+                  | CorruptedDatabase
 
 instance Pretty PackageError where
-    pretty (Unrecognized t) = "Error: Unrecognized archive format when unpacking" <#> hang 2 (pretty t) <> hardline
+    pretty (Unrecognized t)  = "Error: Unrecognized archive format when unpacking" <#> hang 2 (pretty t) <> hardline
+    pretty (IndexError str)  = "Error: Package" <+> pretty str <+> "not found in your indices. Try 'cpkg install" <+> pretty str <> "'." <> hardline
+    pretty CorruptedDatabase = "Error: Package database corrupted. Please try 'cpkg nuke'" <> hardline
 
 printErr :: MonadIO m => PackageError -> m a
 printErr e = liftIO (putDoc (pretty e) *> exitFailure)
 
 unrecognized :: MonadIO m => String -> m a
 unrecognized = printErr . Unrecognized
+
+indexError :: MonadIO m => String -> m a
+indexError = printErr . IndexError
+
+corruptedDatabase :: MonadIO m => m a
+corruptedDatabase = printErr CorruptedDatabase

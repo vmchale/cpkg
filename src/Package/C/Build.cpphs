@@ -8,6 +8,7 @@ import           Package.C.Build.OS
 import           Package.C.Fetch
 import           Package.C.Monad
 import           Package.C.Type
+import           Package.C.Type.Shared
 import           System.Directory
 import           System.FilePath        ((</>))
 import           System.IO.Temp         (withSystemTempDirectory)
@@ -46,10 +47,10 @@ stepToProc dir' (CreateDirectory d) = do
 processSteps :: (Traversable t) => FilePath -> t Command -> PkgM ()
 processSteps pkgDir = traverse_ (stepToProc pkgDir)
 
-configureInDir :: CPkg -> FilePath -> FilePath -> PkgM ()
-configureInDir cpkg pkgDir p =
+configureInDir :: CPkg -> Maybe Platform -> FilePath -> FilePath -> PkgM ()
+configureInDir cpkg host pkgDir p =
 
-    let cfg = ConfigureVars pkgDir Nothing [] dhallOS
+    let cfg = ConfigureVars pkgDir host [] dhallOS
         steps = configureCommand cpkg cfg
     in
         putNormal ("Configuring " ++ pkgName cpkg) *>
@@ -79,8 +80,8 @@ fetchCPkg cpkg = fetchUrl (pkgUrl cpkg) (pkgName cpkg)
 -- Basically nix-style builds for C libraries
 --
 -- TODO: play nicely with cross-compilation (lol)
-buildCPkg :: CPkg -> PkgM ()
-buildCPkg cpkg = do
+buildCPkg :: CPkg -> Maybe Platform -> PkgM ()
+buildCPkg cpkg host = do
 
     pkgDir <- cPkgToDir cpkg
 
@@ -94,7 +95,7 @@ buildCPkg cpkg = do
 
         let p' = p </> pkgSubdir cpkg
 
-        configureInDir cpkg pkgDir p'
+        configureInDir cpkg host pkgDir p'
 
         buildInDir cpkg p'
 

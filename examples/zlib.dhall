@@ -4,7 +4,7 @@ in
 let zlib =
   λ(v : List Natural) →
     prelude.defaultPackage ⫽
-      { pkgName = "zlib"
+      { pkgName = "z"
       , pkgVersion = v
       , pkgUrl = "http://www.zlib.net/zlib-${prelude.showVersion v}.tar.xz"
       , pkgSubdir = "zlib-${prelude.showVersion v}"
