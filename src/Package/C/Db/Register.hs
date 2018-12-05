@@ -21,10 +21,10 @@ import           Package.C.Type.Version
 import           System.Directory
 import           System.FilePath        ((</>))
 
-printFlags :: String -> IO ()
-printFlags name = do
+printFlags :: String -> Maybe String -> IO ()
+printFlags name host = do
 
-    maybePackage <- lookupPackage name
+    maybePackage <- lookupPackage name host
 
     case maybePackage of
         Nothing -> indexError name
@@ -52,12 +52,12 @@ strictIndex = do
         then decode . BSL.fromStrict <$> liftIO (BS.readFile indexFile)
         else pure mempty
 
-lookupPackage :: MonadIO m => String -> m (Maybe BuildCfg)
-lookupPackage name = do
+lookupPackage :: MonadIO m => String -> Maybe Platform -> m (Maybe BuildCfg)
+lookupPackage name host = do
 
     indexContents <- strictIndex
 
-    let matches = S.filter (\pkg -> buildName pkg == name) (_installedPackages indexContents)
+    let matches = S.filter (\pkg -> buildName pkg == name && targetArch pkg == host) (_installedPackages indexContents)
 
     pure (S.lookupMax matches)
 

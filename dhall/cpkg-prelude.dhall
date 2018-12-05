@@ -20,7 +20,7 @@ in
 
 let mkHost =
   λ(x : Optional Text) →
-    mapOptional Text Text (λ(tgt : Text) → "--host=${tgt}") x
+    mapOptional Text Text (λ(tgt : Text) → "--target=${tgt}") x
 in
 
 let maybeAppend =

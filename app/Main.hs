@@ -13,7 +13,7 @@ cpkgVersion = P.version
 
 data Command = Install { _dhallFile :: String, _verbosity :: Verbosity, _host :: Maybe Platform }
              | Check { _dhallFile :: String, _verbosity :: Verbosity }
-             | Dump { _pkgName :: String }
+             | Dump { _pkgName :: String, _host :: Maybe Platform }
              | Nuke
 
 verbosityInt :: Parser Int
@@ -73,6 +73,7 @@ dump = Dump <$>
     (metavar "PACKAGE"
     <> help "Name of package you want to link against"
     )
+    <*> host
 
 dhallFile :: Parser String
 dhallFile =
@@ -87,7 +88,7 @@ run (Install file v host') = do
     unistring <- cPkgDhallToCPkg <$> getCPkg v file
     runPkgM v (buildCPkg unistring host')
 run (Check file v) = void $ getCPkg v file
-run (Dump name) = printFlags name
+run (Dump name host') = printFlags name host'
 run Nuke = do
     pkgDir <- globalPkgDir
     exists <- doesDirectoryExist pkgDir
