@@ -83,7 +83,7 @@ fetchCPkg cpkg = fetchUrl (pkgUrl cpkg) (pkgName cpkg)
 buildCPkg :: CPkg -> Maybe Platform -> PkgM ()
 buildCPkg cpkg host = do
 
-    pkgDir <- cPkgToDir cpkg
+    pkgDir <- cPkgToDir cpkg host
 
     liftIO $ createDirectoryIfMissing True pkgDir
 
@@ -101,4 +101,4 @@ buildCPkg cpkg host = do
 
         installInDir cpkg p'
 
-        registerPkg cpkg
+        registerPkg cpkg host

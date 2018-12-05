@@ -76,7 +76,8 @@ library
         mtl -any,
         hashable -any,
         binary,
-        microlens
+        microlens,
+        composition-prelude
 
     if flag(development)
         ghc-options: -Werror

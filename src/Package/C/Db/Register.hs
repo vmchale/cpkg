@@ -1,9 +1,12 @@
+-- TODO: a lot of the stuff in this module could be made pure so that it only
+-- gets called once
 module Package.C.Db.Register ( registerPkg
                              , cPkgToDir
                              , globalPkgDir
                              , printFlags
                              ) where
 
+import           Control.Composition    ((.*))
 import           Control.Monad.IO.Class (MonadIO (..))
 import           Data.Binary            (decode, encode)
 import qualified Data.ByteString        as BS
@@ -63,20 +66,20 @@ lookupPackage name host = do
 
 -- TODO: replace this with a proper/sensible database
 -- Add some proper error handling here
-registerPkg :: MonadIO m => CPkg -> m ()
-registerPkg cpkg = do
+registerPkg :: MonadIO m => CPkg -> Maybe Platform -> m ()
+registerPkg cpkg host = do
 
     indexFile <- pkgIndex
     indexContents <- strictIndex
 
-    let buildCfg = pkgToBuildCfg cpkg
+    let buildCfg = pkgToBuildCfg cpkg host
         newIndex = over installedPackages (S.insert buildCfg) indexContents
 
     liftIO $ BSL.writeFile indexFile (encode newIndex)
 
-pkgToBuildCfg :: CPkg -> BuildCfg
+pkgToBuildCfg :: CPkg -> Maybe Platform -> BuildCfg
 pkgToBuildCfg (CPkg n v _ _ _ _ _ _ _) =
-    BuildCfg n v mempty mempty Nothing -- TODO: fix pinned build deps &c.
+    BuildCfg n v mempty mempty -- TODO: fix pinned build deps &c.
 
 pkgIndex :: MonadIO m => m FilePath
 pkgIndex = (</> "index.bin") <$> globalPkgDir
@@ -91,9 +94,9 @@ platformString (Just p) = \x y -> x </> p </> y
 buildCfgToDir :: MonadIO m => BuildCfg -> m FilePath
 buildCfgToDir buildCfg = do
     global <- globalPkgDir
-    let hashed = showHex (hash buildCfg) mempty
+    let hashed = showHex (abs (hash buildCfg)) mempty
         (<?>) = platformString (targetArch buildCfg)
     pure (global <?> buildName buildCfg ++ "-" ++ showVersion (buildVersion buildCfg) ++ "-" ++ hashed)
 
-cPkgToDir :: MonadIO m => CPkg -> m FilePath
-cPkgToDir = buildCfgToDir . pkgToBuildCfg
+cPkgToDir :: MonadIO m => CPkg -> Maybe Platform -> m FilePath
+cPkgToDir = buildCfgToDir .* pkgToBuildCfg
