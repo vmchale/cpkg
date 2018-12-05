@@ -11,6 +11,7 @@ module Package.C.Db.Type ( BuildCfg (..)
 
 import           Data.Binary            (Binary)
 import           Data.Hashable          (Hashable)
+import           Data.Semigroup
 import qualified Data.Set               as S
 import qualified Data.Text              as T
 import           GHC.Generics           (Generic)

@@ -75,11 +75,11 @@ library
         process -any,
         mtl -any,
         hashable -any,
-        binary,
-        microlens,
-        composition-prelude >= 1.0.0.0
+        binary -any,
+        microlens -any,
+        composition-prelude >=1.0.0.0
 
-    if flag(development)
+    if (flag(development) && impl(ghc <=8.2))
         ghc-options: -Werror
 
     if impl(ghc >=8.0)
