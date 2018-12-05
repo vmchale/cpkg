@@ -151,6 +151,13 @@ let unbounded =
     }
 in
 
+let lowerBound =
+  λ(pkg : { name : Text, lower : List Natural }) →
+    { name = pkg.name
+    , bound = types.VersionBound.Lower { lower = pkg.lower }
+    }
+in
+
 let defaultPackage =
   { configureCommand = defaultConfigure
   , buildCommand     = defaultBuild
@@ -242,6 +249,7 @@ in
 , makeGnuExe        = makeGnuExe
 , defaultPackage    = defaultPackage
 , unbounded         = unbounded
+, lowerBound        = lowerBound
 , makeExe           = makeExe
 , printArch         = printArch
 , printManufacturer = printManufacturer

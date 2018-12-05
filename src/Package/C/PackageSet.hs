@@ -15,6 +15,11 @@ newtype PackageSetDhall = PackageSetDhall [ Dhall.CPkg ]
 
 newtype PackageSet = PackageSet (M.Map T.Text CPkg)
 
+-- TODO: use Algebra.Graph.AdjacencyMap.Algorithm.topSort and
+-- Algebra.Graph.AdjacencyMap.Algorithm
+--
+-- WANT: return a @Tree [CPkg]@
+
 packageSetDhallToPackageSet :: PackageSetDhall -> PackageSet
 packageSetDhallToPackageSet (PackageSetDhall pkgs) =
     let names = Dhall.pkgName <$> pkgs
