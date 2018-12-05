@@ -18,6 +18,8 @@
 - [ ] Cabal integration?
 - [ ] Generate something like pkg-config files?
 - [ ] Bootstrap "fancy" tar?
+# Performance
+- [ ] Dhall is slow
 # Bugs
 - [ ] `mkExe` and `makeExe` are too similar
 - [ ] `glibc` example is broken
