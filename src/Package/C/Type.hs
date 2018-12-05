@@ -1,3 +1,6 @@
+{-# LANGUAGE DeriveAnyClass #-}
+{-# LANGUAGE DeriveGeneric  #-}
+
 module Package.C.Type ( CPkg (..)
                       , ConfigureVars (..)
                       , BuildVars (..)
@@ -9,7 +12,10 @@ module Package.C.Type ( CPkg (..)
                       , cPkgDhallToCPkg
                       ) where
 
+import           Data.Binary              (Binary)
+import           Data.Hashable            (Hashable)
 import qualified Data.Text                as T
+import           GHC.Generics             (Generic)
 import qualified Package.C.Dhall.Type     as Dhall
 import           Package.C.Type.Shared
 import           Package.C.Type.Vars
@@ -17,6 +23,7 @@ import           Package.C.Type.Verbosity
 import           Package.C.Type.Version
 
 data EnvVar = EnvVar { var :: String, value :: String }
+            deriving (Eq, Ord, Generic, Binary, Hashable)
 
 data Command = CreateDirectory { dir :: String }
              | MakeExecutable { file :: String }
@@ -25,6 +32,7 @@ data Command = CreateDirectory { dir :: String }
                     , environment :: Maybe [EnvVar]
                     , procDir     :: Maybe String
                     }
+              deriving (Eq, Ord, Generic, Binary, Hashable)
 
 -- TODO: build script should take OS as an argument?
 -- That way we can use make/gmake where we want it

@@ -8,7 +8,7 @@ module Package.C.Db.Register ( registerPkg
                              , unregisterPkg
                              ) where
 
-import           Control.Composition    ((.*))
+import           Control.Composition    ((.****))
 import           Control.Monad.IO.Class (MonadIO (..))
 import           Data.Binary            (decode, encode)
 import qualified Data.ByteString        as BS
@@ -97,9 +97,9 @@ registerPkg cpkg host = do
 
     liftIO $ BSL.writeFile indexFile (encode newIndex)
 
-pkgToBuildCfg :: CPkg -> Maybe Platform -> BuildCfg
-pkgToBuildCfg (CPkg n v _ _ _ _ _ _ _) =
-    BuildCfg n v mempty mempty -- TODO: fix pinned build deps &c.
+pkgToBuildCfg :: CPkg -> Maybe Platform -> ConfigureVars -> BuildVars -> InstallVars -> BuildCfg
+pkgToBuildCfg (CPkg n v _ _ _ _ cCmd bCmd iCmd) host cVar bVar iVar =
+    BuildCfg n v mempty mempty host (cCmd cVar) (bCmd bVar) (iCmd iVar) -- TODO: fix pinned build deps &c.
 
 pkgIndex :: MonadIO m => m FilePath
 pkgIndex = (</> "index.bin") <$> globalPkgDir
@@ -118,5 +118,5 @@ buildCfgToDir buildCfg = do
         (<?>) = platformString (targetArch buildCfg)
     pure (global <?> buildName buildCfg ++ "-" ++ showVersion (buildVersion buildCfg) ++ "-" ++ hashed)
 
-cPkgToDir :: MonadIO m => CPkg -> Maybe Platform -> m FilePath
-cPkgToDir = buildCfgToDir .* pkgToBuildCfg
+cPkgToDir :: MonadIO m => CPkg -> Maybe Platform -> ConfigureVars -> BuildVars -> InstallVars -> m FilePath
+cPkgToDir = buildCfgToDir .**** pkgToBuildCfg
