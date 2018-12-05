@@ -9,6 +9,7 @@ module Package.C (
                  , Platform
                  -- * Functions
                  , buildCPkg
+                 , uninstallCPkg
                  , runPkgM
                  , globalPkgDir
                  , printFlags

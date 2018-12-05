@@ -5,6 +5,7 @@ module Package.C.Db.Register ( registerPkg
                              , globalPkgDir
                              , printFlags
                              , packageInstalled
+                             , unregisterPkg
                              ) where
 
 import           Control.Composition    ((.*))
@@ -72,6 +73,17 @@ lookupPackage name host = do
     let matches = S.filter (\pkg -> buildName pkg == name && targetArch pkg == host) (_installedPackages indexContents)
 
     pure (S.lookupMax matches)
+
+unregisterPkg :: MonadIO m => CPkg -> Maybe Platform -> m ()
+unregisterPkg cpkg host = do
+
+    indexFile <- pkgIndex
+    indexContents <- strictIndex
+
+    let buildCfg = pkgToBuildCfg cpkg host
+        newIndex = over installedPackages (S.delete buildCfg) indexContents
+
+    liftIO $ BSL.writeFile indexFile (encode newIndex)
 
 -- TODO: replace this with a proper/sensible database
 registerPkg :: MonadIO m => CPkg -> Maybe Platform -> m ()

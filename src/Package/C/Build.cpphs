@@ -1,11 +1,13 @@
 module Package.C.Build ( buildCPkg
+                       , uninstallCPkg
                        ) where
 
-import Control.Monad (unless)
 import           Control.Concurrent     (getNumCapabilities)
+import           Control.Monad          (unless, when)
 import           Control.Monad.IO.Class (MonadIO (liftIO))
 import           Data.Foldable          (traverse_)
 import           Package.C.Build.OS
+import           Package.C.Db.Register
 import           Package.C.Fetch
 import           Package.C.Monad
 import           Package.C.Type
@@ -15,7 +17,6 @@ import           System.FilePath        ((</>))
 import           System.IO.Temp         (withSystemTempDirectory)
 import           System.Process
 import           System.Process.Ext
-import           Package.C.Db.Register
 
 #ifdef mingw32_HOST_OS
 mkExecutable :: FilePath -> IO ()
@@ -79,11 +80,21 @@ fetchCPkg cpkg = fetchUrl (pkgUrl cpkg) (pkgName cpkg)
 
 buildCPkg :: CPkg -> Maybe Platform -> PkgM ()
 buildCPkg cpkg host = do
-    
+
     installed <- packageInstalled cpkg host
 
     unless installed $
         forceBuildCPkg cpkg host
+
+uninstallCPkg :: CPkg -> Maybe Platform -> PkgM ()
+uninstallCPkg cpkg host = do
+
+    installed <- packageInstalled cpkg host
+    pkgDir <- cPkgToDir cpkg host
+
+    when installed $
+        liftIO (removeDirectoryRecursive pkgDir) *>
+        unregisterPkg cpkg host
 
 -- TODO: more complicated solver, garbage collector, and all that.
 -- Basically nix-style builds for C libraries
