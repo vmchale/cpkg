@@ -11,7 +11,7 @@ import           System.Directory    (doesDirectoryExist, removeDirectoryRecursi
 cpkgVersion :: V.Version
 cpkgVersion = P.version
 
-data Command = Install { _dhallFile :: String, _verbosity :: Verbosity, _host :: Maybe Platform }
+data Command = Install { _dhallFile :: String, _verbosity :: Verbosity, _target :: Maybe Platform }
              | Check { _dhallFile :: String, _verbosity :: Verbosity }
              | Dump { _pkgName :: String, _host :: Maybe Platform }
              | Nuke
@@ -54,16 +54,16 @@ dhallCompletions :: Mod ArgumentFields a
 dhallCompletions = ftypeCompletions "dhall"
 
 install :: Parser Command
-install = Install <$> dhallFile <*> verbosity <*> host
+install = Install <$> dhallFile <*> verbosity <*> target
 
 check :: Parser Command
 check = Check <$> dhallFile <*> verbosity
 
-host :: Parser (Maybe Platform)
-host = optional
+target :: Parser (Maybe Platform)
+target = optional
     (strOption
-    (metavar "HOST"
-    <> long "host"
+    (metavar "TARGET"
+    <> long "target"
     <> help "Host platform, e.g. arm-linux-gnueabihf"
     ))
 
@@ -73,7 +73,7 @@ dump = Dump <$>
     (metavar "PACKAGE"
     <> help "Name of package you want to link against"
     )
-    <*> host
+    <*> target
 
 dhallFile :: Parser String
 dhallFile =
@@ -88,7 +88,7 @@ run (Install file v host') = do
     unistring <- cPkgDhallToCPkg <$> getCPkg v file
     runPkgM v (buildCPkg unistring host')
 run (Check file v) = void $ getCPkg v file
-run (Dump name host') = printFlags name host'
+run (Dump name host) = printFlags name host
 run Nuke = do
     pkgDir <- globalPkgDir
     exists <- doesDirectoryExist pkgDir
