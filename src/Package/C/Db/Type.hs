@@ -36,5 +36,4 @@ data BuildCfg = BuildCfg { buildName       :: String
                          , configureCmds   :: [ Command ]
                          , buildCmds       :: [ Command ]
                          , installCmds     :: [ Command ]
-                         -- TODO: cache build commands, configure commands, &c.
                          } deriving (Eq, Ord, Generic, Binary, Hashable)
