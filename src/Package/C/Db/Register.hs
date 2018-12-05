@@ -4,6 +4,7 @@ module Package.C.Db.Register ( registerPkg
                              , cPkgToDir
                              , globalPkgDir
                              , printFlags
+                             , packageInstalled
                              ) where
 
 import           Control.Composition    ((.*))
@@ -49,11 +50,19 @@ strictIndex :: MonadIO m => m InstallDb
 strictIndex = do
 
     indexFile <- pkgIndex
+    -- Add some proper error handling here
     existsIndex <- liftIO (doesFileExist indexFile)
 
     if existsIndex
         then decode . BSL.fromStrict <$> liftIO (BS.readFile indexFile)
         else pure mempty
+
+packageInstalled :: MonadIO m => CPkg -> Maybe Platform -> m Bool
+packageInstalled pkg host = do
+
+    indexContents <- strictIndex
+
+    pure (pkgToBuildCfg pkg host `S.member` _installedPackages indexContents)
 
 lookupPackage :: MonadIO m => String -> Maybe Platform -> m (Maybe BuildCfg)
 lookupPackage name host = do
@@ -65,7 +74,6 @@ lookupPackage name host = do
     pure (S.lookupMax matches)
 
 -- TODO: replace this with a proper/sensible database
--- Add some proper error handling here
 registerPkg :: MonadIO m => CPkg -> Maybe Platform -> m ()
 registerPkg cpkg host = do
 

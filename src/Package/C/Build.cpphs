@@ -1,6 +1,7 @@
 module Package.C.Build ( buildCPkg
                        ) where
 
+import Control.Monad (unless)
 import           Control.Concurrent     (getNumCapabilities)
 import           Control.Monad.IO.Class (MonadIO (liftIO))
 import           Data.Foldable          (traverse_)
@@ -76,10 +77,18 @@ fetchCPkg cpkg = fetchUrl (pkgUrl cpkg) (pkgName cpkg)
 -- diagnosticDirectory :: String -> (FilePath -> m a) -> m a
 -- diagnosticDirectory s f = f (s ++ "-diagnostic")
 
--- TODO: more complicated solver, garbage collector, and all that.
--- Basically nix-style builds for C libraries
 buildCPkg :: CPkg -> Maybe Platform -> PkgM ()
 buildCPkg cpkg host = do
+    
+    installed <- packageInstalled cpkg host
+
+    unless installed $
+        forceBuildCPkg cpkg host
+
+-- TODO: more complicated solver, garbage collector, and all that.
+-- Basically nix-style builds for C libraries
+forceBuildCPkg :: CPkg -> Maybe Platform -> PkgM ()
+forceBuildCPkg cpkg host = do
 
     pkgDir <- cPkgToDir cpkg host
 
