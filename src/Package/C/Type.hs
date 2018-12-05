@@ -32,6 +32,7 @@ data Command = CreateDirectory { dir :: String }
                     , environment :: Maybe [EnvVar]
                     , procDir     :: Maybe String
                     }
+             | SymlinkBinary { file :: String }
               deriving (Eq, Ord, Generic, Binary, Hashable)
 
 -- TODO: build script should take OS as an argument?
@@ -54,6 +55,7 @@ commandDhallToCommand :: Dhall.Command -> Command
 commandDhallToCommand (Dhall.CreateDirectory d)  = CreateDirectory (T.unpack d)
 commandDhallToCommand (Dhall.MakeExecutable exe) = MakeExecutable (T.unpack exe)
 commandDhallToCommand (Dhall.Call p as env proc) = Call (T.unpack p) (T.unpack <$> as) (fmap envVarDhallToEnvVar <$> env) (T.unpack <$> proc)
+commandDhallToCommand (Dhall.SymlinkBinary b)    = SymlinkBinary (T.unpack b)
 
 cfgVarsToDhallCfgVars :: ConfigureVars -> Dhall.ConfigureVars
 cfgVarsToDhallCfgVars (ConfigureVars dir' tgt incls os) = Dhall.ConfigureVars (T.pack dir') (T.pack <$> tgt) (T.pack <$> incls) os
