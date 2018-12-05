@@ -49,26 +49,23 @@ stepToProc dir' (CreateDirectory d) = do
 processSteps :: (Traversable t) => FilePath -> t Command -> PkgM ()
 processSteps pkgDir = traverse_ (stepToProc pkgDir)
 
-configureInDir :: CPkg -> Maybe Platform -> FilePath -> FilePath -> PkgM ()
-configureInDir cpkg host pkgDir p =
+configureInDir :: CPkg -> ConfigureVars -> FilePath -> PkgM ()
+configureInDir cpkg cfg p =
 
-    let cfg = ConfigureVars pkgDir host [] dhallOS
-        steps = configureCommand cpkg cfg
+    let steps = configureCommand cpkg cfg
     in
         putNormal ("Configuring " ++ pkgName cpkg) *>
         processSteps p steps
 
-buildInDir :: CPkg -> FilePath -> PkgM ()
-buildInDir cpkg p = do
-    nproc <- liftIO getNumCapabilities
+buildInDir :: CPkg -> BuildVars -> FilePath -> PkgM ()
+buildInDir cpkg cfg p = do
     putNormal ("Building " ++ pkgName cpkg)
-    let cfg = BuildVars nproc dhallOS
     processSteps p (buildCommand cpkg cfg)
 
-installInDir :: CPkg -> FilePath -> PkgM ()
-installInDir cpkg p =
+installInDir :: CPkg -> InstallVars -> FilePath -> PkgM ()
+installInDir cpkg cfg p =
     putNormal ("Installing " ++ pkgName cpkg) *>
-    processSteps p (installCommand cpkg (InstallVars dhallOS))
+    processSteps p (installCommand cpkg cfg)
 
 fetchCPkg :: CPkg
           -> FilePath -- ^ Directory for intermediate build files
@@ -81,27 +78,42 @@ fetchCPkg cpkg = fetchUrl (pkgUrl cpkg) (pkgName cpkg)
 buildCPkg :: CPkg -> Maybe Platform -> PkgM ()
 buildCPkg cpkg host = do
 
-    installed <- packageInstalled cpkg host
+    (configureVars, buildVars, installVars) <- getVars host
+
+    installed <- packageInstalled cpkg host configureVars buildVars installVars
 
     unless installed $
-        forceBuildCPkg cpkg host
+        forceBuildCPkg cpkg host configureVars buildVars installVars
 
 uninstallCPkg :: CPkg -> Maybe Platform -> PkgM ()
 uninstallCPkg cpkg host = do
 
-    installed <- packageInstalled cpkg host
-    pkgDir <- cPkgToDir cpkg host
+    (configureVars, buildVars, installVars) <- getVars host
+
+    installed <- packageInstalled cpkg host configureVars buildVars installVars
+    pkgDir <- cPkgToDir cpkg host configureVars buildVars installVars
 
     when installed $
         liftIO (removeDirectoryRecursive pkgDir) *>
-        unregisterPkg cpkg host
+        unregisterPkg cpkg host configureVars buildVars installVars
+
+-- only really suitable for hashing at this point, since we use @""@ as the
+-- install directory
+getVars :: Maybe Platform -> PkgM (ConfigureVars, BuildVars, InstallVars)
+getVars host = do
+    nproc <- liftIO getNumCapabilities
+    let configureVars = ConfigureVars "" host [] dhallOS
+        buildVars = BuildVars nproc dhallOS
+        installVars = InstallVars dhallOS
+    pure (configureVars, buildVars, installVars)
+
 
 -- TODO: more complicated solver, garbage collector, and all that.
 -- Basically nix-style builds for C libraries
-forceBuildCPkg :: CPkg -> Maybe Platform -> PkgM ()
-forceBuildCPkg cpkg host = do
+forceBuildCPkg :: CPkg -> Maybe Platform -> ConfigureVars -> BuildVars -> InstallVars -> PkgM ()
+forceBuildCPkg cpkg host configureVars buildVars installVars = do
 
-    pkgDir <- cPkgToDir cpkg host
+    pkgDir <- cPkgToDir cpkg host configureVars buildVars installVars
 
     liftIO $ createDirectoryIfMissing True pkgDir
 
@@ -113,10 +125,10 @@ forceBuildCPkg cpkg host = do
 
         let p' = p </> pkgSubdir cpkg
 
-        configureInDir cpkg host pkgDir p'
+        configureInDir cpkg (configureVars { installDir = pkgDir }) p'
 
-        buildInDir cpkg p'
+        buildInDir cpkg buildVars p'
 
-        installInDir cpkg p'
+        installInDir cpkg installVars p'
 
-        registerPkg cpkg host
+        registerPkg cpkg host configureVars buildVars installVars

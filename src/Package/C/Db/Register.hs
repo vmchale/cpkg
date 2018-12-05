@@ -58,12 +58,12 @@ strictIndex = do
         then decode . BSL.fromStrict <$> liftIO (BS.readFile indexFile)
         else pure mempty
 
-packageInstalled :: MonadIO m => CPkg -> Maybe Platform -> m Bool
-packageInstalled pkg host = do
+packageInstalled :: MonadIO m => CPkg -> Maybe Platform -> ConfigureVars -> BuildVars -> InstallVars -> m Bool
+packageInstalled pkg host c b i = do
 
     indexContents <- strictIndex
 
-    pure (pkgToBuildCfg pkg host `S.member` _installedPackages indexContents)
+    pure (pkgToBuildCfg pkg host c b i `S.member` _installedPackages indexContents)
 
 lookupPackage :: MonadIO m => String -> Maybe Platform -> m (Maybe BuildCfg)
 lookupPackage name host = do
@@ -74,25 +74,25 @@ lookupPackage name host = do
 
     pure (S.lookupMax matches)
 
-unregisterPkg :: MonadIO m => CPkg -> Maybe Platform -> m ()
-unregisterPkg cpkg host = do
+unregisterPkg :: MonadIO m => CPkg -> Maybe Platform -> ConfigureVars -> BuildVars -> InstallVars -> m ()
+unregisterPkg cpkg host c b i = do
 
     indexFile <- pkgIndex
     indexContents <- strictIndex
 
-    let buildCfg = pkgToBuildCfg cpkg host
+    let buildCfg = pkgToBuildCfg cpkg host c b i
         newIndex = over installedPackages (S.delete buildCfg) indexContents
 
     liftIO $ BSL.writeFile indexFile (encode newIndex)
 
 -- TODO: replace this with a proper/sensible database
-registerPkg :: MonadIO m => CPkg -> Maybe Platform -> m ()
-registerPkg cpkg host = do
+registerPkg :: MonadIO m => CPkg -> Maybe Platform -> ConfigureVars -> BuildVars -> InstallVars -> m ()
+registerPkg cpkg host c b i = do
 
     indexFile <- pkgIndex
     indexContents <- strictIndex
 
-    let buildCfg = pkgToBuildCfg cpkg host
+    let buildCfg = pkgToBuildCfg cpkg host c b i
         newIndex = over installedPackages (S.insert buildCfg) indexContents
 
     liftIO $ BSL.writeFile indexFile (encode newIndex)
