@@ -158,6 +158,13 @@ let lowerBound =
     }
 in
 
+let upperBound =
+  λ(pkg : { name : Text, upper : List Natural }) →
+    { name = pkg.name
+    , bound = types.VersionBound.Upper { upper = pkg.lower }
+    }
+in
+
 let defaultPackage =
   { configureCommand = defaultConfigure
   , buildCommand     = defaultBuild
