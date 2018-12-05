@@ -31,4 +31,5 @@ data BuildCfg = BuildCfg { buildName       :: String
                          , pinnedBuildDeps :: [(T.Text, Version)]
                          , pinnedDeps      :: [(T.Text, Version)]
                          , targetArch      :: Maybe Platform
+                         -- TODO: cache build commands, configure commands, &c.
                          } deriving (Eq, Ord, Generic, Binary, Hashable)

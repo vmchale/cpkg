@@ -6,9 +6,15 @@ in
 
 let perlConfigure =
   λ(cfg : types.ConfigureVars) →
+
+    let maybeHost = prelude.mkHost cfg.targetTriple
+    in
+    let modifyArgs = λ(xs : List Text) → prelude.maybeAppend Text maybeHost xs
+    in
+
     [ prelude.mkExe "Configure"
     , prelude.call { program = "./Configure"
-           , arguments = [ "-des", "-Dprefix=${cfg.installDir}" ]
+           , arguments = modifyArgs [ "-des", "-Dprefix=${cfg.installDir}" ]
            , environment = [] : Optional (List types.EnvVar)
            , procDir = [] : Optional Text
            }

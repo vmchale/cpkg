@@ -2,9 +2,6 @@
 let concatMapSep = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/Text/concatMapSep
 in
 
-let concat = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/List/concat
-in
-
 let map = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/List/map
 in
 
@@ -32,7 +29,7 @@ let maybeAppend =
   λ(a : Type) →
   λ(x : Optional a) →
   λ(xs : List a) →
-    Optional/fold a x (List a) (λ(x : a) → concat a [xs, [x]]) xs
+    Optional/fold a x (List a) (λ(x : a) → (xs # [x])) xs
 in
 
 let printArch =
