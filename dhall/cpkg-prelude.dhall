@@ -161,7 +161,7 @@ in
 let upperBound =
   λ(pkg : { name : Text, upper : List Natural }) →
     { name = pkg.name
-    , bound = types.VersionBound.Upper { upper = pkg.lower }
+    , bound = types.VersionBound.Upper { upper = pkg.upper }
     }
 in
 
