@@ -52,6 +52,7 @@
 # Tests
 - [ ] Nontrivial example where we have to link w/ another package installed by
   `cpkg`.
+  - [ ] GPG
 - [ ] Figure out something w/ Lua
   - [ ] Use `sed` to delete 13th line
   - [ ] Then set `INSTALL_TOP` using an environment var?
