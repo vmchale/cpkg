@@ -51,6 +51,7 @@ library
         Package.C.Db.Register
         Package.C.PackageSet
         System.Process.Ext
+        System.Directory.Executable
     default-language: Haskell2010
     other-extensions: DeriveGeneric DeriveAnyClass OverloadedStrings
                       DerivingStrategies GeneralizedNewtypeDeriving

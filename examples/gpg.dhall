@@ -1,7 +1,7 @@
 let prelude = https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-prelude.dhall
 in
 
--- N.B. this doesn't work yet but it will once dependency resolution does
+-- N.B. this doesn't work yet but when dependency resolution lands it will
 let curl =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "gnupg", version = v } ⫽

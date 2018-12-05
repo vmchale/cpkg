@@ -37,7 +37,6 @@ before_install:
     fi
 
 script:
-  - curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s app
   - cabal new-build all
   - |
     if [ `uname` = "Darwin" ]

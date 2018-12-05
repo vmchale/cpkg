@@ -2,10 +2,10 @@ module Package.C.Build ( buildCPkg
                        , uninstallCPkg
                        ) where
 
-import           Control.Concurrent     (getNumCapabilities)
-import           Control.Monad          (unless, when)
-import           Control.Monad.IO.Class (MonadIO (liftIO))
-import           Data.Foldable          (traverse_)
+import           Control.Concurrent          (getNumCapabilities)
+import           Control.Monad               (unless, when)
+import           Control.Monad.IO.Class      (MonadIO (liftIO))
+import           Data.Foldable               (traverse_)
 import           Package.C.Build.OS
 import           Package.C.Db.Register
 import           Package.C.Fetch
@@ -13,23 +13,13 @@ import           Package.C.Monad
 import           Package.C.Type
 import           Package.C.Type.Shared
 import           System.Directory
-import           System.FilePath        ((</>))
-import           System.IO.Temp         (withSystemTempDirectory)
+import           System.Directory.Executable (mkExecutable)
+import           System.FilePath             ((</>))
+import           System.IO.Temp              (withSystemTempDirectory)
 import           System.Process
 import           System.Process.Ext
 
-#ifdef mingw32_HOST_OS
-mkExecutable :: FilePath -> IO ()
-mkExecutable = mempty
-#else
-mkExecutable :: FilePath -> IO ()
-mkExecutable fp = do
-    perms <- getPermissions fp
-    setPermissions fp (setOwnerExecutable True perms)
-#endif
-
 envVarSplit :: EnvVar -> (String, String)
-
 envVarSplit (EnvVar ev x) = (ev, x)
 
 stepToProc :: FilePath -- ^ Package directory
