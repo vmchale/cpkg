@@ -51,7 +51,7 @@ cfgVarsToDhallCfgVars :: ConfigureVars -> Dhall.ConfigureVars
 cfgVarsToDhallCfgVars (ConfigureVars dir' tgt incls os) = Dhall.ConfigureVars (T.pack dir') (T.pack <$> tgt) (T.pack <$> incls) os
 
 buildVarsToDhallBuildVars :: BuildVars -> Dhall.BuildVars
-buildVarsToDhallBuildVars (BuildVars nproc tgt os) = Dhall.BuildVars (fromIntegral nproc) (T.pack <$> tgt) os
+buildVarsToDhallBuildVars (BuildVars nproc os) = Dhall.BuildVars (fromIntegral nproc) os
 
 cPkgDhallToCPkg :: Dhall.CPkg -> CPkg
 cPkgDhallToCPkg (Dhall.CPkg n v url subdir bldDeps deps cfgCmd buildCmd installCmd) =
