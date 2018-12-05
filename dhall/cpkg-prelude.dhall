@@ -25,7 +25,7 @@ in
 
 let mkHostEnv =
   λ(x : Optional Text) →
-    mapOptional Text Text (λ(tgt : Text) → "CHOST=${tgt}" x
+    mapOptional Text Text (λ(tgt : Text) → "CHOST=${tgt}") x
 in
 
 let maybeAppend =
