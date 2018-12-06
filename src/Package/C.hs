@@ -15,6 +15,7 @@ module Package.C (
                  -- * Dhall functionality
                  , cPkgDhallToCPkg
                  , getCPkg
+                 , getPkgs
                  ) where
 
 import           Package.C.Build

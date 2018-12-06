@@ -13,6 +13,7 @@ cpkgVersion = P.version
 
 data Command = Install { _dhallFile :: String, _verbosity :: Verbosity, _target :: Maybe Platform }
              | Check { _dhallFile :: String, _verbosity :: Verbosity }
+             | CheckSet { _dhallFile :: String, _verbosity :: Verbosity }
              | Dump { _pkgName :: String, _host :: Maybe Platform }
              | Nuke
 
@@ -43,6 +44,7 @@ userCmd :: Parser Command
 userCmd = hsubparser
     (command "install" (info install (progDesc "Install a package defined by a Dhall expression"))
     <> command "check" (info check (progDesc "Check a Dhall expression to ensure it can be used to build a package"))
+    <> command "check-set" (info checkSet (progDesc "Check a package set defined in Dhall"))
     <> command "dump" (info dump (progDesc "Display flags to link against a particular library"))
     <> command "nuke" (info (pure Nuke) (progDesc "Remove all globally installed libraries"))
     )
@@ -58,6 +60,9 @@ install = Install <$> dhallFile <*> verbosity <*> target
 
 check :: Parser Command
 check = Check <$> dhallFile <*> verbosity
+
+checkSet :: Parser Command
+checkSet = CheckSet <$> dhallFile <*> verbosity
 
 target :: Parser (Maybe Platform)
 target = optional
@@ -88,6 +93,7 @@ run (Install file v host') = do
     pkg <- cPkgDhallToCPkg <$> getCPkg v file
     runPkgM v (buildCPkg pkg host' [] [])
 run (Check file v) = void $ getCPkg v file
+run (CheckSet file v) = void $ getPkgs v file
 run (Dump name host) = printFlags name host
 run Nuke = do
     pkgDir <- globalPkgDir
