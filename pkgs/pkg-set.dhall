@@ -31,7 +31,7 @@ in
 
 let npth =
   λ(v : List Natural) →
-    gpgPackage { name = "npth", version = v } ⫽
+    gpgPackage { name = "npth", version = v }
 in
 
 let libgpgError =
