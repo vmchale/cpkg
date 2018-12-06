@@ -2,6 +2,7 @@ module Main (main) where
 
 import           Control.Monad       (void, when)
 import           Data.Semigroup
+import qualified Data.Text           as T
 import qualified Data.Version        as V
 import           Options.Applicative hiding (auto)
 import           Package.C
@@ -11,7 +12,7 @@ import           System.Directory    (doesDirectoryExist, removeDirectoryRecursi
 cpkgVersion :: V.Version
 cpkgVersion = P.version
 
-data Command = Install { _dhallFile :: String, _verbosity :: Verbosity, _target :: Maybe Platform }
+data Command = Install { _pkgName :: String, _verbosity :: Verbosity, _target :: Maybe Platform }
              | Check { _dhallFile :: String, _verbosity :: Verbosity }
              | CheckSet { _dhallFile :: String, _verbosity :: Verbosity }
              | Dump { _pkgName :: String, _host :: Maybe Platform }
@@ -56,7 +57,12 @@ dhallCompletions :: Mod ArgumentFields a
 dhallCompletions = ftypeCompletions "dhall"
 
 install :: Parser Command
-install = Install <$> dhallFile <*> verbosity <*> target
+install = Install
+    <$> argument str
+        (metavar "PACKAGE"
+        <> help "Name of package to install")
+    <*> verbosity
+    <*> target
 
 check :: Parser Command
 check = Check <$> dhallFile <*> verbosity
@@ -89,9 +95,8 @@ dhallFile =
     )
 
 run :: Command -> IO ()
-run (Install file v host') = do
-    pkg <- cPkgDhallToCPkg <$> getCPkg v file
-    runPkgM v (buildCPkg pkg host' [] [])
+run (Install pkId v host') =
+    runPkgM v $ buildByName (T.pack pkId) host'
 run (Check file v) = void $ getCPkg v file
 run (CheckSet file v) = void $ getPkgs v file
 run (Dump name host) = printFlags name host

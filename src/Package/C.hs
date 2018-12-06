@@ -12,6 +12,7 @@ module Package.C (
                  , runPkgM
                  , globalPkgDir
                  , printFlags
+                 , buildByName
                  -- * Dhall functionality
                  , cPkgDhallToCPkg
                  , getCPkg
@@ -19,6 +20,7 @@ module Package.C (
                  ) where
 
 import           Package.C.Build
+import           Package.C.BuildJob
 import           Package.C.Db.Register
 import           Package.C.Dhall
 import           Package.C.Monad

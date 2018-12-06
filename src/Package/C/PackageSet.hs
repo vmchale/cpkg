@@ -1,9 +1,9 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE OverloadedStrings          #-}
 
 module Package.C.PackageSet ( PackageSet (..)
-                            , packageSetDhallToPackageSet
-                            , pkgPlan
-                            , pkgs
+                            , PackId
+                            , pkgsM
                             ) where
 
 import           Algebra.Graph.AdjacencyMap           (edges)
@@ -14,7 +14,11 @@ import qualified Data.Map                             as M
 import qualified Data.Text                            as T
 import           Dhall
 import qualified Package.C.Dhall.Type                 as Dhall
+import           Package.C.Error
 import           Package.C.Type
+
+defaultPackageSetDhall :: IO PackageSetDhall
+defaultPackageSetDhall = input auto "https://raw.githubusercontent.com/vmchale/cpkg/master/pkgs/pkg-set.dhall"
 
 newtype PackageSetDhall = PackageSetDhall [ Dhall.CPkg ]
     deriving Interpret
@@ -52,4 +56,9 @@ pkgs pkId set@(PackageSet pset) = do
     plan <- pkgPlan pkId set
     traverse (`M.lookup` pset) plan
 
--- next problem: pass linker flags appropriately
+pkgsM :: PackId -> IO [CPkg]
+pkgsM pkId = do
+    pks <- pkgs pkId . packageSetDhallToPackageSet <$> defaultPackageSetDhall
+    case pks of
+        Just x  -> pure x
+        Nothing -> unfoundPackage

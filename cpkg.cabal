@@ -103,7 +103,8 @@ executable cpkg
         base -any,
         cpkg -any,
         optparse-applicative -any,
-        directory -any
+        directory -any,
+        text
 
     if (flag(development) && impl(ghc <=8.2))
         ghc-options: -Werror
