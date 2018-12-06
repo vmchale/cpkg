@@ -26,8 +26,9 @@ stepToProc :: FilePath -- ^ Package directory
            -> PkgM ()
 stepToProc fp (Call p as envs dir') = do
     let dir'' = maybe fp (fp </>) dir'
-    putDiagnostic ("Running " ++ p ++ " with arguments " ++ unwords as ++ " in directory " ++ dir'')
-    waitProcess $ (proc p as) { cwd = Just dir'', std_in = CreatePipe, env = fmap envVarSplit <$> envs }
+        envVars = fmap envVarSplit <$> envs
+    putDiagnostic ("Running " ++ p ++ " with arguments " ++ unwords as ++ " in directory " ++ dir'' ++ " with environment " ++ show envVars)
+    waitProcess $ (proc p as) { cwd = Just dir'', std_in = CreatePipe, env = envVars }
 stepToProc dir' (MakeExecutable fp) = do
     putDiagnostic ("Marking " ++ (dir' </> fp) ++ " as executable...")
     liftIO $ mkExecutable (dir' </> fp)

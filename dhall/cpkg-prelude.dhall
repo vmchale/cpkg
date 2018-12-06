@@ -120,6 +120,30 @@ let call =
     types.Command.Call proc
 in
 
+let isUnix =
+  λ(os : types.OS) →
+
+    let true = λ(_ : {}) → True
+    in
+    let false = λ(_ : {}) → False
+    in
+
+    merge
+      { FreeBSD   = true
+      , OpenBSD   = true
+      , NetBSD    = true
+      , Solaris   = true
+      , Dragonfly = true
+      , Linux     = true
+      , Darwin    = true
+      , Windows   = false
+      , Redox     = false
+      , NoOs      = false -- bad but this should never happen
+      }
+      os
+in
+
+
 let mkLDFlags =
   λ(libDirs : List Text) →
     let flag = concatMap Text (λ(dir : Text) → "-L${dir} ") libDirs
@@ -136,6 +160,13 @@ let mkCFlags =
     { var = "CFLAGS", value = flag }
 in
 
+let mkPath =
+  λ(os : types.OS) →
+    if isUnix os
+      then [ { var = "PATH", value = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" } ] : List types.EnvVar
+      else [] : List types.EnvVar
+in
+
 let defaultConfigure =
   λ(cfg : types.ConfigureVars) →
     let maybeHost = mkHost cfg.targetTriple
@@ -147,7 +178,7 @@ let defaultConfigure =
     , call (defaultCall ⫽ { program = "./configure"
                           , arguments = modifyArgs [ "--prefix=${cfg.installDir}" ]
                           , environment =
-                            [ [ mkLDFlags cfg.linkDirs, mkCFlags cfg.includeDirs ] ] : Optional (List types.EnvVar)
+                            [ mkPath cfg.configOS # [ mkLDFlags cfg.linkDirs, mkCFlags cfg.includeDirs ] ] : Optional (List types.EnvVar)
                           })
     ]
 in
@@ -299,4 +330,7 @@ in
 , defaultCall       = defaultCall
 , defaultEnv        = defaultEnv
 , maybeAppend       = maybeAppend
+, mkCFlags          = mkCFlags
+, mkLDFlags         = mkLDFlags
+, isUnix            = isUnix
 }
