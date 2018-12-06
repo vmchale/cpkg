@@ -309,7 +309,7 @@ let nasm =
       , pkgVersion = v
       , pkgUrl = "http://www.nasm.us/pub/nasm/releasebuilds/${prelude.showVersion v}/nasm-${prelude.showVersion v}.tar.xz"
       , pkgSubdir = "nasm-${prelude.showVersion v}"
-      , installCommand = installWithBinaries [ "bin/nasm", "bin/ndisasm" ]
+      , installCommand = prelude.installWithBinaries [ "bin/nasm", "bin/ndisasm" ]
       }
 in
 

@@ -345,4 +345,5 @@ in
 , defaultPath       = defaultPath
 , simplePackage     = simplePackage
 , symlinkBinary     = symlinkBinary
+, installWithBinaries = installWithBinaries
 }
