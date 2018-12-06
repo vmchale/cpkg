@@ -14,6 +14,13 @@ C projects with diverse build systems and handle dependencies between them.
 The goal is to eventually provide something like `cabal new-install` for C, but
 with better support for cross-compilation.
 
+- [Installation](#installation)
+  - [Shell Completions](#shell-completions)
+- [Example](#example)
+  - [Dhall Prelude](#dhall-prelude)
+- [Security](#security)
+- [Contents](#contents)
+
 ## Installation
 
 ```
