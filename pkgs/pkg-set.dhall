@@ -1,3 +1,8 @@
+{- Dhall prelue imports -}
+let concatMap = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/Text/concatMap
+in
+
+{- cpkg prelude imports -}
 let types = https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-types.dhall
 in
 
@@ -323,6 +328,85 @@ let perl5 =
       }
 in
 
+let png =
+  λ(v : List Natural) →
+    prelude.defaultPackage ⫽
+      { pkgName = "libpng"
+      , pkgVersion = v
+      , pkgUrl = "https://download.sourceforge.net/libpng/libpng-${prelude.showVersion v}.tar.xz"
+      , pkgSubdir = "libpng-${prelude.showVersion v}"
+      }
+in
+
+let sed =
+  λ(v : List Natural) →
+    prelude.makeGnuExe { name = "sed", version = v }
+in
+
+let tar =
+  λ(v : List Natural) →
+    prelude.makeGnuExe { name = "tar", version = v }
+in
+
+let unistring =
+  λ(v : List Natural) →
+    prelude.makeGnuLibrary { name = "unistring", version = v }
+in
+
+let valgrind =
+  let valgrindConfigure =
+    λ(cfg : types.ConfigureVars) →
+      prelude.defaultConfigure cfg # [ prelude.mkExe "auxprogs/make_or_upd_vgversion_h" ]
+  in
+
+  λ(v : List Natural) →
+    prelude.defaultPackage ⫽
+      { pkgName = "valgrind"
+      , pkgVersion = v
+      , pkgUrl = "http://www.valgrind.org/downloads/valgrind-${prelude.showVersion v}.tar.bz2"
+      , pkgSubdir = "valgrind-${prelude.showVersion v}"
+      , configureCommand = valgrindConfigure
+      }
+in
+
+let vim =
+  let vimConfigure =
+    λ(cfg : types.ConfigureVars) →
+      prelude.mkExes [ "src/configure", "src/auto/configure", "src/which.sh" ]
+        # prelude.defaultConfigure cfg
+  in
+
+  let squishVersion =
+    λ(x : List Natural) → concatMap Natural Natural/show x
+  in
+
+  λ(v : List Natural) →
+    prelude.defaultPackage ⫽
+      { pkgName = "vim"
+      , pkgVersion = v
+      , pkgUrl = "http://ftp.vim.org/vim/unix/vim-${prelude.showVersion v}.tar.bz2"
+      , pkgSubdir = "vim${squishVersion v}"
+      , configureCommand = vimConfigure
+      }
+in
+
+let xz =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "xz", version = v } ⫽
+      { pkgUrl = "https://tukaani.org/xz/xz-${prelude.showVersion v}.tar.xz"
+      }
+in
+
+let zlib =
+  λ(v : List Natural) →
+    prelude.defaultPackage ⫽
+      { pkgName = "zlib"
+      , pkgVersion = v
+      , pkgUrl = "http://www.zlib.net/zlib-${prelude.showVersion v}.tar.xz"
+      , pkgSubdir = "zlib-${prelude.showVersion v}"
+      }
+in
+
 [ gnupg [2,2,11]
 , npth [1,6]
 , musl [1,1,20]
@@ -344,4 +428,12 @@ in
 , ncurses [6,1]
 , pcre2 [10,32]
 , perl5 [5,28,1]
+, png [1,6,35]
+, sed [4,5]
+, tar [1,30]
+, unistring [0,9,10]
+, valgrind [3,14,0]
+, vim [8,1]
+, xz [5,2,4]
+, zlib [1,2,11]
 ]
