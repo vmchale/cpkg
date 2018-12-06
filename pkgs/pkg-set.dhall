@@ -360,11 +360,8 @@ let valgrind =
   in
 
   λ(v : List Natural) →
-    prelude.defaultPackage ⫽
-      { pkgName = "valgrind"
-      , pkgVersion = v
-      , pkgUrl = "http://www.valgrind.org/downloads/valgrind-${prelude.showVersion v}.tar.bz2"
-      , pkgSubdir = "valgrind-${prelude.showVersion v}"
+    prelude.simplePackage { name = "valgrind", version = v } ⫽
+      { pkgUrl = "http://www.valgrind.org/downloads/valgrind-${prelude.showVersion v}.tar.bz2"
       , configureCommand = valgrindConfigure
       }
 in
@@ -399,18 +396,12 @@ in
 
 let zlib =
   λ(v : List Natural) →
-    prelude.defaultPackage ⫽
-      { pkgName = "zlib"
-      , pkgVersion = v
-      , pkgUrl = "http://www.zlib.net/zlib-${prelude.showVersion v}.tar.xz"
-      , pkgSubdir = "zlib-${prelude.showVersion v}"
+    prelude.simplePackage { name = "zlib", version = v } ⫽
+      { pkgUrl = "http://www.zlib.net/zlib-${prelude.showVersion v}.tar.xz"
       }
 in
 
-[ gnupg [2,2,11]
-, npth [1,6]
-, musl [1,1,20]
-, binutils [2,31]
+[ binutils [2,31]
 , bison [3,2,2]
 , cmake { version = [3,13], patch = 0 }
 , curl [7,62,0]
@@ -421,11 +412,14 @@ in
 , git [2,19,2]
 , glibc [2,28]
 , gmp [6,1,2]
+, gnupg [2,2,11]
 , harfbuzz [2,2,0]
 , jpegTurbo [2,0,1]
 , libuv [1,24,0]
+, musl [1,1,20]
 , nasm [2,14]
 , ncurses [6,1]
+, npth [1,6]
 , pcre2 [10,32]
 , perl5 [5,28,1]
 , png [1,6,35]

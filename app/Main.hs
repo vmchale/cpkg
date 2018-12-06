@@ -16,6 +16,7 @@ data Command = Install { _pkgName :: String, _verbosity :: Verbosity, _target ::
              | Check { _dhallFile :: String, _verbosity :: Verbosity }
              | CheckSet { _dhallFile :: String, _verbosity :: Verbosity }
              | Dump { _pkgName :: String, _host :: Maybe Platform }
+             | List
              | Nuke
 
 verbosityInt :: Parser Int
@@ -47,6 +48,7 @@ userCmd = hsubparser
     <> command "check" (info check (progDesc "Check a Dhall expression to ensure it can be used to build a package"))
     <> command "check-set" (info checkSet (progDesc "Check a package set defined in Dhall"))
     <> command "dump" (info dump (progDesc "Display flags to link against a particular library"))
+    <> command "list" (info (pure List) (progDesc "List all available packages"))
     <> command "nuke" (info (pure Nuke) (progDesc "Remove all globally installed libraries"))
     )
 
@@ -105,6 +107,7 @@ run Nuke = do
     exists <- doesDirectoryExist pkgDir
     when exists $
         removeDirectoryRecursive pkgDir
+run List = displayPackageSet
 
 main :: IO ()
 main = execParser wrapper >>= run

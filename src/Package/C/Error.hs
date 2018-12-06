@@ -10,13 +10,9 @@ module Package.C.Error ( printErr
 
 import           Control.Monad.IO.Class                (MonadIO (liftIO))
 import           Data.Text.Prettyprint.Doc
+import           Data.Text.Prettyprint.Doc.Custom
 import           Data.Text.Prettyprint.Doc.Render.Text
 import           System.Exit
-
-infixr 5 <#>
-
-(<#>) :: Doc a -> Doc a -> Doc a
-(<#>) a b = a <> line <> b
 
 data PackageError = Unrecognized String
                   | IndexError String -- package name

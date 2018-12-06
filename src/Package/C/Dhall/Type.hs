@@ -1,5 +1,6 @@
-{-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE DeriveGeneric  #-}
+{-# LANGUAGE DeriveAnyClass    #-}
+{-# LANGUAGE DeriveGeneric     #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Package.C.Dhall.Type ( CPkg (..)
                             , ConfigureVars (..)
@@ -9,9 +10,11 @@ module Package.C.Dhall.Type ( CPkg (..)
                             , Command (..)
                             ) where
 
-import qualified Data.Text             as T
+import qualified Data.Text                        as T
+import           Data.Text.Prettyprint.Doc
+import           Data.Text.Prettyprint.Doc.Custom
 import           Dhall
-import           GHC.Natural           (Natural)
+import           GHC.Natural                      (Natural)
 import           Package.C.Type.Shared
 
 data ConfigureVars = ConfigureVars { installDir   :: T.Text
@@ -48,4 +51,8 @@ data CPkg = CPkg { pkgName          :: T.Text
                  , configureCommand :: ConfigureVars -> [ Command ]
                  , buildCommand     :: BuildVars -> [ Command ]
                  , installCommand   :: InstallVars -> [ Command ]
+                 -- TODO: add "description" field for printing
                  } deriving (Generic, Interpret)
+
+instance Pretty CPkg where
+    pretty (CPkg nam v url _ _ _ _ _ _) = pretty nam <##> indent 4 ("url:" <+> pretty url <##> "version" <+> pretty v)

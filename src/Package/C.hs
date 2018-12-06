@@ -17,6 +17,8 @@ module Package.C (
                  , cPkgDhallToCPkg
                  , getCPkg
                  , getPkgs
+                 -- * Packaging
+                 , displayPackageSet
                  ) where
 
 import           Package.C.Build
@@ -24,4 +26,5 @@ import           Package.C.BuildJob
 import           Package.C.Db.Register
 import           Package.C.Dhall
 import           Package.C.Monad
+import           Package.C.PackageSet
 import           Package.C.Type
