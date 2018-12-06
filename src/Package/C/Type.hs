@@ -8,6 +8,7 @@ module Package.C.Type ( CPkg (..)
                       , Verbosity (..)
                       , EnvVar (..)
                       , Command (..)
+                      , Dep (..)
                       -- * Helper functions
                       , cPkgDhallToCPkg
                       ) where

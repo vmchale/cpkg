@@ -18,7 +18,7 @@ let cmake =
 
     prelude.defaultPackage ⫽
       { pkgName = "cmake"
-      , pkgVersion = cfg.version
+      , pkgVersion = cfg.version # [ cfg.patch ]
       , pkgUrl = "https://cmake.org/files/v${versionString}/cmake-${versionString}.${patchString}.tar.gz"
       , pkgSubdir = "cmake-${versionString}.${patchString}"
       , configureCommand = bootstrapConfigure

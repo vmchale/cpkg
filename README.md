@@ -11,7 +11,8 @@ By considering a package to be a *function* taking a `cpkg`-supplied
 installation directory to a series of instructions, we can effectively package
 C projects with diverse build systems and handle dependencies between them.
 
-The goal is to eventually provide something like `cabal new-install` for C.
+The goal is to eventually provide something like `cabal new-install` for C, but
+with better support for cross-compilation.
 
 ## Installation
 
@@ -96,11 +97,11 @@ Lovingly provided by [polyglot](https://github.com/vmchale/polyglot):
 -------------------------------------------------------------------------------
  Cabal                    1         114          104            0           10
  Cabal Project            1           2            2            0            0
- Dhall                   29         907          772            1          134
- Haskell                 20         895          707           18          170
- Markdown                 4         180          150            0           30
+ Dhall                   30         922          785            1          136
+ Haskell                 20         899          709           20          170
+ Markdown                 4         183          153            0           30
  YAML                     4         147          133            0           14
 -------------------------------------------------------------------------------
- Total                   59        2245         1868           19          358
+ Total                   60        2267         1886           21          360
 -------------------------------------------------------------------------------
 ```

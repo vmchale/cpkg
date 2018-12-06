@@ -78,7 +78,8 @@ library
         hashable -any,
         binary -any,
         microlens -any,
-        composition-prelude >=1.0.0.0
+        composition-prelude >=1.5.2.0,
+        algebraic-graphs
 
     if (flag(development) && impl(ghc <=8.2))
         ghc-options: -Werror
