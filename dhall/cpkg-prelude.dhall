@@ -120,6 +120,11 @@ let call =
     types.Command.Call proc
 in
 
+let symlinkBinary =
+  λ(file : Text) →
+    types.Command.SymlinkBinary { file = file }
+in
+
 let isUnix =
   λ(os : types.OS) →
 
@@ -194,6 +199,12 @@ let defaultInstall =
     [ call (defaultCall ⫽ { program = makeExe os
                           , arguments = [ "install" ] })
     ]
+in
+
+let installWithBinaries =
+  λ(cfg : { installVars : types.OS, bins : List Text }) →
+    defaultInstall cfg.installVars
+      # map Text types.Command (λ(bin : Text) → symlinkBinary bin) cfg.bins
 in
 
 let unbounded =
@@ -333,4 +344,5 @@ in
 , isUnix            = isUnix
 , defaultPath       = defaultPath
 , simplePackage     = simplePackage
+, symlinkBinary     = symlinkBinary
 }

@@ -34,7 +34,10 @@ stepToProc dir' (MakeExecutable fp) = do
 stepToProc dir' (CreateDirectory d) = do
     putDiagnostic ("Creating directory " ++ (dir' </> d) ++ "...")
     liftIO $ createDirectoryIfMissing True (dir' </> d)
-stepToProc _ SymlinkBinary{} = putDiagnostic "TODO: SymlinkBinary case"
+stepToProc p (SymlinkBinary file') = do
+    binDir <- (</> "bin") <$> globalPkgDir
+    let actualBin = p </> file'
+    liftIO $ createFileLink actualBin (binDir </> file')
 
 processSteps :: (Traversable t) => FilePath -> t Command -> PkgM ()
 processSteps pkgDir = traverse_ (stepToProc pkgDir)
