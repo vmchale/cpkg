@@ -20,7 +20,7 @@ in
 {- gnupg: https://www.gnupg.org/ -}
 let gnupg =
   λ(v : List Natural) →
-    prelude.makeGnuExe { name = "gnupg", version = v } ⫽
+    prelude.simplePackage { name = "gnupg", version = v } ⫽
       { pkgUrl = "https://gnupg.org/ftp/gcrypt/gnupg/gnupg-${prelude.showVersion v}.tar.bz2"
       , pkgDeps = [ prelude.lowerBound { name = "npth", lower = [1,2] }
                   , prelude.lowerBound { name = "libgpg-error", lower = [1,24] }
@@ -30,6 +30,36 @@ let gnupg =
                   ]
       }
 in
+
+let libgpgError =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libgpg-error", version = v } ⫽
+      -- TODO: a mkGPGPackage function...
+      { pkgUrl = "https://www.gnupg.org/ftp/gcrypt/libgpg-error/libgpg-error-${prelude.showVersion v}.tar.bz2"
+      }
+in
+
+let libgcrypt =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libgcrypt", version = v } ⫽
+      { pkgUrl = "https://www.gnupg.org/ftp/gcrypt/libgcrypt/libgcrypt-${prelude.showVersion v}.tar.bz2"
+      }
+in
+
+let libassuan =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libassuan", version = v } ⫽
+      { pkgUrl = "https://www.gnupg.org/ftp/gcrypt/libassuan/libassuan-${prelude.showVersion v}.tar.bz2"
+      }
+in
+
+let libksba =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libksba", version = v } ⫽
+      { pkgUrl = "https://www.gnupg.org/ftp/gcrypt/libksba/libksba-${prelude.showVersion v}.tar.bz2"
+      }
+in
+
 
 {- musl: https://www.musl-libc.org/ -}
 let musl =
@@ -415,6 +445,10 @@ in
 , gnupg [2,2,11]
 , harfbuzz [2,2,0]
 , jpegTurbo [2,0,1]
+, libassuan [2,5,1]
+, libgcrypt [1,8,4]
+, libgpgError [1,32]
+, libksba [1,3,5]
 , libuv [1,24,0]
 , musl [1,1,20]
 , nasm [2,14]
