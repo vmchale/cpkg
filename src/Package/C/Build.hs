@@ -11,7 +11,6 @@ import           Package.C.Db.Register
 import           Package.C.Fetch
 import           Package.C.Monad
 import           Package.C.Type
-import           Package.C.Type.Shared
 import           System.Directory
 import           System.Directory.Executable (mkExecutable)
 import           System.FilePath             ((</>))

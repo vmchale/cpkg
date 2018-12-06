@@ -22,6 +22,7 @@ putNormal = putVerbosity Normal
 putDiagnostic :: String -> PkgM ()
 putDiagnostic = putVerbosity Diagnostic
 
+-- TODO: should this take a 'Maybe Platform' as well?
 type PkgM = ReaderT Verbosity IO
 
 runPkgM :: Verbosity -> PkgM a -> IO a

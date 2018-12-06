@@ -3,6 +3,7 @@
 module Package.C.PackageSet ( PackageSet (..)
                             , packageSetDhallToPackageSet
                             , pkgPlan
+                            , pkgs
                             ) where
 
 import           Algebra.Graph.AdjacencyMap           (edges)
@@ -28,9 +29,9 @@ type PackId = T.Text
 -- WANT: return a @Tree [CPkg]@
 
 packageSetDhallToPackageSet :: PackageSetDhall -> PackageSet
-packageSetDhallToPackageSet (PackageSetDhall pkgs) =
-    let names = Dhall.pkgName <$> pkgs
-        pkgs' = cPkgDhallToCPkg <$> pkgs
+packageSetDhallToPackageSet (PackageSetDhall pkgs'') =
+    let names = Dhall.pkgName <$> pkgs''
+        pkgs' = cPkgDhallToCPkg <$> pkgs''
 
         in PackageSet $ M.fromList (zip names pkgs')
 
@@ -45,3 +46,10 @@ getDeps pkgName' set@(PackageSet ps) = do
 -- TODO: concurrent builds
 pkgPlan :: PackId -> PackageSet -> Maybe [PackId]
 pkgPlan = topSort . edges <=*< getDeps
+
+pkgs :: PackId -> PackageSet -> Maybe [CPkg]
+pkgs pkId set@(PackageSet pset) = do
+    plan <- pkgPlan pkId set
+    traverse (`M.lookup` pset) plan
+
+-- next problem: pass linker flags appropriately

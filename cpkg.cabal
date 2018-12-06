@@ -43,6 +43,7 @@ library
         Package.C.Type.Vars
         Package.C.Build
         Package.C.Build.OS
+        Package.C.BuildJob
         Package.C.Unpack
         Package.C.Error
         Package.C.Fetch
@@ -78,7 +79,7 @@ library
         hashable -any,
         binary -any,
         microlens -any,
-        composition-prelude >=1.5.2.0,
+        composition-prelude >=2.0.0.0,
         algebraic-graphs
 
     if (flag(development) && impl(ghc <=8.2))

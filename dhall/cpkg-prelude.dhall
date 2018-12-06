@@ -2,6 +2,9 @@
 let concatMapSep = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/Text/concatMapSep
 in
 
+let concatMap = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/Text/concatMap
+in
+
 let map = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/List/map
 in
 
@@ -117,6 +120,22 @@ let call =
     types.Command.Call proc
 in
 
+let mkLDFlags =
+  λ(libDirs : List Text) →
+    let flag = concatMap Text (λ(dir : List Text) → "-L${dir} ") libDirs
+    in
+
+    { var = "LDFLAGS", value = flag }
+in
+
+let mkCFlags =
+  λ(libDirs : List Text) →
+    let flag = concatMap Text (λ(dir : List Text) → "-I${dir} ") libDirs
+    in
+
+    { var = "CFLAGS", value = flag }
+in
+
 let defaultConfigure =
   λ(cfg : types.ConfigureVars) →
     let maybeHost = mkHost cfg.targetTriple
@@ -126,7 +145,10 @@ let defaultConfigure =
 
     [ mkExe "configure"
     , call (defaultCall ⫽ { program = "./configure"
-                          , arguments = modifyArgs [ "--prefix=${cfg.installDir}" ] })
+                          , arguments = modifyArgs [ "--prefix=${cfg.installDir}" ]
+                          , environment =
+                            [ [ mkLDFlags cfg.linkDirs, mkCFlags cgf.libDirs ] ] : Optional (List types.EnvVar)
+                          })
     ]
 in
 

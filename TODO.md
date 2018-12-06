@@ -18,6 +18,7 @@
 - [ ] Cabal integration?
 - [ ] Generate something like pkg-config files?
 - [ ] Bootstrap "fancy" tar?
+- [ ] Package "components"? Like cabal: build executables or not...
 # Performance
 - [ ] Dhall is slow
 # Bugs

@@ -9,8 +9,10 @@ module Package.C.Type ( CPkg (..)
                       , EnvVar (..)
                       , Command (..)
                       , Dep (..)
+                      , Platform
                       -- * Helper functions
                       , cPkgDhallToCPkg
+                      , showVersion
                       ) where
 
 import           Data.Binary              (Binary)

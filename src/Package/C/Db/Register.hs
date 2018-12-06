@@ -20,9 +20,7 @@ import           Lens.Micro             (over)
 import           Numeric                (showHex)
 import           Package.C.Db.Type
 import           Package.C.Error
-import           Package.C.Type
-import           Package.C.Type.Shared  hiding (Dep (name))
-import           Package.C.Type.Version
+import           Package.C.Type         hiding (Dep (name))
 import           System.Directory
 import           System.FilePath        ((</>))
 
