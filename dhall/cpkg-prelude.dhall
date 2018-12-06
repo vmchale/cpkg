@@ -226,7 +226,7 @@ let defaultPackage =
   }
 in
 
-let makeGnuCommon =
+let simplePackage =
   λ(pkg : { name : Text, version : List Natural}) →
     defaultPackage ⫽
       { pkgName = pkg.name
@@ -234,10 +234,9 @@ let makeGnuCommon =
       }
 in
 
-
 let makeGnuExe =
   λ(pkg : { name : Text, version : List Natural}) →
-    makeGnuCommon pkg ⫽
+    simplePackage pkg ⫽
       { pkgUrl = "https://ftp.gnu.org/gnu/${pkg.name}/${pkg.name}-${showVersion pkg.version}.tar.xz"
       , pkgSubdir = "${pkg.name}-${showVersion pkg.version}"
       }
@@ -245,7 +244,7 @@ in
 
 let makeGnuLibrary =
   λ(pkg : { name : Text, version : List Natural}) →
-    makeGnuCommon pkg ⫽
+    simplePackage pkg ⫽
       { pkgUrl = "https://mirrors.ocf.berkeley.edu/gnu/lib${pkg.name}/lib${pkg.name}-${showVersion pkg.version}.tar.xz"
       , pkgSubdir = "lib${pkg.name}-${showVersion pkg.version}"
       }
@@ -333,4 +332,5 @@ in
 , mkLDFlags         = mkLDFlags
 , isUnix            = isUnix
 , defaultPath       = defaultPath
+, simplePackage     = simplePackage
 }
