@@ -9,19 +9,11 @@ in
 let prelude = https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-prelude.dhall
 in
 
-{- npth: https://www.gnupg.org/software/npth/index.html -}
-let npth =
-  λ(v : List Natural) →
-    prelude.simplePackage { name = "npth", version = v } ⫽
-      { pkgUrl = "https://gnupg.org/ftp/gcrypt/npth/npth-${prelude.showVersion v}.tar.bz2"
-      }
-in
-
 {- gnupg: https://www.gnupg.org/ -}
 let gpgPackage =
   λ(x : { name : Text, version : List Natural }) →
     prelude.simplePackage x ⫽
-      { pkgUrl = "https://gnupg.org/ftp/gcrypt/gnupg/gnupg-${prelude.showVersion x.version}.tar.bz2"
+      { pkgUrl = "https://gnupg.org/ftp/gcrypt/${x.name}/${x.name}-${prelude.showVersion x.version}.tar.bz2"
       }
 in
 
@@ -35,6 +27,11 @@ let gnupg =
                   , prelude.lowerBound { name = "libksba", lower = [1,3,4] }
                   ]
       }
+in
+
+let npth =
+  λ(v : List Natural) →
+    gpgPackage { name = "npth", version = v } ⫽
 in
 
 let libgpgError =

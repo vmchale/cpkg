@@ -56,12 +56,14 @@ getDeps pkgName' set@(PackageSet ps) = do
     let depNames = name <$> pkgDeps cpkg
     case depNames of
         [] -> pure []
-        xs -> fold <$> traverse (\p -> getDeps p set) xs
+        xs -> do
+            transitive <- fold <$> traverse (\p -> getDeps p set) xs
+            let self = zip (repeat pkgName') xs
+            pure (transitive ++ self)
 
 -- TODO: concurrent builds
 pkgPlan :: PackId -> PackageSet -> Maybe [PackId]
-pkgPlan pkId set = (pkId:) <$> planDeps pkId set
-    where planDeps = topSort . edges <=*< getDeps
+pkgPlan = fmap reverse . topSort . edges <=*< getDeps
 
 pkgs :: PackId -> PackageSet -> Maybe [CPkg]
 pkgs pkId set@(PackageSet pset) = do
