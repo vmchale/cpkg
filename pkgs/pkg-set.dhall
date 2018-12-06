@@ -99,6 +99,16 @@ let curl =
       }
 in
 
+let dbus =
+  λ(v : List Natural) →
+    prelude.defaultPackage ⫽
+      { pkgName = "dbus"
+      , pkgVersion = v
+      , pkgUrl = "https://dbus.freedesktop.org/releases/dbus/dbus-${prelude.showVersion v}.tar.gz"
+      , pkgSubdir = "dbus-${prelude.showVersion v}"
+      }
+in
+
 [ gnupg [2,2,11]
 , npth [1,6]
 , musl [1,1,20]
@@ -106,4 +116,5 @@ in
 , bison [3,2,2]
 , cmake { version = [3,13], patch = 0 }
 , curl [7,62,0]
+, dbus [1,12,10]
 ]

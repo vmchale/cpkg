@@ -42,6 +42,7 @@ script:
   - cabal new-install dhall
   - cat dhall/cpkg-types.dhall | dhall
   - cat dhall/cpkg-prelude.dhall | dhall
+  - cabal new-run cpkg -- check-set pkgs/pkg-set.dhall
   - |
     if [ `uname` = "Darwin" ]
     then
