@@ -18,11 +18,17 @@ let npth =
 in
 
 {- gnupg: https://www.gnupg.org/ -}
+let gpgPackage =
+  λ(x : { name : Text, version : List Natural }) →
+    prelude.simplePackage x ⫽
+      { pkgUrl = "https://gnupg.org/ftp/gcrypt/gnupg/gnupg-${prelude.showVersion x.version}.tar.bz2"
+      }
+in
+
 let gnupg =
   λ(v : List Natural) →
-    prelude.simplePackage { name = "gnupg", version = v } ⫽
-      { pkgUrl = "https://gnupg.org/ftp/gcrypt/gnupg/gnupg-${prelude.showVersion v}.tar.bz2"
-      , pkgDeps = [ prelude.lowerBound { name = "npth", lower = [1,2] }
+    gpgPackage { name = "gnupg", version = v } ⫽
+      { pkgDeps = [ prelude.lowerBound { name = "npth", lower = [1,2] }
                   , prelude.lowerBound { name = "libgpg-error", lower = [1,24] }
                   , prelude.lowerBound { name = "libgcrypt", lower = [1,7,0] }
                   , prelude.lowerBound { name = "libassuan", lower = [2,5,0] }
@@ -33,33 +39,23 @@ in
 
 let libgpgError =
   λ(v : List Natural) →
-    prelude.simplePackage { name = "libgpg-error", version = v } ⫽
-      -- TODO: a mkGPGPackage function...
-      { pkgUrl = "https://www.gnupg.org/ftp/gcrypt/libgpg-error/libgpg-error-${prelude.showVersion v}.tar.bz2"
-      }
+    gpgPackage { name = "libgpg-error", version = v }
 in
 
 let libgcrypt =
   λ(v : List Natural) →
-    prelude.simplePackage { name = "libgcrypt", version = v } ⫽
-      { pkgUrl = "https://www.gnupg.org/ftp/gcrypt/libgcrypt/libgcrypt-${prelude.showVersion v}.tar.bz2"
-      }
+    gpgPackage { name = "libgcrypt", version = v }
 in
 
 let libassuan =
   λ(v : List Natural) →
-    prelude.simplePackage { name = "libassuan", version = v } ⫽
-      { pkgUrl = "https://www.gnupg.org/ftp/gcrypt/libassuan/libassuan-${prelude.showVersion v}.tar.bz2"
-      }
+    gpgPackage { name = "libassuan", version = v }
 in
 
 let libksba =
   λ(v : List Natural) →
-    prelude.simplePackage { name = "libksba", version = v } ⫽
-      { pkgUrl = "https://www.gnupg.org/ftp/gcrypt/libksba/libksba-${prelude.showVersion v}.tar.bz2"
-      }
+    gpgPackage { name = "libksba", version = v }
 in
-
 
 {- musl: https://www.musl-libc.org/ -}
 let musl =
