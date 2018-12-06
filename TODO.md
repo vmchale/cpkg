@@ -51,6 +51,7 @@
   - [ ] German
 # Dhall Libraries
 - [ ] Use something other than `Optional Text` for target architectures
+- [ ] Fix `makeGnuExe` to install binaries
 # Tests
 - [ ] Nontrivial example where we have to link w/ another package installed by
   `cpkg`.
