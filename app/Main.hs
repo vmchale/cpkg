@@ -86,7 +86,7 @@ dhallFile =
 run :: Command -> IO ()
 run (Install file v host') = do
     pkg <- cPkgDhallToCPkg <$> getCPkg v file
-    runPkgM v (buildCPkg pkg host')
+    runPkgM v (buildCPkg pkg host' [] [])
 run (Check file v) = void $ getCPkg v file
 run (Dump name host) = printFlags name host
 run Nuke = do

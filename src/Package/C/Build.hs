@@ -1,9 +1,8 @@
 module Package.C.Build ( buildCPkg
-                       , uninstallCPkg
                        ) where
 
 import           Control.Concurrent          (getNumCapabilities)
-import           Control.Monad               (unless, when)
+import           Control.Monad               (unless)
 import           Control.Monad.IO.Class      (MonadIO (liftIO))
 import           Data.Foldable               (traverse_)
 import           Package.C.Build.OS
@@ -66,36 +65,31 @@ fetchCPkg cpkg = fetchUrl (pkgUrl cpkg) (pkgName cpkg)
 -- diagnosticDirectory :: String -> (FilePath -> m a) -> m a
 -- diagnosticDirectory s f = f (s ++ "-diagnostic")
 
-buildCPkg :: CPkg -> Maybe Platform -> PkgM ()
-buildCPkg cpkg host = do
+buildCPkg :: CPkg
+          -> Maybe Platform
+          -> [FilePath] -- ^ Library directories
+          -> [FilePath] -- ^ Include directories
+          -> PkgM ()
+buildCPkg cpkg host libs incls = do
 
-    (configureVars, buildVars, installVars) <- getVars host
+    (configureVars, buildVars, installVars) <- getVars host libs incls
 
     installed <- packageInstalled cpkg host configureVars buildVars installVars
 
     unless installed $
         forceBuildCPkg cpkg host configureVars buildVars installVars
 
-uninstallCPkg :: CPkg -> Maybe Platform -> PkgM ()
-uninstallCPkg cpkg host = do
-
-    (configureVars, buildVars, installVars) <- getVars host
-
-    installed <- packageInstalled cpkg host configureVars buildVars installVars
-    pkgDir <- cPkgToDir cpkg host configureVars buildVars installVars
-
-    when installed $
-        liftIO (removeDirectoryRecursive pkgDir) *>
-        unregisterPkg cpkg host configureVars buildVars installVars
-
 -- only really suitable for hashing at this point, since we use @""@ as the
 -- install directory. we use this to get a hash which we then use to get the
 -- *real* install directory, which we then use with @configureVars@ to set
 -- things up correctly - otherwise we would have a circularity
-getVars :: Maybe Platform -> PkgM (ConfigureVars, BuildVars, InstallVars)
-getVars host = do
+getVars :: Maybe Platform
+        -> [FilePath] -- ^ Library directories
+        -> [FilePath] -- ^ Include directories
+        -> PkgM (ConfigureVars, BuildVars, InstallVars)
+getVars host incls links = do
     nproc <- liftIO getNumCapabilities
-    let configureVars = ConfigureVars "" host [] [] dhallOS
+    let configureVars = ConfigureVars "" host incls links dhallOS
         buildVars = BuildVars nproc dhallOS
         installVars = InstallVars dhallOS
     pure (configureVars, buildVars, installVars)

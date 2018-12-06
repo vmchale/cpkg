@@ -9,16 +9,14 @@ module Package.C.Db.Type ( BuildCfg (..)
                          , installedPackages
                          ) where
 
-import           Data.Binary            (Binary)
-import           Data.Hashable          (Hashable)
+import           Data.Binary    (Binary)
+import           Data.Hashable  (Hashable)
 import           Data.Semigroup
-import qualified Data.Set               as S
-import qualified Data.Text              as T
-import           GHC.Generics           (Generic)
-import           Lens.Micro             (Lens')
+import qualified Data.Set       as S
+import qualified Data.Text      as T
+import           GHC.Generics   (Generic)
+import           Lens.Micro     (Lens')
 import           Package.C.Type
-import           Package.C.Type.Shared
-import           Package.C.Type.Version
 
 -- TODO: we definitely want something different here - it should allow garbage
 -- collection, for one

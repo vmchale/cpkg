@@ -9,7 +9,6 @@ module Package.C (
                  , Platform
                  -- * Functions
                  , buildCPkg
-                 , uninstallCPkg
                  , runPkgM
                  , globalPkgDir
                  , printFlags
@@ -23,5 +22,3 @@ import           Package.C.Db.Register
 import           Package.C.Dhall
 import           Package.C.Monad
 import           Package.C.Type
-import           Package.C.Type.Shared
-import           Package.C.Type.Version
