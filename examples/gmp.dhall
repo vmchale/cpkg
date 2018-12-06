@@ -4,12 +4,12 @@ in
 let prelude = https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-prelude.dhall
 in
 
-let gmpConfigure =
-  λ(cfg : types.ConfigureVars) →
-    prelude.defaultConfigure cfg # [ prelude.mkExe "mpn/m4-ccas" ]
-in
-
 let gmp =
+  let gmpConfigure =
+    λ(cfg : types.ConfigureVars) →
+      prelude.defaultConfigure cfg # [ prelude.mkExe "mpn/m4-ccas" ]
+  in
+
   λ(v : List Natural) →
     prelude.defaultPackage ⫽
       { pkgName = "gmp"

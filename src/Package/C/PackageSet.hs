@@ -49,7 +49,8 @@ getDeps pkgName' set@(PackageSet ps) = do
 
 -- TODO: concurrent builds
 pkgPlan :: PackId -> PackageSet -> Maybe [PackId]
-pkgPlan = topSort . edges <=*< getDeps
+pkgPlan pkId set = (pkId:) <$> planDeps pkId set
+    where planDeps = topSort . edges <=*< getDeps
 
 pkgs :: PackId -> PackageSet -> Maybe [CPkg]
 pkgs pkId set@(PackageSet pset) = do
