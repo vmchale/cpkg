@@ -17,6 +17,7 @@ import           Package.C.Type.Shared
 data ConfigureVars = ConfigureVars { installDir   :: T.Text
                                    , targetTriple :: Maybe T.Text
                                    , includeDirs  :: [ T.Text ]
+                                   , linkDirs     :: [ T.Text ]
                                    , configOS     :: OS
                                    } deriving (Generic, Inject)
 

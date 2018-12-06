@@ -24,6 +24,7 @@
 - [ ] `mkExe` and `makeExe` are too similar
 - [ ] `glibc` example is broken
 # Deficiencies
+- [ ] `buildDepends` should be a function from operating system?
 - [ ] Symlink built artifacts into a common directory (`~/.cpkg/bin`?)
 - [ ] Cache package downloads globally
 - [ ] No database right now

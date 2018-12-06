@@ -89,11 +89,13 @@ uninstallCPkg cpkg host = do
         unregisterPkg cpkg host configureVars buildVars installVars
 
 -- only really suitable for hashing at this point, since we use @""@ as the
--- install directory
+-- install directory. we use this to get a hash which we then use to get the
+-- *real* install directory, which we then use with @configureVars@ to set
+-- things up correctly - otherwise we would have a circularity
 getVars :: Maybe Platform -> PkgM (ConfigureVars, BuildVars, InstallVars)
 getVars host = do
     nproc <- liftIO getNumCapabilities
-    let configureVars = ConfigureVars "" host [] dhallOS
+    let configureVars = ConfigureVars "" host [] [] dhallOS
         buildVars = BuildVars nproc dhallOS
         installVars = InstallVars dhallOS
     pure (configureVars, buildVars, installVars)
