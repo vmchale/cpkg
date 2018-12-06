@@ -38,6 +38,9 @@ before_install:
 
 script:
   - cabal new-build all
+  - cabal new-install dhall
+  - cat dhall/cpkg-types.dhall | dhall
+  - cat dhall/cpkg-prelude.dhall | dhall
   - |
     if [ `uname` = "Darwin" ]
     then
