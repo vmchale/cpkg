@@ -122,7 +122,7 @@ in
 
 let mkLDFlags =
   λ(libDirs : List Text) →
-    let flag = concatMap Text (λ(dir : List Text) → "-L${dir} ") libDirs
+    let flag = concatMap Text (λ(dir : Text) → "-L${dir} ") libDirs
     in
 
     { var = "LDFLAGS", value = flag }
@@ -130,7 +130,7 @@ in
 
 let mkCFlags =
   λ(libDirs : List Text) →
-    let flag = concatMap Text (λ(dir : List Text) → "-I${dir} ") libDirs
+    let flag = concatMap Text (λ(dir : Text) → "-I${dir} ") libDirs
     in
 
     { var = "CFLAGS", value = flag }
