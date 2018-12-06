@@ -147,7 +147,7 @@ let defaultConfigure =
     , call (defaultCall ⫽ { program = "./configure"
                           , arguments = modifyArgs [ "--prefix=${cfg.installDir}" ]
                           , environment =
-                            [ [ mkLDFlags cfg.linkDirs, mkCFlags cgf.libDirs ] ] : Optional (List types.EnvVar)
+                            [ [ mkLDFlags cfg.linkDirs, mkCFlags cfg.libDirs ] ] : Optional (List types.EnvVar)
                           })
     ]
 in
