@@ -143,7 +143,6 @@ let isUnix =
       os
 in
 
-
 let mkLDFlags =
   λ(libDirs : List Text) →
     let flag = concatMap Text (λ(dir : Text) → "-L${dir} ") libDirs
@@ -160,7 +159,7 @@ let mkCFlags =
     { var = "CFLAGS", value = flag }
 in
 
-let mkPath =
+let defaultPath =
   λ(os : types.OS) →
     if isUnix os
       then [ { var = "PATH", value = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" } ] : List types.EnvVar
@@ -178,7 +177,7 @@ let defaultConfigure =
     , call (defaultCall ⫽ { program = "./configure"
                           , arguments = modifyArgs [ "--prefix=${cfg.installDir}" ]
                           , environment =
-                            [ mkPath cfg.configOS # [ mkLDFlags cfg.linkDirs, mkCFlags cfg.includeDirs ] ] : Optional (List types.EnvVar)
+                            [ defaultPath cfg.configOS # [ mkLDFlags cfg.linkDirs, mkCFlags cfg.includeDirs ] ] : Optional (List types.EnvVar)
                           })
     ]
 in
@@ -333,4 +332,5 @@ in
 , mkCFlags          = mkCFlags
 , mkLDFlags         = mkLDFlags
 , isUnix            = isUnix
+, defaultPath       = defaultPath
 }
