@@ -37,7 +37,7 @@ eval "$(cpkg --bash-completion-script cpkg)"
 
 ## Example
 
-Put the following in a file called `valgrind.dhall`:
+Here is the configuration for Valgrind:
 
 ```dhall
 let prelude = https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-prelude.dhall
@@ -63,12 +63,6 @@ let valgrind =
 in
 
 valgrind [3,14,0]
-```
-
-Then you can install Valgrind to `~/.cpkg/valgrind-3.14.0` with:
-
-```
-cpkg install valgrind.dhall
 ```
 
 ### Dhall Prelude
@@ -105,10 +99,10 @@ Lovingly provided by [polyglot](https://github.com/vmchale/polyglot):
  Cabal                    1         117          107            0           10
  Cabal Project            1           2            2            0            0
  Dhall                   30         997          850            0          147
- Haskell                 21         972          770           23          179
+ Haskell                 21         973          771           23          179
  Markdown                 4         193          162            0           31
  YAML                     4         154          139            0           15
 -------------------------------------------------------------------------------
- Total                   61        2435         2030           23          382
+ Total                   61        2436         2031           23          382
 -------------------------------------------------------------------------------
 ```
