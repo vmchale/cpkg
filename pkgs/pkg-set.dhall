@@ -46,7 +46,9 @@ in
 
 let libassuan =
   λ(v : List Natural) →
-    gpgPackage { name = "libassuan", version = v }
+    gpgPackage { name = "libassuan", version = v } ⫽
+      { pkgDeps = [ prelude.lowerBound { name = "libgpg-error", lower = [1,24] } ]
+      }
 in
 
 let libksba =
