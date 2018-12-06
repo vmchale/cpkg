@@ -231,6 +231,7 @@ let simplePackage =
     defaultPackage ⫽
       { pkgName = pkg.name
       , pkgVersion = pkg.version
+      , pkgSubdir = "${pkg.name}-${showVersion pkg.version}"
       }
 in
 
@@ -238,7 +239,6 @@ let makeGnuExe =
   λ(pkg : { name : Text, version : List Natural}) →
     simplePackage pkg ⫽
       { pkgUrl = "https://ftp.gnu.org/gnu/${pkg.name}/${pkg.name}-${showVersion pkg.version}.tar.xz"
-      , pkgSubdir = "${pkg.name}-${showVersion pkg.version}"
       }
 in
 

@@ -250,6 +250,79 @@ let harfbuzz =
       }
 in
 
+let jpegTurbo =
+  λ(v : List Natural) →
+    prelude.cmakePackage ⫽
+      { pkgName = "libjpeg-turbo"
+      , pkgVersion = v
+      , pkgUrl = "https://downloads.sourceforge.net/libjpeg-turbo/libjpeg-turbo-${prelude.showVersion v}.tar.gz"
+      , pkgSubdir = "libjpeg-turbo-${prelude.showVersion v}"
+      , pkgBuildDeps = [ prelude.unbounded "cmake" ]
+      }
+in
+
+let libuv =
+  λ(v : List Natural) →
+    prelude.defaultPackage ⫽
+      { pkgName = "libuv"
+      , pkgVersion = v
+      , pkgUrl = "https://dist.libuv.org/dist/v${prelude.showVersion v}/libuv-v${prelude.showVersion v}.tar.gz"
+      , pkgSubdir = "libuv-v${prelude.showVersion v}"
+      , configureCommand = prelude.autogenConfigure
+      }
+in
+
+let nasm =
+  λ(v : List Natural) →
+    prelude.defaultPackage ⫽
+      { pkgName = "nasm"
+      , pkgVersion = v
+      , pkgUrl = "http://www.nasm.us/pub/nasm/releasebuilds/${prelude.showVersion v}/nasm-${prelude.showVersion v}.tar.xz"
+      , pkgSubdir = "nasm-${prelude.showVersion v}"
+      }
+in
+
+let ncurses =
+  λ(v : List Natural) →
+    prelude.defaultPackage ⫽
+      { pkgName = "ncurses"
+      , pkgVersion = v
+      , pkgUrl = "https://invisible-mirror.net/archives/ncurses/ncurses-${prelude.showVersion v}.tar.gz"
+      , pkgSubdir = "ncurses-${prelude.showVersion v}"
+      }
+in
+
+let pcre2 =
+  λ(v : List Natural) →
+    prelude.defaultPackage ⫽
+      { pkgName = "pcre2"
+      , pkgVersion = v
+      , pkgUrl = "https://ftp.pcre.org/pub/pcre/pcre2-${prelude.showVersion v}.tar.gz"
+      , pkgSubdir = "pcre2-${prelude.showVersion v}"
+      }
+in
+
+let perl5 =
+  let perlConfigure =
+    λ(cfg : types.ConfigureVars) →
+
+      [ prelude.mkExe "Configure"
+      , prelude.call (prelude.defaultCall ⫽ { program = "./Configure"
+                                            , arguments = [ "-des", "-Dprefix=${cfg.installDir}" ]
+                                            })
+      ]
+  in
+
+  λ(v : List Natural) →
+    prelude.defaultPackage ⫽
+      { pkgName = "perl"
+      , pkgVersion = v
+      , pkgUrl = "https://www.cpan.org/src/5.0/perl-${prelude.showVersion v}.tar.gz"
+      , pkgSubdir = "perl-${prelude.showVersion v}"
+      , configureCommand = perlConfigure
+      }
+in
+
 [ gnupg [2,2,11]
 , npth [1,6]
 , musl [1,1,20]
@@ -265,4 +338,10 @@ in
 , glibc [2,28]
 , gmp [6,1,2]
 , harfbuzz [2,2,0]
+, jpegTurbo [2,0,1]
+, libuv [1,24,0]
+, nasm [2,14]
+, ncurses [6,1]
+, pcre2 [10,32]
+, perl5 [5,28,1]
 ]
