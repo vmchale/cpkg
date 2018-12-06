@@ -304,12 +304,17 @@ in
 
 let nasm =
   λ(v : List Natural) →
+    let nasmInstall =
+      λ(os : types.OS) →
+        prelude.installWithBinaries { installVars = os, bins = [ "bin/nasm", "bin/ndisasm" ] }
+    in
+
     prelude.defaultPackage ⫽
       { pkgName = "nasm"
       , pkgVersion = v
       , pkgUrl = "http://www.nasm.us/pub/nasm/releasebuilds/${prelude.showVersion v}/nasm-${prelude.showVersion v}.tar.xz"
       , pkgSubdir = "nasm-${prelude.showVersion v}"
-      , installCommand = prelude.installWithBinaries [ "bin/nasm", "bin/ndisasm" ]
+      , installCommand = nasmInstall
       }
 in
 
