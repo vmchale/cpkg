@@ -12,10 +12,13 @@ import           System.Directory    (doesDirectoryExist, removeDirectoryRecursi
 cpkgVersion :: V.Version
 cpkgVersion = P.version
 
+data DumpTarget = Linker
+                | Compiler
+
 data Command = Install { _pkgName :: String, _verbosity :: Verbosity, _target :: Maybe Platform }
              | Check { _dhallFile :: String, _verbosity :: Verbosity }
              | CheckSet { _dhallFile :: String, _verbosity :: Verbosity }
-             | Dump { _pkgName :: String, _host :: Maybe Platform }
+             | Dump { _dumpTarget :: DumpTarget, _pkgName :: String, _host :: Maybe Platform }
              | List
              | Nuke
 
@@ -41,6 +44,12 @@ wrapper = info (helper <*> versionInfo <*> userCmd)
 
 versionInfo :: Parser (a -> a)
 versionInfo = infoOption ("atspkg version: " ++ V.showVersion cpkgVersion) (short 'V' <> long "version" <> help "Show version")
+
+dumpTarget :: Parser DumpTarget
+dumpTarget = hsubparser
+    (command "linker" (info (pure Linker) (progDesc "Dump linker flags for a package"))
+    <> command "compiler" (info (pure Compiler) (progDesc "Dump compiler flags for a package"))
+    )
 
 userCmd :: Parser Command
 userCmd = hsubparser
@@ -81,7 +90,9 @@ target = optional
     ))
 
 dump :: Parser Command
-dump = Dump <$>
+dump = Dump
+    <$> dumpTarget
+    <*>
     argument str
     (metavar "PACKAGE"
     <> help "Name of package you want to link against"
@@ -101,7 +112,8 @@ run (Install pkId v host') =
     runPkgM v $ buildByName (T.pack pkId) host'
 run (Check file v) = void $ getCPkg v file
 run (CheckSet file v) = void $ getPkgs v file
-run (Dump name host) = printFlags name host
+run (Dump Linker name host) = printLinkerFlags name host
+run (Dump Compiler name host) = printCompilerFlags name host
 run Nuke = do
     pkgDir <- globalPkgDir
     exists <- doesDirectoryExist pkgDir

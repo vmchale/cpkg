@@ -1,9 +1,12 @@
+{-# LANGUAGE RankNTypes #-}
+
 -- TODO: a lot of the stuff in this module could be made pure so that it only
 -- gets called once
 module Package.C.Db.Register ( registerPkg
                              , cPkgToDir
                              , globalPkgDir
-                             , printFlags
+                             , printCompilerFlags
+                             , printLinkerFlags
                              , packageInstalled
                              , unregisterPkg
                              ) where
@@ -24,18 +27,22 @@ import           Package.C.Type         hiding (Dep (name))
 import           System.Directory
 import           System.FilePath        ((</>))
 
-printFlags :: String -> Maybe String -> IO ()
-printFlags name host = do
+type FlagPrint = forall m. MonadIO m => BuildCfg -> m String
+
+printCompilerFlags :: String -> Maybe String -> IO ()
+printCompilerFlags = printFlagsWith buildCfgToCFlags
+
+printLinkerFlags :: String -> Maybe String -> IO ()
+printLinkerFlags = printFlagsWith buildCfgToLinkerFlags
+
+printFlagsWith :: FlagPrint -> String -> Maybe String -> IO ()
+printFlagsWith f name host = do
 
     maybePackage <- lookupPackage name host
 
     case maybePackage of
         Nothing -> indexError name
-        Just p -> sequenceA_ [ putStr "C flags: "
-                             , putStrLn =<< buildCfgToCFlags p
-                             , putStr "Linker flags: "
-                             , putStrLn =<< buildCfgToLinkerFlags p
-                             ]
+        Just p  -> putStrLn =<< f p
 
 -- TODO: do something more sophisticated; allow packages to return their own
 -- dir?

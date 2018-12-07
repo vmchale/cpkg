@@ -56,7 +56,7 @@ library
     default-language: Haskell2010
     other-extensions:
         DeriveGeneric DeriveAnyClass OverloadedStrings DerivingStrategies
-        GeneralizedNewtypeDeriving
+        GeneralizedNewtypeDeriving RankNTypes
     ghc-options:      -Wall
     build-depends:
         base >=4.3 && <5,

@@ -11,7 +11,8 @@ module Package.C (
                  , buildCPkg
                  , runPkgM
                  , globalPkgDir
-                 , printFlags
+                 , printLinkerFlags
+                 , printCompilerFlags
                  , buildByName
                  -- * Dhall functionality
                  , cPkgDhallToCPkg
