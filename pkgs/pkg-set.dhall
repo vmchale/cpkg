@@ -174,10 +174,18 @@ let git =
       prelude.defaultConfigure cfg # prelude.mkExes [ "check_bindir" ]
   in
 
+  let gitInstall =
+    λ(os : types.OS) →
+      prelude.installWithBinaries { installVars = os
+                                  , bins = [ "bin/git" ]
+                                  }
+  in
+
   λ(v : List Natural) →
     prelude.simplePackage { name = "git", version = v } ⫽
       { pkgUrl = "https://mirrors.edge.kernel.org/pub/software/scm/git/git-${prelude.showVersion v}.tar.xz"
       , configureCommand = gitConfigure
+      , installCommand = gitInstall
       }
 in
 
