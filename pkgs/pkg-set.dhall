@@ -430,7 +430,7 @@ let gnutls =
 
     prelude.simplePackage { name = "gnutls", version = cfg.version # [ cfg.patch ] } ⫽
       { pkgUrl = "https://www.gnupg.org/ftp/gcrypt/gnutls/v${versionString}/gnutls-${versionString}.${Natural/show cfg.patch}.tar.xz"
-      , pkgDeps = [ prelude.lowerBound { name = "nettle", lower = [3,4] } ]
+      , pkgDeps = [ prelude.lowerBound { name = "nettle", lower = [3,4,1] } ]
       }
 in
 
@@ -484,7 +484,7 @@ in
 , libgcrypt [1,8,4]
 , libgpgError [1,32]
 , libksba [1,3,5]
-, libnettle [3,4]
+, libnettle [3,4,1]
 , libuv [1,24,0]
 , musl [1,1,20]
 , nasm [2,14]
