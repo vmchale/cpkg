@@ -193,6 +193,7 @@ let git =
       { pkgUrl = "https://mirrors.edge.kernel.org/pub/software/scm/git/git-${prelude.showVersion v}.tar.xz"
       , configureCommand = gitConfigure
       , installCommand = prelude.installWithBinaries [ "bin/git"]
+      , buildCommand = gitBuild
       }
 in
 
