@@ -400,7 +400,8 @@ in
 
 let gettext =
   λ(v : List Natural) →
-    prelude.makeGnuExe { name = "gettext", version = v }
+    prelude.makeGnuExe { name = "gettext", version = v } ⫽
+      { installCommand = prelude.installWithBinaries [ "bin/gettext", "bin/msgfmt" ] }
 in
 
 let gzip =
