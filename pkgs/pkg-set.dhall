@@ -405,7 +405,12 @@ in
 
 let gzip =
   λ(v : List Natural) →
-    prelude.makeGnuExe { name = "gettext", version = v }
+    prelude.makeGnuExe { name = "gzip", version = v }
+in
+
+let wget =
+  λ(v : List Natural) →
+    prelude.makeGnuExe { name = "wget", version = v }
 in
 
 [ binutils [2,31]
@@ -441,6 +446,7 @@ in
 , unistring [0,9,10]
 , valgrind [3,14,0]
 , vim [8,1]
+, wget [1,20]
 , xz [5,2,4]
 , zlib [1,2,11]
 ]
