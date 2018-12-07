@@ -26,9 +26,10 @@ buildWithContext (c:cs) host ls is bs = do
     pkgDir <- cPkgToDir c host configureVars buildVars installVars
 
     let linkDir = pkgDir </> "lib"
+        linkDir64 = pkgDir </> "lib64"
         includeDir = pkgDir </> "include"
         binDir = pkgDir </> "bin"
-        links = linkDir : ls
+        links = linkDir64 : linkDir : ls
         includes = includeDir : is
         bins = binDir : bs
 

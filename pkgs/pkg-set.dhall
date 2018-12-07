@@ -427,6 +427,12 @@ let gnutls =
     let versionString = prelude.showVersion cfg.version
     in
 
+    let gpgConfigure =
+      λ(cfg : types.ConfigureVars) →
+        prelude.mkExes [ "inittests" ]
+          # prelude.defaultConfigure cfg
+    in
+
     prelude.simplePackage { name = "gnutls", version = cfg.version # [ cfg.patch ] } ⫽
       { pkgUrl = "https://www.gnupg.org/ftp/gcrypt/gnutls/v${versionString}/gnutls-${versionString}.${Natural/show cfg.patch}.tar.xz"
       , pkgDeps = [ prelude.lowerBound { name = "nettle", lower = [3,4] } ]

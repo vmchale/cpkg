@@ -192,6 +192,13 @@ let defaultConfigure =
     ]
 in
 
+let configureMkExes =
+  λ(exes : List Text) →
+  λ(cfg : types.ConfigureVars) →
+    mkExes exes
+      # defaultConfigure cfg
+in
+
 let defaultBuild =
   λ(cfg : types.BuildVars) →
     [ call (defaultCall ⫽ { program = makeExe cfg.buildOS
@@ -353,4 +360,5 @@ in
 , simplePackage     = simplePackage
 , symlinkBinary     = symlinkBinary
 , installWithBinaries = installWithBinaries
+, configureMkExes = configureMkExes
 }
