@@ -164,6 +164,15 @@ let mkCFlags =
     { var = "CPPFLAGS", value = flag }
 in
 
+let mkPkgConfigVar =
+  λ(libDirs : List Text) →
+    let flag = concatMap Text (λ(dir : Text) → "${dir}/pkgconfig:") libDirs
+    in
+
+    { var = "PKG_CONFIG_PATH", value = flag }
+in
+
+
 let mkPathVar =
   λ(binDirs : List Text) →
     concatMap Text (λ(dir : Text) → "${dir}:") binDirs
@@ -187,7 +196,7 @@ let defaultConfigure =
     , call (defaultCall ⫽ { program = "./configure"
                           , arguments = modifyArgs [ "--prefix=${cfg.installDir}" ]
                           , environment =
-                            [ defaultPath cfg # [ mkLDFlags cfg.linkDirs, mkCFlags cfg.includeDirs ] ] : Optional (List types.EnvVar)
+                            [ defaultPath cfg # [ mkLDFlags cfg.linkDirs, mkCFlags cfg.includeDirs, mkPkgConfigVar cfg.linkDirs ] ] : Optional (List types.EnvVar)
                           })
     ]
 in
