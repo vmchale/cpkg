@@ -361,6 +361,7 @@ let valgrind =
     prelude.simplePackage { name = "valgrind", version = v } ⫽
       { pkgUrl = "http://www.valgrind.org/downloads/valgrind-${prelude.showVersion v}.tar.bz2"
       , configureCommand = valgrindConfigure
+      , installCommand = prelude.installWithBinaries [ "bin/valgrind" ]
       }
 in
 
