@@ -22,11 +22,14 @@
 - [ ] Symlink manpages
 - [ ] Completions
   - [ ] `cpkg install` should use `cpkg list`?
+- [ ] Should `check-set` be hidden in help?
 # Performance
 - [ ] Dhall is slow
 # Bugs
 - [ ] `mkExe` and `makeExe` are too similar
 - [ ] `glibc` example is broken
+- [ ] Shouldn't be able to `cpkg dump compiler sed` since it provides no
+  libraries
 # Deficiencies
 - [ ] `buildDepends` should be a function from operating system?
 - [ ] Symlink built artifacts into a common directory (`~/.cpkg/bin`?)

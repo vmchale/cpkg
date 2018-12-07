@@ -431,6 +431,18 @@ let gnutls =
       { pkgUrl = "https://www.gnupg.org/ftp/gcrypt/gnutls/v${versionString}/gnutls-${versionString}.${Natural/show cfg.patch}.tar.xz" }
 in
 
+
+let lapack =
+  λ(v : List Natural) →
+    prelude.cmakePackage ⫽
+      { pkgName = "lapack"
+      , pkgVersion = v
+      , pkgUrl = "http://www.netlib.org/lapack/lapack-${prelude.showVersion v}.tar.gz"
+      , pkgSubdir = "lapack-${prelude.showVersion v}"
+      , pkgBuildDeps = [ prelude.unbounded "cmake" ]
+      }
+in
+
 [ binutils [2,31]
 , bison [3,2,2]
 , cmake { version = [3,13], patch = 0 }
@@ -447,6 +459,7 @@ in
 , gnutls { version = [3,6], patch = 5 }
 , gzip [1,9]
 , harfbuzz [2,2,0]
+, lapack [3,8,0]
 , jpegTurbo [2,0,1]
 , libassuan [2,5,1]
 , libgcrypt [1,8,4]
