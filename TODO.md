@@ -37,6 +37,7 @@
 - [ ] Shouldn't be able to `cpkg dump compiler sed` since it provides no
   libraries
 - [ ] Fails when symlink already exists
+- [ ] Cross-compile shouldn't symlink
 # Deficiencies
 - [ ] `buildDepends` should be a function from operating system?
 - [ ] Symlink built artifacts into a common directory (`~/.cpkg/bin`?)
@@ -59,6 +60,7 @@
 - [ ] GHC cross-compiler?
 - [ ] https://sourceforge.net/projects/infozip/files/
 - [ ] https://www.gnu.org/software/coreutils/
+- [ ] autoconf/automake
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in
