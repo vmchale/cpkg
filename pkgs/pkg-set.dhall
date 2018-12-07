@@ -428,7 +428,9 @@ let gnutls =
     in
 
     prelude.simplePackage { name = "gnutls", version = cfg.version # [ cfg.patch ] } ⫽
-      { pkgUrl = "https://www.gnupg.org/ftp/gcrypt/gnutls/v${versionString}/gnutls-${versionString}.${Natural/show cfg.patch}.tar.xz" }
+      { pkgUrl = "https://www.gnupg.org/ftp/gcrypt/gnutls/v${versionString}/gnutls-${versionString}.${Natural/show cfg.patch}.tar.xz"
+      , pkgDeps = [ prelude.lowerBound { name = "libnettle", lower = [3,4] } ]
+      }
 in
 
 
@@ -455,7 +457,6 @@ let libnettle =
   λ(v : List Natural) →
     prelude.simplePackage { name = "cairo", version = v } ⫽
       { pkgUrl = "https://ftp.gnu.org/gnu/nettle/nettle-${prelude.showVersion v}.tar.gz"
-      , pkgDeps = [ prelude.lowerBound { name = "libnettle", lower = [3,4] } ]
       }
 in
 
