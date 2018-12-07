@@ -420,6 +420,23 @@ let m4 =
     prelude.makeGnuExe { name = "m4", version = v }
 in
 
+let nginx =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "nginx", version = v } ⫽
+      { pkgUrl = "http://nginx.org/download/nginx-${prelude.showVersion v}.tar.gz"
+      , pkgDeps = [ prelude.unbounded "zlib", prelude.unbounded "pcre2" ]
+      }
+in
+
+let openssl =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "openssl", version = v } ⫽
+      { pkgUrl = "https://www.openssl.org/source/openssl-${prelude.showVersion v}a.tar.gz"
+      , configureCommand = prelude.generalConfigure "config"
+      , pkgSubdir = "openssl-${prelude.showVersion v}a"
+      }
+in
+
 [ binutils [2,31]
 , bison [3,2,2]
 , cairo [1,16,0]
@@ -448,6 +465,7 @@ in
 , musl [1,1,20]
 , nasm [2,14]
 , ncurses [6,1]
+, nginx [1,15,7]
 , npth [1,6]
 , pcre2 [10,32]
 , perl5 [5,28,1]
@@ -461,4 +479,5 @@ in
 , xz [5,2,4]
 , zlib [1,2,11]
 , m4 [1,4,18]
+, openssl [1,1,1]
 ]

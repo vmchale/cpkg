@@ -185,20 +185,29 @@ let defaultPath =
       else [] : List types.EnvVar
 in
 
-let defaultConfigure =
+let generalConfigure =
+  λ(filename : Text) →
   λ(cfg : types.ConfigureVars) →
     let maybeHost = mkHost cfg.targetTriple
     in
     let modifyArgs = λ(xs : List Text) → maybeAppend Text maybeHost xs
     in
 
-    [ mkExe "configure"
-    , call (defaultCall ⫽ { program = "./configure"
+    [ mkExe filename
+    , call (defaultCall ⫽ { program = "./${filename}"
                           , arguments = modifyArgs [ "--prefix=${cfg.installDir}" ]
                           , environment =
                               Some (defaultPath cfg # [ mkLDFlags cfg.linkDirs, mkCFlags cfg.includeDirs, mkPkgConfigVar cfg.linkDirs ])
                           })
     ]
+in
+
+let defaultConfigure =
+  generalConfigure "configure"
+in
+
+let bigConfigure =
+  generalConfigure "Configure"
 in
 
 -- TODO: configureWithFlags...
@@ -372,4 +381,6 @@ in
 , symlinkBinary     = symlinkBinary
 , installWithBinaries = installWithBinaries
 , configureMkExes   = configureMkExes
+, bigConfigure      = bigConfigure
+, generalConfigure  = generalConfigure
 }
