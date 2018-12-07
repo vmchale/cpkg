@@ -174,18 +174,11 @@ let git =
       prelude.defaultConfigure cfg # prelude.mkExes [ "check_bindir" ]
   in
 
-  let gitInstall =
-    λ(os : types.OS) →
-      prelude.installWithBinaries { installVars = os
-                                  , bins = [ "bin/git" ]
-                                  }
-  in
-
   λ(v : List Natural) →
     prelude.simplePackage { name = "git", version = v } ⫽
       { pkgUrl = "https://mirrors.edge.kernel.org/pub/software/scm/git/git-${prelude.showVersion v}.tar.xz"
       , configureCommand = gitConfigure
-      , installCommand = gitInstall
+      , installCommand = prelude.installWithBinaries [ "bin/git"]
       }
 in
 
@@ -290,16 +283,9 @@ in
 
 let nasm =
   λ(v : List Natural) →
-    let nasmInstall =
-      λ(os : types.OS) →
-        prelude.installWithBinaries { installVars = os
-                                    , bins = [ "bin/nasm", "bin/ndisasm" ]
-                                    }
-    in
-
     prelude.simplePackage { name = "nasm", version = v } ⫽
       { pkgUrl = "http://www.nasm.us/pub/nasm/releasebuilds/${prelude.showVersion v}/nasm-${prelude.showVersion v}.tar.xz"
-      , installCommand = nasmInstall
+      , installCommand = prelude.installWithBinaries [ "bin/nasm", "bin/ndisasm" ]
       }
 in
 
