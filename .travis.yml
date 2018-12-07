@@ -33,9 +33,9 @@ before_install:
       cabal new-update
     else
       export PATH=/opt/ghc/bin:$PATH
-      export PATH=$HOME/.cabal/bin:$PATH
       cabal new-update
     fi
+  - export PATH=$HOME/.cabal/bin:$PATH
 
 script:
   - cabal new-build all
