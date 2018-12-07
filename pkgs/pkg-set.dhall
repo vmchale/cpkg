@@ -414,7 +414,7 @@ in
 let wget =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "wget", version = v } ⫽
-      { pkgUrl = "https://ftp.gnu.org/gnu/wget/wget-${v}.tar.gz" }
+      { pkgUrl = "https://ftp.gnu.org/gnu/wget/wget-${prelude.showVersion v}.tar.gz" }
 in
 
 [ binutils [2,31]
