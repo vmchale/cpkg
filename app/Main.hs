@@ -44,7 +44,7 @@ versionInfo = infoOption ("atspkg version: " ++ V.showVersion cpkgVersion) (shor
 
 userCmd :: Parser Command
 userCmd = hsubparser
-    (command "install" (info install (progDesc "Install a package defined by a Dhall expression"))
+    (command "install" (info install (progDesc "Install a package from the global package set"))
     <> command "check" (info check (progDesc "Check a Dhall expression to ensure it can be used to build a package"))
     <> command "check-set" (info checkSet (progDesc "Check a package set defined in Dhall"))
     <> command "dump" (info dump (progDesc "Display flags to link against a particular library"))
