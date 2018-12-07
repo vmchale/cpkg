@@ -179,6 +179,13 @@ let git =
       prelude.defaultConfigure cfg # prelude.mkExes [ "check_bindir" ]
   in
 
+  let gitBuild =
+    λ(cfg : types.BuildVars) →
+      [ call (defaultCall ⫽ { program = makeExe cfg.buildOS
+                            , arguments = [ "NO_GETTEXT=1", "-j${Natural/show cfg.cpus}" ] })
+      ]
+  in
+
   λ(v : List Natural) →
     prelude.simplePackage { name = "git", version = v } ⫽
       { pkgUrl = "https://mirrors.edge.kernel.org/pub/software/scm/git/git-${prelude.showVersion v}.tar.xz"
@@ -396,6 +403,11 @@ let zlib =
       }
 in
 
+let gettext =
+  λ(v : List Natural) →
+    prelude.makeGnuExe { name = "gettext", version = v }
+in
+
 [ binutils [2,31]
 , bison [3,2,2]
 , cmake { version = [3,13], patch = 0 }
@@ -404,6 +416,7 @@ in
 , fltk { version = [1,3,4], patch = 2 }
 , gawk [4,2,1]
 , gc [8,0,0]
+, gettext [0,19,8]
 , git [2,19,2]
 , glibc [2,28]
 , gmp [6,1,2]
