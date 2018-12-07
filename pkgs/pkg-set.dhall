@@ -402,6 +402,11 @@ let gettext =
     prelude.makeGnuExe { name = "gettext", version = v }
 in
 
+let gzip =
+  λ(v : List Natural) →
+    prelude.makeGnuExe { name = "gettext", version = v }
+in
+
 [ binutils [2,31]
 , bison [3,2,2]
 , cmake { version = [3,13], patch = 0 }
@@ -415,6 +420,7 @@ in
 , glibc [2,28]
 , gmp [6,1,2]
 , gnupg [2,2,11]
+, gzip [1,9]
 , harfbuzz [2,2,0]
 , jpegTurbo [2,0,1]
 , libassuan [2,5,1]

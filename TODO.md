@@ -50,6 +50,7 @@
 - [ ] Documentation in
   - [ ] French
   - [ ] German
+- [ ] Write `info` thing like `info sed`
 # Dhall Libraries
 - [ ] Use something other than `Optional Text` for target architectures
 - [ ] Fix `makeGnuExe` to install binaries
