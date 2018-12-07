@@ -451,6 +451,14 @@ let cairo =
      }
 in
 
+let libnettle =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "cairo", version = v } ⫽
+      { pkgUrl = "https://ftp.gnu.org/gnu/nettle/nettle-${prelude.showVersion v}.tar.gz"
+      , pkgDeps = [ prelude.lowerBound { name = "libnettle", lower = [3,4] } ]
+      }
+in
+
 [ binutils [2,31]
 , bison [3,2,2]
 , cairo [1,16,0]
@@ -474,6 +482,7 @@ in
 , libgcrypt [1,8,4]
 , libgpgError [1,32]
 , libksba [1,3,5]
+, libnettle [3,4]
 , libuv [1,24,0]
 , musl [1,1,20]
 , nasm [2,14]
