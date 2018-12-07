@@ -360,5 +360,5 @@ in
 , simplePackage     = simplePackage
 , symlinkBinary     = symlinkBinary
 , installWithBinaries = installWithBinaries
-, configureMkExes = configureMkExes
+, configureMkExes   = configureMkExes
 }
