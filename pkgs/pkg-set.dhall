@@ -25,7 +25,7 @@ let gnupg =
                   , prelude.lowerBound { name = "libgcrypt", lower = [1,7,0] }
                   , prelude.lowerBound { name = "libassuan", lower = [2,5,0] }
                   , prelude.lowerBound { name = "libksba", lower = [1,3,4] }
-                  , prelude.unbounded "gnutls"
+                  -- , prelude.unbounded "gnutls"
                   ]
       , configureCommand = prelude.configureMkExes [ "tests/inittests", "tests/runtest", "tests/pkits/inittests" ]
       , installCommand = prelude.installWithBinaries [ "bin/gpg" ]
