@@ -455,7 +455,7 @@ in
 
 let libnettle =
   λ(v : List Natural) →
-    prelude.simplePackage { name = "cairo", version = v } ⫽
+    prelude.simplePackage { name = "libnettle", version = v } ⫽
       { pkgUrl = "https://ftp.gnu.org/gnu/nettle/nettle-${prelude.showVersion v}.tar.gz"
       }
 in
