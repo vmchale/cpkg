@@ -19,6 +19,7 @@
 - [ ] Generate something like pkg-config files?
 - [ ] Bootstrap "fancy" tar?
 - [ ] Package "components"? Like cabal: build executables or not...
+- [ ] Symlink manpages
 # Performance
 - [ ] Dhall is slow
 # Bugs

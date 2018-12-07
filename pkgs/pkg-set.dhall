@@ -166,18 +166,14 @@ let gawk =
 
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "gawk", version = v } ⫽
-      { pkgName = "awk"
-      , configureCommand = gawkConfigure
+      { configureCommand = gawkConfigure
       }
 in
 
 let gc =
   λ(v : List Natural) →
-    prelude.defaultPackage ⫽
-        { pkgName = "gc"
-        , pkgVersion = v
-        , pkgUrl = "https://github.com/ivmai/bdwgc/releases/download/v${prelude.showVersion v}/gc-${prelude.showVersion v}.tar.gz"
-        , pkgSubdir = "gc-${prelude.showVersion v}"
+    prelude.simplePackage { name = "gc", version = v } ⫽
+        { pkgUrl = "https://github.com/ivmai/bdwgc/releases/download/v${prelude.showVersion v}/gc-${prelude.showVersion v}.tar.gz"
         }
 in
 
@@ -188,11 +184,8 @@ let git =
   in
 
   λ(v : List Natural) →
-    prelude.defaultPackage ⫽
-      { pkgName = "git"
-      , pkgVersion = v
-      , pkgUrl = "https://mirrors.edge.kernel.org/pub/software/scm/git/git-${prelude.showVersion v}.tar.xz"
-      , pkgSubdir = "git-${prelude.showVersion v}"
+    prelude.simplePackage { name = "git", version = v } ⫽
+      { pkgUrl = "https://mirrors.edge.kernel.org/pub/software/scm/git/git-${prelude.showVersion v}.tar.xz"
       , configureCommand = gitConfigure
       }
 in
@@ -260,11 +253,8 @@ let gmp =
   in
 
   λ(v : List Natural) →
-    prelude.defaultPackage ⫽
-      { pkgName = "gmp"
-      , pkgVersion = v
-      , pkgUrl = "https://gmplib.org/download/gmp/gmp-${prelude.showVersion v}.tar.xz"
-      , pkgSubdir = "gmp-${prelude.showVersion v}"
+    prelude.simplePackage { name = "gmp", version = v } ⫽
+      { pkgUrl = "https://gmplib.org/download/gmp/gmp-${prelude.showVersion v}.tar.xz"
       , configureCommand = gmpConfigure
       -- TODO: run 'make check' if not cross-compiling?
       }
@@ -306,35 +296,28 @@ let nasm =
   λ(v : List Natural) →
     let nasmInstall =
       λ(os : types.OS) →
-        prelude.installWithBinaries { installVars = os, bins = [ "bin/nasm", "bin/ndisasm" ] }
+        prelude.installWithBinaries { installVars = os
+                                    , bins = [ "bin/nasm", "bin/ndisasm" ]
+                                    }
     in
 
-    prelude.defaultPackage ⫽
-      { pkgName = "nasm"
-      , pkgVersion = v
-      , pkgUrl = "http://www.nasm.us/pub/nasm/releasebuilds/${prelude.showVersion v}/nasm-${prelude.showVersion v}.tar.xz"
-      , pkgSubdir = "nasm-${prelude.showVersion v}"
+    prelude.simplePackage { name = "nasm", version = v } ⫽
+      { pkgUrl = "http://www.nasm.us/pub/nasm/releasebuilds/${prelude.showVersion v}/nasm-${prelude.showVersion v}.tar.xz"
       , installCommand = nasmInstall
       }
 in
 
 let ncurses =
   λ(v : List Natural) →
-    prelude.defaultPackage ⫽
-      { pkgName = "ncurses"
-      , pkgVersion = v
-      , pkgUrl = "https://invisible-mirror.net/archives/ncurses/ncurses-${prelude.showVersion v}.tar.gz"
-      , pkgSubdir = "ncurses-${prelude.showVersion v}"
+    prelude.simplePackage { name = "ncurses", version = v } ⫽
+      { pkgUrl = "https://invisible-mirror.net/archives/ncurses/ncurses-${prelude.showVersion v}.tar.gz"
       }
 in
 
 let pcre2 =
   λ(v : List Natural) →
-    prelude.defaultPackage ⫽
-      { pkgName = "pcre2"
-      , pkgVersion = v
-      , pkgUrl = "https://ftp.pcre.org/pub/pcre/pcre2-${prelude.showVersion v}.tar.gz"
-      , pkgSubdir = "pcre2-${prelude.showVersion v}"
+    prelude.simplePackage { name = "pcre2", version = v } ⫽
+      { pkgUrl = "https://ftp.pcre.org/pub/pcre/pcre2-${prelude.showVersion v}.tar.gz"
       }
 in
 
