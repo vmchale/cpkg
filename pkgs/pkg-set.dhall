@@ -446,7 +446,9 @@ in
 let cairo =
   λ(v : List Natural) →
     prelude.simplePackage { name = "cairo", version = v } ⫽
-     { pkgUrl = "https://www.cairographics.org/releases/cairo-${prelude.showVersion v}.tar.xz" }
+     { pkgUrl = "https://www.cairographics.org/releases/cairo-${prelude.showVersion v}.tar.xz"
+     , pkgBuildDeps = [ prelude.unbounded "libpng" ]
+     }
 in
 
 [ binutils [2,31]
