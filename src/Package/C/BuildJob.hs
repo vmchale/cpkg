@@ -10,26 +10,29 @@ import           System.FilePath        ((</>))
 
 -- TODO: pass link flags
 buildAll :: [CPkg] -> Maybe Platform -> PkgM ()
-buildAll pkgs host = buildWithContext pkgs host [] []
+buildAll pkgs host = buildWithContext pkgs host [] [] []
 
 buildWithContext :: [CPkg]
                  -> Maybe Platform
                  -> [FilePath] -- ^ Library directories
                  -> [FilePath] -- ^ Include directories
+                 -> [FilePath] -- ^ Directories to add to @PATH@
                  -> PkgM ()
-buildWithContext []   _ _ _        = pure ()
-buildWithContext (c:cs) host ls is = do
+buildWithContext []   _ _ _ _         = pure ()
+buildWithContext (c:cs) host ls is bs = do
 
-    (configureVars, buildVars, installVars) <- getVars host ls is
+    (configureVars, buildVars, installVars) <- getVars host ls is bs
 
     pkgDir <- cPkgToDir c host configureVars buildVars installVars
 
     let linkDir = pkgDir </> "lib"
         includeDir = pkgDir </> "include"
+        binDir = pkgDir </> "bin"
         links = linkDir : ls
         includes = includeDir : is
+        bins = binDir : bs
 
-    buildCPkg c host ls is *> buildWithContext cs host links includes
+    buildCPkg c host ls is bs *> buildWithContext cs host links includes bins
 
 buildByName :: PackId -> Maybe Platform -> PkgM ()
 buildByName pkId host = do

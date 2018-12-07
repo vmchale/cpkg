@@ -56,6 +56,7 @@ let ConfigureVars = { installDir : Text
                     , targetTriple : Optional Text
                     , includeDirs : List Text
                     , linkDirs : List Text
+                    , binDirs : List Text
                     , configOS : OS
                     }
 in

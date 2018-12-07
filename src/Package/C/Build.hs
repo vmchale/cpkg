@@ -91,10 +91,11 @@ buildCPkg :: CPkg
           -> Maybe Platform
           -> [FilePath] -- ^ Library directories
           -> [FilePath] -- ^ Include directories
+          -> [FilePath] -- ^ Directories to add to @PATH@
           -> PkgM ()
-buildCPkg cpkg host libs incls = do
+buildCPkg cpkg host libs incls bins = do
 
-    (configureVars, buildVars, installVars) <- getVars host libs incls
+    (configureVars, buildVars, installVars) <- getVars host libs incls bins
 
     installed <- packageInstalled cpkg host configureVars buildVars installVars
 
@@ -108,10 +109,11 @@ buildCPkg cpkg host libs incls = do
 getVars :: Maybe Platform
         -> [FilePath] -- ^ Library directories
         -> [FilePath] -- ^ Include directories
+        -> [FilePath] -- ^ Directories to add to @PATH@
         -> PkgM (ConfigureVars, BuildVars, InstallVars)
-getVars host links incls = do
+getVars host links incls bins = do
     nproc <- liftIO getNumCapabilities
-    let configureVars = ConfigureVars "" host incls links dhallOS
+    let configureVars = ConfigureVars "" host incls links bins dhallOS
         buildVars = BuildVars nproc dhallOS
         installVars = InstallVars dhallOS
     pure (configureVars, buildVars, installVars)

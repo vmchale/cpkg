@@ -62,7 +62,7 @@ commandDhallToCommand (Dhall.Call p as env proc) = Call (T.unpack p) (T.unpack <
 commandDhallToCommand (Dhall.SymlinkBinary b)    = SymlinkBinary (T.unpack b)
 
 cfgVarsToDhallCfgVars :: ConfigureVars -> Dhall.ConfigureVars
-cfgVarsToDhallCfgVars (ConfigureVars dir' tgt incls lds os) = Dhall.ConfigureVars (T.pack dir') (T.pack <$> tgt) (T.pack <$> incls) (T.pack <$> lds) os
+cfgVarsToDhallCfgVars (ConfigureVars dir' tgt incls lds bins os) = Dhall.ConfigureVars (T.pack dir') (T.pack <$> tgt) (T.pack <$> incls) (T.pack <$> lds) (T.pack <$> bins) os
 
 buildVarsToDhallBuildVars :: BuildVars -> Dhall.BuildVars
 buildVarsToDhallBuildVars (BuildVars nproc os) = Dhall.BuildVars (fromIntegral nproc) os

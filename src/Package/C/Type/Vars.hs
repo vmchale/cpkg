@@ -8,6 +8,7 @@ data ConfigureVars = ConfigureVars { installDir   :: FilePath
                                    , targetTriple :: Maybe Platform
                                    , includeDirs  :: [ FilePath ]
                                    , linkDirs     :: [ FilePath ]
+                                   , binDirs      :: [ FilePath ]
                                    , configOS     :: OS
                                    }
 

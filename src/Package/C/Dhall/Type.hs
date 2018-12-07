@@ -21,6 +21,7 @@ data ConfigureVars = ConfigureVars { installDir   :: T.Text
                                    , targetTriple :: Maybe T.Text
                                    , includeDirs  :: [ T.Text ]
                                    , linkDirs     :: [ T.Text ]
+                                   , binDirs      :: [ T.Text ]
                                    , configOS     :: OS
                                    } deriving (Generic, Inject)
 
