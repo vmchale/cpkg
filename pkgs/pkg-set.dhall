@@ -416,6 +416,7 @@ let wget =
     prelude.makeGnuExe { name = "wget", version = v } ⫽
       { pkgUrl = "https://ftp.gnu.org/gnu/wget/wget-${prelude.showVersion v}.tar.gz"
       , pkgDeps = [ prelude.unbounded "gnutls" ]
+      , configureCommand = prelude.autogenConfigure
       }
 in
 
@@ -424,7 +425,7 @@ let gnutls =
     let versionString = prelude.showVersion cfg.version
     in
 
-    prelude.simplePackage { name = "gnutls", version = cfg.version } ⫽
+    prelude.simplePackage { name = "gnutls", version = cfg.version # [ cfg.patch ] } ⫽
       { pkgUrl = "https://www.gnupg.org/ftp/gcrypt/gnutls/v${versionString}/gnutls-${versionString}.${Natural/show cfg.patch}.tar.xz" }
 in
 
