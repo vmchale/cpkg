@@ -91,7 +91,9 @@ let bison =
 
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "bison", version = v } ⫽
-      { configureCommand = bisonConfigure }
+      { configureCommand = bisonConfigure
+      , installCommand = prelude.installWithBinaries [ "bin/bison", "bin/yacc" ]
+      }
 in
 
 {- cmake https://cmake.org/ -}
@@ -158,6 +160,7 @@ let gawk =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "gawk", version = v } ⫽
       { configureCommand = gawkConfigure
+      , installCommand = prelude.installWithBinaries [ "bin/gawk", "bin/awk" ]
       }
 in
 
