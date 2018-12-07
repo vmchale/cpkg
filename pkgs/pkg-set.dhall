@@ -414,6 +414,11 @@ let libnettle =
       { pkgUrl = "https://ftp.gnu.org/gnu/nettle/nettle-${prelude.showVersion v}.tar.gz" }
 in
 
+let m4 =
+  λ(v : List Natural) →
+    prelude.makeGnuExe { name = "m4", version = v }
+in
+
 [ binutils [2,31]
 , bison [3,2,2]
 , cairo [1,16,0]
@@ -454,4 +459,5 @@ in
 , wget [1,20]
 , xz [5,2,4]
 , zlib [1,2,11]
+, m4 [1,4,18]
 ]

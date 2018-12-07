@@ -27,6 +27,8 @@
   - [ ] `cpkg install` should use `cpkg list`?
 - [ ] Should `check-set` be hidden in help?
 - [ ] Custom package directories
+- [ ] Make Haskell library API better
+  - [ ] Separate Dhall parts?
 # Performance
 - [ ] Dhall is slow
 # Bugs
