@@ -8,6 +8,9 @@
 - [ ] Investigate possible upstream bug when downloading `fltk` and unpacking
   the `.tar.gz`
 - [ ] Fix tar library and/or rewrite it
+# Code Maintenance
+- [ ] Use a more sensible monad
+- [ ] Stop being a mess
 # Features
 - [ ] Constraint solver
 - [ ] Build/handle preprocessors
@@ -31,6 +34,7 @@
 - [ ] `glibc` example is broken
 - [ ] Shouldn't be able to `cpkg dump compiler sed` since it provides no
   libraries
+- [ ] Fails when symlink already exists
 # Deficiencies
 - [ ] `buildDepends` should be a function from operating system?
 - [ ] Symlink built artifacts into a common directory (`~/.cpkg/bin`?)

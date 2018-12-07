@@ -60,7 +60,7 @@ library
     ghc-options: -Wall
     build-depends:
         base >=4.3 && <5,
-        containers -any,
+        containers >= 0.6.0.0,
         dhall -any,
         text -any,
         temporary -any,
