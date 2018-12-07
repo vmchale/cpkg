@@ -12,7 +12,7 @@ import           Package.C.Monad
 import           Package.C.Type
 import           System.Directory
 import           System.Directory.Executable (mkExecutable)
-import           System.FilePath             ((</>))
+import           System.FilePath             (takeFileName, (</>))
 import           System.IO.Temp              (withSystemTempDirectory)
 import           System.Process
 import           System.Process.Ext
@@ -20,45 +20,62 @@ import           System.Process.Ext
 envVarSplit :: EnvVar -> (String, String)
 envVarSplit (EnvVar ev x) = (ev, x)
 
-stepToProc :: FilePath -- ^ Package directory
+stepToProc :: FilePath -- ^ Package build directory
+           -> FilePath -- ^ Package install directory
            -> Command
            -> PkgM ()
-stepToProc fp (Call p as envs dir') = do
+stepToProc fp _ (Call p as envs dir') = do
     let dir'' = maybe fp (fp </>) dir'
         envVars = fmap envVarSplit <$> envs
     putDiagnostic ("Running " ++ p ++ " with arguments " ++ unwords as ++ " in directory " ++ dir'' ++ " with environment " ++ show envVars)
     waitProcess $ (proc p as) { cwd = Just dir'', std_in = CreatePipe, env = envVars }
-stepToProc dir' (MakeExecutable fp) = do
+stepToProc dir' _ (MakeExecutable fp) = do
     putDiagnostic ("Marking " ++ (dir' </> fp) ++ " as executable...")
     liftIO $ mkExecutable (dir' </> fp)
-stepToProc dir' (CreateDirectory d) = do
+stepToProc dir' _ (CreateDirectory d) = do
     putDiagnostic ("Creating directory " ++ (dir' </> d) ++ "...")
     liftIO $ createDirectoryIfMissing True (dir' </> d)
-stepToProc p (SymlinkBinary file') = do
+stepToProc _ p (SymlinkBinary file') = do
     binDir <- (</> "bin") <$> globalPkgDir
     let actualBin = p </> file'
-    liftIO $ createFileLink actualBin (binDir </> file')
+    liftIO $ createDirectoryIfMissing True binDir
+    liftIO $ createFileLink actualBin (binDir </> takeFileName file')
 
-processSteps :: (Traversable t) => FilePath -> t Command -> PkgM ()
-processSteps pkgDir = traverse_ (stepToProc pkgDir)
+processSteps :: (Traversable t)
+             => FilePath -- ^ Build directory
+             -> FilePath -- ^ Install directory
+             -> t Command
+             -> PkgM ()
+processSteps pkgDir instDir = traverse_ (stepToProc pkgDir instDir)
 
-configureInDir :: CPkg -> ConfigureVars -> FilePath -> PkgM ()
+configureInDir :: CPkg
+               -> ConfigureVars
+               -> FilePath -- ^ Build directory
+               -> PkgM ()
 configureInDir cpkg cfg p =
 
     let steps = configureCommand cpkg cfg
     in
         putNormal ("Configuring " ++ pkgName cpkg) *>
-        processSteps p steps
+        processSteps p (installDir cfg) steps
 
-buildInDir :: CPkg -> BuildVars -> FilePath -> PkgM ()
-buildInDir cpkg cfg p = do
+buildInDir :: CPkg
+           -> BuildVars
+           -> FilePath -- ^ Build directory
+           -> FilePath -- ^ Install directory
+           -> PkgM ()
+buildInDir cpkg cfg p p' = do
     putNormal ("Building " ++ pkgName cpkg)
-    processSteps p (buildCommand cpkg cfg)
+    processSteps p p' (buildCommand cpkg cfg)
 
-installInDir :: CPkg -> InstallVars -> FilePath -> PkgM ()
-installInDir cpkg cfg p =
+installInDir :: CPkg
+             -> InstallVars
+             -> FilePath -- ^ Build directory
+             -> FilePath -- ^ Install directory
+             -> PkgM ()
+installInDir cpkg cfg p p' =
     putNormal ("Installing " ++ pkgName cpkg) *>
-    processSteps p (installCommand cpkg cfg)
+    processSteps p p' (installCommand cpkg cfg)
 
 fetchCPkg :: CPkg
           -> FilePath -- ^ Directory for intermediate build files
@@ -119,10 +136,10 @@ forceBuildCPkg cpkg host configureVars buildVars installVars = do
 
         configureInDir cpkg (configureVars { installDir = pkgDir }) p'
 
-        buildInDir cpkg buildVars p'
+        buildInDir cpkg buildVars p' pkgDir
 
         liftIO $ createDirectoryIfMissing True pkgDir
 
-        installInDir cpkg installVars p'
+        installInDir cpkg installVars p' pkgDir
 
         registerPkg cpkg host configureVars buildVars installVars
