@@ -60,54 +60,34 @@ in
 
 {- musl: https://www.musl-libc.org/ -}
 let musl =
-  let muslConfigure =
-    λ(cfg : types.ConfigureVars) →
-      prelude.mkExes [ "tools/install.sh" ] # prelude.defaultConfigure cfg
-  in
-
   λ(v : List Natural) →
     prelude.simplePackage { name = "musl", version = v } ⫽
       { pkgUrl = "https://www.musl-libc.org/releases/musl-${prelude.showVersion v}.tar.gz"
-      , configureCommand = muslConfigure
       , installCommand = prelude.installWithBinaries [ "bin/musl-gcc" ]
+      , configureCommand = prelude.configureMkExes [ "tools/install.sh" ]
       }
 in
 
 let binutils =
-  let binutilsConfigure =
-    λ(cfg : types.ConfigureVars) →
-      prelude.defaultConfigure cfg # [ prelude.mkExe "mkinstalldirs" ]
-  in
-
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "binutils", version = v } ⫽
       { pkgUrl = "https://mirrors.ocf.berkeley.edu/gnu/binutils/binutils-${prelude.showVersion v}.tar.xz"
-      , configureCommand = binutilsConfigure
+      , configureCommand = prelude.configureMkExes [ "mkinstalldirs" ]
       , installCommand =
-        prelude.installWithBinaries [ "bin/ar", "bin/as", "bin/ld", "bin/strip", "bin/strings", "bin/readelf", "bin/objdump", "bin/nm" ]
+          prelude.installWithBinaries [ "bin/ar", "bin/as", "bin/ld", "bin/strip", "bin/strings", "bin/readelf", "bin/objdump", "bin/nm" ]
       }
 in
 
 let bison =
-  let bisonConfigure =
-    λ(cfg : types.ConfigureVars) →
-      prelude.defaultConfigure cfg # [ prelude.mkExe "build-aux/move-if-change" ]
-  in
-
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "bison", version = v } ⫽
-      { configureCommand = bisonConfigure
+      { configureCommand = prelude.configureMkExes [ "build-aux/move-if-change" ]
       , installCommand = prelude.installWithBinaries [ "bin/bison", "bin/yacc" ]
       }
 in
 
 {- cmake https://cmake.org/ -}
 let cmake =
-  let bootstrapConfigure =
-    λ(cfg : types.ConfigureVars) →
-      [ prelude.mkExe "bootstrap" ] # prelude.defaultConfigure cfg
-  in
-
   λ(cfg : { version : List Natural, patch : Natural }) →
     let patchString = Natural/show cfg.patch
     in
@@ -119,7 +99,7 @@ let cmake =
       , pkgVersion = cfg.version # [ cfg.patch ]
       , pkgUrl = "https://cmake.org/files/v${versionString}/cmake-${versionString}.${patchString}.tar.gz"
       , pkgSubdir = "cmake-${versionString}.${patchString}"
-      , configureCommand = bootstrapConfigure
+      , configureCommand = prelude.configureMkExes [ "bootstrap" ]
       }
 in
 
@@ -155,17 +135,9 @@ let fltk =
 in
 
 let gawk =
-  let gawkConfigure =
-    λ(cfg : types.ConfigureVars) →
-      prelude.defaultConfigure cfg
-        # [ prelude.mkExe "install-sh"
-          , prelude.mkExe "extension/build-aux/install-sh"
-          ]
-  in
-
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "gawk", version = v } ⫽
-      { configureCommand = gawkConfigure
+      { configureCommand = prelude.configureMkExes [ "install-sh", "extension/build-aux/install-sh" ]
       , installCommand = prelude.installWithBinaries [ "bin/gawk", "bin/awk" ]
       }
 in
@@ -178,15 +150,10 @@ let gc =
 in
 
 let git =
-  let gitConfigure =
-    λ(cfg : types.ConfigureVars) →
-      prelude.defaultConfigure cfg # prelude.mkExes [ "check_bindir" ]
-  in
-
   λ(v : List Natural) →
     prelude.simplePackage { name = "git", version = v } ⫽
       { pkgUrl = "https://mirrors.edge.kernel.org/pub/software/scm/git/git-${prelude.showVersion v}.tar.xz"
-      , configureCommand = gitConfigure
+      , configureCommand = prelude.configureMkExes [ "check_bindir" ]
       , installCommand = prelude.installWithBinaries [ "bin/git" ]
       , pkgBuildDeps = [ prelude.unbounded "gettext" ]
       }
@@ -249,15 +216,10 @@ let glibc =
 in
 
 let gmp =
-  let gmpConfigure =
-    λ(cfg : types.ConfigureVars) →
-      prelude.defaultConfigure cfg # [ prelude.mkExe "mpn/m4-ccas" ]
-  in
-
   λ(v : List Natural) →
     prelude.simplePackage { name = "gmp", version = v } ⫽
       { pkgUrl = "https://gmplib.org/download/gmp/gmp-${prelude.showVersion v}.tar.xz"
-      , configureCommand = gmpConfigure
+      , configureCommand = prelude.configureMkExes [ "mpn/m4-ccas" ]
       -- TODO: run 'make check' if not cross-compiling?
       }
 in
@@ -355,26 +317,15 @@ let unistring =
 in
 
 let valgrind =
-  let valgrindConfigure =
-    λ(cfg : types.ConfigureVars) →
-      prelude.defaultConfigure cfg # [ prelude.mkExe "auxprogs/make_or_upd_vgversion_h" ]
-  in
-
   λ(v : List Natural) →
     prelude.simplePackage { name = "valgrind", version = v } ⫽
       { pkgUrl = "http://www.valgrind.org/downloads/valgrind-${prelude.showVersion v}.tar.bz2"
-      , configureCommand = valgrindConfigure
       , installCommand = prelude.installWithBinaries [ "bin/valgrind" ]
+      , configureCommand = prelude.configureMkExes [ "auxprogs/make_or_upd_vgversion_h" ]
       }
 in
 
 let vim =
-  let vimConfigure =
-    λ(cfg : types.ConfigureVars) →
-      prelude.mkExes [ "src/configure", "src/auto/configure", "src/which.sh" ]
-        # prelude.defaultConfigure cfg
-  in
-
   let squishVersion =
     λ(x : List Natural) → concatMap Natural Natural/show x
   in
@@ -385,7 +336,7 @@ let vim =
       , pkgVersion = v
       , pkgUrl = "http://ftp.vim.org/vim/unix/vim-${prelude.showVersion v}.tar.bz2"
       , pkgSubdir = "vim${squishVersion v}"
-      , configureCommand = vimConfigure
+      , configureCommand = prelude.configureMkExes [ "src/configure", "src/auto/configure", "src/which.sh" ]
       }
 in
 
@@ -460,8 +411,7 @@ in
 let libnettle =
   λ(v : List Natural) →
     prelude.simplePackage { name = "nettle", version = v } ⫽
-      { pkgUrl = "https://ftp.gnu.org/gnu/nettle/nettle-${prelude.showVersion v}.tar.gz"
-      }
+      { pkgUrl = "https://ftp.gnu.org/gnu/nettle/nettle-${prelude.showVersion v}.tar.gz" }
 in
 
 [ binutils [2,31]
