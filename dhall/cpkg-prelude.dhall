@@ -164,10 +164,15 @@ let mkCFlags =
     { var = "CPPFLAGS", value = flag }
 in
 
+let mkPathVar =
+  λ(binDirs : List Text) →
+    concatMap Text (λ(dir : Text) → "${dir}:") binDirs
+in
+
 let defaultPath =
-  λ(os : types.OS) →
-    if isUnix os
-      then [ { var = "PATH", value = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" } ] : List types.EnvVar
+  λ(cfg : types.ConfigureVars) →
+    if isUnix cfg.configOS
+      then [ { var = "PATH", value = mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" } ] : List types.EnvVar
       else [] : List types.EnvVar
 in
 
@@ -182,7 +187,7 @@ let defaultConfigure =
     , call (defaultCall ⫽ { program = "./configure"
                           , arguments = modifyArgs [ "--prefix=${cfg.installDir}" ]
                           , environment =
-                            [ defaultPath cfg.configOS # [ mkLDFlags cfg.linkDirs, mkCFlags cfg.includeDirs ] ] : Optional (List types.EnvVar)
+                            [ defaultPath cfg # [ mkLDFlags cfg.linkDirs, mkCFlags cfg.includeDirs ] ] : Optional (List types.EnvVar)
                           })
     ]
 in
