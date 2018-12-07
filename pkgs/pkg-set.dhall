@@ -206,10 +206,10 @@ let glibc =
         [ "configure", "scripts/mkinstalldirs", "scripts/rellns-sh" ]
           # [ prelude.createDir "build"
             , prelude.call { program = "../configure"
-                          , arguments = modifyArgs [ "--prefix=${cfg.installDir}" ]
-                          , environment = prelude.defaultEnv
-                          , procDir = buildDir
-                          }
+                           , arguments = modifyArgs [ "--prefix=${cfg.installDir}" ]
+                           , environment = prelude.defaultEnv
+                           , procDir = buildDir
+                           }
             ]
   in
 
@@ -411,7 +411,8 @@ in
 
 let wget =
   λ(v : List Natural) →
-    prelude.makeGnuExe { name = "wget", version = v }
+    prelude.makeGnuExe { name = "wget", version = v } ⫽
+      { pkgUrl = "https://ftp.gnu.org/gnu/wget/wget-${version}.tar.gz" }
 in
 
 [ binutils [2,31]
