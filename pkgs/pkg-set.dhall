@@ -26,6 +26,7 @@ let gnupg =
                   , prelude.lowerBound { name = "libassuan", lower = [2,5,0] }
                   , prelude.lowerBound { name = "libksba", lower = [1,3,4] }
                   ]
+      , configureCommand = prelude.configureMkExes [ "test/pkits/inittests" ]
       }
 in
 
@@ -430,7 +431,6 @@ let gnutls =
     prelude.simplePackage { name = "gnutls", version = cfg.version # [ cfg.patch ] } ⫽
       { pkgUrl = "https://www.gnupg.org/ftp/gcrypt/gnutls/v${versionString}/gnutls-${versionString}.${Natural/show cfg.patch}.tar.xz"
       , pkgDeps = [ prelude.lowerBound { name = "nettle", lower = [3,4] } ]
-      , configureCommand = prelude.configureMkExes [ "inittest" ]
       }
 in
 
