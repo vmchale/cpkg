@@ -325,6 +325,7 @@ let perl5 =
     prelude.simplePackage { name = "perl", version = v } ⫽
       { pkgUrl = "https://www.cpan.org/src/5.0/perl-${prelude.showVersion v}.tar.gz"
       , configureCommand = perlConfigure
+      , installCommand = prelude.installWithBinaries [ "bin/perl", "bin/cpan" ]
       }
 in
 
