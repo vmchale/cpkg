@@ -27,6 +27,7 @@ let gnupg =
                   , prelude.lowerBound { name = "libksba", lower = [1,3,4] }
                   ]
       , configureCommand = prelude.configureMkExes [ "tests/inittests", "tests/runtest", "tests/pkits/inittests" ]
+      , installCommand = prelude.installWithBinaries [ "bin/gpg" ]
       }
 in
 
