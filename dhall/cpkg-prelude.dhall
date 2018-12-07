@@ -202,9 +202,10 @@ let defaultInstall =
 in
 
 let installWithBinaries =
-  λ(cfg : { installVars : types.OS, bins : List Text }) →
-    defaultInstall cfg.installVars
-      # map Text types.Command (λ(bin : Text) → symlinkBinary bin) cfg.bins
+  λ(bins : List Text) →
+  λ(installVars : types.OS) →
+    defaultInstall installVars
+      # map Text types.Command (λ(bin : Text) → symlinkBinary bin) bins
 in
 
 let unbounded =
