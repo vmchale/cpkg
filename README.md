@@ -17,6 +17,7 @@ with better support for cross-compilation.
 - [Installation](#installation)
   - [Shell Completions](#shell-completions)
 - [Example](#example)
+  - [Configuration](#configuration)
   - [Dhall Prelude](#dhall-prelude)
 - [Security](#security)
 - [Contents](#contents)
@@ -36,6 +37,14 @@ eval "$(cpkg --bash-completion-script cpkg)"
 ```
 
 ## Example
+
+To install `tar`:
+
+```
+cpkg install tar
+```
+
+### Configuration
 
 Here is the configuration for Valgrind:
 
@@ -96,11 +105,11 @@ Lovingly provided by [polyglot](https://github.com/vmchale/polyglot):
 -------------------------------------------------------------------------------
  Cabal                    1         118          108            0           10
  Cabal Project            1           2            2            0            0
- Dhall                    4         965          839            0          126
+ Dhall                    4         974          847            0          127
  Haskell                 22        1065          848           24          193
  Markdown                 4         195          166            0           29
  YAML                     4         155          140            0           15
 -------------------------------------------------------------------------------
- Total                   36        2500         2103           24          373
+ Total                   36        2509         2111           24          374
 -------------------------------------------------------------------------------
 ```
