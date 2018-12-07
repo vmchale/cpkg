@@ -23,6 +23,7 @@
 - [ ] Completions
   - [ ] `cpkg install` should use `cpkg list`?
 - [ ] Should `check-set` be hidden in help?
+- [ ] Custom package directories
 # Performance
 - [ ] Dhall is slow
 # Bugs

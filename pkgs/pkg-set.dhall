@@ -26,7 +26,7 @@ let gnupg =
                   , prelude.lowerBound { name = "libassuan", lower = [2,5,0] }
                   , prelude.lowerBound { name = "libksba", lower = [1,3,4] }
                   ]
-      , configureCommand = prelude.configureMkExes [ "tests/inittests", "tests/runtest" ]
+      , configureCommand = prelude.configureMkExes [ "tests/inittests", "tests/runtest", "tests/pkits/inittests" ]
       }
 in
 
