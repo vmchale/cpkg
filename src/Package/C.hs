@@ -20,6 +20,7 @@ module Package.C (
                  , getPkgs
                  -- * Packaging
                  , displayPackageSet
+                 , allPackages
                  ) where
 
 import           Package.C.Build

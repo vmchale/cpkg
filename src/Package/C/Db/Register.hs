@@ -9,6 +9,7 @@ module Package.C.Db.Register ( registerPkg
                              , printLinkerFlags
                              , packageInstalled
                              , unregisterPkg
+                             , allPackages
                              ) where
 
 import           Control.Composition    ((.****))
@@ -16,7 +17,7 @@ import           Control.Monad.IO.Class (MonadIO (..))
 import           Data.Binary            (decode, encode)
 import qualified Data.ByteString        as BS
 import qualified Data.ByteString.Lazy   as BSL
-import           Data.Foldable          (sequenceA_)
+import           Data.Foldable          (toList)
 import           Data.Hashable          (Hashable (hash))
 import qualified Data.Set               as S
 import           Lens.Micro             (over)
@@ -28,6 +29,11 @@ import           System.Directory
 import           System.FilePath        ((</>))
 
 type FlagPrint = forall m. MonadIO m => BuildCfg -> m String
+
+allPackages :: IO [String]
+allPackages = do
+    (InstallDb index) <- strictIndex
+    pure (buildName <$> toList index)
 
 printCompilerFlags :: String -> Maybe String -> IO ()
 printCompilerFlags = printFlagsWith buildCfgToCFlags

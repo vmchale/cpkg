@@ -20,6 +20,7 @@
 - [ ] Bootstrap "fancy" tar?
 - [ ] Package "components"? Like cabal: build executables or not...
 - [ ] Symlink manpages
+- [ ] Completions for `cpkg install` should use `cpkg list`?
 # Performance
 - [ ] Dhall is slow
 # Bugs

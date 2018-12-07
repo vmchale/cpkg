@@ -12,13 +12,13 @@ import           System.Directory    (doesDirectoryExist, removeDirectoryRecursi
 cpkgVersion :: V.Version
 cpkgVersion = P.version
 
-data DumpTarget = Linker
-                | Compiler
+data DumpTarget = Linker { _pkgGet :: String }
+                | Compiler { _pkgGet :: String }
 
 data Command = Install { _pkgName :: String, _verbosity :: Verbosity, _target :: Maybe Platform }
              | Check { _dhallFile :: String, _verbosity :: Verbosity }
              | CheckSet { _dhallFile :: String, _verbosity :: Verbosity }
-             | Dump { _dumpTarget :: DumpTarget, _pkgName :: String, _host :: Maybe Platform }
+             | Dump { _dumpTarget :: DumpTarget, _host :: Maybe Platform }
              | List
              | Nuke
 
@@ -47,8 +47,8 @@ versionInfo = infoOption ("atspkg version: " ++ V.showVersion cpkgVersion) (shor
 
 dumpTarget :: Parser DumpTarget
 dumpTarget = hsubparser
-    (command "linker" (info (pure Linker) (progDesc "Dump linker flags for a package"))
-    <> command "compiler" (info (pure Compiler) (progDesc "Dump compiler flags for a package"))
+    (command "linker" (info (Linker <$> package) (progDesc "Dump linker flags for a package"))
+    <> command "compiler" (info (Compiler <$> package) (progDesc "Dump compiler flags for a package"))
     )
 
 userCmd :: Parser Command
@@ -89,14 +89,17 @@ target = optional
     <> help "Host platform, e.g. arm-linux-gnueabihf"
     ))
 
-dump :: Parser Command
-dump = Dump
-    <$> dumpTarget
-    <*>
+package :: Parser String
+package =
     argument str
     (metavar "PACKAGE"
     <> help "Name of package you want to link against"
+    <> completer (listIOCompleter allPackages)
     )
+
+dump :: Parser Command
+dump = Dump
+    <$> dumpTarget
     <*> target
 
 dhallFile :: Parser String
@@ -112,8 +115,8 @@ run (Install pkId v host') =
     runPkgM v $ buildByName (T.pack pkId) host'
 run (Check file v) = void $ getCPkg v file
 run (CheckSet file v) = void $ getPkgs v file
-run (Dump Linker name host) = printLinkerFlags name host
-run (Dump Compiler name host) = printCompilerFlags name host
+run (Dump (Linker name) host) = printLinkerFlags name host
+run (Dump (Compiler name) host) = printCompilerFlags name host
 run Nuke = do
     pkgDir <- globalPkgDir
     exists <- doesDirectoryExist pkgDir
