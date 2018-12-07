@@ -80,6 +80,8 @@ let binutils =
     prelude.makeGnuExe { name = "binutils", version = v } ⫽
       { pkgUrl = "https://mirrors.ocf.berkeley.edu/gnu/binutils/binutils-${prelude.showVersion v}.tar.xz"
       , configureCommand = binutilsConfigure
+      , installCommand =
+        prelude.installWithBinaries [ "bin/ar", "bin/as", "bin/ld", "bin/strip", "bin/strings", "bin/readelf", "bin/objdump", "bin/nm" ]
       }
 in
 

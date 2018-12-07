@@ -251,6 +251,7 @@ let makeGnuExe =
   λ(pkg : { name : Text, version : List Natural}) →
     simplePackage pkg ⫽
       { pkgUrl = "https://ftp.gnu.org/gnu/${pkg.name}/${pkg.name}-${showVersion pkg.version}.tar.xz"
+      , installCommand = prelude.installWithBinaries [ "bin/${pkg.name}" ]
       }
 in
 
