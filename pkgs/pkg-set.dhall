@@ -64,11 +64,8 @@ let musl =
   in
 
   λ(v : List Natural) →
-    prelude.defaultPackage ⫽
-      { pkgName = "musl"
-      , pkgVersion = v
-      , pkgUrl = "https://www.musl-libc.org/releases/musl-${prelude.showVersion v}.tar.gz"
-      , pkgSubdir = "musl-${prelude.showVersion v}"
+    prelude.simplePackage { name = "musl", version = v } ⫽
+      { pkgUrl = "https://www.musl-libc.org/releases/musl-${prelude.showVersion v}.tar.gz"
       , configureCommand = muslConfigure
       }
 in
@@ -121,21 +118,15 @@ in
 
 let curl =
   λ(v : List Natural) →
-    prelude.defaultPackage ⫽
-      { pkgName = "curl"
-      , pkgVersion = v
-      , pkgUrl = "https://curl.haxx.se/download/curl-${prelude.showVersion v}.tar.xz"
-      , pkgSubdir = "curl-${prelude.showVersion v}"
+    prelude.simplePackage { name = "curl", version = v } ⫽
+      { pkgUrl = "https://curl.haxx.se/download/curl-${prelude.showVersion v}.tar.xz"
       }
 in
 
 let dbus =
   λ(v : List Natural) →
-    prelude.defaultPackage ⫽
-      { pkgName = "dbus"
-      , pkgVersion = v
-      , pkgUrl = "https://dbus.freedesktop.org/releases/dbus/dbus-${prelude.showVersion v}.tar.gz"
-      , pkgSubdir = "dbus-${prelude.showVersion v}"
+    prelude.simplePackage { name = "dbus", version = v } ⫽
+      { pkgUrl = "https://dbus.freedesktop.org/releases/dbus/dbus-${prelude.showVersion v}.tar.gz"
       }
 in
 
@@ -262,11 +253,8 @@ in
 
 let harfbuzz =
   λ(v : List Natural) →
-    prelude.defaultPackage ⫽
-      { pkgName = "harfbuzz"
-      , pkgVersion = v
-      , pkgUrl = "https://www.freedesktop.org/software/harfbuzz/release/harfbuzz-${prelude.showVersion v}.tar.bz2"
-      , pkgSubdir = "harfbuzz-${prelude.showVersion v}"
+    prelude.simplePackage { name = "harfbuzz", version = v } ⫽
+      { pkgUrl = "https://www.freedesktop.org/software/harfbuzz/release/harfbuzz-${prelude.showVersion v}.tar.bz2"
       }
 in
 
@@ -333,22 +321,16 @@ let perl5 =
   in
 
   λ(v : List Natural) →
-    prelude.defaultPackage ⫽
-      { pkgName = "perl"
-      , pkgVersion = v
-      , pkgUrl = "https://www.cpan.org/src/5.0/perl-${prelude.showVersion v}.tar.gz"
-      , pkgSubdir = "perl-${prelude.showVersion v}"
+    prelude.simplePackage { name = "perl", version = v } ⫽
+      { pkgUrl = "https://www.cpan.org/src/5.0/perl-${prelude.showVersion v}.tar.gz"
       , configureCommand = perlConfigure
       }
 in
 
 let png =
   λ(v : List Natural) →
-    prelude.defaultPackage ⫽
-      { pkgName = "libpng"
-      , pkgVersion = v
-      , pkgUrl = "https://download.sourceforge.net/libpng/libpng-${prelude.showVersion v}.tar.xz"
-      , pkgSubdir = "libpng-${prelude.showVersion v}"
+    prelude.simplePackage { name = "libpng", version = v } ⫽
+      { pkgUrl = "https://download.sourceforge.net/libpng/libpng-${prelude.showVersion v}.tar.xz"
       }
 in
 
