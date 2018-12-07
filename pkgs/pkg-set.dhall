@@ -67,6 +67,7 @@ let musl =
     prelude.simplePackage { name = "musl", version = v } ⫽
       { pkgUrl = "https://www.musl-libc.org/releases/musl-${prelude.showVersion v}.tar.gz"
       , configureCommand = muslConfigure
+      { installCommand = prelude.installWithBinaries [ "bin/musl-gcc" ] }
       }
 in
 

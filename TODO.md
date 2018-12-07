@@ -46,6 +46,7 @@
 - [ ] ImageMagick
 - [ ] GHC cross-compiler?
 - [ ] https://sourceforge.net/projects/infozip/files/
+- [ ] https://www.gnu.org/software/coreutils/
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in
