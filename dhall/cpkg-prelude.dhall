@@ -105,13 +105,13 @@ let mkExes =
 in
 
 let defaultEnv =
-  [] : Optional (List types.EnvVar)
+  None (List types.EnvVar)
 in
 
 let defaultCall =
   { arguments = [] : List Text
   , environment = defaultEnv
-  , procDir = [] : Optional Text
+  , procDir = None Text
   }
 in
 
@@ -196,10 +196,12 @@ let defaultConfigure =
     , call (defaultCall ⫽ { program = "./configure"
                           , arguments = modifyArgs [ "--prefix=${cfg.installDir}" ]
                           , environment =
-                            [ defaultPath cfg # [ mkLDFlags cfg.linkDirs, mkCFlags cfg.includeDirs, mkPkgConfigVar cfg.linkDirs ] ] : Optional (List types.EnvVar)
+                              Some (defaultPath cfg # [ mkLDFlags cfg.linkDirs, mkCFlags cfg.includeDirs, mkPkgConfigVar cfg.linkDirs ])
                           })
     ]
 in
+
+-- TODO: configureWithFlags...
 
 let configureMkExes =
   λ(exes : List Text) →
@@ -295,7 +297,7 @@ let cmakeConfigure =
     , call { program = "cmake"
            , arguments = [ "../", "-DCMAKE_INSTALL_PREFIX:PATH=${cfg.installDir}" ]
            , environment = defaultEnv
-           , procDir = [ "build" ] : Optional Text
+           , procDir = Some "build"
            }
     ]
 in
@@ -305,7 +307,7 @@ let cmakeBuild =
     [ call { program = "cmake"
            , arguments = [ "--build", ".", "--config", "Release", "--", "-j", Natural/show cfg.cpus ]
            , environment = defaultEnv
-           , procDir = [ "build" ] : Optional Text
+           , procDir = Some "build"
            }
     ]
 in
@@ -315,7 +317,7 @@ let cmakeInstall =
     [ call { program = "cmake"
            , arguments = [ "--build", ".", "--target", "install", "--config", "Release" ]
            , environment = defaultEnv
-           , procDir = [ "build" ] : Optional Text
+           , procDir = Some "build"
            }
     ]
 in

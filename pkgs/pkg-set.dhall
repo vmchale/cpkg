@@ -162,7 +162,7 @@ in
 
 let glibc =
   let buildDir =
-    [ "build" ] : Optional Text
+    Some "build"
   in
 
   let glibcConfigure =
