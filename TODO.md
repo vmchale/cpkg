@@ -45,6 +45,7 @@
 - [ ] librsvg
 - [ ] ImageMagick
 - [ ] GHC cross-compiler?
+- [ ] https://sourceforge.net/projects/infozip/files/
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in

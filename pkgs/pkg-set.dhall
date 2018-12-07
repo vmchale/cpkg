@@ -124,6 +124,7 @@ let curl =
   λ(v : List Natural) →
     prelude.simplePackage { name = "curl", version = v } ⫽
       { pkgUrl = "https://curl.haxx.se/download/curl-${prelude.showVersion v}.tar.xz"
+      , installCommand = prelude.installWithBinaries [ "bin/curl" ]
       }
 in
 
