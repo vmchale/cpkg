@@ -389,7 +389,6 @@ let gnutls =
       }
 in
 
-
 let lapack =
   λ(v : List Natural) →
     prelude.cmakePackage ⫽
@@ -405,7 +404,7 @@ let cairo =
   λ(v : List Natural) →
     prelude.simplePackage { name = "cairo", version = v } ⫽
      { pkgUrl = "https://www.cairographics.org/releases/cairo-${prelude.showVersion v}.tar.xz"
-     , pkgBuildDeps = [ prelude.unbounded "libpng" ]
+     , pkgDeps = [ prelude.unbounded "libpng" ]
      }
 in
 
@@ -437,6 +436,12 @@ let openssl =
       }
 in
 
+let libssh2 =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libssh2", version = v } ⫽
+      { pkgUrl = "https://www.libssh2.org/download/libssh2-1.8.0.tar.gz" }
+in
+
 [ binutils [2,31]
 , bison [3,2,2]
 , cairo [1,16,0]
@@ -461,6 +466,7 @@ in
 , libgpgError [1,32]
 , libksba [1,3,5]
 , libnettle [3,4,1]
+, libssh2 [1,8,0]
 , libuv [1,24,0]
 , musl [1,1,20]
 , nasm [2,14]
