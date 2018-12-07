@@ -39,7 +39,7 @@ before_install:
 
 script:
   - cabal new-build all
-  - cabal new-install dhall
+  - cabal new-install dhall --overwrite-policy=always to overwrite
   - cat dhall/cpkg-types.dhall | dhall
   - cat dhall/cpkg-prelude.dhall | dhall
   - cabal new-run cpkg -- check-set pkgs/pkg-set.dhall
