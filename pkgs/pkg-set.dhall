@@ -181,8 +181,10 @@ let git =
 
   let gitBuild =
     λ(cfg : types.BuildVars) →
-      [ call (defaultCall ⫽ { program = makeExe cfg.buildOS
-                            , arguments = [ "NO_GETTEXT=1", "-j${Natural/show cfg.cpus}" ] })
+      [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
+                                            , arguments = [ "-j${Natural/show cfg.cpus}" ]
+                                            , environment = [ [ { var = "NO_GETTEXT", value = "1" } ] # prelude.defaultPath cfg.buildOS ] : Optional (List types.EnvVar)
+                                            })
       ]
   in
 
