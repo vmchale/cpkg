@@ -184,7 +184,7 @@ let git =
     prelude.simplePackage { name = "git", version = v } ⫽
       { pkgUrl = "https://mirrors.edge.kernel.org/pub/software/scm/git/git-${prelude.showVersion v}.tar.xz"
       , configureCommand = gitConfigure
-      , installCommand = prelude.installWithBinaries [ "bin/git"]
+      , installCommand = prelude.installWithBinaries [ "bin/git" ]
       , pkgBuildDeps = [ prelude.unbounded "gettext" ]
       }
 in
