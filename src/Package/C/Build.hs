@@ -126,6 +126,8 @@ forceBuildCPkg cpkg host configureVars buildVars installVars = do
 
     pkgDir <- cPkgToDir cpkg host configureVars buildVars installVars
 
+    liftIO $ createDirectoryIfMissing True pkgDir
+
     withSystemTempDirectory "cpkg" $ \p -> do
 
         putDiagnostic ("Setting up temporary directory in " ++ p)
@@ -137,8 +139,6 @@ forceBuildCPkg cpkg host configureVars buildVars installVars = do
         configureInDir cpkg (configureVars { installDir = pkgDir }) p'
 
         buildInDir cpkg buildVars p' pkgDir
-
-        liftIO $ createDirectoryIfMissing True pkgDir
 
         installInDir cpkg installVars p' pkgDir
 

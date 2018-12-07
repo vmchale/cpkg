@@ -439,12 +439,19 @@ let lapack =
       , pkgVersion = v
       , pkgUrl = "http://www.netlib.org/lapack/lapack-${prelude.showVersion v}.tar.gz"
       , pkgSubdir = "lapack-${prelude.showVersion v}"
-      , pkgBuildDeps = [ prelude.unbounded "cmake" ]
+      , pkgBuildDeps = [ prelude.unbounded "cmake", prelude.unbounded "gfortran" ]
       }
+in
+
+let cairo =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "cairo", version = v } ⫽
+     { pkgUrl = "https://www.cairographics.org/releases/cairo-${prelude.showVersion v}.tar.xz" }
 in
 
 [ binutils [2,31]
 , bison [3,2,2]
+, cairo [1,16,0]
 , cmake { version = [3,13], patch = 0 }
 , curl [7,62,0]
 , dbus [1,12,10]
