@@ -46,19 +46,17 @@ in
 let types = https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-types.dhall
 in
 
-let valgrindConfigure =
-  λ(cfg : types.ConfigureVars) →
-    prelude.defaultConfigure cfg # [ prelude.mkExe "auxprogs/make_or_upd_vgversion_h" ]
-in
-
 let valgrind =
+  let valgrindConfigure =
+    λ(cfg : types.ConfigureVars) →
+      prelude.defaultConfigure cfg # [ prelude.mkExe "auxprogs/make_or_upd_vgversion_h" ]
+  in
+
   λ(v : List Natural) →
-    prelude.defaultPackage ⫽
-      { pkgName = "valgrind"
-      , pkgVersion = v
-      , pkgUrl = "http://www.valgrind.org/downloads/valgrind-${prelude.showVersion v}.tar.bz2"
-      , pkgSubdir = "valgrind-${prelude.showVersion v}"
+    prelude.simplePackage { name = "valgrind", version = v } ⫽
+      { pkgUrl = "http://www.valgrind.org/downloads/valgrind-${prelude.showVersion v}.tar.bz2"
       , configureCommand = valgrindConfigure
+      , installCommand = prelude.installWithBinaries [ "bin/valgrind" ]
       }
 in
 
@@ -98,11 +96,11 @@ Lovingly provided by [polyglot](https://github.com/vmchale/polyglot):
 -------------------------------------------------------------------------------
  Cabal                    1         119          109            0           10
  Cabal Project            1           2            2            0            0
- Dhall                    4         940          817            0          123
+ Dhall                    4         941          818            0          123
  Haskell                 22        1035          827           23          185
  Markdown                 4         191          162            0           29
  YAML                     4         155          140            0           15
 -------------------------------------------------------------------------------
- Total                   36        2442         2057           23          362
+ Total                   36        2443         2058           23          362
 -------------------------------------------------------------------------------
 ```
