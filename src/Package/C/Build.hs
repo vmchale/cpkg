@@ -1,4 +1,6 @@
 module Package.C.Build ( buildCPkg
+                       , getVars
+                       , cPkgToDir
                        ) where
 
 import           Control.Concurrent          (getNumCapabilities)
@@ -107,7 +109,7 @@ getVars :: Maybe Platform
         -> [FilePath] -- ^ Library directories
         -> [FilePath] -- ^ Include directories
         -> PkgM (ConfigureVars, BuildVars, InstallVars)
-getVars host incls links = do
+getVars host links incls = do
     nproc <- liftIO getNumCapabilities
     let configureVars = ConfigureVars "" host incls links dhallOS
         buildVars = BuildVars nproc dhallOS

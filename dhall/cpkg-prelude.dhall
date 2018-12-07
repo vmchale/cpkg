@@ -161,7 +161,7 @@ let mkCFlags =
     let flag = concatMap Text (λ(dir : Text) → "-I${dir} ") libDirs
     in
 
-    { var = "CFLAGS", value = flag }
+    { var = "CPPFLAGS", value = flag }
 in
 
 let defaultPath =
