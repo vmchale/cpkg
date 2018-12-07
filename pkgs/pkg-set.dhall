@@ -390,6 +390,7 @@ let xz =
   λ(v : List Natural) →
     prelude.simplePackage { name = "xz", version = v } ⫽
       { pkgUrl = "https://tukaani.org/xz/xz-${prelude.showVersion v}.tar.xz"
+      , installCommand = prelude.installWithBinaries [ "bin/xz" ]
       }
 in
 
