@@ -58,6 +58,8 @@
 - [ ] https://sourceforge.net/projects/infozip/files/
 - [ ] https://www.gnu.org/software/coreutils/
 - [ ] autoconf/automake
+- [ ] fdupes
+- [ ] Figlet
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in

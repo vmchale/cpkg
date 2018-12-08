@@ -83,6 +83,7 @@ let bison =
     prelude.makeGnuExe { name = "bison", version = v } ⫽
       { configureCommand = prelude.configureMkExes [ "build-aux/move-if-change" ]
       , installCommand = prelude.installWithBinaries [ "bin/bison", "bin/yacc" ]
+      , pkgBuildDeps = [ prelude.unbounded "m4" ]
       }
 in
 
