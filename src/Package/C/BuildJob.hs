@@ -11,7 +11,7 @@ import           System.FilePath           ((</>))
 
 -- TODO: pass link flags
 buildAll :: [CPkg] -> Maybe Platform -> PkgM ()
-buildAll pkgs host = buildWithContext (nubOrdOn pkgName pkgs) host [] [] []
+buildAll pkgs host = buildWithContext pkgs host [] [] []
 
 buildWithContext :: [CPkg]
                  -> Maybe Platform

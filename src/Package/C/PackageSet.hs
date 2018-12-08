@@ -61,10 +61,16 @@ getDeps pkgName' set@(PackageSet ps) = do
             let self = zip (repeat pkgName') xs
             pure (transitive ++ self)
 
+prePlan :: PackId -> PackageSet -> Maybe [PackId]
+prePlan = fmap reverse . topSort . edges <=*< getDeps
+
 -- TODO: concurrent builds
 pkgPlan :: PackId -> PackageSet -> Maybe [PackId]
-pkgPlan pkId set = (++ [pkId]) <$> plan pkId set
-    where plan = fmap reverse . topSort . edges <=*< getDeps
+pkgPlan pkId set = do
+    plan' <- prePlan pkId set
+    if pkId `elem` plan'
+        then pure plan'
+        else pure (plan' ++ [pkId])
 
 pkgs :: PackId -> PackageSet -> Maybe [CPkg]
 pkgs pkId set@(PackageSet pset) = do
