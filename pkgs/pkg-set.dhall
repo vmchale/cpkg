@@ -266,8 +266,7 @@ in
 let ncurses =
   λ(v : List Natural) →
     prelude.simplePackage { name = "ncurses", version = v } ⫽
-      { pkgUrl = "https://invisible-mirror.net/archives/ncurses/ncurses-${prelude.showVersion v}.tar.gz"
-      }
+      { pkgUrl = "https://invisible-mirror.net/archives/ncurses/ncurses-${prelude.showVersion v}.tar.gz" }
 in
 
 let pcre2 =
@@ -340,7 +339,7 @@ let vim =
       , pkgSubdir = "vim${squishVersion v}"
       , configureCommand = prelude.configureMkExes [ "src/configure", "src/auto/configure", "src/which.sh" ]
       , installCommand = prelude.installWithBinaries [ "bin/vim", "bin/xxd" ]
-      , pkgDeps = [ prelude.unbounded "ncurses" ]
+      , pkgDeps = [ prelude.unbounded "ncurses" ] -- , prelude.unbounded "glibc" ]
       }
 in
 
