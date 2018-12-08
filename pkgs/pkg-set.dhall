@@ -186,20 +186,20 @@ let glibc =
   let glibcBuild =
     λ(cfg : types.BuildVars) →
       [ prelude.call { program = prelude.makeExe cfg.buildOS
-                    , arguments = [ "-j${Natural/show cfg.cpus}" ]
-                    , environment = prelude.defaultEnv
-                    , procDir = buildDir
-                    }
+                     , arguments = [ "-j${Natural/show cfg.cpus}" ]
+                     , environment = prelude.defaultEnv
+                     , procDir = buildDir
+                     }
       ]
   in
 
   let glibcInstall =
     λ(os : types.OS) →
       [ prelude.call { program = prelude.makeExe os
-                    , arguments = [ "install" ]
-                    , environment = prelude.defaultEnv
-                    , procDir = buildDir
-                    }
+                     , arguments = [ "install" ]
+                     , environment = prelude.defaultEnv
+                     , procDir = buildDir
+                     }
       ]
   in
 
@@ -212,6 +212,7 @@ let glibc =
       , configureCommand = glibcConfigure
       , buildCommand = glibcBuild
       , installCommand = glibcInstall
+      , pkgBuildDeps = [ prelude.unbounded "bison" ]
       }
 in
 
