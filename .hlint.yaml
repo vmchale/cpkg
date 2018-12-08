@@ -32,3 +32,4 @@
 - fixity: infixr 3 ***
 - fixity: infixr 3 &&&
 - fixity: infixr 1 <=<
+- fixity: infixr 1 <=*<

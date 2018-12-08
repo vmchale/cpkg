@@ -340,6 +340,7 @@ let vim =
       , pkgSubdir = "vim${squishVersion v}"
       , configureCommand = prelude.configureMkExes [ "src/configure", "src/auto/configure", "src/which.sh" ]
       , installCommand = prelude.installWithBinaries [ "bin/vim", "bin/xxd" ]
+      , pkgDeps = [ prelude.unbounded "ncurses" ]
       }
 in
 

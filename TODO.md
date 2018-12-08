@@ -41,6 +41,7 @@
 - [ ] Cache package downloads globally
 - [ ] No database w/ graph right now
 - [ ] Build step should take OS as an argument
+- [ ] Make e.g. `vim` depend on `glibc`
 # Packages
 - [ ] Lua (`http://www.lua.org/ftp/lua-5.3.5.tar.gz`)
 - [ ] jemalloc
