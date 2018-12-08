@@ -213,7 +213,7 @@ let glibc =
       , configureCommand = glibcConfigure
       , buildCommand = glibcBuild
       , installCommand = glibcInstall
-      , pkgBuildDeps = [ prelude.unbounded "bison" ]
+      , pkgBuildDeps = [ prelude.unbounded "bison", prelude.unbounded "gawk" ]
       }
 in
 
