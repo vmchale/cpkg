@@ -32,17 +32,14 @@
 # Performance
 - [ ] Dhall is slow
 # Bugs
-- [ ] `mkExe` and `makeExe` are too similar
-- [ ] `glibc` example is broken
 - [ ] Shouldn't be able to `cpkg dump compiler sed` since it provides no
   libraries
 - [ ] Fails when symlink already exists
 - [ ] Cross-compile shouldn't symlink
 # Deficiencies
-- [ ] `buildDepends` should be a function from operating system?
-- [ ] Symlink built artifacts into a common directory (`~/.cpkg/bin`?)
+- [ ] `mkExe` and `makeExe` are too similar
 - [ ] Cache package downloads globally
-- [ ] No database right now
+- [ ] No database w/ graph right now
 - [ ] Build step should take OS as an argument
 # Packages
 - [ ] Lua (`http://www.lua.org/ftp/lua-5.3.5.tar.gz`)

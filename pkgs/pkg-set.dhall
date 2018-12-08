@@ -50,8 +50,7 @@ in
 let libassuan =
   λ(v : List Natural) →
     gpgPackage { name = "libassuan", version = v } ⫽
-      { pkgDeps = [ prelude.lowerBound { name = "libgpg-error", lower = [1,24] } ]
-      }
+      { pkgDeps = [ prelude.lowerBound { name = "libgpg-error", lower = [1,24] } ] }
 in
 
 let libksba =
@@ -338,6 +337,7 @@ let vim =
       , pkgUrl = "http://ftp.vim.org/vim/unix/vim-${prelude.showVersion v}.tar.bz2"
       , pkgSubdir = "vim${squishVersion v}"
       , configureCommand = prelude.configureMkExes [ "src/configure", "src/auto/configure", "src/which.sh" ]
+      , installCommand = prelude.installWithBinaries [ "bin/vim", "bin/xxd" ]
       }
 in
 
@@ -442,16 +442,38 @@ let libssh2 =
       { pkgUrl = "https://www.libssh2.org/download/libssh2-1.8.0.tar.gz" }
 in
 
+let giflib =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "giflib", version = v } ⫽
+      { pkgUrl = "https://downloads.sourceforge.net/giflib/giflib-${prelude.showVersion v}.tar.bz2" }
+in
+
+let emacs =
+  λ(v : List Natural) →
+    prelude.makeGnuExe { name = "emacs", version = v } ⫽
+      { pkgDeps = [ prelude.unbounded "giflib" ]
+      , configureCommand = prelude.configureMkExes [ "build-aux/move-if-change", "build-aux/update-subdirs" ]
+      }
+in
+
+let which =
+  λ(v : List Natural) →
+    prelude.makeGnuExe { name = "which", version = v } ⫽
+      { pkgUrl = "https://ftp.gnu.org/gnu/which/which-${prelude.showVersion v}.tar.gz" }
+in
+
 [ binutils [2,31]
 , bison [3,2,2]
 , cairo [1,16,0]
 , cmake { version = [3,13], patch = 0 }
 , curl [7,62,0]
 , dbus [1,12,10]
+, emacs [25,3]
 , fltk { version = [1,3,4], patch = 2 }
 , gawk [4,2,1]
 , gc [8,0,0]
 , gettext [0,19,8]
+, giflib [5,1,4]
 , git [2,19,2]
 , glibc [2,28]
 , gmp [6,1,2]
@@ -468,11 +490,13 @@ in
 , libnettle [3,4,1]
 , libssh2 [1,8,0]
 , libuv [1,24,0]
+, m4 [1,4,18]
 , musl [1,1,20]
 , nasm [2,14]
 , ncurses [6,1]
 , nginx [1,15,7]
 , npth [1,6]
+, openssl [1,1,1]
 , pcre2 [10,32]
 , perl5 [5,28,1]
 , png [1,6,35]
@@ -482,8 +506,7 @@ in
 , valgrind [3,14,0]
 , vim [8,1]
 , wget [1,20]
+, which [2,21]
 , xz [5,2,4]
 , zlib [1,2,11]
-, m4 [1,4,18]
-, openssl [1,1,1]
 ]
