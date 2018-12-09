@@ -10,6 +10,7 @@ module Package.C.PackageSet ( PackageSet (..)
 import           Algebra.Graph.AdjacencyMap            (edges)
 import           Algebra.Graph.AdjacencyMap.Algorithm  (topSort)
 import           Control.Composition                   ((<=*<))
+import           Data.Containers.ListUtils
 import           Data.Foldable                         (fold)
 import           Data.List                             (intersperse)
 import qualified Data.Map                              as M
@@ -54,7 +55,7 @@ getDeps :: PackId -> PackageSet -> Maybe [(PackId, PackId)]
 getDeps pkgName' set@(PackageSet ps) = do
     cpkg <- M.lookup pkgName' ps
     let depNames = (name <$> pkgDeps cpkg) ++ (name <$> pkgBuildDeps cpkg) -- this is terrible but it works better than doing nothing
-    case depNames of
+    case nubOrd depNames of
         [] -> pure []
         xs -> do
             transitive <- fold <$> traverse (\p -> getDeps p set) xs

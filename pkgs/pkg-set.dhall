@@ -464,7 +464,21 @@ let which =
       { pkgUrl = "https://ftp.gnu.org/gnu/which/which-${prelude.showVersion v}.tar.gz" }
 in
 
-[ binutils [2,31]
+let automake =
+  λ(v : List Natural) →
+    prelude.makeGnuExe { name = "automake", version = v } ⫽
+      { pkgBuildDeps = [ prelude.lowerBound { name =  "autoconf", lower = [2,65] } ] }
+in
+
+let autoconf =
+  λ(v : List Natural) →
+    prelude.makeGnuExe { name = "autoconf", version = v } ⫽
+      { pkgBuildDeps = [ prelude.lowerBound { name =  "m4", lower = [1,4,16] } ] }
+in
+
+[ autoconf [2,69]
+, automake [1,16,1]
+, binutils [2,31]
 , bison [3,2,2]
 , cairo [1,16,0]
 , cmake { version = [3,13], patch = 0 }
