@@ -125,6 +125,11 @@ let symlinkBinary =
     types.Command.SymlinkBinary { file = file }
 in
 
+let symlinkBinaries =
+  λ(files : List Text) →
+    map Text types.Command symlinkBinary files
+in
+
 let isUnix =
   λ(os : types.OS) →
 
@@ -187,6 +192,7 @@ in
 
 let generalConfigure =
   λ(filename : Text) →
+  λ(extraFlags : List Text) →
   λ(cfg : types.ConfigureVars) →
     let maybeHost = mkHost cfg.targetTriple
     in
@@ -195,7 +201,7 @@ let generalConfigure =
 
     [ mkExe filename
     , call (defaultCall ⫽ { program = "./${filename}"
-                          , arguments = modifyArgs [ "--prefix=${cfg.installDir}" ]
+                          , arguments = modifyArgs [ "--prefix=${cfg.installDir}" ] # extraFlags
                           , environment =
                               Some (defaultPath cfg # [ mkLDFlags cfg.linkDirs, mkCFlags cfg.includeDirs, mkPkgConfigVar cfg.linkDirs ])
                           })
@@ -203,20 +209,28 @@ let generalConfigure =
 in
 
 let defaultConfigure =
-  generalConfigure "configure"
+  generalConfigure "configure" ([] : List Text)
+in
+
+let configureWithFlags =
+  λ(extraFlags : List Text) →
+    generalConfigure "configure" extraFlags
 in
 
 let bigConfigure =
-  generalConfigure "Configure"
+  generalConfigure "Configure" ([] : List Text)
 in
 
--- TODO: configureWithFlags...
-
-let configureMkExes =
+let configureMkExesWithFlags =
+  λ(extraFlags : List Text) →
   λ(exes : List Text) →
   λ(cfg : types.ConfigureVars) →
     mkExes exes
-      # defaultConfigure cfg
+      # generalConfigure "configure" extraFlags cfg
+in
+
+let configureMkExes =
+  configureMkExesWithFlags ([] : List Text)
 in
 
 let defaultBuild =
@@ -227,17 +241,17 @@ let defaultBuild =
 in
 
 let defaultInstall =
-  λ(os : types.OS) →
-    [ call (defaultCall ⫽ { program = makeExe os
+  λ(cfg : types.InstallVars) →
+    [ call (defaultCall ⫽ { program = makeExe (cfg.installOS)
                           , arguments = [ "install" ] })
     ]
 in
 
 let installWithBinaries =
   λ(bins : List Text) →
-  λ(installVars : types.OS) →
+  λ(installVars : types.InstallVars) →
     defaultInstall installVars
-      # map Text types.Command (λ(bin : Text) → symlinkBinary bin) bins
+      # symlinkBinaries bins
 in
 
 let unbounded =
@@ -322,7 +336,7 @@ let cmakeBuild =
 in
 
 let cmakeInstall =
-  λ(os : types.OS) →
+  λ(os : types.InstallVars) →
     [ call { program = "cmake"
            , arguments = [ "--build", ".", "--target", "install", "--config", "Release" ]
            , environment = defaultEnv
@@ -347,40 +361,43 @@ let autogenConfigure =
     ] # defaultConfigure cfg
 in
 
-{ showVersion       = showVersion
-, makeGnuLibrary    = makeGnuLibrary
-, makeGnuExe        = makeGnuExe
-, defaultPackage    = defaultPackage
-, unbounded         = unbounded
-, lowerBound        = lowerBound
-, upperBound        = upperBound
-, makeExe           = makeExe
-, printArch         = printArch
-, printManufacturer = printManufacturer
-, call              = call
-, mkExe             = mkExe -- TODO: rename this so it's not so confusing
-, mkExes            = mkExes
-, createDir         = createDir
-, mkHost            = mkHost
-, defaultConfigure  = defaultConfigure
-, defaultBuild      = defaultBuild
-, defaultInstall    = defaultInstall
-, cmakeConfigure    = cmakeConfigure
-, cmakeBuild        = cmakeBuild
-, cmakeInstall      = cmakeInstall
-, cmakePackage      = cmakePackage
-, autogenConfigure  = autogenConfigure
-, defaultCall       = defaultCall
-, defaultEnv        = defaultEnv
-, maybeAppend       = maybeAppend
-, mkCFlags          = mkCFlags
-, mkLDFlags         = mkLDFlags
-, isUnix            = isUnix
-, defaultPath       = defaultPath
-, simplePackage     = simplePackage
-, symlinkBinary     = symlinkBinary
+{ showVersion         = showVersion
+, makeGnuLibrary      = makeGnuLibrary
+, makeGnuExe          = makeGnuExe
+, defaultPackage      = defaultPackage
+, unbounded           = unbounded
+, lowerBound          = lowerBound
+, upperBound          = upperBound
+, makeExe             = makeExe
+, printArch           = printArch
+, printManufacturer   = printManufacturer
+, call                = call
+, mkExe               = mkExe -- TODO: rename this so it's not so confusing
+, mkExes              = mkExes
+, createDir           = createDir
+, mkHost              = mkHost
+, defaultConfigure    = defaultConfigure
+, defaultBuild        = defaultBuild
+, defaultInstall      = defaultInstall
+, cmakeConfigure      = cmakeConfigure
+, cmakeBuild          = cmakeBuild
+, cmakeInstall        = cmakeInstall
+, cmakePackage        = cmakePackage
+, autogenConfigure    = autogenConfigure
+, defaultCall         = defaultCall
+, defaultEnv          = defaultEnv
+, maybeAppend         = maybeAppend
+, mkCFlags            = mkCFlags
+, mkLDFlags           = mkLDFlags
+, isUnix              = isUnix
+, defaultPath         = defaultPath
+, simplePackage       = simplePackage
+, symlinkBinary       = symlinkBinary
+, symlinkBinaries     = symlinkBinaries
 , installWithBinaries = installWithBinaries
-, configureMkExes   = configureMkExes
-, bigConfigure      = bigConfigure
-, generalConfigure  = generalConfigure
+, configureMkExes     = configureMkExes
+, bigConfigure        = bigConfigure
+, generalConfigure    = generalConfigure
+, configureWithFlags  = configureWithFlags
+, configureMkExesWithFlags = configureMkExesWithFlags
 }

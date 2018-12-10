@@ -195,8 +195,8 @@ let glibc =
   in
 
   let glibcInstall =
-    λ(os : types.OS) →
-      [ prelude.call { program = prelude.makeExe os
+    λ(cfg : types.InstallVars) →
+      [ prelude.call { program = prelude.makeExe cfg.installOS
                      , arguments = [ "install" ]
                      , environment = prelude.defaultEnv
                      , procDir = buildDir
@@ -433,7 +433,7 @@ let openssl =
   λ(v : List Natural) →
     prelude.simplePackage { name = "openssl", version = v } ⫽
       { pkgUrl = "https://www.openssl.org/source/openssl-${prelude.showVersion v}a.tar.gz"
-      , configureCommand = prelude.generalConfigure "config"
+      , configureCommand = prelude.generalConfigure "config" ([] : List Text)
       , pkgSubdir = "openssl-${prelude.showVersion v}a"
       }
 in
@@ -476,6 +476,56 @@ let autoconf =
       { pkgBuildDeps = [ prelude.lowerBound { name =  "m4", lower = [1,4,16] } ] }
 in
 
+let python =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "python", version = v } ⫽
+      { pkgUrl = "https://www.python.org/ftp/python/${prelude.showVersion v}/Python-${prelude.showVersion v}.tar.xz"
+      , pkgSubdir = "Python-${prelude.showVersion v}"
+      , configureCommand = prelude.configureMkExesWithFlags [ "bin/python3", "bin/pip3" ] [ "--enable-optimizations" ] -- TODO fix python cross-compilation?
+      }
+in
+
+let lua =
+  λ(v : List Natural) →
+    let printLuaOS =
+      λ(os : types.OS) →
+        merge
+          { FreeBSD   = λ(_ : {}) → "freebsd"
+          , OpenBSD   = λ(_ : {}) → "bsd"
+          , NetBSD    = λ(_ : {}) → "bsd"
+          , Solaris   = λ(_ : {}) → "solaris"
+          , Dragonfly = λ(_ : {}) → "bsd"
+          , Linux     = λ(_ : {}) → "linux"
+          , Darwin    = λ(_ : {}) → "macosx"
+          , Windows   = λ(_ : {}) → "mingw"
+          , Redox     = λ(_ : {}) → "generic"
+          , NoOs      = λ(_ : {}) → "c89"
+          }
+          os
+    in
+    let luaBuild =
+      λ(cfg : types.BuildVars) →
+        [ prelude.call (prelude.defaultCall ⫽ { program = "make"
+                                              , arguments = [ printLuaOS cfg.buildOS ]
+                                              }) ]
+    in
+
+    let luaInstall =
+      λ(cfg : types.InstallVars) →
+        [ prelude.call (prelude.defaultCall ⫽ { program = "make"
+                                              , arguments = [ "install", "INSTALL_TOP=${cfg.installPath}" ]
+                                              }) ]
+          # prelude.symlinkBinaries [ "bin/lua", "bin/luac" ]
+    in
+
+    prelude.simplePackage { name = "lua", version = v } ⫽
+      { pkgUrl = "http://www.lua.org/ftp/lua-${prelude.showVersion v}.tar.gz"
+      , configureCommand = (λ(cfg : types.ConfigureVars) → [] : List types.Command)
+      , buildCommand = luaBuild
+      , installCommand = luaInstall
+      }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , binutils [2,31]
@@ -497,6 +547,8 @@ in
 , gnutls { version = [3,6], patch = 5 }
 , gzip [1,9]
 , harfbuzz [2,2,0]
+, python [2,7,15] ⫽ { pkgName = "python2" }
+, python [3,7,1] ⫽ { pkgName = "python3" }
 , lapack [3,8,0]
 , jpegTurbo [2,0,1]
 , libassuan [2,5,1]
@@ -506,6 +558,7 @@ in
 , libnettle [3,4,1]
 , libssh2 [1,8,0]
 , libuv [1,24,0]
+, lua [5,3,5]
 , m4 [1,4,18]
 , musl [1,1,20]
 , nasm [2,14]

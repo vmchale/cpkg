@@ -61,6 +61,9 @@ commandDhallToCommand (Dhall.MakeExecutable exe) = MakeExecutable (T.unpack exe)
 commandDhallToCommand (Dhall.Call p as env proc) = Call (T.unpack p) (T.unpack <$> as) (fmap envVarDhallToEnvVar <$> env) (T.unpack <$> proc)
 commandDhallToCommand (Dhall.SymlinkBinary b)    = SymlinkBinary (T.unpack b)
 
+installVarsToDhallInstallVars :: InstallVars -> Dhall.InstallVars
+installVarsToDhallInstallVars (InstallVars fp os) = Dhall.InstallVars (T.pack fp) os
+
 cfgVarsToDhallCfgVars :: ConfigureVars -> Dhall.ConfigureVars
 cfgVarsToDhallCfgVars (ConfigureVars dir' tgt incls lds bins os) = Dhall.ConfigureVars (T.pack dir') (T.pack <$> tgt) (T.pack <$> incls) (T.pack <$> lds) (T.pack <$> bins) os
 
@@ -73,4 +76,4 @@ cPkgDhallToCPkg (Dhall.CPkg n v url subdir bldDeps deps cfgCmd buildCmd installC
 
     where configure cfg = commandDhallToCommand <$> cfgCmd (cfgVarsToDhallCfgVars cfg)
           build cfg = commandDhallToCommand <$> buildCmd (buildVarsToDhallBuildVars cfg)
-          install cfg = commandDhallToCommand <$> installCmd cfg
+          install cfg = commandDhallToCommand <$> installCmd (installVarsToDhallInstallVars cfg)

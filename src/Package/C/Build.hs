@@ -115,7 +115,7 @@ getVars host links incls bins = do
     nproc <- liftIO getNumCapabilities
     let configureVars = ConfigureVars "" host incls links bins dhallOS
         buildVars = BuildVars nproc dhallOS
-        installVars = InstallVars dhallOS
+        installVars = InstallVars "" dhallOS
     pure (configureVars, buildVars, installVars)
 
 -- TODO: more complicated solver, garbage collector, and all that.
@@ -144,6 +144,6 @@ forceBuildCPkg cpkg host configureVars buildVars installVars = do
 
         buildInDir cpkg buildVars p' pkgDir
 
-        installInDir cpkg installVars p' pkgDir
+        installInDir cpkg (installVars { installPath = pkgDir }) p' pkgDir
 
         registerPkg cpkg host configureVars buildVars installVars

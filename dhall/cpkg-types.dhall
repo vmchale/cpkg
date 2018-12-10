@@ -1,3 +1,4 @@
+-- TODO: Add AIX
 let OS = < FreeBSD : {}
          | OpenBSD : {}
          | NetBSD : {}
@@ -66,6 +67,10 @@ let BuildVars = { cpus : Natural
                 }
 in
 
+let InstallVars = { installPath : Text
+                  , installOS : OS
+                  }
+
 let VersionBound = < Lower : { lower : List Natural }
                    | Upper : { upper : List Natural }
                    | LowerUpper : { lower : List Natural, upper : List Natural }
@@ -104,4 +109,5 @@ in
 , Command       = Command
 , EnvVar        = EnvVar
 , Proc          = Proc
+, InstallVars   = InstallVars
 }

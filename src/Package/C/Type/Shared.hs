@@ -1,11 +1,10 @@
-{-# LANGUAGE DeriveAnyClass             #-}
-{-# LANGUAGE DeriveGeneric              #-}
-{-# LANGUAGE DerivingStrategies         #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE DeriveAnyClass     #-}
+{-# LANGUAGE DeriveGeneric      #-}
+{-# LANGUAGE DerivingStrategies #-}
+
 
 module Package.C.Type.Shared ( OS (..)
                              , VersionBound (..)
-                             , InstallVars (..)
                              , Dep (..)
                              , Platform
                              ) where
@@ -21,9 +20,6 @@ data VersionBound = Lower { lower :: Version }
                   | LowerUpper { lower :: Version, upper :: Version }
                   | NoBound
                   deriving (Generic, Interpret)
-
-newtype InstallVars = InstallVars { installOS :: OS }
-                    deriving newtype (Inject)
 
 data Dep = Dep { name  :: T.Text
                , bound :: VersionBound

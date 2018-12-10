@@ -25,6 +25,11 @@ data ConfigureVars = ConfigureVars { installDir   :: T.Text
                                    , configOS     :: OS
                                    } deriving (Generic, Inject)
 
+data InstallVars = InstallVars { installPath :: T.Text
+                               , installOS   :: OS
+                               }
+                    deriving (Generic, Inject)
+
 data BuildVars = BuildVars { cpus    :: Natural
                            , buildOS :: OS
                            }

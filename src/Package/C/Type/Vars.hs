@@ -1,5 +1,6 @@
 module Package.C.Type.Vars ( ConfigureVars (..)
                            , BuildVars (..)
+                           , InstallVars (..)
                            ) where
 
 import           Package.C.Type.Shared
@@ -15,3 +16,7 @@ data ConfigureVars = ConfigureVars { installDir   :: FilePath
 data BuildVars = BuildVars { cpus    :: Int
                            , osBuild :: OS
                            }
+
+data InstallVars = InstallVars { installPath :: FilePath
+                               , installOS   :: OS
+                               }
