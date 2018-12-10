@@ -66,6 +66,7 @@
 - [ ] GHC (`https://downloads.haskell.org/~ghc/8.6.3/ghc-8.6.3-src.tar.xz`)
   & cross-compiler
 - [ ] `http://prdownloads.sourceforge.net/ctags/ctags-5.8.tar.gz`
+- [ ] https://ftp.gnu.org/gnu/coreutils/coreutils-8.30.tar.xz
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in

@@ -499,7 +499,7 @@ let python =
       { pkgUrl = "https://www.python.org/ftp/python/${versionString}/Python-${versionString}.tar.xz"
       , pkgSubdir = "Python-${versionString}"
       , configureCommand = prelude.configureWithFlags [ "--enable-optimizations" ]
-      , installCommand = prelude.installWithBinaries [ "bin/python${major}", "bin/pip${major}" ]
+      , installCommand = prelude.installWithBinaries [ "bin/python${major}" ]
       }
 in
 
