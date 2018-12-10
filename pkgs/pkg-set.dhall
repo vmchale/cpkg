@@ -13,8 +13,7 @@ in
 let gpgPackage =
   λ(x : { name : Text, version : List Natural }) →
     prelude.simplePackage x ⫽
-      { pkgUrl = "https://gnupg.org/ftp/gcrypt/${x.name}/${x.name}-${prelude.showVersion x.version}.tar.bz2"
-      }
+      { pkgUrl = "https://gnupg.org/ftp/gcrypt/${x.name}/${x.name}-${prelude.showVersion x.version}.tar.bz2" }
 in
 
 let gnupg =
@@ -170,7 +169,7 @@ let glibc =
 
       let maybeHost = prelude.mkHost cfg.targetTriple
       in
-      let modifyArgs = λ(xs : List Text) → prelude.maybeAppend Text maybeHost xs
+      let modifyArgs = prelude.maybeAppend Text maybeHost
       in
 
       prelude.mkExes
@@ -272,8 +271,7 @@ in
 let pcre2 =
   λ(v : List Natural) →
     prelude.simplePackage { name = "pcre2", version = v } ⫽
-      { pkgUrl = "https://ftp.pcre.org/pub/pcre/pcre2-${prelude.showVersion v}.tar.gz"
-      }
+      { pkgUrl = "https://ftp.pcre.org/pub/pcre/pcre2-${prelude.showVersion v}.tar.gz" }
 in
 
 let perl5 =
@@ -328,7 +326,7 @@ in
 
 let vim =
   let squishVersion =
-    λ(x : List Natural) → concatMap Natural Natural/show x
+    concatMap Natural Natural/show
   in
 
   λ(v : List Natural) →
@@ -433,7 +431,7 @@ let m4 =
       λ(cfg : types.ConfigureVars) →
         let maybeHost = prelude.mkHost cfg.targetTriple
         in
-        let modifyArgs = λ(xs : List Text) → prelude.maybeAppend Text maybeHost xs
+        let modifyArgs = prelude.maybeAppend Text maybeHost
         in
 
         [ prelude.mkExe "configure"
@@ -553,7 +551,7 @@ let lua =
 
     prelude.simplePackage { name = "lua", version = v } ⫽
       { pkgUrl = "http://www.lua.org/ftp/lua-${prelude.showVersion v}.tar.gz"
-      , configureCommand = (λ(cfg : types.ConfigureVars) → [] : List types.Command)
+      , configureCommand = (λ(_ : types.ConfigureVars) → [] : List types.Command)
       , buildCommand = luaBuild
       , installCommand = luaInstall
       }

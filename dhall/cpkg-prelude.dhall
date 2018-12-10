@@ -15,17 +15,15 @@ let types = ../dhall/cpkg-types.dhall
 in
 
 let showVersion =
-  λ(x : List Natural) → concatMapSep "." Natural Natural/show x
+  concatMapSep "." Natural Natural/show
 in
 
 let mkHost =
-  λ(x : Optional Text) →
-    mapOptional Text Text (λ(tgt : Text) → "--host=${tgt}") x
+  mapOptional Text Text (λ(tgt : Text) → "--host=${tgt}")
 in
 
 let mkHostEnv =
-  λ(x : Optional Text) →
-    mapOptional Text Text (λ(tgt : Text) → "CHOST=${tgt}") x
+  mapOptional Text Text (λ(tgt : Text) → "CHOST=${tgt}")
 in
 
 let maybeAppend =
@@ -100,8 +98,7 @@ let mkExe =
 in
 
 let mkExes =
-  λ(xs : List Text) →
-    map Text types.Command mkExe xs
+  map Text types.Command mkExe
 in
 
 let writeFile =
@@ -120,8 +117,7 @@ let defaultCall =
 in
 
 let call =
-  λ(proc : types.Proc) →
-    types.Command.Call proc
+  types.Command.Call
 in
 
 let symlinkBinary =
@@ -130,8 +126,7 @@ let symlinkBinary =
 in
 
 let symlinkBinaries =
-  λ(files : List Text) →
-    map Text types.Command symlinkBinary files
+  map Text types.Command symlinkBinary
 in
 
 let isUnix =
@@ -200,7 +195,7 @@ let generalConfigure =
   λ(cfg : types.ConfigureVars) →
     let maybeHost = mkHost cfg.targetTriple
     in
-    let modifyArgs = λ(xs : List Text) → maybeAppend Text maybeHost xs
+    let modifyArgs = maybeAppend Text maybeHost
     in
 
     [ mkExe filename
@@ -339,7 +334,7 @@ let cmakeBuild =
 in
 
 let cmakeInstall =
-  λ(os : types.InstallVars) →
+  λ(_ : types.InstallVars) →
     [ call { program = "cmake"
            , arguments = [ "--build", ".", "--target", "install", "--config", "Release" ]
            , environment = defaultEnv

@@ -67,6 +67,7 @@
   & cross-compiler
 - [ ] `http://prdownloads.sourceforge.net/ctags/ctags-5.8.tar.gz`
 - [ ] https://ftp.gnu.org/gnu/coreutils/coreutils-8.30.tar.xz
+- [ ] https://www.libarchive.org/downloads/libarchive-3.3.3.tar.gz
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in
