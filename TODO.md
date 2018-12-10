@@ -61,6 +61,8 @@
 - [ ] autoconf/automake
 - [ ] fdupes
 - [ ] Figlet
+- [ ] GHC (`https://downloads.haskell.org/~ghc/8.6.3/ghc-8.6.3-src.tar.xz`)
+  & cross-compiler
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in

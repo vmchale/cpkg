@@ -213,25 +213,18 @@ let defaultConfigure =
 in
 
 let configureWithFlags =
-  λ(extraFlags : List Text) →
-    generalConfigure "configure" extraFlags
+    generalConfigure "configure"
 in
 
 let bigConfigure =
   generalConfigure "Configure" ([] : List Text)
 in
 
-let configureSymlinkBinariesWithFlags =
-  λ(extraFlags : List Text) →
+let configureMkExes =
   λ(bins : List Text) →
   λ(cfg : types.ConfigureVars) →
-    generalConfigure "configure" extraFlags cfg
-      # symlinkBinaries bins
-in
-
-let configureMkExes =
-  λ(extraFlags : List Text) →
-    configureSymlinkBinariesWithFlags extraFlags ([] : List Text)
+    mkExes bins
+      # defaultConfigure cfg
 in
 
 let defaultBuild =
@@ -400,5 +393,4 @@ in
 , bigConfigure        = bigConfigure
 , generalConfigure    = generalConfigure
 , configureWithFlags  = configureWithFlags
-, configureSymlinkBinariesWithFlags = configureSymlinkBinariesWithFlags
 }
