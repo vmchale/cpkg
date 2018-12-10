@@ -553,8 +553,8 @@ in
 , gnutls { version = [3,6], patch = 5 }
 , gzip [1,9]
 , harfbuzz [2,2,0]
-, python [2,7,15] ⫽ { pkgName = "python2" }
-, python [3,7,1] ⫽ { pkgName = "python3" }
+, python [2,7,15]
+, python [3,7,1]
 , lapack [3,8,0]
 , jpegTurbo [2,0,1]
 , libassuan [2,5,1]
