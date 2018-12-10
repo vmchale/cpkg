@@ -420,7 +420,9 @@ in
 let libnettle =
   λ(v : List Natural) →
     prelude.simplePackage { name = "nettle", version = v } ⫽
-      { pkgUrl = "https://ftp.gnu.org/gnu/nettle/nettle-${prelude.showVersion v}.tar.gz" }
+      { pkgUrl = "https://ftp.gnu.org/gnu/nettle/nettle-${prelude.showVersion v}.tar.gz"
+      , pkgBuildDeps = [ prelude.unbounded "m4" ]
+      }
 in
 
 let m4 =
