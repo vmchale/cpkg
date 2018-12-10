@@ -393,6 +393,7 @@ let gnutls =
       , pkgDeps = [ prelude.lowerBound { name = "nettle", lower = [3,4,1] }
                   , prelude.unbounded "unistring"
                   , prelude.lowerBound { name = "libtasn1", lower = [4,9] }
+                  , prelude.lowerBound { name = "p11-kit", lower = [0,23,1] }
                   ]
       }
 in
@@ -563,6 +564,12 @@ let libtasn1 =
       { pkgUrl = "https://ftp.gnu.org/gnu/libtasn1/libtasn1-${prelude.showVersion v}.tar.gz" }
 in
 
+let p11kit =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "p11-kit", version = v } ⫽
+      { pkgUrl = "https://github.com/p11-glue/p11-kit/releases/download/${prelude.showVersion v}/p11-kit-${prelude.showVersion v}.tar.gz" }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , binutils [2,31]
@@ -585,6 +592,7 @@ in
 , gnutls { version = [3,5], patch = 19 }
 , gzip [1,9]
 , harfbuzz [2,2,0]
+, p11kit [0,23,14]
 , python [2,7,15]
 , python [3,7,1]
 , lapack [3,8,0]
