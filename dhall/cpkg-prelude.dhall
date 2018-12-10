@@ -221,12 +221,12 @@ let bigConfigure =
   generalConfigure "Configure" ([] : List Text)
 in
 
-let configureMkExesWithFlags =
+let configureSymlinkBinariesWithFlags =
   λ(extraFlags : List Text) →
-  λ(exes : List Text) →
+  λ(bins : List Text) →
   λ(cfg : types.ConfigureVars) →
-    mkExes exes
-      # generalConfigure "configure" extraFlags cfg
+    generalConfigure "configure" extraFlags cfg
+      # symlinkBinaries bins
 in
 
 let configureMkExes =
@@ -399,5 +399,5 @@ in
 , bigConfigure        = bigConfigure
 , generalConfigure    = generalConfigure
 , configureWithFlags  = configureWithFlags
-, configureMkExesWithFlags = configureMkExesWithFlags
+, configureSymlinkBinariesWithFlags = configureSymlinkBinariesWithFlags
 }

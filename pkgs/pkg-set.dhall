@@ -478,10 +478,15 @@ in
 
 let python =
   λ(v : List Natural) →
-    prelude.simplePackage { name = "python", version = v } ⫽
-      { pkgUrl = "https://www.python.org/ftp/python/${prelude.showVersion v}/Python-${prelude.showVersion v}.tar.xz"
-      , pkgSubdir = "Python-${prelude.showVersion v}"
-      , configureCommand = prelude.configureMkExesWithFlags [ "bin/python3", "bin/pip3" ] [ "--enable-optimizations" ] -- TODO fix python cross-compilation?
+    let major = Optional/fold Natural (List/head Natural v) Text (Natural/show) ""
+    in
+    let versionString = prelude.showVersion v
+    in
+
+    prelude.simplePackage { name = "python${major}", version = v } ⫽
+      { pkgUrl = "https://www.python.org/ftp/python/${versionString}/Python-${versionString}.tar.xz"
+      , pkgSubdir = "Python-${versionString}"
+      , configureCommand = prelude.configureSymlinkBinariesWithFlags [ "--enable-optimizations" ] [ "bin/python${major}", "bin/pip${major}" ]
       }
 in
 
