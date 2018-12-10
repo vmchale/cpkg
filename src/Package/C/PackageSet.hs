@@ -39,11 +39,6 @@ newtype PackageSet = PackageSet (M.Map T.Text CPkg)
 
 type PackId = T.Text
 
--- TODO: use Algebra.Graph.AdjacencyMap.Algorithm.topSort and
--- Algebra.Graph.AdjacencyMap.Algorithm
---
--- WANT: return a @Tree [CPkg]@
-
 packageSetDhallToPackageSet :: PackageSetDhall -> PackageSet
 packageSetDhallToPackageSet (PackageSetDhall pkgs'') =
     let names = Dhall.pkgName <$> pkgs''
@@ -62,6 +57,7 @@ getDeps pkgName' set@(PackageSet ps) = do
             let self = zip (repeat pkgName') xs
             pure (transitive ++ self)
 
+-- TODO: use dfsForest but check for cycles
 prePlan :: PackId -> PackageSet -> Maybe [PackId]
 prePlan = fmap reverse . topSort . edges <=*< getDeps
 

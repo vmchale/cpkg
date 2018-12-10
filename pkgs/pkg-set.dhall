@@ -539,7 +539,8 @@ let lua =
       λ(cfg : types.BuildVars) →
         [ prelude.call (prelude.defaultCall ⫽ { program = "make"
                                               , arguments = [ printLuaOS cfg.buildOS ]
-                                              }) ]
+                                              })
+        ]
     in
 
     let luaInstall =
@@ -562,12 +563,6 @@ let libtasn1 =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libtasn1", version = v } ⫽
       { pkgUrl = "https://ftp.gnu.org/gnu/libtasn1/libtasn1-${prelude.showVersion v}.tar.gz" }
-in
-
-let ghc =
-  λ(v : List Natural) →
-    prelude.simplePackage { name = "ghc", version = v } ⫽
-      { pkgUrl = "https://downloads.haskell.org/~ghc/${prelude.showVersion v}/ghc-${prelude.showVersion v}-src.tar.xz" }
 in
 
 [ autoconf [2,69]

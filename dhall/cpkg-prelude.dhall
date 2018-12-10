@@ -104,6 +104,10 @@ let mkExes =
     map Text types.Command mkExe xs
 in
 
+let writeFile =
+  types.Command.Write
+in
+
 let defaultEnv =
   None (List types.EnvVar)
 in
@@ -399,4 +403,5 @@ in
 , generalConfigure    = generalConfigure
 , configureWithFlags  = configureWithFlags
 , configureMkExesExtraFlags = configureMkExesExtraFlags
+, writeFile           = writeFile
 }
