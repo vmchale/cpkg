@@ -349,8 +349,8 @@ let vim =
       , pkgDeps = [ prelude.unbounded "ncurses"
                   , prelude.unbounded "perl" -- ideally it shouldn't be a *hard* dependency on perl, since perl's cross-compilation abilities are not really there...
                   , prelude.unbounded "lua"
-                  -- , prelude.unbounded "python2"
-                  -- , prelude.unbounded "python3"
+                  , prelude.unbounded "python2"
+                  , prelude.unbounded "python3"
                   ]
       }
 in
