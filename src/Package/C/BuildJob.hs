@@ -9,19 +9,20 @@ import           Package.C.Type
 import           System.FilePath        ((</>))
 
 -- TODO: pass link flags
-buildAll :: [CPkg] -> Maybe Platform -> PkgM ()
-buildAll pkgs host = buildWithContext pkgs host [] [] []
+buildAll :: [CPkg] -> Maybe Platform -> Bool -> PkgM ()
+buildAll pkgs host sta = buildWithContext pkgs host sta [] [] []
 
 buildWithContext :: [CPkg]
                  -> Maybe Platform
+                 -> Bool -- ^ Should we build static libraries?
                  -> [FilePath] -- ^ Library directories
                  -> [FilePath] -- ^ Include directories
                  -> [FilePath] -- ^ Directories to add to @PATH@
                  -> PkgM ()
-buildWithContext []   _ _ _ _         = pure ()
-buildWithContext (c:cs) host ls is bs = do
+buildWithContext [] _ _ _ _ _         = pure ()
+buildWithContext (c:cs) host sta ls is bs = do
 
-    (configureVars, buildVars, installVars) <- getVars host ls is bs
+    (configureVars, buildVars, installVars) <- getVars host sta ls is bs
 
     pkgDir <- cPkgToDir c host configureVars buildVars installVars
 
@@ -33,9 +34,9 @@ buildWithContext (c:cs) host ls is bs = do
         includes = includeDir : is
         bins = binDir : bs
 
-    buildCPkg c host ls is bs *> buildWithContext cs host links includes bins
+    buildCPkg c host sta ls is bs *> buildWithContext cs host sta links includes bins
 
-buildByName :: PackId -> Maybe Platform -> PkgM ()
-buildByName pkId host = do
+buildByName :: PackId -> Maybe Platform -> Bool -> PkgM ()
+buildByName pkId host sta = do
     allPkgs <- liftIO (pkgsM pkId)
-    buildAll allPkgs host
+    buildAll allPkgs host sta

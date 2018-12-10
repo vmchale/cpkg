@@ -11,7 +11,7 @@ in
 let mapOptional = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/Optional/map
 in
 
-let types = https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-types.dhall
+let types = ../dhall/cpkg-types.dhall
 in
 
 let showVersion =

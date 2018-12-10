@@ -23,6 +23,7 @@ data ConfigureVars = ConfigureVars { installDir   :: T.Text
                                    , linkDirs     :: [ T.Text ]
                                    , binDirs      :: [ T.Text ]
                                    , configOS     :: OS
+                                   , static       :: Bool
                                    } deriving (Generic, Inject)
 
 data InstallVars = InstallVars { installPath :: T.Text
@@ -66,5 +67,4 @@ prettyDeps [] = ""
 prettyDeps ds = hardline <> "dependencies:" <+> hsep (punctuate "," (pretty . name <$> ds))
 
 instance Pretty CPkg where
-    pretty (CPkg nam v url _ _ [] _ _ _) = pretty nam <##> indent 4 ("url:" <+> pretty url <##> "version:" <+> pretty v)
     pretty (CPkg nam v url _ _ ds _ _ _) = pretty nam <##> indent 4 ("url:" <+> pretty url <##> "version:" <+> pretty v <> prettyDeps ds)

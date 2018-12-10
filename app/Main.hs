@@ -15,7 +15,7 @@ cpkgVersion = P.version
 data DumpTarget = Linker { _pkgGet :: String }
                 | Compiler { _pkgGet :: String }
 
-data Command = Install { _pkgName :: String, _verbosity :: Verbosity, _target :: Maybe Platform }
+data Command = Install { _pkgName :: String, _verbosity :: Verbosity, _target :: Maybe Platform, _static :: Bool }
              | Check { _dhallFile :: String, _verbosity :: Verbosity }
              | CheckSet { _dhallFile :: String, _verbosity :: Verbosity }
              | Dump { _dumpTarget :: DumpTarget, _host :: Maybe Platform }
@@ -74,6 +74,13 @@ install = Install
         <> help "Name of package to install")
     <*> verbosity
     <*> target
+    <*> static'
+
+static' :: Parser Bool
+static' =
+    switch
+    (long "static"
+    <> help "Build static libaries")
 
 check :: Parser Command
 check = Check <$> dhallFile <*> verbosity
@@ -111,8 +118,8 @@ dhallFile =
     )
 
 run :: Command -> IO ()
-run (Install pkId v host') =
-    runPkgM v $ buildByName (T.pack pkId) host'
+run (Install pkId v host' sta) =
+    runPkgM v $ buildByName (T.pack pkId) host' sta
 run (Check file v) = void $ getCPkg v file
 run (CheckSet file v) = void $ getPkgs v file
 run (Dump (Linker name) host) = printLinkerFlags name host

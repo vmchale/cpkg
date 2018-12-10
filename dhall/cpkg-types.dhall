@@ -59,6 +59,7 @@ let ConfigureVars = { installDir : Text
                     , linkDirs : List Text
                     , binDirs : List Text
                     , configOS : OS
+                    , static : Bool
                     }
 in
 

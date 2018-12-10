@@ -11,6 +11,7 @@ data ConfigureVars = ConfigureVars { installDir   :: FilePath
                                    , linkDirs     :: [ FilePath ]
                                    , binDirs      :: [ FilePath ]
                                    , configOS     :: OS
+                                   , static       :: Bool
                                    }
 
 data BuildVars = BuildVars { cpus    :: Int

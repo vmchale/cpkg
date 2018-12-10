@@ -3,10 +3,10 @@ let concatMap = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/P
 in
 
 {- cpkg prelude imports -}
-let types = https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-types.dhall
+let types = ../dhall/cpkg-types.dhall
 in
 
-let prelude = ../dhall/cpkg-prelude.dhall -- https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-prelude.dhall
+let prelude = ../dhall/cpkg-prelude.dhall
 in
 
 {- gnupg: https://www.gnupg.org/ -}
@@ -394,6 +394,7 @@ let gnutls =
       { pkgUrl = "https://www.gnupg.org/ftp/gcrypt/gnutls/v${versionString}/gnutls-${versionString}.${Natural/show cfg.patch}.tar.xz"
       , pkgDeps = [ prelude.lowerBound { name = "nettle", lower = [3,4,1] }
                   , prelude.unbounded "unistring"
+                  , prelude.lowerBound { name = "libtasn1", lower = [4,9] }
                   ]
       }
 in
@@ -450,7 +451,7 @@ in
 let libssh2 =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libssh2", version = v } ⫽
-      { pkgUrl = "https://www.libssh2.org/download/libssh2-1.8.0.tar.gz" }
+      { pkgUrl = "https://www.libssh2.org/download/libssh2-${prelude.showVersion v}.tar.gz" }
 in
 
 let giflib =
@@ -541,6 +542,13 @@ let lua =
       }
 in
 
+let libtasn1 =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libtasn1", version = v } ⫽
+      { pkgUrl = "https://ftp.gnu.org/gnu/libtasn1/libtasn1-${prelude.showVersion v}.tar.gz" }
+in
+
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , binutils [2,31]
@@ -573,6 +581,7 @@ in
 , libksba [1,3,5]
 , libnettle [3,4,1]
 , libssh2 [1,8,0]
+, libtasn1 [4,13]
 , libuv [1,24,0]
 , lua [5,3,5]
 , m4 [1,4,18]

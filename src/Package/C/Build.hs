@@ -92,13 +92,14 @@ fetchCPkg cpkg = fetchUrl (pkgUrl cpkg) (pkgName cpkg)
 
 buildCPkg :: CPkg
           -> Maybe Platform
+          -> Bool -- ^ Should we build static libraries?
           -> [FilePath] -- ^ Library directories
           -> [FilePath] -- ^ Include directories
           -> [FilePath] -- ^ Directories to add to @PATH@
           -> PkgM ()
-buildCPkg cpkg host libs incls bins = do
+buildCPkg cpkg host sta libs incls bins = do
 
-    (configureVars, buildVars, installVars) <- getVars host libs incls bins
+    (configureVars, buildVars, installVars) <- getVars host sta libs incls bins
 
     installed <- packageInstalled cpkg host configureVars buildVars installVars
 
@@ -110,13 +111,14 @@ buildCPkg cpkg host libs incls bins = do
 -- *real* install directory, which we then use with @configureVars@ to set
 -- things up correctly - otherwise we would have a circularity
 getVars :: Maybe Platform
+        -> Bool -- ^ Should we build static libraries?
         -> [FilePath] -- ^ Library directories
         -> [FilePath] -- ^ Include directories
         -> [FilePath] -- ^ Directories to add to @PATH@
         -> PkgM (ConfigureVars, BuildVars, InstallVars)
-getVars host links incls bins = do
+getVars host sta links incls bins = do
     nproc <- liftIO getNumCapabilities
-    let configureVars = ConfigureVars "" host incls links bins dhallOS
+    let configureVars = ConfigureVars "" host incls links bins dhallOS sta
         buildVars = BuildVars nproc dhallOS
         installVars = InstallVars "" dhallOS
     pure (configureVars, buildVars, installVars)
