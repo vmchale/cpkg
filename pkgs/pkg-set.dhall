@@ -3,7 +3,7 @@ let concatMap = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/P
 in
 
 {- cpkg prelude imports -}
-let types = https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-types.dhall
+let types = ../dhall/cpkg-types.dhall -- https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-types.dhall
 in
 
 let prelude = https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-prelude.dhall

@@ -94,7 +94,7 @@ let Command = < CreateDirectory : { dir : Text }
               | MakeExecutable : { file : Text }
               | Call : Proc
               | SymlinkBinary : { file : Text }
-              | Write { contents : Text, file : Text }
+              | Write : { contents : Text, file : Text }
               >
 in
 
