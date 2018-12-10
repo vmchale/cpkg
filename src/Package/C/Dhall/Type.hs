@@ -46,6 +46,7 @@ data Command = CreateDirectory { dir :: T.Text }
                     , procDir     :: Maybe T.Text
                     }
              | SymlinkBinary { file :: T.Text }
+             | Write { contents :: T.Text, file :: T.Text }
              deriving (Generic, Interpret)
 
 data CPkg = CPkg { pkgName          :: T.Text

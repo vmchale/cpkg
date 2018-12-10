@@ -37,7 +37,8 @@ data Command = CreateDirectory { dir :: String }
                     , procDir     :: Maybe String
                     }
              | SymlinkBinary { file :: String }
-              deriving (Eq, Ord, Generic, Binary, Hashable)
+             | Write { contents :: T.Text, file :: FilePath }
+             deriving (Eq, Ord, Generic, Binary, Hashable)
 
 -- TODO: build script should take OS as an argument?
 -- That way we can use make/gmake where we want it
@@ -60,6 +61,7 @@ commandDhallToCommand (Dhall.CreateDirectory d)  = CreateDirectory (T.unpack d)
 commandDhallToCommand (Dhall.MakeExecutable exe) = MakeExecutable (T.unpack exe)
 commandDhallToCommand (Dhall.Call p as env proc) = Call (T.unpack p) (T.unpack <$> as) (fmap envVarDhallToEnvVar <$> env) (T.unpack <$> proc)
 commandDhallToCommand (Dhall.SymlinkBinary b)    = SymlinkBinary (T.unpack b)
+commandDhallToCommand (Dhall.Write out fp)       = Write out (T.unpack fp)
 
 installVarsToDhallInstallVars :: InstallVars -> Dhall.InstallVars
 installVarsToDhallInstallVars (InstallVars fp os) = Dhall.InstallVars (T.pack fp) os

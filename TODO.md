@@ -63,6 +63,7 @@
 - [ ] Figlet
 - [ ] GHC (`https://downloads.haskell.org/~ghc/8.6.3/ghc-8.6.3-src.tar.xz`)
   & cross-compiler
+- [ ] `http://prdownloads.sourceforge.net/ctags/ctags-5.8.tar.gz`
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in

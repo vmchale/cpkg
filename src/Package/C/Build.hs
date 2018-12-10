@@ -7,6 +7,7 @@ import           Control.Concurrent          (getNumCapabilities)
 import           Control.Monad               (unless)
 import           Control.Monad.IO.Class      (MonadIO (liftIO))
 import           Data.Foldable               (traverse_)
+import qualified Data.Text.IO                as TIO
 import           Package.C.Build.OS
 import           Package.C.Db.Register
 import           Package.C.Fetch
@@ -42,6 +43,8 @@ stepToProc _ p (SymlinkBinary file') = do
     let actualBin = p </> file'
     liftIO $ createDirectoryIfMissing True binDir
     liftIO $ createFileLink actualBin (binDir </> takeFileName file')
+stepToProc dir' _ (Write out fp) =
+    liftIO (TIO.writeFile (dir' </> fp) out)
 
 processSteps :: (Traversable t)
              => FilePath -- ^ Build directory
