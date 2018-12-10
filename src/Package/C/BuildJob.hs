@@ -6,6 +6,7 @@ import           Package.C.Build
 import           Package.C.Monad
 import           Package.C.PackageSet
 import           Package.C.Type
+import           System.Directory       (doesDirectoryExist)
 import           System.FilePath        ((</>))
 
 -- TODO: pass link flags
@@ -31,8 +32,13 @@ buildWithContext (c:cs) host sta ls is bs = do
         includeDir = pkgDir </> "include"
         binDir = pkgDir </> "bin"
         links = linkDir64 : linkDir : ls
-        includes = includeDir : is
         bins = binDir : bs
+
+    includeExists <- liftIO (doesDirectoryExist includeDir)
+
+    let includes = if includeExists
+        then includeDir : is
+        else is
 
     buildCPkg c host sta ls is bs *> buildWithContext cs host sta links includes bins
 

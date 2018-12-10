@@ -428,7 +428,23 @@ in
 
 let m4 =
   λ(v : List Natural) →
-    prelude.makeGnuExe { name = "m4", version = v }
+    -- TODO remove this hack
+    let m4Configure =
+      λ(cfg : types.ConfigureVars) →
+        let maybeHost = prelude.mkHost cfg.targetTriple
+        in
+        let modifyArgs = λ(xs : List Text) → prelude.maybeAppend Text maybeHost xs
+        in
+
+        [ prelude.mkExe "configure"
+        , prelude.call (prelude.defaultCall ⫽ { program = "./configure"
+                                              , arguments = modifyArgs [ "--prefix=${cfg.installDir}" ]
+                                              , environment = None (List types.EnvVar)
+                                              })
+        ]
+    in
+    prelude.makeGnuExe { name = "m4", version = v } ⫽
+      { configureCommand = m4Configure }
 in
 
 let nginx =
@@ -548,6 +564,11 @@ let libtasn1 =
       { pkgUrl = "https://ftp.gnu.org/gnu/libtasn1/libtasn1-${prelude.showVersion v}.tar.gz" }
 in
 
+let ghc =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "ghc", version = v } ⫽
+      { pkgUrl = "https://downloads.haskell.org/~ghc/${prelude.showVersion v}/ghc-${prelude.showVersion v}-src.tar.xz" }
+in
 
 [ autoconf [2,69]
 , automake [1,16,1]

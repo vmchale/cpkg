@@ -66,6 +66,7 @@ prePlan :: PackId -> PackageSet -> Maybe [PackId]
 prePlan = fmap reverse . topSort . edges <=*< getDeps
 
 -- TODO: concurrent builds
+-- or at least return [[PackId]] ?
 pkgPlan :: PackId -> PackageSet -> Maybe [PackId]
 pkgPlan pkId set = do
     plan' <- prePlan pkId set
