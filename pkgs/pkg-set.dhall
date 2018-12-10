@@ -6,7 +6,7 @@ in
 let types = https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-types.dhall
 in
 
-let prelude = https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-prelude.dhall
+let prelude = ../dhall/cpkg-prelude.dhall -- https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-prelude.dhall
 in
 
 {- gnupg: https://www.gnupg.org/ -}
@@ -337,9 +337,21 @@ let vim =
       , pkgVersion = v
       , pkgUrl = "http://ftp.vim.org/vim/unix/vim-${prelude.showVersion v}.tar.bz2"
       , pkgSubdir = "vim${squishVersion v}"
-      , configureCommand = prelude.configureMkExes [ "src/configure", "src/auto/configure", "src/which.sh" ]
+      , configureCommand =
+          prelude.configureMkExesExtraFlags { bins = [ "src/configure", "src/auto/configure", "src/which.sh" ]
+                                            , extraFlags = [ "--enable-perlinterp=yes"
+                                                           , "--enable-luainterp=yes"
+                                                           , "--enable-pythoninterp"
+                                                           , "--enable-python3interp"
+                                                           ]
+                                            }
       , installCommand = prelude.installWithBinaries [ "bin/vim", "bin/xxd" ]
-      , pkgDeps = [ prelude.unbounded "ncurses" ] -- , prelude.unbounded "glibc" ]
+      , pkgDeps = [ prelude.unbounded "ncurses"
+                  , prelude.unbounded "perl" -- ideally it shouldn't be a *hard* dependency on perl, since perl's cross-compilation abilities are not really there...
+                  , prelude.unbounded "lua"
+                  -- , prelude.unbounded "python2"
+                  -- , prelude.unbounded "python3"
+                  ]
       }
 in
 

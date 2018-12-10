@@ -220,11 +220,16 @@ let bigConfigure =
   generalConfigure "Configure" ([] : List Text)
 in
 
+let configureMkExesExtraFlags =
+  λ(x : { bins : List Text, extraFlags : List Text }) →
+  λ(cfg : types.ConfigureVars) →
+    mkExes x.bins
+      # configureWithFlags x.extraFlags cfg
+in
+
 let configureMkExes =
   λ(bins : List Text) →
-  λ(cfg : types.ConfigureVars) →
-    mkExes bins
-      # defaultConfigure cfg
+    configureMkExesExtraFlags { bins = bins, extraFlags = ([] : List Text) }
 in
 
 let defaultBuild =
@@ -393,4 +398,5 @@ in
 , bigConfigure        = bigConfigure
 , generalConfigure    = generalConfigure
 , configureWithFlags  = configureWithFlags
+, configureMkExesExtraFlags = configureMkExesExtraFlags
 }

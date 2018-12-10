@@ -36,6 +36,8 @@
   libraries
 - [ ] Fails when symlink already exists
 - [ ] Cross-compile shouldn't symlink
+- [ ] Don't rebuild `ncurses` when rebuilding `vim` with `lua` - `ncurses`
+  does not depend on lua so its hash/include dirs should not be changed
 # Deficiencies
 - [ ] `mkExe` and `makeExe` are too similar
 - [ ] Cache package downloads globally
