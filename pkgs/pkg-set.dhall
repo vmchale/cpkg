@@ -532,17 +532,6 @@ let lua =
       }
 in
 
-let ruby =
-  λ(x : { version : List Natural, patch : Natural }) →
-    let versionString = prelude.showVersion x.version
-    in
-
-    prelude.simplePackage { name = "ruby", version = x.version # [ x.patch ] } ⫽
-      { pkgUrl = "https://cache.ruby-lang.org/pub/ruby/${versionString}/ruby-${versionString}.${Natural/show x.patch}.tar.gz"
-      , configureCommand = prelude.configureMkExes [ "tool/ifchange", "tool/rbinstall.rb" ]
-      }
-in
-
 [ autoconf [2,69]
 , automake [1,16,1]
 , binutils [2,31]
@@ -586,7 +575,6 @@ in
 , pcre2 [10,32]
 , perl5 [5,28,1]
 , png [1,6,35]
-, ruby { version = [2,5], patch = 3 }
 , sed [4,5]
 , tar [1,30]
 , unistring [0,9,10]
