@@ -24,7 +24,7 @@ import           Package.C.Error
 import           Package.C.Type
 
 defaultPackageSetDhall :: IO PackageSetDhall
-defaultPackageSetDhall = input auto "./pkgs/pkg-set.dhall" -- "https://raw.githubusercontent.com/vmchale/cpkg/master/pkgs/pkg-set.dhall"
+defaultPackageSetDhall = input auto "https://raw.githubusercontent.com/vmchale/cpkg/master/pkgs/pkg-set.dhall"
 
 displayPackageSet :: IO ()
 displayPackageSet = putDoc . pretty =<< defaultPackageSetDhall
