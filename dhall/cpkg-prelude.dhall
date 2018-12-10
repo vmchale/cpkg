@@ -230,7 +230,8 @@ let configureSymlinkBinariesWithFlags =
 in
 
 let configureMkExes =
-  configureMkExesWithFlags ([] : List Text)
+  λ(extraFlags : List Text) →
+    configureSymlinkBinariesWithFlags extraFlags ([] : List Text)
 in
 
 let defaultBuild =
