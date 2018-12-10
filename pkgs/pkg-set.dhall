@@ -339,18 +339,12 @@ let vim =
       , pkgSubdir = "vim${squishVersion v}"
       , configureCommand =
           prelude.configureMkExesExtraFlags { bins = [ "src/configure", "src/auto/configure", "src/which.sh" ]
-                                            , extraFlags = [ "--enable-perlinterp=yes"
-                                                           , "--enable-luainterp=yes"
-                                                           , "--enable-pythoninterp"
-                                                           , "--enable-python3interp"
+                                            , extraFlags = [ "--enable-luainterp=yes"
                                                            ]
                                             }
       , installCommand = prelude.installWithBinaries [ "bin/vim", "bin/xxd" ]
       , pkgDeps = [ prelude.unbounded "ncurses"
-                  , prelude.unbounded "perl" -- ideally it shouldn't be a *hard* dependency on perl, since perl's cross-compilation abilities are not really there...
                   , prelude.unbounded "lua"
-                  , prelude.unbounded "python2"
-                  , prelude.unbounded "python3"
                   ]
       }
 in
