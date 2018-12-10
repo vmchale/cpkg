@@ -567,7 +567,15 @@ in
 let p11kit =
   λ(v : List Natural) →
     prelude.simplePackage { name = "p11-kit", version = v } ⫽
-      { pkgUrl = "https://github.com/p11-glue/p11-kit/releases/download/${prelude.showVersion v}/p11-kit-${prelude.showVersion v}.tar.gz" }
+      { pkgUrl = "https://github.com/p11-glue/p11-kit/releases/download/${prelude.showVersion v}/p11-kit-${prelude.showVersion v}.tar.gz"
+      , pkgDeps = [ prelude.lowerBound { name = "libffi", lower = [3,0,0] } ]
+      }
+in
+
+let libffi =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libffi", version = v } ⫽
+      { pkgUrl = "https://sourceware.org/ftp/libffi/libffi-${prelude.showVersion v}.tar.gz" }
 in
 
 [ autoconf [2,69]
@@ -598,6 +606,7 @@ in
 , lapack [3,8,0]
 , jpegTurbo [2,0,1]
 , libassuan [2,5,1]
+, libffi [3,2,1]
 , libgcrypt [1,8,4]
 , libgpgError [1,32]
 , libksba [1,3,5]
