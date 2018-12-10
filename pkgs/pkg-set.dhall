@@ -380,7 +380,8 @@ let wget =
     prelude.makeGnuExe { name = "wget", version = v } ⫽
       { pkgUrl = "https://ftp.gnu.org/gnu/wget/wget-${prelude.showVersion v}.tar.gz"
       , pkgDeps = [ prelude.unbounded "gnutls" ]
-      , configureCommand = prelude.autogenConfigure
+      , pkgBuildDeps = [ prelude.unbounded "perl" ]
+      , configureCommand = prelude.configureMkExes [ "doc/texi2pod.pl" ]
       }
 in
 
@@ -556,7 +557,8 @@ in
 , glibc [2,28]
 , gmp [6,1,2]
 , gnupg [2,2,11]
-, gnutls { version = [3,6], patch = 5 }
+-- , gnutls { version = [3,6], patch = 5 }
+, gnutls { version = [3,5], patch = 19 }
 , gzip [1,9]
 , harfbuzz [2,2,0]
 , python [2,7,15]
