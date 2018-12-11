@@ -28,6 +28,7 @@
 - [ ] Custom package directories
 - [ ] Make Haskell library API better
   - [ ] Separate Dhall parts?
+- [ ] `cpkg list` should show what binaries it provides
 # Performance
 - [ ] Dhall is slow
 # Bugs

@@ -228,6 +228,7 @@ let gmp =
     prelude.simplePackage { name = "gmp", version = v } ⫽
       { pkgUrl = "https://gmplib.org/download/gmp/gmp-${prelude.showVersion v}.tar.xz"
       , configureCommand = prelude.configureMkExes [ "mpn/m4-ccas" ]
+      , pkgBuildDeps = [ prelude.unbounded "m4" ]
       -- TODO: run 'make check' if not cross-compiling?
       }
 in
