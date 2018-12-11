@@ -8,8 +8,7 @@ module Package.C.PackageSet ( PackageSet (..)
                             ) where
 
 import           Algebra.Graph.AdjacencyMap            (edges)
-import           Algebra.Graph.AdjacencyMap.Algorithm  (topSort)
-import           Control.Composition                   ((<=*<))
+import           Algebra.Graph.AdjacencyMap.Algorithm  (dfsForest)
 import           Data.Containers.ListUtils
 import           Data.Foldable                         (fold)
 import           Data.List                             (intersperse)
@@ -18,6 +17,7 @@ import qualified Data.Text                             as T
 import           Data.Text.Prettyprint.Doc
 import           Data.Text.Prettyprint.Doc.Custom
 import           Data.Text.Prettyprint.Doc.Render.Text
+import           Data.Tree                             (Tree (..))
 import           Dhall
 import qualified Package.C.Dhall.Type                  as Dhall
 import           Package.C.Error
@@ -39,6 +39,10 @@ newtype PackageSet = PackageSet (M.Map T.Text CPkg)
 
 type PackId = T.Text
 
+data DepNames = DepNames { libNames       :: [(PackId, PackId)]
+                         , buildToolNames :: [[(PackId, PackId)]]
+                         }
+
 packageSetDhallToPackageSet :: PackageSetDhall -> PackageSet
 packageSetDhallToPackageSet (PackageSetDhall pkgs'') =
     let names = Dhall.pkgName <$> pkgs''
@@ -57,25 +61,25 @@ getDeps pkgName' set@(PackageSet ps) = do
             let self = zip (repeat pkgName') xs
             pure (transitive ++ self)
 
+unwrapForest :: [Tree a] -> Maybe (Tree a)
+unwrapForest [node] = Just node
+unwrapForest _      = Nothing
+
 -- TODO: use dfsForest but check for cycles
-prePlan :: PackId -> PackageSet -> Maybe [PackId]
-prePlan = fmap reverse . topSort . edges <=*< getDeps
+pkgPlan :: PackId -> PackageSet -> Maybe (Tree PackId)
+pkgPlan pkId ps = do
+    ds <- getDeps pkId ps
+    case ds of
+        []  -> pure (Node pkId [])
+        ds' -> unwrapForest (dfsForest (edges ds'))
+        -- FIXME check for cycles with isAcyclic
 
--- TODO: concurrent builds
--- or at least return [[PackId]] ?
-pkgPlan :: PackId -> PackageSet -> Maybe [PackId]
-pkgPlan pkId set = do
-    plan' <- prePlan pkId set
-    if pkId `elem` plan'
-        then pure plan'
-        else pure (plan' ++ [pkId])
-
-pkgs :: PackId -> PackageSet -> Maybe [CPkg]
+pkgs :: PackId -> PackageSet -> Maybe (Tree CPkg)
 pkgs pkId set@(PackageSet pset) = do
     plan <- pkgPlan pkId set
     traverse (`M.lookup` pset) plan
 
-pkgsM :: PackId -> IO [CPkg]
+pkgsM :: PackId -> IO (Tree CPkg)
 pkgsM pkId = do
     pks <- pkgs pkId . packageSetDhallToPackageSet <$> defaultPackageSetDhall
     case pks of

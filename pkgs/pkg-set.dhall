@@ -451,23 +451,7 @@ in
 
 let m4 =
   λ(v : List Natural) →
-    -- TODO remove this hack
-    let m4Configure =
-      λ(cfg : types.ConfigureVars) →
-        let maybeHost = prelude.mkHost cfg.targetTriple
-        in
-        let modifyArgs = prelude.maybeAppend Text maybeHost
-        in
-
-        [ prelude.mkExe "configure"
-        , prelude.call (prelude.defaultCall ⫽ { program = "./configure"
-                                              , arguments = modifyArgs [ "--prefix=${cfg.installDir}" ]
-                                              , environment = None (List types.EnvVar)
-                                              })
-        ]
-    in
     prelude.makeGnuExe { name = "m4", version = v } ⫽
-      { configureCommand = m4Configure }
 in
 
 let nginx =
