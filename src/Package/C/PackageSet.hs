@@ -39,10 +39,6 @@ newtype PackageSet = PackageSet (M.Map T.Text CPkg)
 
 type PackId = T.Text
 
-data DepNames = DepNames { libNames       :: [(PackId, PackId)]
-                         , buildToolNames :: [[(PackId, PackId)]]
-                         }
-
 packageSetDhallToPackageSet :: PackageSetDhall -> PackageSet
 packageSetDhallToPackageSet (PackageSetDhall pkgs'') =
     let names = Dhall.pkgName <$> pkgs''
