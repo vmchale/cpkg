@@ -15,7 +15,7 @@ data ConfigureVars = ConfigureVars { installDir   :: FilePath
                                    }
 
 data BuildVars = BuildVars { cpus    :: Int
-                           , osBuild :: OS
+                           , buildOS :: OS
                            }
 
 data InstallVars = InstallVars { installPath :: FilePath

@@ -10,6 +10,7 @@ module Package.C.Type ( CPkg (..)
                       , Command (..)
                       , Dep (..)
                       , Version (..)
+                      , OS (..)
                       , Platform
                       -- * Helper functions
                       , cPkgDhallToCPkg

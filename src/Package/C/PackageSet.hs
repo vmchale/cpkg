@@ -46,6 +46,8 @@ packageSetDhallToPackageSet (PackageSetDhall pkgs'') =
 
         in PackageSet $ M.fromList (zip names pkgs')
 
+-- TODO: we need a graph-like structure that has two distinct types of edges...
+-- this would separate build depends &c.
 getDeps :: PackId -> PackageSet -> Maybe [(PackId, PackId)]
 getDeps pkgName' set@(PackageSet ps) = do
     cpkg <- M.lookup pkgName' ps

@@ -314,9 +314,13 @@ in
 
 let cmakeConfigure =
   λ(cfg : types.ConfigureVars) →
+    let host =
+      Optional/fold Text cfg.targetTriple (List Text) (λ(tgt : Text) → ["-DCMAKE_C_COMPILER=${tgt}-gcc"]) ([] : List Text)
+    in
+
     [ createDir "build"
     , call { program = "cmake"
-           , arguments = [ "../", "-DCMAKE_INSTALL_PREFIX:PATH=${cfg.installDir}" ]
+           , arguments = [ "../", "-DCMAKE_INSTALL_PREFIX:PATH=${cfg.installDir}" ] # host
            , environment = defaultEnv
            , procDir = Some "build"
            }

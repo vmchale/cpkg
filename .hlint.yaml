@@ -4,6 +4,8 @@
   - {name: undefined, within: []}
   - {name: fromJust, within: []}
   - {name: foldl, within: []}
+  - {name: traceShowId, within: []}
+  - {name: traceShow, within: []}
 
 - ignore: {name: "Avoid lambda using `infix`"}
 - ignore: {name: "Use section"}

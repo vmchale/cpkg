@@ -80,9 +80,9 @@ library
         hashable -any,
         binary -any,
         microlens -any,
-        composition-prelude,
-        algebraic-graphs -any,
-        recursion >= 2.0.0.0
+        composition-prelude >=1.0.0.0,
+        algebraic-graphs >=0.3,
+        recursion >=2.0.0.0
 
     if (flag(development) && impl(ghc <=8.2))
         ghc-options: -Werror
