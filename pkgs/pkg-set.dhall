@@ -409,7 +409,7 @@ let lapack =
       , pkgVersion = v
       , pkgUrl = "http://www.netlib.org/lapack/lapack-${prelude.showVersion v}.tar.gz"
       , pkgSubdir = "lapack-${prelude.showVersion v}"
-      , pkgBuildDeps = [ prelude.unbounded "cmake", prelude.unbounded "gfortran" ]
+      , pkgBuildDeps = [ prelude.unbounded "cmake" ]
       }
 in
 

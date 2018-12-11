@@ -62,9 +62,15 @@ data CPkg = CPkg { pkgName          :: T.Text
                  -- TODO: add "description" field for printing
                  } deriving (Generic, Interpret)
 
+preDeps :: Doc a -> [ Dep ] -> Doc a
+preDeps _ []   = ""
+preDeps dep ds = hardline <> dep <+> hsep (punctuate "," (pretty . name <$> ds))
+
 prettyDeps :: [ Dep ] -> Doc a
-prettyDeps [] = ""
-prettyDeps ds = hardline <> "dependencies:" <+> hsep (punctuate "," (pretty . name <$> ds))
+prettyDeps = preDeps "dependencies:"
+
+prettyBldDeps :: [ Dep ] -> Doc a
+prettyBldDeps = preDeps "build dependencies:"
 
 instance Pretty CPkg where
-    pretty (CPkg nam v url _ _ ds _ _ _) = pretty nam <##> indent 4 ("url:" <+> pretty url <##> "version:" <+> pretty v <> prettyDeps ds)
+    pretty (CPkg nam v url _ bds ds _ _ _) = pretty nam <##> indent 4 ("url:" <+> pretty url <##> "version:" <+> pretty v <> prettyDeps ds <> prettyBldDeps bds)
