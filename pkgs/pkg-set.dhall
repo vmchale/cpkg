@@ -100,6 +100,7 @@ let cmake =
       , pkgUrl = "https://cmake.org/files/v${versionString}/cmake-${versionString}.${patchString}.tar.gz"
       , pkgSubdir = "cmake-${versionString}.${patchString}"
       , configureCommand = prelude.configureMkExes [ "bootstrap" ]
+      , installCommand = prelude.installWithBinaries [ "bin/cmake" ]
       }
 in
 
@@ -428,7 +429,6 @@ let lapack =
       , pkgUrl = "http://www.netlib.org/lapack/lapack-${prelude.showVersion v}.tar.gz"
       , pkgSubdir = "lapack-${prelude.showVersion v}"
       , pkgBuildDeps = [ prelude.unbounded "cmake" ]
-      , installWith = prelude.installWithBinaries [ "bin/cmake" ]
       }
 in
 
