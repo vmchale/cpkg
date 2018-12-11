@@ -496,13 +496,15 @@ in
 let automake =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "automake", version = v } ⫽
-      { pkgBuildDeps = [ prelude.lowerBound { name =  "autoconf", lower = [2,65] } ] }
+      { pkgBuildDeps = [ prelude.lowerBound { name =  "autoconf", lower = [2,65] } ]
+      , installCommand = prelude.installWithBinaries [ "bin/automake", "bin/aclocal" ] }
 in
 
 let autoconf =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "autoconf", version = v } ⫽
-      { pkgBuildDeps = [ prelude.lowerBound { name =  "m4", lower = [1,4,16] } ] }
+      { pkgBuildDeps = [ prelude.lowerBound { name =  "m4", lower = [1,4,16] } ]
+      , installCommand = prelude.installWithBinaries [ "bin/autoconf", "bin/autoheader" ] }
 in
 
 let python =
