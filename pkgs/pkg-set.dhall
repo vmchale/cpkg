@@ -504,7 +504,8 @@ let autoconf =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "autoconf", version = v } ⫽
       { pkgBuildDeps = [ prelude.lowerBound { name =  "m4", lower = [1,4,16] } ]
-      , installCommand = prelude.installWithBinaries [ "bin/autoconf", "bin/autoheader" ] }
+      , installCommand = prelude.installWithBinaries [ "bin/autoconf", "bin/autoheader", "bin/autom4te" ]
+      }
 in
 
 let python =
