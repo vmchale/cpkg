@@ -8,7 +8,7 @@ module Package.C.PackageSet ( PackageSet (..)
                             ) where
 
 import           Algebra.Graph.AdjacencyMap            (edges)
-import           Algebra.Graph.AdjacencyMap.Algorithm  (dfsForest)
+import           Algebra.Graph.AdjacencyMap.Algorithm  (dfsForestFrom)
 import           Data.Containers.ListUtils
 import           Data.Foldable                         (fold)
 import           Data.List                             (intersperse)
@@ -67,7 +67,7 @@ pkgPlan pkId ps = do
     ds <- getDeps pkId ps
     case ds of
         []  -> pure (Node pkId [])
-        ds' -> unwrapForest (dfsForest (edges ds'))
+        ds' -> unwrapForest (dfsForestFrom [pkId] (edges ds')) -- FIXME: dfsForest is not what we want?
         -- FIXME check for cycles with isAcyclic
 
 pkgs :: PackId -> PackageSet -> Maybe (Tree CPkg)

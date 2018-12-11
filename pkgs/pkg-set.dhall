@@ -501,7 +501,8 @@ let automake =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "automake", version = v } ⫽
       { pkgBuildDeps = [ prelude.lowerBound { name =  "autoconf", lower = [2,65] } ]
-      , installCommand = prelude.installWithBinaries [ "bin/automake", "bin/aclocal" ] }
+      , installCommand = prelude.installWithBinaries [ "bin/automake", "bin/aclocal" ]
+      }
 in
 
 let autoconf =
