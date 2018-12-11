@@ -451,7 +451,7 @@ in
 
 let m4 =
   λ(v : List Natural) →
-    prelude.makeGnuExe { name = "m4", version = v } ⫽
+    prelude.makeGnuExe { name = "m4", version = v }
 in
 
 let nginx =
