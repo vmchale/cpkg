@@ -34,13 +34,14 @@ buildWithContext (c:cs) host sta ls is bs = do
         links = linkDir64 : linkDir : ls
         bins = binDir : bs
 
-    includeExists <- liftIO (doesDirectoryExist includeDir)
+    buildCPkg c host sta ls is bs
 
+    includeExists <- liftIO (doesDirectoryExist includeDir)
     let includes = if includeExists
         then includeDir : is
         else is
 
-    buildCPkg c host sta ls is bs *> buildWithContext cs host sta links includes bins
+    buildWithContext cs host sta links includes bins
 
 buildByName :: PackId -> Maybe Platform -> Bool -> PkgM ()
 buildByName pkId host sta = do
