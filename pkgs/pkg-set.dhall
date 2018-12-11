@@ -362,8 +362,26 @@ in
 -- FIXME: fix cross-compilation/configuration
 let zlib =
   λ(v : List Natural) →
+
+    let zlibConfigure =
+      λ(cfg : types.ConfigureVars) →
+
+        let host =
+          Optional/fold Text cfg.targetTriple Text (λ(tgt : Text) → "${tgt}-") ""
+        in
+
+        [ prelude.mkExe "configure"
+        , prelude.call (prelude.defaultCall ⫽ { program = "./configure"
+                                              , arguments = [ "--prefix=${cfg.installDir}" ]
+                                              , environment = Some [ { var = "CC", value = "${host}gcc" }, { var = "PATH", value = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" } ]
+                                              })
+        ]
+    in
+
     prelude.simplePackage { name = "zlib", version = v } ⫽
-      { pkgUrl = "http://www.zlib.net/zlib-${prelude.showVersion v}.tar.xz" }
+      { pkgUrl = "http://www.zlib.net/zlib-${prelude.showVersion v}.tar.xz"
+      , configureCommand = zlibConfigure
+      }
 in
 
 let gettext =
@@ -410,6 +428,7 @@ let lapack =
       , pkgUrl = "http://www.netlib.org/lapack/lapack-${prelude.showVersion v}.tar.gz"
       , pkgSubdir = "lapack-${prelude.showVersion v}"
       , pkgBuildDeps = [ prelude.unbounded "cmake" ]
+      , installWith = prelude.installWithBinaries [ "bin/cmake" ]
       }
 in
 

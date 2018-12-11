@@ -16,6 +16,7 @@ import           Data.Text.Prettyprint.Doc.Custom
 import           Dhall
 import           GHC.Natural                      (Natural)
 import           Package.C.Type.Shared
+import           Package.C.Type.Version
 
 data ConfigureVars = ConfigureVars { installDir   :: T.Text
                                    , targetTriple :: Maybe T.Text
@@ -73,4 +74,4 @@ prettyBldDeps :: [ Dep ] -> Doc a
 prettyBldDeps = preDeps "build dependencies:"
 
 instance Pretty CPkg where
-    pretty (CPkg nam v url _ bds ds _ _ _) = pretty nam <##> indent 4 ("url:" <+> pretty url <##> "version:" <+> pretty v <> prettyDeps ds <> prettyBldDeps bds)
+    pretty (CPkg nam v url _ bds ds _ _ _) = pretty nam <##> indent 4 ("url:" <+> pretty url <##> "version:" <+> pretty (Version v) <> prettyDeps ds <> prettyBldDeps bds)
