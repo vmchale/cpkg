@@ -114,8 +114,7 @@ in
 let dbus =
   λ(v : List Natural) →
     prelude.simplePackage { name = "dbus", version = v } ⫽
-      { pkgUrl = "https://dbus.freedesktop.org/releases/dbus/dbus-${prelude.showVersion v}.tar.gz"
-      }
+      { pkgUrl = "https://dbus.freedesktop.org/releases/dbus/dbus-${prelude.showVersion v}.tar.gz" }
 in
 
 let fltk =
@@ -146,7 +145,14 @@ let gc =
   λ(v : List Natural) →
     prelude.simplePackage { name = "gc", version = v } ⫽
         { pkgUrl = "https://github.com/ivmai/bdwgc/releases/download/v${prelude.showVersion v}/gc-${prelude.showVersion v}.tar.gz"
+        , pkgDeps = [ prelude.unbounded "libatomic_ops" ]
         }
+in
+
+let libatomic_ops =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libatomic_ops", version = v } ⫽
+        { pkgUrl = "https://github.com/ivmai/libatomic_ops/releases/download/v${prelude.showVersion v}/libatomic_ops-${prelude.showVersion v}.tar.gz" }
 in
 
 let git =
@@ -228,8 +234,7 @@ in
 let harfbuzz =
   λ(v : List Natural) →
     prelude.simplePackage { name = "harfbuzz", version = v } ⫽
-      { pkgUrl = "https://www.freedesktop.org/software/harfbuzz/release/harfbuzz-${prelude.showVersion v}.tar.bz2"
-      }
+      { pkgUrl = "https://www.freedesktop.org/software/harfbuzz/release/harfbuzz-${prelude.showVersion v}.tar.bz2" }
 in
 
 let jpegTurbo =
@@ -293,11 +298,10 @@ let perl5 =
       }
 in
 
-let png =
+let libpng =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libpng", version = v } ⫽
-      { pkgUrl = "https://download.sourceforge.net/libpng/libpng-${prelude.showVersion v}.tar.xz"
-      }
+      { pkgUrl = "https://download.sourceforge.net/libpng/libpng-${prelude.showVersion v}.tar.xz" }
 in
 
 let sed =
@@ -578,6 +582,12 @@ let libffi =
       { pkgUrl = "https://sourceware.org/ftp/libffi/libffi-${prelude.showVersion v}.tar.gz" }
 in
 
+let gdb =
+  λ(v : List Natural) →
+    prelude.makeGnuExe { name = "gdb", version = v } ⫽
+      { configureCommand = prelude.configureMkExes [ "mkinstalldirs" ] }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , binutils [2,31]
@@ -590,6 +600,7 @@ in
 , fltk { version = [1,3,4], patch = 2 }
 , gawk [4,2,1]
 , gc [8,0,0]
+, gdb [8,2]
 , gettext [0,19,8]
 , giflib [5,1,4]
 , git [2,19,2]
@@ -606,10 +617,12 @@ in
 , lapack [3,8,0]
 , jpegTurbo [2,0,1]
 , libassuan [2,5,1]
+, libatomic_ops [7,6,6]
 , libffi [3,2,1]
 , libgcrypt [1,8,4]
 , libgpgError [1,32]
 , libksba [1,3,5]
+, libpng [1,6,35]
 , libnettle [3,4,1]
 , libssh2 [1,8,0]
 , libtasn1 [4,13]
@@ -624,7 +637,6 @@ in
 , openssl [1,1,1]
 , pcre2 [10,32]
 , perl5 [5,28,1]
-, png [1,6,35]
 , sed [4,5]
 , tar [1,30]
 , unistring [0,9,10]
