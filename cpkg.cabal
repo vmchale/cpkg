@@ -82,7 +82,7 @@ library
         microlens -any,
         composition-prelude,
         algebraic-graphs -any,
-        recursion >= 1.2.2.0
+        recursion >= 2.0.0.0
 
     if (flag(development) && impl(ghc <=8.2))
         ghc-options: -Werror

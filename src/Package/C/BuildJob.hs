@@ -15,6 +15,7 @@ import           Package.C.Build
 import           Package.C.Monad
 import           Package.C.PackageSet
 import           Package.C.Type
+import           System.Directory       (doesDirectoryExist)
 import           System.FilePath        ((</>))
 
 data TreeF a x = NodeF a [x]
@@ -34,7 +35,7 @@ buildWithContext :: Tree CPkg
                  -> Maybe Platform
                  -> Bool -- ^ Should we build static libraries?
                  -> PkgM ()
-buildWithContext cTree host sta = zygoM dirAlg buildAlg cTree
+buildWithContext cTree host sta = zygoM' dirAlg buildAlg cTree
 
     where buildAlg :: TreeF CPkg (BuildDirs, ()) -> PkgM ()
           buildAlg (NodeF c preBds) = do
@@ -46,7 +47,7 @@ buildWithContext cTree host sta = zygoM dirAlg buildAlg cTree
             buildCPkg c host sta ls is bs
 
           dirAlg :: TreeF CPkg BuildDirs -> PkgM BuildDirs
-          dirAlg (NodeF c bds)  = do
+          dirAlg (NodeF c bds) = do
 
             let go f = fold (f <$> bds)
                 (ls, is, bs) = (go libraries, go include, go binaries)
@@ -61,7 +62,11 @@ buildWithContext cTree host sta = zygoM dirAlg buildAlg cTree
                 binDir = pkgDir </> "bin"
                 links = linkDir64 : linkDir : ls
                 bins = binDir : bs
-                includes = includeDir : is
+
+            includeExists <- liftIO (doesDirectoryExist includeDir)
+            let includes = if includeExists
+                then includeDir : is
+                else is
 
             pure (BuildDirs links includes bins)
 
