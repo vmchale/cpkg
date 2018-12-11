@@ -359,11 +359,11 @@ let xz =
       }
 in
 
+-- FIXME: fix cross-compilation/configuration
 let zlib =
   λ(v : List Natural) →
     prelude.simplePackage { name = "zlib", version = v } ⫽
-      { pkgUrl = "http://www.zlib.net/zlib-${prelude.showVersion v}.tar.xz"
-      }
+      { pkgUrl = "http://www.zlib.net/zlib-${prelude.showVersion v}.tar.xz" }
 in
 
 let gettext =
@@ -617,7 +617,7 @@ in
 , lapack [3,8,0]
 , jpegTurbo [2,0,1]
 , libassuan [2,5,1]
-, libatomic_ops [7,6,6]
+, libatomic_ops [7,6,8]
 , libffi [3,2,1]
 , libgcrypt [1,8,4]
 , libgpgError [1,32]
