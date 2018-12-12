@@ -19,7 +19,7 @@ matrix:
           sources:
             - hvr-ghc
           packages:
-            - ghc-8.6.1
+            - ghc-8.6.3
             - cabal-install-2.4
 
     - env: TARGET=x86_64-apple-darwin
@@ -40,7 +40,6 @@ before_install:
 script:
   - cabal new-build all
   - cabal new-run cpkg -- check-set pkgs/pkg-set.dhall
-  - cabal new-run cpkg -- install gc
   - |
     if [ `uname` = "Darwin" ]
     then
