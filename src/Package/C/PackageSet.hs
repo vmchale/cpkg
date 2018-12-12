@@ -69,7 +69,7 @@ pkgPlan pkId ps = do
     ds <- getDeps pkId ps
     case ds of
         []  -> pure (Node pkId [])
-        ds' -> unwrapForest (dfsForestFrom [pkId] (edges ds')) -- FIXME: dfsForest is not what we want?
+        ds' -> unwrapForest (dfsForestFrom [pkId] (edges ds'))
         -- FIXME check for cycles with isAcyclic
 
 pkgs :: PackId -> PackageSet -> Maybe (Tree CPkg)

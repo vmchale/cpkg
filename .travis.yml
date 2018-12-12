@@ -40,6 +40,7 @@ before_install:
 script:
   - cabal new-build all
   - cabal new-run cpkg -- check-set pkgs/pkg-set.dhall
+  - cabal new-run cpkg -- install gc
   - |
     if [ `uname` = "Darwin" ]
     then
