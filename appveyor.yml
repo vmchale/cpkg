@@ -9,7 +9,9 @@ before_test:
 test_script:
   - refreshenv
   - cabal new-update
-  - cabal new-build all
+  - cabal new-build
+  - cabal new-run cpkg -- check-set pkgs/pkg-set.dhall
+  - cabal new-run cpkg -- install gc
   - ps: $directory = Get-ChildItem . -name -recurse cpkg.exe
   - ps: Copy-Item $directory cpkg-x86_64-pc-windows.exe
   - ps: Push-AppveyorArtifact cpkg-x86_64-pc-windows.exe
