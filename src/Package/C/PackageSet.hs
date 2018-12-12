@@ -51,7 +51,7 @@ packageSetDhallToPackageSet (PackageSetDhall pkgs'') =
 getDeps :: PackId -> PackageSet -> Maybe [(PackId, PackId)]
 getDeps pkgName' set@(PackageSet ps) = do
     cpkg <- M.lookup pkgName' ps
-    let depNames = (name <$> pkgDeps cpkg) ++ (name <$> pkgBuildDeps cpkg) -- this is terrible but it works better than doing nothing
+    let depNames = name <$> pkgDeps cpkg -- ++ (name <$> pkgBuildDeps cpkg)
     case nubOrd depNames of
         [] -> pure []
         xs -> do

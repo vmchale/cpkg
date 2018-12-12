@@ -29,6 +29,7 @@
 - [ ] Make Haskell library API better
   - [ ] Separate Dhall parts?
 - [ ] `cpkg list` should show what binaries it provides
+- [ ] https://fukuchi.org/works/qrencode/
 # Performance
 - [ ] Dhall is slow
 # Bugs
@@ -38,6 +39,8 @@
 - [ ] Cross-compile shouldn't symlink
 - [ ] Don't rebuild `ncurses` when rebuilding `vim` with `lua` - `ncurses`
   does not depend on lua so its hash/include dirs should not be changed
+- [ ] If X depends on Y, Z and Y depends on Z, then it will not link things
+  correctly...
 # Deficiencies
 - [ ] `mkExe` and `makeExe` are too similar
 - [ ] Cache package downloads globally
@@ -45,22 +48,16 @@
 - [ ] Build step should take OS as an argument
 - [ ] Make e.g. `vim` depend on `glibc`
 # Packages
-- [ ] Lua (`http://www.lua.org/ftp/lua-5.3.5.tar.gz`)
 - [ ] jemalloc
-- [ ] Cairo
 - [ ] Pango
 - [ ] GTK+
 - [ ] GraphViz
 - [ ] Ruby
-- [ ] Lua
-- [ ] Emacs
-- [ ] DBus
 - [ ] librsvg
 - [ ] ImageMagick
 - [ ] GHC cross-compiler?
 - [ ] https://sourceforge.net/projects/infozip/files/
 - [ ] https://www.gnu.org/software/coreutils/
-- [ ] autoconf/automake
 - [ ] fdupes
 - [ ] Figlet
 - [ ] GHC (`https://downloads.haskell.org/~ghc/8.6.3/ghc-8.6.3-src.tar.xz`)
@@ -69,6 +66,8 @@
 - [ ] https://ftp.gnu.org/gnu/coreutils/coreutils-8.30.tar.xz
 - [ ] https://www.libarchive.org/downloads/libarchive-3.3.3.tar.gz
 - [ ] `patscc`
+- [ ] `rustc`
+- [ ] https://github.com/ZBar/ZBar
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in

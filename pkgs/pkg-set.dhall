@@ -596,6 +596,28 @@ let gdb =
       { configureCommand = prelude.configureMkExes [ "mkinstalldirs" ] }
 in
 
+let libtool =
+  λ(v : List Natural) →
+    prelude.makeGnuExe { name = "libtool", version = v } ⫽
+      { pkgUrl = "http://ftpmirror.gnu.org/libtool/libtool-${prelude.showVersion v}.tar.gz"
+      , pkgBuildDeps = [ prelude.lowerBound { name =  "m4", lower = [1,4,16] } ]
+      }
+in
+
+let pkg-config =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "pkg-config", version = v } ⫽
+      { pkgUrl = "https://pkg-config.freedesktop.org/releases/pkg-config-${prelude.showVersion v}.tar.gz"
+      , installCommand = prelude.installWithBinaries [ "bin/pkg-config" ]
+      }
+in
+
+let qrencode =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "qrencode", version = v } ⫽
+      { pkgUrl = "https://fukuchi.org/works/qrencode/qrencode-${prelude.showVersion v}.tar.gz" }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , binutils [2,31]
@@ -634,6 +656,7 @@ in
 , libnettle [3,4,1]
 , libssh2 [1,8,0]
 , libtasn1 [4,13]
+, libtool [2,4,6]
 , libuv [1,24,0]
 , lua [5,3,5]
 , m4 [1,4,18]
@@ -645,6 +668,8 @@ in
 , openssl [1,1,1]
 , pcre2 [10,32]
 , perl5 [5,28,1]
+, pkg-config [0,29,2]
+, qrencode [4,0,2]
 , sed [4,5]
 , tar [1,30]
 , unistring [0,9,10]
