@@ -68,6 +68,11 @@
 - [ ] `patscc`
 - [ ] `rustc`
 - [ ] https://github.com/ZBar/ZBar
+- [ ] SDL2
+- [ ] Doxygen
+- [ ] libexif
+- [ ] LibTIFF
+- [ ] FFmpeg
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in

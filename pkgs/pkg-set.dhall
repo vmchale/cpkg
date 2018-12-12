@@ -615,7 +615,9 @@ in
 let qrencode =
   λ(v : List Natural) →
     prelude.simplePackage { name = "qrencode", version = v } ⫽
-      { pkgUrl = "https://fukuchi.org/works/qrencode/qrencode-${prelude.showVersion v}.tar.gz" }
+      { pkgUrl = "https://fukuchi.org/works/qrencode/qrencode-${prelude.showVersion v}.tar.gz"
+      , pkgDeps = [ prelude.unbounded "libpng" ]
+      }
 in
 
 [ autoconf [2,69]
