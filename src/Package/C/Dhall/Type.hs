@@ -55,7 +55,7 @@ data CPkg = CPkg { pkgName          :: T.Text
                  , pkgVersion       :: [ Natural ]
                  , pkgUrl           :: T.Text
                  , pkgSubdir        :: T.Text
-                 , pkgBuildDeps     :: [ Dep ]
+                 , pkgBuildDeps     :: [ Dep ] -- TODO: depend on target?
                  , pkgDeps          :: [ Dep ]
                  , configureCommand :: ConfigureVars -> [ Command ]
                  , buildCommand     :: BuildVars -> [ Command ]

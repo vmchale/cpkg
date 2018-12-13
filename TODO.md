@@ -14,23 +14,21 @@
 - [ ] Constraint solver
 - [ ] Build/handle preprocessors
   - [ ] Don't try to use cross-compiler on preprocessors
-- [ ] Nix-style builds
+- [x] Nix-style builds
   - [ ] Garbage collection
-- [ ] Package database
+- [ ] Caching
+  - [ ] Cache global package set?
 - [ ] `unpack` subcommand for packages
 - [ ] Cabal integration?
-- [ ] Generate something like pkg-config files?
+- [ ] Generate pkg-config files?
 - [ ] Bootstrap "fancy" tar?
 - [ ] Package "components"? Like cabal: build executables or not...
 - [ ] Symlink manpages
 - [ ] Completions
   - [ ] `cpkg install` should use `cpkg list`?
-- [ ] Should `check-set` be hidden in help?
-- [ ] Custom package directories
+- [ ] Custom package sets
 - [ ] Make Haskell library API better
-  - [ ] Separate Dhall parts?
 - [ ] `cpkg list` should show what binaries it provides
-- [ ] https://fukuchi.org/works/qrencode/
 # Performance
 - [ ] Dhall is slow
 # Bugs

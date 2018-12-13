@@ -16,7 +16,7 @@ let Arch = < X64 : {}
            | AArch : {}
            | Arm : {}
            | RISCV64 : {}
-           | PowerPc : {}
+           | PowerPC : {}
            | PowerPC64 : {}
            | PowerPC64le : {}
            | Sparc64 : {}
@@ -29,7 +29,9 @@ let Arch = < X64 : {}
            | Mips64El : {}
            | X86 : {}
            | SH4 : {}
-           | HPPA : {} >
+           | HPPA : {}
+           | HPPA64 : {}
+           >
 in
 
 let Manufacturer = < Unknown : {}
@@ -40,9 +42,9 @@ let Manufacturer = < Unknown : {}
 in
 
 let ABI = < GNU : {}
-          | Eabi : {}
           | GNUeabi : {}
           | GNUeabihf : {}
+          | GNUspe : {}
           >
 in
 

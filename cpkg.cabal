@@ -40,6 +40,7 @@ library
         Package.C.Type.Verbosity
         Package.C.Type.Version
         Package.C.Type.Vars
+        Package.C.Triple
         Package.C.Build
         Package.C.Build.OS
         Package.C.Build.Tree
