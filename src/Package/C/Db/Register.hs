@@ -16,15 +16,12 @@ import           CPkgPrelude
 import           Data.Binary          (decode, encode)
 import qualified Data.ByteString      as BS
 import qualified Data.ByteString.Lazy as BSL
-import           Data.Foldable        (toList)
 import           Data.Hashable        (Hashable (hash))
 import qualified Data.Set             as S
 import           Numeric              (showHex)
 import           Package.C.Db.Type
 import           Package.C.Error
 import           Package.C.Type       hiding (Dep (name))
-import           System.Directory
-import           System.FilePath      ((</>))
 
 type FlagPrint = forall m. MonadIO m => BuildCfg -> m String
 
