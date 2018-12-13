@@ -4,7 +4,7 @@
 {-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE TypeFamilies      #-}
 
-module Package.C.BuildJob ( buildByName
+module Package.C.Build.Tree ( buildByName
                           ) where
 
 import           Control.Monad.IO.Class (liftIO)

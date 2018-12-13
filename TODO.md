@@ -13,6 +13,7 @@
 # Features
 - [ ] Constraint solver
 - [ ] Build/handle preprocessors
+  - [ ] Don't try to use cross-compiler on preprocessors
 - [ ] Nix-style builds
   - [ ] Garbage collection
 - [ ] Package database

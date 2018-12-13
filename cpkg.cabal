@@ -42,7 +42,7 @@ library
         Package.C.Type.Vars
         Package.C.Build
         Package.C.Build.OS
-        Package.C.BuildJob
+        Package.C.Build.Tree
         Package.C.Unpack
         Package.C.Error
         Package.C.Fetch
