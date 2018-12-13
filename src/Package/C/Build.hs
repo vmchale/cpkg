@@ -4,9 +4,7 @@ module Package.C.Build ( buildCPkg
                        ) where
 
 import           Control.Concurrent          (getNumCapabilities)
-import           Control.Monad               (unless)
-import           Control.Monad.IO.Class      (MonadIO (liftIO))
-import           Data.Foldable               (traverse_)
+import           CPkgPrelude
 import qualified Data.Text.IO                as TIO
 import           Package.C.Build.OS
 import           Package.C.Db.Register

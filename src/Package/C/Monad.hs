@@ -5,8 +5,6 @@ module Package.C.Monad ( PkgM
                        , putDiagnostic
                        ) where
 
-import           Control.Monad            (when)
-import           Control.Monad.IO.Class   (liftIO)
 import           Control.Monad.Reader
 import           Package.C.Type.Verbosity
 

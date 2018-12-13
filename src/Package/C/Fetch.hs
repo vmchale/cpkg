@@ -3,7 +3,7 @@
 module Package.C.Fetch ( fetchUrl
                        ) where
 
-import           Control.Monad.IO.Class  (MonadIO (liftIO))
+import           CPkgPrelude
 import           Data.List               (isSuffixOf)
 import           Network.HTTP.Client
 import           Network.HTTP.Client.TLS (tlsManagerSettings)

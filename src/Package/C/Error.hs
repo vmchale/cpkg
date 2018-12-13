@@ -8,7 +8,7 @@ module Package.C.Error ( printErr
                        , PackageError (..)
                        ) where
 
-import           Control.Monad.IO.Class                (MonadIO (liftIO))
+import           CPkgPrelude
 import           Data.Text.Prettyprint.Doc
 import           Data.Text.Prettyprint.Doc.Custom
 import           Data.Text.Prettyprint.Doc.Render.Text

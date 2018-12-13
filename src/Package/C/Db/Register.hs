@@ -12,21 +12,19 @@ module Package.C.Db.Register ( registerPkg
                              , allPackages
                              ) where
 
-import           Control.Composition    ((.****))
-import           Control.Monad.IO.Class (MonadIO (..))
-import           Data.Binary            (decode, encode)
-import qualified Data.ByteString        as BS
-import qualified Data.ByteString.Lazy   as BSL
-import           Data.Foldable          (toList)
-import           Data.Hashable          (Hashable (hash))
-import qualified Data.Set               as S
-import           Lens.Micro             (over)
-import           Numeric                (showHex)
+import           CPkgPrelude
+import           Data.Binary          (decode, encode)
+import qualified Data.ByteString      as BS
+import qualified Data.ByteString.Lazy as BSL
+import           Data.Foldable        (toList)
+import           Data.Hashable        (Hashable (hash))
+import qualified Data.Set             as S
+import           Numeric              (showHex)
 import           Package.C.Db.Type
 import           Package.C.Error
-import           Package.C.Type         hiding (Dep (name))
+import           Package.C.Type       hiding (Dep (name))
 import           System.Directory
-import           System.FilePath        ((</>))
+import           System.FilePath      ((</>))
 
 type FlagPrint = forall m. MonadIO m => BuildCfg -> m String
 

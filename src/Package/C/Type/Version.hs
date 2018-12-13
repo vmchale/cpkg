@@ -5,12 +5,9 @@ module Package.C.Type.Version ( Version (..)
                               , showVersion
                               ) where
 
-import           Data.Binary               (Binary)
-import           Data.Foldable             (fold)
-import           Data.Hashable             (Hashable)
-import           Data.List                 (intercalate)
-import           Data.Text.Prettyprint.Doc
-import           Dhall
+import           CPkgPrelude
+import           Data.Hashable (Hashable)
+import           Data.List     (intercalate)
 
 newtype Version = Version [ Natural ]
     deriving (Eq, Ord, Interpret, Binary, Hashable)

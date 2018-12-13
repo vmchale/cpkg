@@ -7,16 +7,15 @@
 module Package.C.Build.Tree ( buildByName
                           ) where
 
-import           Control.Monad.IO.Class (liftIO)
 import           Control.Recursion
-import           Data.Foldable          (fold)
-import           Data.Tree              (Tree (..))
+import           CPkgPrelude
+import           Data.Tree            (Tree (..))
 import           Package.C.Build
 import           Package.C.Monad
 import           Package.C.PackageSet
 import           Package.C.Type
-import           System.Directory       (doesDirectoryExist)
-import           System.FilePath        ((</>))
+import           System.Directory     (doesDirectoryExist)
+import           System.FilePath      ((</>))
 
 data TreeF a x = NodeF a [x]
     deriving (Functor, Foldable, Traversable)

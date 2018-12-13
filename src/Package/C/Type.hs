@@ -17,7 +17,7 @@ module Package.C.Type ( CPkg (..)
                       , showVersion
                       ) where
 
-import           Data.Binary              (Binary)
+import           CPkgPrelude
 import           Data.Hashable            (Hashable)
 import qualified Data.Text                as T
 import           GHC.Generics             (Generic)

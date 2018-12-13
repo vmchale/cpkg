@@ -1,9 +1,8 @@
 module System.Process.Ext ( waitProcess
                           ) where
 
-import           Control.Monad            (void)
-import           Control.Monad.IO.Class   (liftIO)
 import           Control.Monad.Reader     (ask)
+import           CPkgPrelude
 import           Package.C.Monad
 import           Package.C.Type.Verbosity
 import           System.Exit              (ExitCode (ExitSuccess), exitWith)

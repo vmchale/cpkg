@@ -7,8 +7,7 @@ module Package.C.Triple ( TargetTriple (..)
                         , ABI (..)
                         ) where
 
-import           Dhall                 (Inject)
-import           GHC.Generics          (Generic)
+import           CPkgPrelude
 import           Package.C.Type.Shared (OS)
 
 data TargetTriple = TargetTriple { arch         :: Arch
