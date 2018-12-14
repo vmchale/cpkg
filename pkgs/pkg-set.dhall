@@ -554,8 +554,12 @@ let lua =
           Optional/fold Text cfg.buildTgt (List Text) (λ(tgt : Text) → ["CC=${tgt}-gcc"]) ([] : List Text)
         in
 
+        let ldflags =
+          (prelude.mkLDFlags (cfg.linkDirsBld)).value
+        in
+
         [ prelude.call (prelude.defaultCall ⫽ { program = "make"
-                                              , arguments = cc # [ printLuaOS cfg.buildOS ]
+                                              , arguments = cc # [ printLuaOS cfg.buildOS, "MYLDFLAGS=${ldflags}" ]
                                               })
         ]
     in
@@ -573,6 +577,7 @@ let lua =
       , configureCommand = (λ(_ : types.ConfigureVars) → [] : List types.Command)
       , buildCommand = luaBuild
       , installCommand = luaInstall
+      , pkgDeps = [ prelude.unbounded "readline" ]
       }
 in
 
@@ -624,6 +629,12 @@ let qrencode =
       { pkgUrl = "https://fukuchi.org/works/qrencode/qrencode-${prelude.showVersion v}.tar.gz"
       , configureCommand = prelude.configureWithFlags [ "--without-tools" ]
       }
+in
+
+let readline =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "readline", version = v } ⫽
+      { pkgUrl = "https://ftp.gnu.org/gnu/readline/readline-${prelude.showVersion v}.tar.gz" }
 in
 
 [ autoconf [2,69]
@@ -678,6 +689,7 @@ in
 , perl5 [5,28,1]
 , pkg-config [0,29,2]
 , qrencode [4,0,2]
+, readline [7,0]
 , sed [4,5]
 , tar [1,30]
 , unistring [0,9,10]
