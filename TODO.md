@@ -67,7 +67,6 @@
 - [ ] `patscc`
 - [ ] `rustc`
 - [ ] https://github.com/ZBar/ZBar
-- [ ] SDL2
 - [ ] Doxygen
 - [ ] libexif
 - [ ] LibTIFF

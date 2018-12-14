@@ -69,7 +69,7 @@ buildWithContext cTree host sta = zygoM' dirAlg buildAlg cTree
 
             pure (BuildDirs links includes bins)
 
-buildByName :: PackId -> Maybe Platform -> Bool -> PkgM ()
-buildByName pkId host sta = do
-    allPkgs <- liftIO (pkgsM pkId)
+buildByName :: PackId -> Maybe Platform -> Maybe String -> Bool -> PkgM ()
+buildByName pkId host pkSet sta = do
+    allPkgs <- liftIO (pkgsM pkId pkSet)
     buildWithContext allPkgs host sta

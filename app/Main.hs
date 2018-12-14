@@ -15,11 +15,11 @@ cpkgVersion = P.version
 data DumpTarget = Linker { _pkgGet :: String }
                 | Compiler { _pkgGet :: String }
 
-data Command = Install { _pkgName :: String, _verbosity :: Verbosity, _target :: Maybe Platform, _static :: Bool }
+data Command = Install { _pkgName :: String, _verbosity :: Verbosity, _target :: Maybe Platform, _static :: Bool, _packageSet :: Maybe String }
              | Check { _dhallFile :: String, _verbosity :: Verbosity }
              | CheckSet { _dhallFile :: String, _verbosity :: Verbosity }
              | Dump { _dumpTarget :: DumpTarget, _host :: Maybe Platform }
-             | List
+             | List { _packageSet :: Maybe String }
              | Nuke
 
 verbosityInt :: Parser Int
@@ -57,9 +57,12 @@ userCmd = hsubparser
     <> command "check" (info check (progDesc "Check a Dhall expression to ensure it can be used to build a package"))
     <> command "check-set" (info checkSet (progDesc "Check a package set defined in Dhall"))
     <> command "dump" (info dump (progDesc "Display flags to link against a particular library"))
-    <> command "list" (info (pure List) (progDesc "List all available packages"))
+    <> command "list" (info list (progDesc "List all available packages"))
     <> command "nuke" (info (pure Nuke) (progDesc "Remove all globally installed libraries"))
     )
+
+list :: Parser Command
+list = List <$> packageSet
 
 ftypeCompletions :: String -> Mod ArgumentFields a
 ftypeCompletions ext = completer . bashCompleter $ "file -X '!*." ++ ext ++ "' -o plusdirs"
@@ -75,6 +78,15 @@ install = Install
     <*> verbosity
     <*> target
     <*> static'
+    <*> packageSet
+
+packageSet :: Parser (Maybe String)
+packageSet = optional
+    (strOption
+    (metavar "EXPRESSION"
+    <> long "pkg-set"
+    <> help "Dhall expression for the package set to be used"
+    ))
 
 static' :: Parser Bool
 static' =
@@ -118,8 +130,8 @@ dhallFile =
     )
 
 run :: Command -> IO ()
-run (Install pkId v host' sta) =
-    runPkgM v $ buildByName (T.pack pkId) host' sta
+run (Install pkId v host' sta pkSet) =
+    runPkgM v $ buildByName (T.pack pkId) host' pkSet sta
 run (Check file v) = void $ getCPkg v file
 run (CheckSet file v) = void $ getPkgs v file
 run (Dump (Linker name) host) = printLinkerFlags name host
@@ -129,7 +141,7 @@ run Nuke = do
     exists <- doesDirectoryExist pkgDir
     when exists $
         removeDirectoryRecursive pkgDir
-run List = displayPackageSet
+run (List pkSet) = displayPackageSet pkSet
 
 main :: IO ()
 main = execParser wrapper >>= run

@@ -7,6 +7,7 @@ module CPkgPrelude ( -- * Base reëxports
                    , traverse_
                    , fold
                    , toList
+                   , (<=<)
                    , MonadIO (..)
                    -- Dhall reëxports
                    , Inject
@@ -29,14 +30,14 @@ module CPkgPrelude ( -- * Base reëxports
                    ) where
 
 import           Control.Composition       ((.****))
-import           Control.Monad             (unless, void, when)
+import           Control.Monad
 import           Control.Monad.IO.Class    (MonadIO (..))
 import           Data.Binary               (Binary)
-import           Data.Foldable             (fold, toList, traverse_)
-import           Data.Text.Prettyprint.Doc (Pretty (..), punctuate)
+import           Data.Foldable
+import           Data.Text.Prettyprint.Doc
 import           Dhall                     (Inject, Interpret)
 import           GHC.Generics              (Generic)
 import           GHC.Natural               (Natural)
 import           Lens.Micro                (Lens', over)
-import           System.Directory          (doesFileExist, getAppUserDataDirectory)
+import           System.Directory
 import           System.FilePath           ((</>))

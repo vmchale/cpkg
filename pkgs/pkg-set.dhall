@@ -676,6 +676,29 @@ let sdl2 =
       }
 in
 
+let zbar =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v
+    in
+
+    prelude.simplePackage { name = "zbar", version = v } ⫽
+      { pkgUrl = "https://managedway.dl.sourceforge.net/project/zbar/zbar/${versionString}/zbar-${versionString}.tar.bz2"
+      , configureCommand = prelude.configureWithFlags [ "--disable-video" ]
+      , pkgDeps = [ prelude.lowerBound { name = "imagemagick", lower = [6,2,6] } ]
+      }
+in
+
+let imageMagick =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v
+    in
+
+    prelude.simplePackage { name = "imagemagick", version = v } ⫽
+      { pkgUrl = "https://imagemagick.org/download/ImageMagick-${versionString}-16.tar.xz"
+      , pkgSubdir = "ImageMagick-${versionString}-16"
+      }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , binutils [2,31]
@@ -700,6 +723,7 @@ in
 , gnutls { version = [3,5], patch = 19 }
 , gzip [1,9]
 , harfbuzz [2,2,0]
+, imageMagick [7,0,8]
 , p11kit [0,23,14]
 , python [2,7,15]
 , python [3,7,1]
@@ -740,5 +764,6 @@ in
 , wget [1,20]
 , which [2,21]
 , xz [5,2,4]
+, zbar [0,10]
 , zlib [1,2,11]
 ]
