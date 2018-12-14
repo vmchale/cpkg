@@ -348,6 +348,13 @@ let cmakeInstall =
     ]
 in
 
+let cmakeInstallWithBinaries =
+  λ(bins : List Text) →
+  λ(installVars : types.InstallVars) →
+    cmakeInstall installVars
+      # symlinkBinaries bins
+in
+
 let cmakePackage =
   defaultPackage ⫽
   { configureCommand = cmakeConfigure
@@ -404,4 +411,5 @@ in
 , configureWithFlags  = configureWithFlags
 , configureMkExesExtraFlags = configureMkExesExtraFlags
 , writeFile           = writeFile
+, cmakeInstallWithBinaries = cmakeInstallWithBinaries
 }
