@@ -546,10 +546,16 @@ let lua =
           }
           os
     in
+
+
     let luaBuild =
       λ(cfg : types.BuildVars) →
+        let cc =
+          Optional/fold Text cfg.buildTgt (List Text) (λ(tgt : Text) → ["CC=${tgt}-gcc"]) ([] : List Text)
+        in
+
         [ prelude.call (prelude.defaultCall ⫽ { program = "make"
-                                              , arguments = [ printLuaOS cfg.buildOS ]
+                                              , arguments = cc # [ printLuaOS cfg.buildOS ]
                                               })
         ]
     in
