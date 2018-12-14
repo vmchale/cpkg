@@ -560,8 +560,12 @@ let lua =
           (prelude.mkLDFlags (cfg.linkDirsBld)).value
         in
 
+        let cflags =
+          (prelude.mkCFlags (cfg.includeDirsBld)).value
+        in
+
         [ prelude.call (prelude.defaultCall ⫽ { program = "make"
-                                              , arguments = cc # [ printLuaOS cfg.buildOS, "MYLDFLAGS=${ldflags}" ]
+                                              , arguments = cc # [ printLuaOS cfg.buildOS, "MYLDFLAGS=${ldflags}", "MYCFLAGS=${cflags}" ]
                                               })
         ]
     in
@@ -579,6 +583,7 @@ let lua =
       , configureCommand = (λ(_ : types.ConfigureVars) → [] : List types.Command)
       , buildCommand = luaBuild
       , installCommand = luaInstall
+      , pkgDeps = [ prelude.unbounded "readline" ]
       }
 in
 

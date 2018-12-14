@@ -69,6 +69,7 @@ let BuildVars = { cpus : Natural
                 , buildOS : OS
                 , buildTgt : Optional Text
                 , linkDirsBld : List Text
+                , includeDirsBld : List Text
                 }
 in
 
