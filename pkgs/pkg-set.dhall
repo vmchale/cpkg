@@ -579,7 +579,6 @@ let lua =
       , configureCommand = (λ(_ : types.ConfigureVars) → [] : List types.Command)
       , buildCommand = luaBuild
       , installCommand = luaInstall
-      , pkgDeps = [ prelude.unbounded "readline" ]
       }
 in
 
