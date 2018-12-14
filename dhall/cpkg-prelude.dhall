@@ -40,7 +40,7 @@ let printArch =
       , AArch       = λ(_ : {}) → "aarch64"
       , Arm         = λ(_ : {}) → "arm"
       , RISCV64     = λ(_ : {}) → "riscv64"
-      , PowerPc     = λ(_ : {}) → "powerpc"
+      , PowerPC     = λ(_ : {}) → "powerpc"
       , PowerPC64   = λ(_ : {}) → "powerpc64"
       , PowerPC64le = λ(_ : {}) → "powerpc64le"
       , Sparc64     = λ(_ : {}) → "sparc64"
@@ -54,6 +54,7 @@ let printArch =
       , X86         = λ(_ : {}) → "i686"
       , SH4         = λ(_ : {}) → "sh4"
       , HPPA        = λ(_ : {}) → "hppa"
+      , HPPA64      = λ(_ : {}) → "hppa64"
       }
       arch
 in

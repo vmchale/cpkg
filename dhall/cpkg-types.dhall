@@ -67,6 +67,7 @@ in
 
 let BuildVars = { cpus : Natural
                 , buildOS : OS
+                , buildTgt : Optional Text
                 }
 in
 

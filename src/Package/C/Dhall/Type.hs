@@ -32,8 +32,9 @@ data InstallVars = InstallVars { installPath :: T.Text
                                }
                     deriving (Generic, Inject)
 
-data BuildVars = BuildVars { cpus    :: Natural
-                           , buildOS :: OS
+data BuildVars = BuildVars { cpus     :: Natural
+                           , buildOS  :: OS
+                           , buildTgt :: Maybe T.Text
                            }
                 deriving (Generic, Inject)
 
