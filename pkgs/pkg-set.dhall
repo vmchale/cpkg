@@ -408,7 +408,7 @@ let wget =
     prelude.makeGnuExe { name = "wget", version = v } ⫽
       { pkgUrl = "https://ftp.gnu.org/gnu/wget/wget-${prelude.showVersion v}.tar.gz"
       , pkgDeps = [ prelude.unbounded "gnutls" ]
-      -- , pkgBuildDeps = [ prelude.unbounded "perl" ]
+      , pkgBuildDeps = [ prelude.unbounded "perl" ]
       , configureCommand = prelude.configureMkExes [ "doc/texi2pod.pl" ]
       }
 in
