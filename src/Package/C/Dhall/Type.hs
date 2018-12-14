@@ -25,6 +25,7 @@ data ConfigureVars = ConfigureVars { installDir   :: T.Text
                                    , binDirs      :: [ T.Text ]
                                    , configOS     :: OS
                                    , static       :: Bool
+                                   , cfgCpus      :: Natural
                                    } deriving (Generic, Inject)
 
 data InstallVars = InstallVars { installPath :: T.Text

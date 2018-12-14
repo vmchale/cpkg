@@ -116,7 +116,7 @@ getVars :: Maybe Platform
         -> PkgM (ConfigureVars, BuildVars, InstallVars)
 getVars host sta links incls bins = do
     nproc <- liftIO getNumCapabilities
-    let configureVars = ConfigureVars "" host incls links bins dhallOS sta
+    let configureVars = ConfigureVars "" host incls links bins dhallOS sta nproc
         buildVars = BuildVars nproc dhallOS host links incls
         installVars = InstallVars "" dhallOS
     pure (configureVars, buildVars, installVars)

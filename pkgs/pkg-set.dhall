@@ -93,13 +93,19 @@ let cmake =
     in
     let versionString = prelude.showVersion cfg.version
     in
+    let cmakeConfigure =
+      λ(cfg : types.ConfigureVars) →
+        prelude.configureMkExesExtraFlags { bins = [ "bootstrap" ]
+                                          , extraFlags = [ "--parallel=${Natural/show cfg.cfgCpus}" ]
+                                          } cfg
+    in
 
     prelude.defaultPackage ⫽
       { pkgName = "cmake"
       , pkgVersion = cfg.version # [ cfg.patch ]
       , pkgUrl = "https://cmake.org/files/v${versionString}/cmake-${versionString}.${patchString}.tar.gz"
       , pkgSubdir = "cmake-${versionString}.${patchString}"
-      , configureCommand = prelude.configureMkExes [ "bootstrap" ]
+      , configureCommand = cmakeConfigure
       , installCommand = prelude.installWithBinaries [ "bin/cmake" ]
       }
 in

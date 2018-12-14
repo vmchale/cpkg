@@ -62,6 +62,7 @@ let ConfigureVars = { installDir : Text
                     , binDirs : List Text
                     , configOS : OS
                     , static : Bool
+                    , cfgCpus : Natural
                     }
 in
 
