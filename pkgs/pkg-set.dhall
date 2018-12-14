@@ -665,6 +665,17 @@ let freetype =
       }
 in
 
+let sdl2 =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v
+    in
+
+    prelude.simplePackage { name = "sdl2", version = v } ⫽
+      { pkgUrl = "https://www.libsdl.org/release/SDL2-${versionString}.tar.gz"
+      , pkgSubdir = "SDL2-${versionString}"
+      }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , binutils [2,31]
@@ -720,6 +731,7 @@ in
 , pkg-config [0,29,2]
 , qrencode [4,0,2]
 , readline [7,0]
+, sdl2 [2,0,9]
 , sed [4,5]
 , tar [1,30]
 , unistring [0,9,10]
