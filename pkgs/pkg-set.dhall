@@ -657,7 +657,6 @@ let pixman =
       }
 in
 
-
 let freetype =
   λ(v : List Natural) →
     prelude.simplePackage { name = "freetype", version = v } ⫽
