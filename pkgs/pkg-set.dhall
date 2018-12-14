@@ -437,7 +437,7 @@ let cairo =
   λ(v : List Natural) →
     prelude.simplePackage { name = "cairo", version = v } ⫽
      { pkgUrl = "https://www.cairographics.org/releases/cairo-${prelude.showVersion v}.tar.xz"
-     , pkgDeps = [ prelude.unbounded "libpng" ]
+     , pkgDeps = [ prelude.lowerBound { name = "pixman", lower = [0,3,0] } ] -- TODO: add libpng bound back in...
      }
 in
 
@@ -637,6 +637,14 @@ let readline =
       { pkgUrl = "https://ftp.gnu.org/gnu/readline/readline-${prelude.showVersion v}.tar.gz" }
 in
 
+let pixman =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "pixman", version = v } ⫽
+      { pkgUrl = "https://www.cairographics.org/releases/pixman-${prelude.showVersion v}.tar.gz"
+      , pkgDeps = [ prelude.unbounded "libpng" ]
+      }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , binutils [2,31]
@@ -687,6 +695,7 @@ in
 , openssl [1,1,1]
 , pcre2 [10,32]
 , perl5 [5,28,1]
+, pixman [0,36,0]
 , pkg-config [0,29,2]
 , qrencode [4,0,2]
 , readline [7,0]
