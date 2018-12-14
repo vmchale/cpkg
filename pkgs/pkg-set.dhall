@@ -730,7 +730,9 @@ let pango =
         [ prelude.createDir "build"
         , prelude.call { program = "meson"
                        , arguments = [ "--prefix=${cfg.installDir}", ".." ]
-                       , environment = prelude.defaultEnv
+                       , environment = Some [ prelude.mkPkgConfigVar cfg.linkDirs
+                                            , { var = "PATH", value = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
+                                            ]
                        , procDir = Some "build"
                        }
         ]
@@ -757,6 +759,9 @@ let pango =
       , buildCommand = pangoBuild
       , installCommand = pangoInstall
       , pkgBuildDeps = [ prelude.lowerBound { name = "meson", lower = [0,48,0] } ]
+      , pkgDeps = [ prelude.unbounded "fontconfig"
+                  , prelude.unbounded "cairo"
+                  ]
       }
 in
 
@@ -774,11 +779,12 @@ let meson =
                                                                    , { var = "PATH", value = prelude.mkPathVar cfg.binDirs }
                                                                    ]
                                               })
+        , prelude.symlinkBinary "bin/meson"
         ]
     in
 
     prelude.simplePackage { name = "meson", version = v } ⫽
-      { pkgUrl = "https://github.com/mesonbuild/meson/archive/${versionString}.tar.gz" --  "https://github.com/mesonbuild/meson/releases/download/${versionString}/meson-${versionString}.tar.gz"
+      { pkgUrl = "https://github.com/mesonbuild/meson/archive/${versionString}.tar.gz"
       , configureCommand = pythonInstall
       , buildCommand = (λ(_ : types.BuildVars) → [] : List types.Command)
       , installCommand = (λ(_ : types.InstallVars) → [] : List types.Command)
@@ -814,6 +820,14 @@ let ninja =
       }
 in
 
+let fontconfig =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "fontconfig", version = v } ⫽
+      { pkgUrl = "https://www.freedesktop.org/software/fontconfig/release/fontconfig-${prelude.showVersion v}.tar.bz2"
+      , pkgDeps = [ prelude.unbounded "freetype" ]
+      }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , binutils [2,31]
@@ -823,6 +837,7 @@ in
 , curl [7,62,0]
 , dbus [1,12,10]
 , emacs [25,3]
+, fontconfig [2,13,1]
 , fltk { version = [1,3,4], patch = 2 }
 , freetype [2,9,1]
 , gawk [4,2,1]

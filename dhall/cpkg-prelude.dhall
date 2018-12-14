@@ -420,4 +420,5 @@ in
 , cmakeInstallWithBinaries = cmakeInstallWithBinaries
 , copyFile            = copyFile
 , mkPathVar           = mkPathVar
+, mkPkgConfigVar      = mkPkgConfigVar
 }
