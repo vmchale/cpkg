@@ -437,7 +437,9 @@ let cairo =
   λ(v : List Natural) →
     prelude.simplePackage { name = "cairo", version = v } ⫽
      { pkgUrl = "https://www.cairographics.org/releases/cairo-${prelude.showVersion v}.tar.xz"
-     , pkgDeps = [ prelude.lowerBound { name = "pixman", lower = [0,3,0] } ] -- TODO: add libpng bound back in...
+     , pkgDeps = [ prelude.lowerBound { name = "pixman", lower = [0,3,0] }
+                 , prelude.unbounded "freetype"
+                 ]
      }
 in
 
@@ -645,6 +647,15 @@ let pixman =
       }
 in
 
+
+let freetype =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "freetype", version = v } ⫽
+      { pkgUrl = "https://download.savannah.gnu.org/releases/freetype/freetype-${prelude.showVersion v}.tar.gz"
+      , configureCommand = prelude.configureMkExes [ "builds/unix/configure" ]
+      }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , binutils [2,31]
@@ -655,6 +666,7 @@ in
 , dbus [1,12,10]
 , emacs [25,3]
 , fltk { version = [1,3,4], patch = 2 }
+, freetype [2,9,1]
 , gawk [4,2,1]
 , gc [8,0,0]
 , gdb [8,2]
