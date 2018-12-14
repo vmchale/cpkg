@@ -13,7 +13,7 @@ import           Package.C.Monad
 import           Package.C.Type
 import           System.Directory
 import           System.Directory.Executable (mkExecutable)
-import           System.FilePath             (takeFileName, (</>))
+import           System.FilePath             (takeDirectory, takeFileName, (</>))
 import           System.IO.Temp              (withSystemTempDirectory)
 import           System.Process
 import           System.Process.Ext
@@ -43,6 +43,12 @@ stepToProc _ p (SymlinkBinary file') = do
     liftIO $ createFileLink actualBin (binDir </> takeFileName file')
 stepToProc dir' _ (Write out fp) =
     liftIO (TIO.writeFile (dir' </> fp) out)
+stepToProc dir' p (CopyFile src' dest') = do
+    let absSrc = dir' </> src'
+        absDest = p </> dest'
+    putDiagnostic ("Copying file " ++ absSrc ++ " to " ++ absDest ++ "...")
+    liftIO $ createDirectoryIfMissing True (takeDirectory absDest)
+    liftIO $ copyFileWithMetadata absSrc absDest
 
 processSteps :: (Traversable t)
              => FilePath -- ^ Build directory

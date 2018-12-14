@@ -29,6 +29,8 @@
 - [ ] Custom package sets
 - [ ] Make Haskell library API better
 - [ ] `cpkg list` should show what binaries it provides
+- [ ] `test` should map to commands such as `make check`; should not be run when
+  cross-compiling
 # Performance
 - [ ] Dhall is slow
 # Bugs

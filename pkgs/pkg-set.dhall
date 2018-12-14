@@ -531,7 +531,7 @@ let python =
     prelude.simplePackage { name = "python${major}", version = v } ⫽
       { pkgUrl = "https://www.python.org/ftp/python/${versionString}/Python-${versionString}.tar.xz"
       , pkgSubdir = "Python-${versionString}"
-      , configureCommand = prelude.configureWithFlags [ "--enable-optimizations" ]
+      -- , configureCommand = prelude.configureWithFlags [ "--enable-optimizations" ]
       , installCommand = prelude.installWithBinaries [ "bin/python${major}" ]
       }
 in
@@ -684,7 +684,9 @@ let zbar =
     prelude.simplePackage { name = "zbar", version = v } ⫽
       { pkgUrl = "https://managedway.dl.sourceforge.net/project/zbar/zbar/${versionString}/zbar-${versionString}.tar.bz2"
       , configureCommand = prelude.configureWithFlags [ "--disable-video" ]
-      , pkgDeps = [ prelude.lowerBound { name = "imagemagick", lower = [6,2,6] } ]
+      , pkgDeps = [ prelude.lowerBound { name = "imagemagick", lower = [6,2,6] }
+                  , prelude.unbounded "gtk2"
+                  ]
       }
 in
 
@@ -696,6 +698,119 @@ let imageMagick =
     prelude.simplePackage { name = "imagemagick", version = v } ⫽
       { pkgUrl = "https://imagemagick.org/download/ImageMagick-${versionString}-16.tar.xz"
       , pkgSubdir = "ImageMagick-${versionString}-16"
+      }
+in
+
+let gtk2 =
+  λ(x : { version : List Natural, patch : Natural }) →
+    let versionString = prelude.showVersion x.version
+    in
+    let fullVersion = versionString ++ "." ++ Natural/show x.patch
+    in
+
+    prelude.simplePackage { name = "gtk2", version = x.version # [x.patch] } ⫽
+      { pkgUrl = "http://ftp.gnome.org/pub/gnome/sources/gtk+/${versionString}/gtk+-${fullVersion}.tar.xz"
+      , pkgSubdir = "gtk+-${fullVersion}"
+      , pkgDeps = [ prelude.lowerBound { name = "cairo", lower = [1,6] }
+                  , prelude.lowerBound { name = "pango", lower = [1,20] }
+                  ]
+      }
+in
+
+let pango =
+  λ(x : { version : List Natural, patch : Natural }) →
+    let versionString = prelude.showVersion x.version
+    in
+    let fullVersion = versionString ++ "." ++ Natural/show x.patch
+    in
+
+    let pangoConfigure =
+      λ(cfg : types.ConfigureVars) →
+
+        [ prelude.createDir "build"
+        , prelude.call { program = "meson"
+                       , arguments = [ "--prefix=${cfg.installDir}", ".." ]
+                       , environment = prelude.defaultEnv
+                       , procDir = Some "build"
+                       }
+        ]
+
+    in
+
+    let pangoBuild =
+      λ(cfg : types.BuildVars) →
+        [ prelude.call (prelude.defaultCall ⫽ { program = "ninja", procDir = Some "build" }) ]
+    in
+
+    let pangoInstall =
+      λ(cfg : types.InstallVars) →
+        [ prelude.call (prelude.defaultCall ⫽ { program = "ninja"
+                                              , arguments = [ "install" ]
+                                              , procDir = Some "build"
+                                              })
+        ]
+    in
+
+    prelude.simplePackage { name = "pango", version = x.version # [x.patch] } ⫽
+      { pkgUrl = "http://ftp.gnome.org/pub/GNOME/sources/pango/${versionString}/pango-${fullVersion}.tar.xz"
+      , configureCommand = pangoConfigure
+      , buildCommand = pangoBuild
+      , installCommand = pangoInstall
+      , pkgBuildDeps = [ prelude.lowerBound { name = "meson", lower = [0,48,0] } ]
+      }
+in
+
+let meson =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v
+    in
+
+    let pythonInstall =
+      λ(cfg : types.ConfigureVars) →
+        [ prelude.createDir "${cfg.installDir}/lib/python3.7/site-packages"
+        , prelude.call (prelude.defaultCall ⫽ { program = "python3"
+                                              , arguments = [ "setup.py", "install", "--prefix=${cfg.installDir}" ]
+                                              , environment = Some [ { var = "PYTHONPATH", value = "${cfg.installDir}/lib/python3.7/site-packages" }
+                                                                   , { var = "PATH", value = prelude.mkPathVar cfg.binDirs }
+                                                                   ]
+                                              })
+        ]
+    in
+
+    prelude.simplePackage { name = "meson", version = v } ⫽
+      { pkgUrl = "https://github.com/mesonbuild/meson/archive/${versionString}.tar.gz" --  "https://github.com/mesonbuild/meson/releases/download/${versionString}/meson-${versionString}.tar.gz"
+      , configureCommand = pythonInstall
+      , buildCommand = (λ(_ : types.BuildVars) → [] : List types.Command)
+      , installCommand = (λ(_ : types.InstallVars) → [] : List types.Command)
+      , pkgDeps = [ prelude.unbounded "python3" ]
+      }
+in
+
+let ninja =
+  λ(v : List Natural) →
+    let ninjaConfigure =
+      λ(cfg : types.ConfigureVars) →
+        [ prelude.mkExe "configure.py"
+        , prelude.mkExe "src/inline.sh"
+        , prelude.call (prelude.defaultCall ⫽ { program = "./configure.py"
+                                              , arguments = [ "--bootstrap" ]
+                                              })
+        ]
+    in
+
+    let ninjaInstall =
+      λ(cfg : types.InstallVars) →
+        [ prelude.copyFile "ninja" "bin/ninja"
+        , prelude.symlinkBinary "bin/ninja"
+        ]
+    in
+
+    prelude.simplePackage { name = "ninja", version = v } ⫽
+      { pkgUrl = "https://github.com/ninja-build/ninja/archive/v${prelude.showVersion v}.tar.gz"
+      , configureCommand = ninjaConfigure
+      , buildCommand = (λ(_ : types.BuildVars) → [] : List types.Command)
+      , installCommand = ninjaInstall
+      , pkgBuildDeps = [ prelude.unbounded "python2" ]
       }
 in
 
@@ -721,9 +836,10 @@ in
 , gnupg [2,2,11]
 -- , gnutls { version = [3,6], patch = 5 }
 , gnutls { version = [3,5], patch = 19 }
+, gtk2 { version = [2,24], patch = 32 }
 , gzip [1,9]
 , harfbuzz [2,2,0]
-, imageMagick [7,0,8]
+, imageMagick [6,9,10] -- [7,0,8]
 , p11kit [0,23,14]
 , python [2,7,15]
 , python [3,7,1]
@@ -743,12 +859,15 @@ in
 , libuv [1,24,0]
 , lua [5,3,5]
 , m4 [1,4,18]
+, meson [0,49,0]
 , musl [1,1,20]
 , nasm [2,14]
 , ncurses [6,1]
 , nginx [1,15,7]
+, ninja [1,8,2]
 , npth [1,6]
 , openssl [1,1,1]
+, pango { version = [1,43], patch = 0 }
 , pcre2 [10,32]
 , perl5 [5,28,1]
 , pixman [0,36,0]

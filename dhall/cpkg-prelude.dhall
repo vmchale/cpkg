@@ -126,6 +126,12 @@ let symlinkBinary =
     types.Command.SymlinkBinary { file = file }
 in
 
+let copyFile =
+  λ(src : Text) →
+  λ(dest : Text) →
+    types.Command.CopyFile { src = src, dest = dest }
+in
+
 let symlinkBinaries =
   map Text types.Command symlinkBinary
 in
@@ -412,4 +418,6 @@ in
 , configureMkExesExtraFlags = configureMkExesExtraFlags
 , writeFile           = writeFile
 , cmakeInstallWithBinaries = cmakeInstallWithBinaries
+, copyFile            = copyFile
+, mkPathVar           = mkPathVar
 }

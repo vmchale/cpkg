@@ -53,6 +53,7 @@ data Command = CreateDirectory { dir :: T.Text }
                     }
              | SymlinkBinary { file :: T.Text }
              | Write { contents :: T.Text, file :: T.Text }
+             | CopyFile { src :: T.Text, dest :: T.Text }
              deriving (Generic, Interpret)
 
 data CPkg = CPkg { pkgName          :: T.Text
@@ -65,6 +66,7 @@ data CPkg = CPkg { pkgName          :: T.Text
                  , buildCommand     :: BuildVars -> [ Command ]
                  , installCommand   :: InstallVars -> [ Command ]
                  -- TODO: add "description" field for printing
+                 -- TODO: add "test" command for e.g. `make check`
                  } deriving (Generic, Interpret)
 
 preDeps :: Doc a -> [ Dep ] -> Doc a
