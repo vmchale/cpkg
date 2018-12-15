@@ -50,7 +50,7 @@
 - [ ] Make e.g. `vim` depend on `glibc`
 # Packages
 - [ ] jemalloc
-- [ ] Pango
+- [ ] Pango (huge PITA)
 - [ ] GTK+
 - [ ] GraphViz
 - [ ] Ruby

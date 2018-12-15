@@ -373,8 +373,8 @@ let autogenConfigure =
   λ(cfg : types.ConfigureVars) →
     [ mkExe "autogen.sh"
     , call (defaultCall ⫽ { program = "./autogen.sh"
-                          , arguments = [] : List Text
-                          , environment = Some (defaultPath cfg # [mkPkgConfigVar cfg.linkDirs])
+                          -- https://www.gnu.org/software/automake/manual/html_node/Macro-Search-Path.html
+                          -- ACLOCAL_PATH / ACLOCAL_FLAGS ??
                           })
     ] # defaultConfigure cfg
 in
@@ -382,6 +382,37 @@ in
 let fullVersion =
   λ(x : { version : List Natural, patch : Natural }) →
     x.version # [x.patch]
+in
+
+{- meson build helpers -}
+
+let mesonConfigure =
+  λ(cfg : types.ConfigureVars) →
+
+    [ createDir "build"
+    , call { program = "meson"
+           , arguments = [ "--prefix=${cfg.installDir}", ".." ]
+           , environment = Some [ mkPkgConfigVar cfg.linkDirs
+                                , { var = "PATH", value = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
+                                ]
+           , procDir = Some "build"
+           }
+    ]
+
+in
+
+let ninjaBuild =
+  λ(cfg : types.BuildVars) →
+    [ call (defaultCall ⫽ { program = "ninja", procDir = Some "build" }) ]
+in
+
+let ninjaInstall =
+  λ(cfg : types.InstallVars) →
+    [ call (defaultCall ⫽ { program = "ninja"
+                          , arguments = [ "install" ]
+                          , procDir = Some "build"
+                          })
+    ]
 in
 
 { showVersion         = showVersion
@@ -429,4 +460,7 @@ in
 , mkPathVar           = mkPathVar
 , mkPkgConfigVar      = mkPkgConfigVar
 , fullVersion         = fullVersion
+, mesonConfigure      = mesonConfigure
+, ninjaBuild          = ninjaBuild
+, ninjaInstall        = ninjaInstall
 }

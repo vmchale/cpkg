@@ -662,6 +662,7 @@ let freetype =
     prelude.simplePackage { name = "freetype", version = v } ⫽
       { pkgUrl = "https://download.savannah.gnu.org/releases/freetype/freetype-${prelude.showVersion v}.tar.gz"
       , configureCommand = prelude.configureMkExes [ "builds/unix/configure" ]
+      -- TODO: figure out circular situation with harfbuzz/freetype
       }
 in
 
@@ -724,40 +725,11 @@ let pango =
     let fullVersion = versionString ++ "." ++ Natural/show x.patch
     in
 
-    let pangoConfigure =
-      λ(cfg : types.ConfigureVars) →
-
-        [ prelude.createDir "build"
-        , prelude.call { program = "meson"
-                       , arguments = [ "--prefix=${cfg.installDir}", ".." ]
-                       , environment = Some [ prelude.mkPkgConfigVar cfg.linkDirs
-                                            , { var = "PATH", value = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
-                                            ]
-                       , procDir = Some "build"
-                       }
-        ]
-
-    in
-
-    let pangoBuild =
-      λ(cfg : types.BuildVars) →
-        [ prelude.call (prelude.defaultCall ⫽ { program = "ninja", procDir = Some "build" }) ]
-    in
-
-    let pangoInstall =
-      λ(cfg : types.InstallVars) →
-        [ prelude.call (prelude.defaultCall ⫽ { program = "ninja"
-                                              , arguments = [ "install" ]
-                                              , procDir = Some "build"
-                                              })
-        ]
-    in
-
     prelude.simplePackage { name = "pango", version = prelude.fullVersion x } ⫽
       { pkgUrl = "http://ftp.gnome.org/pub/GNOME/sources/pango/${versionString}/pango-${fullVersion}.tar.xz"
-      , configureCommand = pangoConfigure
-      , buildCommand = pangoBuild
-      , installCommand = pangoInstall
+      , configureCommand = prelude.mesonConfigure
+      , buildCommand = prelude.ninjaBuild
+      , installCommand = prelude.ninjaInstall
       , pkgBuildDeps = [ prelude.lowerBound { name = "meson", lower = [0,48,0] }
                        , prelude.unbounded "gobject-introspection"
                        ]
@@ -871,8 +843,10 @@ let glib =
 
     prelude.simplePackage { name = "glib", version = prelude.fullVersion x } ⫽
       { pkgUrl = "http://ftp.gnome.org/pub/gnome/sources/glib/${versionString}/glib-${fullVersion}.tar.xz"
-      , configureCommand = prelude.autogenConfigure
-      , pkgBuildDeps = [ prelude.unbounded "autoconf", prelude.unbounded "automake" ]
+      , configureCommand = prelude.mesonConfigure
+      , buildCommand = prelude.ninjaBuild
+      , installCommand = prelude.ninjaInstall
+      , pkgBuildDeps = [ prelude.unbounded "meson" ]
       }
 in
 
@@ -889,7 +863,6 @@ let libxft =
                   ]
       }
 in
-
 
 [ autoconf [2,69]
 , automake [1,16,1]
