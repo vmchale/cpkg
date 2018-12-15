@@ -415,6 +415,16 @@ let ninjaInstall =
     ]
 in
 
+let copyFiles =
+  map { src : Text, dest : Text } types.Command types.Command.CopyFile
+in
+
+let ninjaInstallWithPkgConfig =
+  λ(fs : List { src : Text, dest : Text }) →
+  λ(cfg : types.InstallVars) →
+    ninjaInstall cfg # copyFiles fs
+in
+
 { showVersion         = showVersion
 , makeGnuLibrary      = makeGnuLibrary
 , makeGnuExe          = makeGnuExe
@@ -463,4 +473,5 @@ in
 , mesonConfigure      = mesonConfigure
 , ninjaBuild          = ninjaBuild
 , ninjaInstall        = ninjaInstall
+, ninjaInstallWithPkgConfig = ninjaInstallWithPkgConfig
 }

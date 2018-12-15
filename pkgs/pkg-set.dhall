@@ -730,7 +730,8 @@ let pango =
       { pkgUrl = "http://ftp.gnome.org/pub/GNOME/sources/pango/${versionString}/pango-${fullVersion}.tar.xz"
       , configureCommand = prelude.mesonConfigure
       , buildCommand = prelude.ninjaBuild
-      , installCommand = prelude.ninjaInstall
+      , installCommand =
+          prelude.ninjaInstallWithPkgConfig [ { src = "build/meson-private/pango.pc", dest = "lib/pkgconfig/pango.0.pc" } ]
       , pkgBuildDeps = [ prelude.lowerBound { name = "meson", lower = [0,48,0] }
                        , prelude.unbounded "gobject-introspection"
                        ]
@@ -847,8 +848,7 @@ let glib =
       , configureCommand = prelude.mesonConfigure
       , buildCommand = prelude.ninjaBuild
       , installCommand =
-        λ(cfg : types.InstallVars) →
-          prelude.ninjaInstall cfg # [ prelude.copyFile "build/meson-private/glib-2.0.pc" "lib/pkgconfig/glib-2.0.pc" ]
+          prelude.ninjaInstallWithPkgConfig [ { src = "build/meson-private/glib-2.0.pc", dest = "lib/pkgconfig/glib-2.0.pc" } ]
       , pkgBuildDeps = [ prelude.unbounded "meson", prelude.unbounded "ninja" ]
       }
 in
