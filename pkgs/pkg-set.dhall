@@ -102,7 +102,7 @@ let cmake =
 
     prelude.defaultPackage ⫽
       { pkgName = "cmake"
-      , pkgVersion = cfg.version # [ cfg.patch ]
+      , pkgVersion = prelude.fullVersion cfg
       , pkgUrl = "https://cmake.org/files/v${versionString}/cmake-${versionString}.${patchString}.tar.gz"
       , pkgSubdir = "cmake-${versionString}.${patchString}"
       , configureCommand = cmakeConfigure
@@ -134,7 +134,7 @@ let fltk =
 
     prelude.defaultPackage ⫽
       { pkgName = "fltk"
-      , pkgVersion = cfg.version # [ cfg.patch ]
+      , pkgVersion = prelude.fullVersion cfg
       , pkgUrl = "http://fltk.org/pub/fltk/${versionString}/fltk-${versionString}-${patchString}-source.tar.bz2"
       , pkgSubdir = "fltk-${versionString}-${patchString}"
       }
@@ -418,7 +418,7 @@ let gnutls =
     let versionString = prelude.showVersion cfg.version
     in
 
-    prelude.simplePackage { name = "gnutls", version = cfg.version # [ cfg.patch ] } ⫽
+    prelude.simplePackage { name = "gnutls", version = prelude.fullVersion cfg } ⫽
       { pkgUrl = "https://www.gnupg.org/ftp/gcrypt/gnutls/v${versionString}/gnutls-${versionString}.${Natural/show cfg.patch}.tar.xz"
       , pkgDeps = [ prelude.lowerBound { name = "nettle", lower = [3,4,1] }
                   , prelude.unbounded "unistring"
@@ -517,7 +517,7 @@ let autoconf =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "autoconf", version = v } ⫽
       { pkgBuildDeps = [ prelude.lowerBound { name =  "m4", lower = [1,4,16] } ]
-      , installCommand = prelude.installWithBinaries [ "bin/autoconf", "bin/autoheader", "bin/autom4te" ]
+      , installCommand = prelude.installWithBinaries [ "bin/autoconf", "bin/autoheader", "bin/autom4te", "bin/autoreconf" ]
       }
 in
 
@@ -708,7 +708,7 @@ let gtk2 =
     let fullVersion = versionString ++ "." ++ Natural/show x.patch
     in
 
-    prelude.simplePackage { name = "gtk2", version = x.version # [x.patch] } ⫽
+    prelude.simplePackage { name = "gtk2", version = prelude.fullVersion x } ⫽
       { pkgUrl = "http://ftp.gnome.org/pub/gnome/sources/gtk+/${versionString}/gtk+-${fullVersion}.tar.xz"
       , pkgSubdir = "gtk+-${fullVersion}"
       , pkgDeps = [ prelude.lowerBound { name = "cairo", lower = [1,6] }
@@ -753,14 +753,17 @@ let pango =
         ]
     in
 
-    prelude.simplePackage { name = "pango", version = x.version # [x.patch] } ⫽
+    prelude.simplePackage { name = "pango", version = prelude.fullVersion x } ⫽
       { pkgUrl = "http://ftp.gnome.org/pub/GNOME/sources/pango/${versionString}/pango-${fullVersion}.tar.xz"
       , configureCommand = pangoConfigure
       , buildCommand = pangoBuild
       , installCommand = pangoInstall
-      , pkgBuildDeps = [ prelude.lowerBound { name = "meson", lower = [0,48,0] } ]
+      , pkgBuildDeps = [ prelude.lowerBound { name = "meson", lower = [0,48,0] }
+                       , prelude.unbounded "gobject-introspection"
+                       ]
       , pkgDeps = [ prelude.unbounded "fontconfig"
                   , prelude.unbounded "cairo"
+                  , prelude.unbounded "fribidi"
                   ]
       }
 in
@@ -828,6 +831,52 @@ let fontconfig =
       }
 in
 
+let fribidi =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "fribidi", version = v } ⫽
+      { pkgUrl = "https://github.com/fribidi/fribidi/releases/download/v${prelude.showVersion v}/fribidi-${prelude.showVersion v}.tar.bz2" }
+in
+
+let gobject-introspection =
+  λ(x : { version : List Natural, patch : Natural }) →
+    let versionString = prelude.showVersion x.version
+    in
+    let fullVersion = versionString ++ "." ++ Natural/show x.patch
+    in
+
+    prelude.simplePackage { name = "gobject-introspection", version = prelude.fullVersion x } ⫽
+      { pkgUrl = "https://download.gnome.org/sources/gobject-introspection/${versionString}/gobject-introspection-${fullVersion}.tar.xz"
+      , pkgBuildDeps = [ prelude.unbounded "flex" ]
+      , pkgDeps = [ prelude.lowerBound { name = "glib", lower = [2,58,0] } ]
+      }
+in
+
+let flex =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v
+    in
+
+    prelude.simplePackage { name = "flex", version = v } ⫽
+      { pkgUrl = "https://github.com/westes/flex/releases/download/v${versionString}/flex-${versionString}.tar.gz"
+      , pkgBuildDeps = [ prelude.unbounded "m4", prelude.unbounded "bison" ]
+      }
+in
+
+let glib =
+  λ(x : { version : List Natural, patch : Natural }) →
+    let versionString = prelude.showVersion x.version
+    in
+    let fullVersion = versionString ++ "." ++ Natural/show x.patch
+    in
+
+    prelude.simplePackage { name = "glib", version = prelude.fullVersion x } ⫽
+      { pkgUrl = "http://ftp.gnome.org/pub/gnome/sources/glib/${versionString}/glib-${fullVersion}.tar.xz"
+      , configureCommand = prelude.autogenConfigure
+      , pkgBuildDeps = [ prelude.unbounded "autoconf", prelude.unbounded "automake" ]
+      }
+in
+
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , binutils [2,31]
@@ -838,16 +887,20 @@ in
 , dbus [1,12,10]
 , emacs [25,3]
 , fontconfig [2,13,1]
+, flex [2,6,3]
 , fltk { version = [1,3,4], patch = 2 }
 , freetype [2,9,1]
+, fribidi [1,0,5]
 , gawk [4,2,1]
 , gc [8,0,0]
 , gdb [8,2]
 , gettext [0,19,8]
 , giflib [5,1,4]
 , git [2,19,2]
+, glib { version = [2,58], patch = 1 }
 , glibc [2,28]
 , gmp [6,1,2]
+, gobject-introspection { version = [1,58], patch = 2 }
 , gnupg [2,2,11]
 -- , gnutls { version = [3,6], patch = 5 }
 , gnutls { version = [3,5], patch = 19 }

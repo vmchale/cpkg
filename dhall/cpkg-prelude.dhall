@@ -373,8 +373,15 @@ let autogenConfigure =
   λ(cfg : types.ConfigureVars) →
     [ mkExe "autogen.sh"
     , call (defaultCall ⫽ { program = "./autogen.sh"
-                          , arguments = [] : List Text })
+                          , arguments = [] : List Text
+                          , environment = Some (defaultPath cfg # [mkPkgConfigVar cfg.linkDirs])
+                          })
     ] # defaultConfigure cfg
+in
+
+let fullVersion =
+  λ(x : { version : List Natural, patch : Natural }) →
+    x.version # [x.patch]
 in
 
 { showVersion         = showVersion
@@ -421,4 +428,5 @@ in
 , copyFile            = copyFile
 , mkPathVar           = mkPathVar
 , mkPkgConfigVar      = mkPkgConfigVar
+, fullVersion         = fullVersion
 }

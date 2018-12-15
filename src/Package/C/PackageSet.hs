@@ -7,8 +7,6 @@ module Package.C.PackageSet ( PackageSet (..)
                             , displayPackageSet
                             ) where
 
-import           Algebra.Graph.AdjacencyMap            (edges)
-import           Algebra.Graph.AdjacencyMap.Algorithm  (topSort)
 import           CPkgPrelude
 import           Data.Containers.ListUtils
 import           Data.List                             (intersperse)
@@ -47,32 +45,17 @@ packageSetDhallToPackageSet (PackageSetDhall pkgs'') =
 
         in PackageSet $ M.fromList (zip names pkgs')
 
--- TODO: a graph-like structure that has two distinct types of edges?
--- we need to separate build depends &c.
-getDeps :: PackId -> PackageSet -> Maybe [(PackId, PackId)]
+-- FIXME: this whole thing is bad
+getDeps :: PackId -> PackageSet -> Maybe (Tree PackId)
 getDeps pkgName' set@(PackageSet ps) = do
     cpkg <- M.lookup pkgName' ps
     let depNames = (name <$> pkgDeps cpkg) ++ (name <$> pkgBuildDeps cpkg)
     case nubOrd depNames of
-        [] -> pure []
-        xs -> do
-            transitive <- fold <$> traverse (\p -> getDeps p set) xs
-            let self = zip (repeat pkgName') xs
-            pure (transitive ++ self)
-
-splitTree :: [PackId] -> PackageSet -> Maybe (Tree PackId)
-splitTree [] _        = Nothing
-splitTree [p] _       = Just (Node p [])
-splitTree (p:ps) pset = Node p . pure <$> splitTree ps pset
+        xs -> Node pkgName' <$> traverse (\p -> getDeps p set) xs
 
 -- TODO: use dfsForest but check for cycles
 pkgPlan :: PackId -> PackageSet -> Maybe (Tree PackId)
-pkgPlan pkId ps = do
-    ds <- getDeps pkId ps
-    sorted <- topSort (edges ds)
-    case sorted of
-        []  -> pure (Node pkId [])
-        ds' -> splitTree sorted ps
+pkgPlan = getDeps
 
 pkgs :: PackId -> PackageSet -> Maybe (Tree CPkg)
 pkgs pkId set@(PackageSet pset) = do
