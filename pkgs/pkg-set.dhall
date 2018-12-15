@@ -716,6 +716,7 @@ let gtk2 =
       , pkgDeps = [ prelude.lowerBound { name = "cairo", lower = [1,6] }
                   , prelude.lowerBound { name = "pango", lower = [1,20] }
                   , prelude.lowerBound { name = "atk", lower = [1,29,2] }
+                  , prelude.lowerBound { name = "glib", lower = [2,28,0] }
                   ]
       }
 in
@@ -732,7 +733,9 @@ let pango =
       , configureCommand = prelude.mesonConfigure
       , buildCommand = prelude.ninjaBuild
       , installCommand =
-          prelude.ninjaInstallWithPkgConfig [ { src = "build/meson-private/pango.pc", dest = "lib/pkgconfig/pango.pc" } ]
+          prelude.ninjaInstallWithPkgConfig [ { src = "build/meson-private/pango.pc", dest = "lib/pkgconfig/pango.pc" }
+                                            , { src = "build/meson-private/pangocairo.pc", dest = "lib/pkgconfig/pangocairo.pc" }
+                                            ]
       , pkgBuildDeps = [ prelude.lowerBound { name = "meson", lower = [0,48,0] }
                        , prelude.unbounded "gobject-introspection"
                        ]
@@ -916,12 +919,13 @@ in
 , gmp [6,1,2]
 , gobject-introspection { version = [1,58], patch = 2 }
 , gnupg [2,2,11]
--- , gnutls { version = [3,6], patch = 5 }
+, gnutls { version = [3,6], patch = 5 }
 , gnutls { version = [3,5], patch = 19 }
 , gtk2 { version = [2,24], patch = 32 }
 , gzip [1,9]
 , harfbuzz [2,2,0]
-, imageMagick [6,9,10] -- [7,0,8]
+, imageMagick [7,0,8]
+, imageMagick [6,9,10]
 , p11kit [0,23,14]
 , python [2,7,15]
 , python [3,7,1]
