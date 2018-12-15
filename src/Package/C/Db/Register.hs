@@ -7,6 +7,7 @@ module Package.C.Db.Register ( registerPkg
                              , globalPkgDir
                              , printCompilerFlags
                              , printLinkerFlags
+                             , printPkgConfigPath
                              , packageInstalled
                              , unregisterPkg
                              , allPackages
@@ -36,6 +37,9 @@ printCompilerFlags = printFlagsWith buildCfgToCFlags
 printLinkerFlags :: String -> Maybe String -> IO ()
 printLinkerFlags = printFlagsWith buildCfgToLinkerFlags
 
+printPkgConfigPath :: String -> Maybe String -> IO ()
+printPkgConfigPath = printFlagsWith buildCfgToPkgConfigPath
+
 printFlagsWith :: FlagPrint -> String -> Maybe String -> IO ()
 printFlagsWith f name host = do
 
@@ -52,6 +56,9 @@ buildCfgToLinkerFlags = fmap (("-L" ++) . (</> "lib")) . buildCfgToDir
 
 buildCfgToCFlags :: MonadIO m => BuildCfg -> m String
 buildCfgToCFlags = fmap (("-I" ++) . (</> "include")) . buildCfgToDir
+
+buildCfgToPkgConfigPath :: MonadIO m => BuildCfg -> m String
+buildCfgToPkgConfigPath = fmap (</> "lib" </> "pkgconfig") . buildCfgToDir
 
 strictIndex :: MonadIO m => m InstallDb
 strictIndex = do

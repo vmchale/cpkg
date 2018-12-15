@@ -14,6 +14,7 @@ cpkgVersion = P.version
 
 data DumpTarget = Linker { _pkgGet :: String }
                 | Compiler { _pkgGet :: String }
+                | PkgConfig { _pkgGet :: String }
 
 data Command = Install { _pkgName :: String, _verbosity :: Verbosity, _target :: Maybe Platform, _static :: Bool, _packageSet :: Maybe String }
              | Check { _dhallFile :: String, _verbosity :: Verbosity }
@@ -49,6 +50,7 @@ dumpTarget :: Parser DumpTarget
 dumpTarget = hsubparser
     (command "linker" (info (Linker <$> package) (progDesc "Dump linker flags for a package"))
     <> command "compiler" (info (Compiler <$> package) (progDesc "Dump compiler flags for a package"))
+    <> command "pkg-config" (info (PkgConfig <$> package) (progDesc "Dump pkg-config path for a package"))
     )
 
 userCmd :: Parser Command
@@ -136,6 +138,7 @@ run (Check file v) = void $ getCPkg v file
 run (CheckSet file v) = void $ getPkgs v file
 run (Dump (Linker name) host) = printLinkerFlags name host
 run (Dump (Compiler name) host) = printCompilerFlags name host
+run (Dump (PkgConfig name) host) = printPkgConfigPath name host
 run Nuke = do
     pkgDir <- globalPkgDir
     exists <- doesDirectoryExist pkgDir

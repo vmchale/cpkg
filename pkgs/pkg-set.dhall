@@ -876,6 +876,20 @@ let glib =
       }
 in
 
+let libxft =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v
+    in
+
+    prelude.simplePackage { name = "libxft", version = v } ⫽
+      { pkgUrl = "https://www.x.org/releases/individual/lib/libXft-${versionString}.tar.bz2"
+      , pkgSubdir = "libXft-${versionString}"
+      , pkgDeps = [ prelude.unbounded "freetype"
+                  , prelude.unbounded "fontconfig"
+                  ]
+      }
+in
+
 
 [ autoconf [2,69]
 , automake [1,16,1]
@@ -925,6 +939,7 @@ in
 , libtasn1 [4,13]
 , libtool [2,4,6]
 , libuv [1,24,0]
+, libxft [2,3,2]
 , lua [5,3,5]
 , m4 [1,4,18]
 , meson [0,49,0]
