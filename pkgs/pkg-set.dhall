@@ -715,6 +715,7 @@ let gtk2 =
       , pkgSubdir = "gtk+-${fullVersion}"
       , pkgDeps = [ prelude.lowerBound { name = "cairo", lower = [1,6] }
                   , prelude.lowerBound { name = "pango", lower = [1,20] }
+                  , prelude.lowerBound { name = "atk", lower = [1,29,2] }
                   ]
       }
 in
@@ -731,7 +732,7 @@ let pango =
       , configureCommand = prelude.mesonConfigure
       , buildCommand = prelude.ninjaBuild
       , installCommand =
-          prelude.ninjaInstallWithPkgConfig [ { src = "build/meson-private/pango.pc", dest = "lib/pkgconfig/pango.0.pc" } ]
+          prelude.ninjaInstallWithPkgConfig [ { src = "build/meson-private/pango.pc", dest = "lib/pkgconfig/pango.pc" } ]
       , pkgBuildDeps = [ prelude.lowerBound { name = "meson", lower = [0,48,0] }
                        , prelude.unbounded "gobject-introspection"
                        ]
@@ -867,8 +868,31 @@ let libxft =
       }
 in
 
+let atk =
+  λ(x : { version : List Natural, patch : Natural }) →
+    let versionString = prelude.showVersion x.version
+    in
+    let fullVersion = versionString ++ "." ++ Natural/show x.patch
+    in
+
+    prelude.simplePackage { name = "atk", version = prelude.fullVersion x } ⫽
+      { pkgUrl = "https://ftp.gnome.org/pub/gnome/sources/atk/${versionString}/atk-${fullVersion}.tar.xz"
+      -- , pkgDeps = [ prelude.unbounded "glib" ]
+      }
+in
+
+let re2c =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v
+    in
+
+    prelude.simplePackage { name = "re2c", version = v } ⫽
+      { pkgUrl = "https://github.com/skvadrik/re2c/releases/download/${versionString}/re2c-${versionString}.tar.gz" }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
+, atk { version = [2,26], patch = 1 }
 , binutils [2,31]
 , bison [3,2,2]
 , cairo [1,16,0]
@@ -932,6 +956,7 @@ in
 , pixman [0,36,0]
 , pkg-config [0,29,2]
 , qrencode [4,0,2]
+, re2c [1,1,1]
 , readline [7,0]
 , sdl2 [2,0,9]
 , sed [4,5]

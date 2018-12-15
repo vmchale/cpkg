@@ -167,6 +167,14 @@ let mkLDFlags =
     { var = "LDFLAGS", value = flag }
 in
 
+let mkLDPath =
+  λ(libDirs : List Text) →
+    let flag = concatMap Text (λ(dir : Text) → "${dir}:") libDirs
+    in
+
+    { var = "LD_LIBRARY_PATH", value = flag }
+in
+
 let mkCFlags =
   λ(libDirs : List Text) →
     let flag = concatMap Text (λ(dir : Text) → "-I${dir} ") libDirs
@@ -209,7 +217,7 @@ let generalConfigure =
     , call (defaultCall ⫽ { program = "./${filename}"
                           , arguments = modifyArgs [ "--prefix=${cfg.installDir}" ] # extraFlags
                           , environment =
-                              Some (defaultPath cfg # [ mkLDFlags cfg.linkDirs, mkCFlags cfg.includeDirs, mkPkgConfigVar cfg.linkDirs ])
+                              Some (defaultPath cfg # [ mkLDFlags cfg.linkDirs, mkCFlags cfg.includeDirs, mkPkgConfigVar cfg.linkDirs, mkLDPath cfg.linkDirs ])
                           })
     ]
 in
