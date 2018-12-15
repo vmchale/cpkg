@@ -21,6 +21,7 @@
 - [ ] `unpack` subcommand for packages
 - [ ] Cabal integration?
 - [ ] Generate pkg-config files?
+- [ ] Allow a package's function to specify a `pkg-config` dir, etc.
 - [ ] Bootstrap "fancy" tar?
 - [ ] Package "components"? Like cabal: build executables or not...
 - [ ] Symlink manpages

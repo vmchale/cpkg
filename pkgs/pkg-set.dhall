@@ -445,6 +445,7 @@ let cairo =
      { pkgUrl = "https://www.cairographics.org/releases/cairo-${prelude.showVersion v}.tar.xz"
      , pkgDeps = [ prelude.lowerBound { name = "pixman", lower = [0,3,0] }
                  , prelude.unbounded "freetype"
+                 , prelude.unbounded "fontconfig"
                  ]
      }
 in
@@ -845,8 +846,10 @@ let glib =
       { pkgUrl = "http://ftp.gnome.org/pub/gnome/sources/glib/${versionString}/glib-${fullVersion}.tar.xz"
       , configureCommand = prelude.mesonConfigure
       , buildCommand = prelude.ninjaBuild
-      , installCommand = prelude.ninjaInstall
-      , pkgBuildDeps = [ prelude.unbounded "meson" ]
+      , installCommand =
+        λ(cfg : types.InstallVars) →
+          prelude.ninjaInstall cfg # [ prelude.copyFile "build/meson-private/glib-2.0.pc" "lib/pkgconfig/glib-2.0.pc" ]
+      , pkgBuildDeps = [ prelude.unbounded "meson", prelude.unbounded "ninja" ]
       }
 in
 

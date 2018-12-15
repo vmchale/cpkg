@@ -393,7 +393,7 @@ let mesonConfigure =
     , call { program = "meson"
            , arguments = [ "--prefix=${cfg.installDir}", ".." ]
            , environment = Some [ mkPkgConfigVar cfg.linkDirs
-                                , { var = "PATH", value = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
+                                , { var = "PATH", value = mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
                                 ]
            , procDir = Some "build"
            }
