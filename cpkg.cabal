@@ -37,6 +37,7 @@ library
         Package.C.Dhall.Type
         Package.C.Type
         Package.C.Type.Shared
+        Package.C.Type.Tree
         Package.C.Type.Verbosity
         Package.C.Type.Version
         Package.C.Type.Vars

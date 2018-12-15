@@ -30,6 +30,7 @@ data BuildDirs = BuildDirs { libraries :: [FilePath]
                            , binaries  :: [FilePath]
                            }
 
+-- FIXME: dfsForestFrom is not what we want...
 buildWithContext :: Tree CPkg
                  -> Maybe Platform
                  -> Bool -- ^ Should we build static libraries?

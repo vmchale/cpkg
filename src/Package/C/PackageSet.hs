@@ -8,7 +8,7 @@ module Package.C.PackageSet ( PackageSet (..)
                             ) where
 
 import           Algebra.Graph.AdjacencyMap            (edges)
-import           Algebra.Graph.AdjacencyMap.Algorithm  (dfsForestFrom)
+import           Algebra.Graph.AdjacencyMap.Algorithm  (topSort)
 import           CPkgPrelude
 import           Data.Containers.ListUtils
 import           Data.List                             (intersperse)
@@ -60,18 +60,19 @@ getDeps pkgName' set@(PackageSet ps) = do
             let self = zip (repeat pkgName') xs
             pure (transitive ++ self)
 
-unwrapForest :: [Tree a] -> Maybe (Tree a)
-unwrapForest [node] = Just node
-unwrapForest _      = Nothing
+splitTree :: [PackId] -> PackageSet -> Maybe (Tree PackId)
+splitTree [] _        = Nothing
+splitTree [p] _       = Just (Node p [])
+splitTree (p:ps) pset = Node p . pure <$> splitTree ps pset
 
 -- TODO: use dfsForest but check for cycles
 pkgPlan :: PackId -> PackageSet -> Maybe (Tree PackId)
 pkgPlan pkId ps = do
     ds <- getDeps pkId ps
-    case ds of
+    sorted <- topSort (edges ds)
+    case sorted of
         []  -> pure (Node pkId [])
-        ds' -> unwrapForest (dfsForestFrom [pkId] (edges ds'))
-        -- FIXME check for cycles with isAcyclic
+        ds' -> splitTree sorted ps
 
 pkgs :: PackId -> PackageSet -> Maybe (Tree CPkg)
 pkgs pkId set@(PackageSet pset) = do
