@@ -88,6 +88,11 @@ let makeExe =
       , Darwin    = make
       , Windows   = make
       , Redox     = make
+      , Haiku     = make
+      , IOS       = make
+      , AIX       = make
+      , Hurd      = make
+      , Android   = make
       , NoOs      = make -- this is bad but it's meaningless in this context
       }
       os
@@ -154,6 +159,11 @@ let isUnix =
       , Darwin    = true
       , Windows   = false
       , Redox     = false
+      , Haiku     = false
+      , IOS       = true
+      , AIX       = true
+      , Hurd      = true
+      , Android   = true
       , NoOs      = false -- bad but this should never happen
       }
       os

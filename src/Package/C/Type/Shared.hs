@@ -34,5 +34,10 @@ data OS = Darwin
         | Solaris
         | Windows
         | Redox
+        | Haiku
+        | IOS
+        | AIX
+        | Hurd
+        | Android
         | NoOs
         deriving (Generic, Inject)

@@ -29,6 +29,7 @@ data ConfigureVars = ConfigureVars { installDir   :: T.Text
                                    } deriving (Generic, Inject)
 
 data InstallVars = InstallVars { installPath :: T.Text
+                               , installTgt  :: Maybe T.Text
                                , installOS   :: OS
                                }
                     deriving (Generic, Inject)

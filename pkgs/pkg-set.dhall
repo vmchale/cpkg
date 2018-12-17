@@ -551,11 +551,15 @@ let lua =
           , Darwin    = λ(_ : {}) → "macosx"
           , Windows   = λ(_ : {}) → "mingw"
           , Redox     = λ(_ : {}) → "generic"
+          , Haiku     = λ(_ : {}) → "generic"
+          , IOS       = λ(_ : {}) → "generic"
+          , AIX       = λ(_ : {}) → "generic"
+          , Hurd      = λ(_ : {}) → "generic"
+          , Android   = λ(_ : {}) → "generic"
           , NoOs      = λ(_ : {}) → "c89"
           }
           os
     in
-
 
     let luaBuild =
       λ(cfg : types.BuildVars) →
@@ -879,9 +883,7 @@ let atk =
     in
 
     prelude.simplePackage { name = "atk", version = prelude.fullVersion x } ⫽
-      { pkgUrl = "https://ftp.gnome.org/pub/gnome/sources/atk/${versionString}/atk-${fullVersion}.tar.xz"
-      -- , pkgDeps = [ prelude.unbounded "glib" ]
-      }
+      { pkgUrl = "https://ftp.gnome.org/pub/gnome/sources/atk/${versionString}/atk-${fullVersion}.tar.xz" }
 in
 
 let re2c =
@@ -893,12 +895,64 @@ let re2c =
       { pkgUrl = "https://github.com/skvadrik/re2c/releases/download/${versionString}/re2c-${versionString}.tar.gz" }
 in
 
+let chickenScheme =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v
+    in
+
+    let printChickenOS =
+      λ(os : types.OS) →
+        merge
+          { FreeBSD   = λ(_ : {}) → "bsd"
+          , OpenBSD   = λ(_ : {}) → "bsd"
+          , NetBSD    = λ(_ : {}) → "bsd"
+          , Solaris   = λ(_ : {}) → "solaris"
+          , Dragonfly = λ(_ : {}) → "bsd"
+          , Linux     = λ(_ : {}) → "linux"
+          , Darwin    = λ(_ : {}) → "macosx"
+          , Windows   = λ(_ : {}) → "mingw"
+          , Haiku     = λ(_ : {}) → "haiku"
+          , IOS       = λ(_ : {}) → "ios"
+          , AIX       = λ(_ : {}) → "aix"
+          , Hurd      = λ(_ : {}) → "hurd"
+          , Android   = λ(_ : {}) → "android"
+          , Redox     = λ(_ : {}) → "error: no port for Redox OS"
+          , NoOs      = λ(_ : {}) → "error: no port for no OS"
+          }
+          os
+    in
+
+    let chickenBuild =
+      λ(cfg : types.InstallVars) →
+        let cc =
+          Optional/fold Text cfg.installTgt (List Text) (λ(tgt : Text) → ["CC=${tgt}-gcc"]) ([] : List Text)
+        in
+        [ prelude.call (prelude.defaultCall ⫽ { program = "make"
+                                              , arguments = cc # [ "PLATFORM=${printChickenOS cfg.installOS}", "PREFIX=${cfg.installPath}" ]
+                                              })
+        , prelude.call (prelude.defaultCall ⫽ { program = "make"
+                                              , arguments = [ "PLATFORM=${printChickenOS cfg.installOS}", "PREFIX=${cfg.installPath}", "install" ]
+                                              })
+        ]
+          # prelude.symlinkBinaries [ "bin/csc", "bin/chicken-install", "bin/csi" ]
+    in
+
+    prelude.simplePackage { name = "chicken-scheme", version = v } ⫽
+      { pkgUrl = "https://code.call-cc.org/releases/${versionString}/chicken-${versionString}.tar.gz"
+      , configureCommand = (λ(_ : types.ConfigureVars) → [] : List types.Command)
+      , buildCommand = (λ(_ : types.BuildVars) → [] : List types.Command)
+      , installCommand = chickenBuild
+      , pkgSubdir = "chicken-${versionString}"
+      }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , atk { version = [2,26], patch = 1 }
 , binutils [2,31]
 , bison [3,2,2]
 , cairo [1,16,0]
+, chickenScheme [5,0,0]
 , cmake { version = [3,13], patch = 0 }
 , curl [7,62,0]
 , dbus [1,12,10]

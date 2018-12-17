@@ -8,6 +8,11 @@ let OS = < FreeBSD : {}
          | Darwin : {}
          | Windows : {}
          | Redox : {}
+         | Haiku : {}
+         | IOS : {}
+         | AIX : {}
+         | Hurd : {}
+         | Android : {}
          | NoOs : {}
          >
 in
@@ -75,6 +80,7 @@ let BuildVars = { cpus : Natural
 in
 
 let InstallVars = { installPath : Text
+                  , installTgt : Optional Text
                   , installOS : OS
                   }
 

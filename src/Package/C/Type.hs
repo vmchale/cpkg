@@ -67,7 +67,7 @@ commandDhallToCommand (Dhall.Write out fp)        = Write out (T.unpack fp)
 commandDhallToCommand (Dhall.CopyFile src' dest') = CopyFile (T.unpack src') (T.unpack dest')
 
 installVarsToDhallInstallVars :: InstallVars -> Dhall.InstallVars
-installVarsToDhallInstallVars (InstallVars fp os) = Dhall.InstallVars (T.pack fp) os
+installVarsToDhallInstallVars (InstallVars fp tgt os) = Dhall.InstallVars (T.pack fp) (T.pack <$> tgt) os
 
 cfgVarsToDhallCfgVars :: ConfigureVars -> Dhall.ConfigureVars
 cfgVarsToDhallCfgVars (ConfigureVars dir' tgt incls lds bins os sta nproc) = Dhall.ConfigureVars (T.pack dir') (T.pack <$> tgt) (T.pack <$> incls) (T.pack <$> lds) (T.pack <$> bins) os sta (fromIntegral nproc)

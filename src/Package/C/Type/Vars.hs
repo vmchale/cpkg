@@ -23,5 +23,6 @@ data BuildVars = BuildVars { cpus           :: Int
                            }
 
 data InstallVars = InstallVars { installPath :: FilePath
+                               , installTgt  :: Maybe Platform
                                , installOS   :: OS
                                }

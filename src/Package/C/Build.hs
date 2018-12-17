@@ -124,7 +124,7 @@ getVars host sta links incls bins = do
     nproc <- liftIO getNumCapabilities
     let configureVars = ConfigureVars "" host incls links bins dhallOS sta nproc
         buildVars = BuildVars nproc dhallOS host links incls
-        installVars = InstallVars "" dhallOS
+        installVars = InstallVars "" host dhallOS
     pure (configureVars, buildVars, installVars)
 
 -- TODO: more complicated solver, garbage collector, and all that.
