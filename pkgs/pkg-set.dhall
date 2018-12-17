@@ -925,13 +925,13 @@ let chickenScheme =
     let chickenBuild =
       λ(cfg : types.InstallVars) →
         let cc =
-          Optional/fold Text cfg.installTgt (List Text) (λ(tgt : Text) → ["CC=${tgt}-gcc"]) ([] : List Text)
+          Optional/fold Text cfg.installTgt (List Text) (λ(tgt : Text) → ["C_COMPILER=${tgt}-gcc"]) ([] : List Text)
         in
         [ prelude.call (prelude.defaultCall ⫽ { program = "make"
                                               , arguments = cc # [ "PLATFORM=${printChickenOS cfg.installOS}", "PREFIX=${cfg.installPath}" ]
                                               })
         , prelude.call (prelude.defaultCall ⫽ { program = "make"
-                                              , arguments = [ "PLATFORM=${printChickenOS cfg.installOS}", "PREFIX=${cfg.installPath}", "install" ]
+                                              , arguments = cc # [ "PLATFORM=${printChickenOS cfg.installOS}", "PREFIX=${cfg.installPath}", "install" ]
                                               })
         ]
           # prelude.symlinkBinaries [ "bin/csc", "bin/chicken-install", "bin/csi" ]
