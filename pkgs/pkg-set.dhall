@@ -977,6 +977,30 @@ let libx11 =
       }
 in
 
+let libXrandr =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libXrandr", version = v } ⫽
+      { pkgUrl = "https://www.x.org/releases/individual/lib/libXrandr-${prelude.showVersion v}.tar.bz2" }
+in
+
+let libXinerama =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libXinerama", version = v } ⫽
+      { pkgUrl = "https://www.x.org/releases/individual/lib/libXinerama-${prelude.showVersion v}.tar.bz2" }
+in
+
+let libXext =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libXext", version = v } ⫽
+      { pkgUrl = "https://www.x.org/releases/individual/lib/libXext-${prelude.showVersion v}.tar.bz2" }
+in
+
+let libXScrnSaver =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libXScrnSaver", version = v } ⫽
+      { pkgUrl = "https://www.x.org/releases/individual/lib/libXScrnSaver-${prelude.showVersion v}.tar.bz2" }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , atk { version = [2,26], patch = 1 }
@@ -1032,6 +1056,10 @@ in
 , libxcb [1,13]
 , libxft [2,3,2]
 , libXau [1,0,7]
+, libXext [1,3,3]
+, libXinerama [1,1,4]
+, libXScrnSaver [1,2,3]
+, libXrandr [1,5,1]
 , lua [5,3,5]
 , m4 [1,4,18]
 , meson [0,49,0]
