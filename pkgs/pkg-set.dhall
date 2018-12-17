@@ -946,6 +946,37 @@ let chickenScheme =
       }
 in
 
+let xcb-proto =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "xcb-proto", version = v } ⫽
+      { pkgUrl = "https://xorg.freedesktop.org/archive/individual/xcb/xcb-proto-${prelude.showVersion v}.tar.bz2" }
+in
+
+let libxcb =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libxcb", version = v } ⫽
+      { pkgUrl = "https://xorg.freedesktop.org/archive/individual/xcb/libxcb-${prelude.showVersion v}.tar.bz2"
+      , pkgDeps = [ prelude.lowerBound { name = "xcb-proto", lower = [1,13] }
+                  , prelude.unbounded "libXau"
+                  ]
+      }
+in
+
+let libXau =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libXau", version = v } ⫽
+      { pkgUrl = "https://www.x.org/releases/X11R7.7/src/lib/libXau-${prelude.showVersion v}.tar.bz2" }
+in
+
+let libx11 =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libx11", version = v } ⫽
+      { pkgUrl = "https://www.x.org/releases/X11R7.7/src/lib/libX11-${prelude.showVersion v}.tar.bz2"
+      , pkgDeps = [ prelude.unbounded "libxcb" ]
+      , pkgSubdir = "libX11-${prelude.showVersion v}"
+      }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , atk { version = [2,26], patch = 1 }
@@ -997,7 +1028,10 @@ in
 , libtasn1 [4,13]
 , libtool [2,4,6]
 , libuv [1,24,0]
+, libx11 [1,5,0]
+, libxcb [1,13]
 , libxft [2,3,2]
+, libXau [1,0,7]
 , lua [5,3,5]
 , m4 [1,4,18]
 , meson [0,49,0]
@@ -1024,6 +1058,7 @@ in
 , vim [8,1]
 , wget [1,20]
 , which [2,21]
+, xcb-proto [1,13]
 , xz [5,2,4]
 , zbar [0,10]
 , zlib [1,2,11]
