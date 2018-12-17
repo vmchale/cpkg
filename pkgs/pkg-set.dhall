@@ -778,24 +778,24 @@ let meson =
 in
 
 let ninja =
+  let ninjaConfigure =
+    λ(cfg : types.ConfigureVars) →
+      [ prelude.mkExe "configure.py"
+      , prelude.mkExe "src/inline.sh"
+      , prelude.call (prelude.defaultCall ⫽ { program = "./configure.py"
+                                            , arguments = [ "--bootstrap" ]
+                                            })
+      ]
+  in
+
+  let ninjaInstall =
+    λ(cfg : types.InstallVars) →
+      [ prelude.copyFile "ninja" "bin/ninja"
+      , prelude.symlinkBinary "bin/ninja"
+      ]
+  in
+
   λ(v : List Natural) →
-    let ninjaConfigure =
-      λ(cfg : types.ConfigureVars) →
-        [ prelude.mkExe "configure.py"
-        , prelude.mkExe "src/inline.sh"
-        , prelude.call (prelude.defaultCall ⫽ { program = "./configure.py"
-                                              , arguments = [ "--bootstrap" ]
-                                              })
-        ]
-    in
-
-    let ninjaInstall =
-      λ(cfg : types.InstallVars) →
-        [ prelude.copyFile "ninja" "bin/ninja"
-        , prelude.symlinkBinary "bin/ninja"
-        ]
-    in
-
     prelude.simplePackage { name = "ninja", version = v } ⫽
       { pkgUrl = "https://github.com/ninja-build/ninja/archive/v${prelude.showVersion v}.tar.gz"
       , configureCommand = ninjaConfigure
