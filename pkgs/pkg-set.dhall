@@ -532,7 +532,7 @@ let python =
     prelude.simplePackage { name = "python${major}", version = v } ⫽
       { pkgUrl = "https://www.python.org/ftp/python/${versionString}/Python-${versionString}.tar.xz"
       , pkgSubdir = "Python-${versionString}"
-      -- , configureCommand = prelude.configureWithFlags [ "--enable-optimizations" ]
+      , configureCommand = prelude.configureWithFlags [ "--enable-optimizations" ]
       , installCommand = prelude.installWithBinaries [ "bin/python${major}" ]
       }
 in
