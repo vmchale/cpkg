@@ -1043,7 +1043,7 @@ in
 
 let gperf =
   λ(v : List Natural) →
-    prelude.makeGnuExe { name = "libtool", version = v } ⫽
+    prelude.makeGnuExe { name = "gperf", version = v } ⫽
       { pkgUrl = "http://ftp.gnu.org/pub/gnu/gperf/gperf-${prelude.showVersion v}.tar.gz" }
 in
 
