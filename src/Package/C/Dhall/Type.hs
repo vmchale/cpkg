@@ -21,7 +21,7 @@ data BuildVars = BuildVars { installDir   :: T.Text
                            , includeDirs  :: [ T.Text ]
                            , linkDirs     :: [ T.Text ]
                            , binDirs      :: [ T.Text ]
-                           , configOS     :: OS
+                           , buildOS      :: OS
                            , static       :: Bool
                            , cpus         :: Natural
                            } deriving (Generic, Inject)

@@ -65,7 +65,7 @@ let BuildVars = { installDir : Text
                 , includeDirs : List Text
                 , linkDirs : List Text
                 , binDirs : List Text
-                , configOS : OS
+                , buildOS : OS
                 , static : Bool
                 , cpus : Natural
                 }

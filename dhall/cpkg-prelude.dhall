@@ -209,7 +209,7 @@ in
 
 let defaultPath =
   λ(cfg : types.BuildVars) →
-    if isUnix cfg.configOS
+    if isUnix cfg.buildOS
       then [ { var = "PATH", value = mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" } ] : List types.EnvVar
       else [] : List types.EnvVar
 in
@@ -258,14 +258,14 @@ in
 
 let defaultBuild =
   λ(cfg : types.BuildVars) →
-    [ call (defaultCall ⫽ { program = makeExe cfg.configOS
+    [ call (defaultCall ⫽ { program = makeExe cfg.buildOS
                           , arguments = [ "-j${Natural/show cfg.cpus}" ] })
     ]
 in
 
 let defaultInstall =
   λ(cfg : types.BuildVars) →
-    [ call (defaultCall ⫽ { program = makeExe (cfg.configOS)
+    [ call (defaultCall ⫽ { program = makeExe (cfg.buildOS)
                           , arguments = [ "install" ] })
     ]
 in
@@ -462,6 +462,10 @@ let ninjaInstallWithPkgConfig =
     ninjaInstall cfg # copyFiles fs
 in
 
+let doNothing =
+  λ(_ : types.BuildVars) → [] : List types.Command
+in
+
 { showVersion         = showVersion
 , makeGnuLibrary      = makeGnuLibrary
 , makeGnuExe          = makeGnuExe
@@ -511,4 +515,5 @@ in
 , ninjaBuild          = ninjaBuild
 , ninjaInstall        = ninjaInstall
 , ninjaInstallWithPkgConfig = ninjaInstallWithPkgConfig
+, doNothing           = doNothing
 }

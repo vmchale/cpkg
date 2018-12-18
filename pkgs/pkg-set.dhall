@@ -198,7 +198,7 @@ let glibc =
 
   let glibcBuild =
     λ(cfg : types.BuildVars) →
-      [ prelude.call { program = prelude.makeExe cfg.configOS
+      [ prelude.call { program = prelude.makeExe cfg.buildOS
                      , arguments = [ "-j${Natural/show cfg.cpus}" ]
                      , environment = prelude.defaultEnv
                      , procDir = buildDir
@@ -208,7 +208,7 @@ let glibc =
 
   let glibcInstall =
     λ(cfg : types.BuildVars) →
-      [ prelude.call { program = prelude.makeExe cfg.configOS
+      [ prelude.call { program = prelude.makeExe cfg.buildOS
                      , arguments = [ "install" ]
                      , environment = prelude.defaultEnv
                      , procDir = buildDir
@@ -576,7 +576,7 @@ let lua =
         in
 
         [ prelude.call (prelude.defaultCall ⫽ { program = "make"
-                                              , arguments = cc # [ printLuaOS cfg.configOS, "MYLDFLAGS=${ldflags}", "MYCFLAGS=${cflags}" ]
+                                              , arguments = cc # [ printLuaOS cfg.buildOS, "MYLDFLAGS=${ldflags}", "MYCFLAGS=${cflags}" ]
                                               })
         ]
     in
@@ -591,7 +591,7 @@ let lua =
 
     prelude.simplePackage { name = "lua", version = v } ⫽
       { pkgUrl = "http://www.lua.org/ftp/lua-${prelude.showVersion v}.tar.gz"
-      , configureCommand = (λ(_ : types.BuildVars) → [] : List types.Command)
+      , configureCommand = prelude.doNothing
       , buildCommand = luaBuild
       , installCommand = luaInstall
       , pkgDeps = [ prelude.unbounded "readline" ]
@@ -771,8 +771,8 @@ let meson =
     prelude.simplePackage { name = "meson", version = v } ⫽
       { pkgUrl = "https://github.com/mesonbuild/meson/archive/${versionString}.tar.gz"
       , configureCommand = pythonInstall
-      , buildCommand = (λ(_ : types.BuildVars) → [] : List types.Command)
-      , installCommand = (λ(_ : types.BuildVars) → [] : List types.Command)
+      , buildCommand = prelude.doNothing
+      , installCommand = prelude.doNothing
       , pkgDeps = [ prelude.unbounded "python3" ]
       }
 in
@@ -799,7 +799,7 @@ let ninja =
     prelude.simplePackage { name = "ninja", version = v } ⫽
       { pkgUrl = "https://github.com/ninja-build/ninja/archive/v${prelude.showVersion v}.tar.gz"
       , configureCommand = ninjaConfigure
-      , buildCommand = (λ(_ : types.BuildVars) → [] : List types.Command)
+      , buildCommand = prelude.doNothing
       , installCommand = ninjaInstall
       , pkgBuildDeps = [ prelude.unbounded "python2" ]
       }
@@ -929,10 +929,10 @@ let chickenScheme =
           Optional/fold Text cfg.targetTriple (List Text) (λ(tgt : Text) → ["C_COMPILER=${tgt}-gcc"]) ([] : List Text)
         in
         [ prelude.call (prelude.defaultCall ⫽ { program = "make"
-                                              , arguments = cc # [ "PLATFORM=${printChickenOS cfg.configOS}", "PREFIX=${cfg.installDir}" ]
+                                              , arguments = cc # [ "PLATFORM=${printChickenOS cfg.buildOS}", "PREFIX=${cfg.installDir}" ]
                                               })
         , prelude.call (prelude.defaultCall ⫽ { program = "make"
-                                              , arguments = cc # [ "PLATFORM=${printChickenOS cfg.configOS}", "PREFIX=${cfg.installDir}", "install" ]
+                                              , arguments = cc # [ "PLATFORM=${printChickenOS cfg.buildOS}", "PREFIX=${cfg.installDir}", "install" ]
                                               })
         ]
           # prelude.symlinkBinaries [ "bin/csc", "bin/chicken-install", "bin/csi" ]
@@ -940,9 +940,9 @@ let chickenScheme =
 
     prelude.simplePackage { name = "chicken-scheme", version = v } ⫽
       { pkgUrl = "https://code.call-cc.org/releases/${versionString}/chicken-${versionString}.tar.gz"
-      , configureCommand = (λ(_ : types.BuildVars) → [] : List types.Command)
-      , buildCommand = (λ(_ : types.BuildVars) → [] : List types.Command)
-      , installCommand = chickenBuild
+      , configureCommand = prelude.doNothing
+      , buildCommand = chickenBuild
+      , installCommand = prelude.doNothing
       , pkgSubdir = "chicken-${versionString}"
       }
 in
@@ -1003,16 +1003,21 @@ let libXScrnSaver =
 in
 
 let bzip2 =
+  let cc =
+    λ(cfg : types.BuildVars) →
+      Optional/fold Text cfg.targetTriple (List Text) (λ(tgt : Text) → ["CC=${tgt}-gcc"]) ([] : List Text)
+  in
   let bzipBuild =
     λ(cfg : types.BuildVars) →
-      let cc =
-        Optional/fold Text cfg.targetTriple (List Text) (λ(tgt : Text) → ["CC=${tgt}-gcc"]) ([] : List Text)
-      in
-      [ prelude.call (prelude.defaultCall ⫽ { program = "make"
-                                            , arguments = cc # [ "-j${Natural/show cfg.cpus}" ]
+      [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
+                                            , arguments = cc cfg # [ "-j${Natural/show cfg.cpus}" ]
                                             })
-      , prelude.call (prelude.defaultCall ⫽ { program = "make"
-                                            , arguments = cc # [ "PREFIX=${cfg.installDir}", "install" ]
+      ]
+  in
+  let bzipInstall =
+    λ(cfg : types.BuildVars) →
+      [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
+                                            , arguments = cc cfg # [ "PREFIX=${cfg.installDir}", "install" ]
                                             })
       ]
   in
@@ -1020,10 +1025,9 @@ let bzip2 =
   λ(v : List Natural) →
     prelude.simplePackage { name = "bzip2", version = v } ⫽
       { pkgUrl = "https://cytranet.dl.sourceforge.net/project/bzip2/bzip2-${prelude.showVersion v}.tar.gz"
-      , configureCommand = (λ(_ : types.BuildVars) → [] : List types.Command)
-      -- FIXME: add the appropriate phases
-      , buildCommand = (λ(_ : types.BuildVars) → [] : List types.Command)
-      , installCommand = bzipBuild
+      , configureCommand = prelude.doNothing
+      , buildCommand = bzipBuild
+      , installCommand = bzipInstall
       }
 in
 

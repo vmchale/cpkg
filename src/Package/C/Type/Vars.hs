@@ -8,7 +8,7 @@ data BuildVars = BuildVars { installDir   :: FilePath
                            , includeDirs  :: [ FilePath ]
                            , linkDirs     :: [ FilePath ]
                            , binDirs      :: [ FilePath ]
-                           , configOS     :: OS
+                           , buildOS      :: OS -- ^ See [here](https://gcc.gnu.org/onlinedocs/gccint/Configure-Terms.html) for terminology. This is the OS of the system we are building on.
                            , static       :: Bool
                            , cpus         :: Int
                            }
