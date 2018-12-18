@@ -46,22 +46,71 @@ cpkg install tar
 
 ### Configuration
 
-Here is the configuration for Valgrind:
+Here is the configuration for Lua:
 
 ```dhall
-let prelude = https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-prelude.dhall
-in
-
-let valgrind =
+let lua =
   λ(v : List Natural) →
-    prelude.simplePackage { name = "valgrind", version = v } ⫽
-      { pkgUrl = "http://www.valgrind.org/downloads/valgrind-${prelude.showVersion v}.tar.bz2"
-      , installCommand = prelude.installWithBinaries [ "bin/valgrind" ]
-      , configureCommand = prelude.configureMkExes [ "auxprogs/make_or_upd_vgversion_h" ]
+    let printLuaOS =
+      λ(os : types.OS) →
+        merge
+          { FreeBSD   = λ(_ : {}) → "freebsd"
+          , OpenBSD   = λ(_ : {}) → "bsd"
+          , NetBSD    = λ(_ : {}) → "bsd"
+          , Solaris   = λ(_ : {}) → "solaris"
+          , Dragonfly = λ(_ : {}) → "bsd"
+          , Linux     = λ(_ : {}) → "linux"
+          , Darwin    = λ(_ : {}) → "macosx"
+          , Windows   = λ(_ : {}) → "mingw"
+          , Redox     = λ(_ : {}) → "generic"
+          , Haiku     = λ(_ : {}) → "generic"
+          , IOS       = λ(_ : {}) → "generic"
+          , AIX       = λ(_ : {}) → "generic"
+          , Hurd      = λ(_ : {}) → "generic"
+          , Android   = λ(_ : {}) → "generic"
+          , NoOs      = λ(_ : {}) → "c89"
+          }
+          os
+    in
+
+    let luaBuild =
+      λ(cfg : types.BuildVars) →
+        let cc =
+          Optional/fold Text cfg.targetTriple (List Text) (λ(tgt : Text) → ["CC=${tgt}-gcc"]) ([] : List Text)
+        in
+
+        let ldflags =
+          (prelude.mkLDFlags (cfg.linkDirs)).value
+        in
+
+        let cflags =
+          (prelude.mkCFlags (cfg.includeDirs)).value
+        in
+
+        [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
+                                              , arguments = cc # [ printLuaOS cfg.buildOS, "MYLDFLAGS=${ldflags}", "MYCFLAGS=${cflags}" ]
+                                              })
+        ]
+    in
+
+    let luaInstall =
+      λ(cfg : types.BuildVars) →
+        [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
+                                              , arguments = [ "install", "INSTALL_TOP=${cfg.installDir}" ]
+                                              }) ]
+          # prelude.symlinkBinaries [ "bin/lua", "bin/luac" ]
+    in
+
+    prelude.simplePackage { name = "lua", version = v } ⫽
+      { pkgUrl = "http://www.lua.org/ftp/lua-${prelude.showVersion v}.tar.gz"
+      , configureCommand = prelude.doNothing
+      , buildCommand = luaBuild
+      , installCommand = luaInstall
+      , pkgDeps = [ prelude.unbounded "readline" ]
       }
 in
 
-valgrind [3,14,0]
+lua [5,3,5]
 ```
 
 ### Dhall Prelude
@@ -100,9 +149,9 @@ Lovingly provided by [polyglot](https://github.com/vmchale/polyglot):
  Cabal Project            1           2            2            0            0
  Dhall                    3        1749         1528            1          220
  Haskell                 25        1263         1013           21          229
- Markdown                 5         240          208            0           32
+ Markdown                 5         232          202            0           30
  YAML                     4         155          140            0           15
 -------------------------------------------------------------------------------
- Total                   41        3559         3031           22          506
+ Total                   41        3551         3025           22          504
 -------------------------------------------------------------------------------
 ```
