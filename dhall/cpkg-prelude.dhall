@@ -259,7 +259,9 @@ in
 let defaultBuild =
   λ(cfg : types.BuildVars) →
     [ call (defaultCall ⫽ { program = makeExe cfg.buildOS
-                          , arguments = [ "-j${Natural/show cfg.cpus}" ] })
+                          , arguments = [ "-j${Natural/show cfg.cpus}" ]
+                          , environment = Some (defaultPath cfg)
+                          })
     ]
 in
 
