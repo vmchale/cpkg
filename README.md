@@ -52,20 +52,12 @@ Here is the configuration for Valgrind:
 let prelude = https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-prelude.dhall
 in
 
-let types = https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-types.dhall
-in
-
 let valgrind =
-  let valgrindConfigure =
-    λ(cfg : types.ConfigureVars) →
-      prelude.defaultConfigure cfg # [ prelude.mkExe "auxprogs/make_or_upd_vgversion_h" ]
-  in
-
   λ(v : List Natural) →
     prelude.simplePackage { name = "valgrind", version = v } ⫽
       { pkgUrl = "http://www.valgrind.org/downloads/valgrind-${prelude.showVersion v}.tar.bz2"
-      , configureCommand = valgrindConfigure
       , installCommand = prelude.installWithBinaries [ "bin/valgrind" ]
+      , configureCommand = prelude.configureMkExes [ "auxprogs/make_or_upd_vgversion_h" ]
       }
 in
 
@@ -108,9 +100,9 @@ Lovingly provided by [polyglot](https://github.com/vmchale/polyglot):
  Cabal Project            1           2            2            0            0
  Dhall                    3        1749         1528            1          220
  Haskell                 25        1263         1013           21          229
- Markdown                 5         239          207            0           32
+ Markdown                 5         240          208            0           32
  YAML                     4         155          140            0           15
 -------------------------------------------------------------------------------
- Total                   41        3558         3030           22          506
+ Total                   41        3559         3031           22          506
 -------------------------------------------------------------------------------
 ```
