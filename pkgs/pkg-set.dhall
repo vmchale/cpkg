@@ -878,6 +878,7 @@ let libxft =
       , pkgDeps = [ prelude.unbounded "freetype"
                   , prelude.unbounded "fontconfig"
                   ]
+      , pkgBuildDeps = [ prelude.unbounded "gperf" ]
       }
 in
 
@@ -1040,6 +1041,12 @@ let expat =
       { pkgUrl = "https://github.com/libexpat/libexpat/releases/download/R_${underscoreVersion v}/expat-${prelude.showVersion v}.tar.bz2" }
 in
 
+let gperf =
+  λ(v : List Natural) →
+    prelude.makeGnuExe { name = "libtool", version = v } ⫽
+      { pkgUrl = "http://ftp.gnu.org/pub/gnu/gperf/gperf-${prelude.showVersion v}.tar.gz" }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , atk { version = [2,26], patch = 1 }
@@ -1062,6 +1069,7 @@ in
 , gc [8,0,0]
 , gdb [8,2]
 , gettext [0,19,8]
+, gperf [3,1]
 , giflib [5,1,4]
 , git [2,19,2]
 , glib { version = [2,58], patch = 1 }
