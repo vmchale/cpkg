@@ -208,7 +208,7 @@ let mkPathVar =
 in
 
 let defaultPath =
-  λ(cfg : types.ConfigureVars) →
+  λ(cfg : types.BuildVars) →
     if isUnix cfg.configOS
       then [ { var = "PATH", value = mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" } ] : List types.EnvVar
       else [] : List types.EnvVar
@@ -217,7 +217,7 @@ in
 let generalConfigure =
   λ(filename : Text) →
   λ(extraFlags : List Text) →
-  λ(cfg : types.ConfigureVars) →
+  λ(cfg : types.BuildVars) →
     let maybeHost = mkHost cfg.targetTriple
     in
     let modifyArgs = maybeAppend Text maybeHost
@@ -246,7 +246,7 @@ in
 
 let configureMkExesExtraFlags =
   λ(x : { bins : List Text, extraFlags : List Text }) →
-  λ(cfg : types.ConfigureVars) →
+  λ(cfg : types.BuildVars) →
     mkExes x.bins
       # configureWithFlags x.extraFlags cfg
 in
@@ -258,21 +258,21 @@ in
 
 let defaultBuild =
   λ(cfg : types.BuildVars) →
-    [ call (defaultCall ⫽ { program = makeExe cfg.buildOS
+    [ call (defaultCall ⫽ { program = makeExe cfg.configOS
                           , arguments = [ "-j${Natural/show cfg.cpus}" ] })
     ]
 in
 
 let defaultInstall =
-  λ(cfg : types.InstallVars) →
-    [ call (defaultCall ⫽ { program = makeExe (cfg.installOS)
+  λ(cfg : types.BuildVars) →
+    [ call (defaultCall ⫽ { program = makeExe (cfg.configOS)
                           , arguments = [ "install" ] })
     ]
 in
 
 let installWithBinaries =
   λ(bins : List Text) →
-  λ(installVars : types.InstallVars) →
+  λ(installVars : types.BuildVars) →
     defaultInstall installVars
       # symlinkBinaries bins
 in
@@ -338,7 +338,7 @@ let createDir =
 in
 
 let cmakeConfigure =
-  λ(cfg : types.ConfigureVars) →
+  λ(cfg : types.BuildVars) →
     let host =
       Optional/fold Text cfg.targetTriple (List Text) (λ(tgt : Text) → ["-DCMAKE_C_COMPILER=${tgt}-gcc"]) ([] : List Text)
     in
@@ -363,7 +363,7 @@ let cmakeBuild =
 in
 
 let cmakeInstall =
-  λ(_ : types.InstallVars) →
+  λ(_ : types.BuildVars) →
     [ call { program = "cmake"
            , arguments = [ "--build", ".", "--target", "install", "--config", "Release" ]
            , environment = defaultEnv
@@ -374,7 +374,7 @@ in
 
 let cmakeInstallWithBinaries =
   λ(bins : List Text) →
-  λ(installVars : types.InstallVars) →
+  λ(installVars : types.BuildVars) →
     cmakeInstall installVars
       # symlinkBinaries bins
 in
@@ -388,7 +388,7 @@ let cmakePackage =
 in
 
 let autogenConfigure =
-  λ(cfg : types.ConfigureVars) →
+  λ(cfg : types.BuildVars) →
     [ mkExe "autogen.sh"
     , call (defaultCall ⫽ { program = "./autogen.sh"
                           -- https://www.gnu.org/software/automake/manual/html_node/Macro-Search-Path.html
@@ -404,14 +404,24 @@ in
 
 {- meson build helpers -}
 
+let mkPyPath =
+  λ(libDirs : List Text) →
+    -- TODO: both python3.7 and python2.whatever
+    let flag = concatMap Text (λ(dir : Text) → "${dir}/python3.7/site-packages:") libDirs
+    in
+
+    { var = "PYTHONPATH", value = flag }
+in
+
 let mesonConfigure =
-  λ(cfg : types.ConfigureVars) →
+  λ(cfg : types.BuildVars) →
 
     [ createDir "build"
     , call { program = "meson"
            , arguments = [ "--prefix=${cfg.installDir}", ".." ]
            , environment = Some [ mkPkgConfigVar cfg.linkDirs
                                 , { var = "PATH", value = mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
+                                , mkPyPath cfg.linkDirs
                                 ]
            , procDir = Some "build"
            }
@@ -421,12 +431,21 @@ in
 
 let ninjaBuild =
   λ(cfg : types.BuildVars) →
-    [ call (defaultCall ⫽ { program = "ninja", procDir = Some "build" }) ]
+    [ call (defaultCall ⫽ { program = "ninja"
+                          , environment = Some [ mkPkgConfigVar cfg.linkDirs
+                                               , { var = "PATH", value = mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
+                                               , mkPyPath cfg.linkDirs
+                                               ]
+                          , procDir = Some "build" }) ]
 in
 
 let ninjaInstall =
-  λ(cfg : types.InstallVars) →
+  λ(cfg : types.BuildVars) →
     [ call (defaultCall ⫽ { program = "ninja"
+                          , environment = Some [ mkPkgConfigVar cfg.linkDirs
+                                               , { var = "PATH", value = mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
+                                               , mkPyPath cfg.linkDirs
+                                               ]
                           , arguments = [ "install" ]
                           , procDir = Some "build"
                           })
@@ -439,7 +458,7 @@ in
 
 let ninjaInstallWithPkgConfig =
   λ(fs : List { src : Text, dest : Text }) →
-  λ(cfg : types.InstallVars) →
+  λ(cfg : types.BuildVars) →
     ninjaInstall cfg # copyFiles fs
 in
 

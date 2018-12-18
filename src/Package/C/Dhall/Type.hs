@@ -3,9 +3,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Package.C.Dhall.Type ( CPkg (..)
-                            , ConfigureVars (..)
                             , BuildVars (..)
-                            , InstallVars (..)
                             , EnvVar (..)
                             , Command (..)
                             ) where
@@ -18,29 +16,15 @@ import           GHC.Natural                      (Natural)
 import           Package.C.Type.Shared
 import           Package.C.Type.Version
 
-data ConfigureVars = ConfigureVars { installDir   :: T.Text
-                                   , targetTriple :: Maybe T.Text
-                                   , includeDirs  :: [ T.Text ]
-                                   , linkDirs     :: [ T.Text ]
-                                   , binDirs      :: [ T.Text ]
-                                   , configOS     :: OS
-                                   , static       :: Bool
-                                   , cfgCpus      :: Natural
-                                   } deriving (Generic, Inject)
-
-data InstallVars = InstallVars { installPath :: T.Text
-                               , installTgt  :: Maybe T.Text
-                               , installOS   :: OS
-                               }
-                    deriving (Generic, Inject)
-
-data BuildVars = BuildVars { cpus           :: Natural
-                           , buildOS        :: OS
-                           , buildTgt       :: Maybe T.Text
-                           , linkDirsBld    :: [ T.Text ]
-                           , includeDirsBld :: [ T.Text ]
-                           }
-                deriving (Generic, Inject)
+data BuildVars = BuildVars { installDir   :: T.Text
+                           , targetTriple :: Maybe T.Text
+                           , includeDirs  :: [ T.Text ]
+                           , linkDirs     :: [ T.Text ]
+                           , binDirs      :: [ T.Text ]
+                           , configOS     :: OS
+                           , static       :: Bool
+                           , cpus         :: Natural
+                           } deriving (Generic, Inject)
 
 data EnvVar = EnvVar { var :: T.Text, value :: T.Text }
             deriving (Generic, Interpret)
@@ -63,9 +47,9 @@ data CPkg = CPkg { pkgName          :: T.Text
                  , pkgSubdir        :: T.Text
                  , pkgBuildDeps     :: [ Dep ] -- TODO: depend on target?
                  , pkgDeps          :: [ Dep ]
-                 , configureCommand :: ConfigureVars -> [ Command ]
+                 , configureCommand :: BuildVars -> [ Command ]
                  , buildCommand     :: BuildVars -> [ Command ]
-                 , installCommand   :: InstallVars -> [ Command ]
+                 , installCommand   :: BuildVars -> [ Command ]
                  -- TODO: add "description" field for printing
                  -- TODO: add "test" command for e.g. `make check`
                  } deriving (Generic, Interpret)

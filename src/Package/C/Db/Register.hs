@@ -74,15 +74,13 @@ strictIndex = do
 packageInstalled :: MonadIO m
                  => CPkg
                  -> Maybe Platform
-                 -> ConfigureVars
                  -> BuildVars
-                 -> InstallVars
                  -> m Bool
-packageInstalled pkg host c b i = do
+packageInstalled pkg host b = do
 
     indexContents <- strictIndex
 
-    pure (pkgToBuildCfg pkg host c b i `S.member` _installedPackages indexContents)
+    pure (pkgToBuildCfg pkg host b `S.member` _installedPackages indexContents)
 
 lookupPackage :: MonadIO m => String -> Maybe Platform -> m (Maybe BuildCfg)
 lookupPackage name host = do
@@ -96,16 +94,14 @@ lookupPackage name host = do
 unregisterPkg :: MonadIO m
               => CPkg
               -> Maybe Platform
-              -> ConfigureVars
               -> BuildVars
-              -> InstallVars
               -> m ()
-unregisterPkg cpkg host c b i = do
+unregisterPkg cpkg host b = do
 
     indexFile <- pkgIndex
     indexContents <- strictIndex
 
-    let buildCfg = pkgToBuildCfg cpkg host c b i
+    let buildCfg = pkgToBuildCfg cpkg host b
         newIndex = over installedPackages (S.delete buildCfg) indexContents
 
     liftIO $ BSL.writeFile indexFile (encode newIndex)
@@ -114,28 +110,24 @@ unregisterPkg cpkg host c b i = do
 registerPkg :: MonadIO m
             => CPkg
             -> Maybe Platform
-            -> ConfigureVars
             -> BuildVars
-            -> InstallVars
             -> m ()
-registerPkg cpkg host c b i = do
+registerPkg cpkg host b = do
 
     indexFile <- pkgIndex
     indexContents <- strictIndex
 
-    let buildCfg = pkgToBuildCfg cpkg host c b i
+    let buildCfg = pkgToBuildCfg cpkg host b
         newIndex = over installedPackages (S.insert buildCfg) indexContents
 
     liftIO $ BSL.writeFile indexFile (encode newIndex)
 
 pkgToBuildCfg :: CPkg
               -> Maybe Platform
-              -> ConfigureVars
               -> BuildVars
-              -> InstallVars
               -> BuildCfg
-pkgToBuildCfg (CPkg n v _ _ _ _ cCmd bCmd iCmd) host cVar bVar iVar =
-    BuildCfg n v mempty mempty host (cCmd cVar) (bCmd bVar) (iCmd iVar) -- TODO: fix pinned build deps &c.
+pkgToBuildCfg (CPkg n v _ _ _ _ cCmd bCmd iCmd) host bVar =
+    BuildCfg n v mempty mempty host (cCmd bVar) (bCmd bVar) (iCmd bVar) -- TODO: fix pinned build deps &c.
 
 pkgIndex :: MonadIO m => m FilePath
 pkgIndex = (</> "index.bin") <$> globalPkgDir
@@ -157,8 +149,6 @@ buildCfgToDir buildCfg = do
 cPkgToDir :: MonadIO m
           => CPkg
           -> Maybe Platform
-          -> ConfigureVars
           -> BuildVars
-          -> InstallVars
           -> m FilePath
-cPkgToDir = buildCfgToDir .**** pkgToBuildCfg
+cPkgToDir = buildCfgToDir .** pkgToBuildCfg

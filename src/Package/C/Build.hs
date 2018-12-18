@@ -58,7 +58,7 @@ processSteps :: (Traversable t)
 processSteps pkgDir instDir = traverse_ (stepToProc pkgDir instDir)
 
 configureInDir :: CPkg
-               -> ConfigureVars
+               -> BuildVars
                -> FilePath -- ^ Build directory
                -> PkgM ()
 configureInDir cpkg cfg p =
@@ -78,7 +78,7 @@ buildInDir cpkg cfg p p' = do
     processSteps p p' (buildCommand cpkg cfg)
 
 installInDir :: CPkg
-             -> InstallVars
+             -> BuildVars
              -> FilePath -- ^ Build directory
              -> FilePath -- ^ Install directory
              -> PkgM ()
@@ -103,12 +103,12 @@ buildCPkg :: CPkg
           -> PkgM ()
 buildCPkg cpkg host sta libs incls bins = do
 
-    (configureVars, buildVars, installVars) <- getVars host sta libs incls bins
+    buildVars <- getVars host sta libs incls bins
 
-    installed <- packageInstalled cpkg host configureVars buildVars installVars
+    installed <- packageInstalled cpkg host buildVars
 
     unless installed $
-        forceBuildCPkg cpkg host configureVars buildVars installVars
+        forceBuildCPkg cpkg host buildVars
 
 -- only really suitable for hashing at this point, since we use @""@ as the
 -- install directory. we use this to get a hash which we then use to get the
@@ -119,25 +119,20 @@ getVars :: Maybe Platform
         -> [FilePath] -- ^ Library directories
         -> [FilePath] -- ^ Include directories
         -> [FilePath] -- ^ Directories to add to @PATH@
-        -> PkgM (ConfigureVars, BuildVars, InstallVars)
+        -> PkgM (BuildVars)
 getVars host sta links incls bins = do
     nproc <- liftIO getNumCapabilities
-    let configureVars = ConfigureVars "" host incls links bins dhallOS sta nproc
-        buildVars = BuildVars nproc dhallOS host links incls
-        installVars = InstallVars "" host dhallOS
-    pure (configureVars, buildVars, installVars)
+    pure (BuildVars "" host incls links bins dhallOS sta nproc)
 
 -- TODO: more complicated solver, garbage collector, and all that.
 -- Basically nix-style builds for C libraries
 forceBuildCPkg :: CPkg
                -> Maybe Platform
-               -> ConfigureVars
                -> BuildVars
-               -> InstallVars
                -> PkgM ()
-forceBuildCPkg cpkg host configureVars buildVars installVars = do
+forceBuildCPkg cpkg host buildVars = do
 
-    pkgDir <- cPkgToDir cpkg host configureVars buildVars installVars
+    pkgDir <- cPkgToDir cpkg host buildVars
 
     liftIO $ createDirectoryIfMissing True pkgDir
 
@@ -149,10 +144,12 @@ forceBuildCPkg cpkg host configureVars buildVars installVars = do
 
         let p' = p </> pkgSubdir cpkg
 
-        configureInDir cpkg (configureVars { installDir = pkgDir }) p'
+        let buildConfigured = buildVars { installDir = pkgDir }
 
-        buildInDir cpkg buildVars p' pkgDir
+        configureInDir cpkg buildConfigured p'
 
-        installInDir cpkg (installVars { installPath = pkgDir }) p' pkgDir
+        buildInDir cpkg buildConfigured p' pkgDir
 
-        registerPkg cpkg host configureVars buildVars installVars
+        installInDir cpkg buildConfigured p' pkgDir
+
+        registerPkg cpkg host buildVars -- not configured? I think?

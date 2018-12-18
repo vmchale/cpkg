@@ -60,29 +60,16 @@ let TargetTriple = { arch : Arch
                    }
 in
 
-let ConfigureVars = { installDir : Text
-                    , targetTriple : Optional Text
-                    , includeDirs : List Text
-                    , linkDirs : List Text
-                    , binDirs : List Text
-                    , configOS : OS
-                    , static : Bool
-                    , cfgCpus : Natural
-                    }
-in
-
-let BuildVars = { cpus : Natural
-                , buildOS : OS
-                , buildTgt : Optional Text
-                , linkDirsBld : List Text
-                , includeDirsBld : List Text
+let BuildVars = { installDir : Text
+                , targetTriple : Optional Text
+                , includeDirs : List Text
+                , linkDirs : List Text
+                , binDirs : List Text
+                , configOS : OS
+                , static : Bool
+                , cpus : Natural
                 }
 in
-
-let InstallVars = { installPath : Text
-                  , installTgt : Optional Text
-                  , installOS : OS
-                  }
 
 let VersionBound = < Lower : { lower : List Natural }
                    | Upper : { upper : List Natural }
@@ -113,7 +100,6 @@ let Command = < CreateDirectory : { dir : Text }
 in
 
 { OS            = OS
-, ConfigureVars = ConfigureVars
 , BuildVars     = BuildVars
 , VersionBound  = VersionBound
 , Dep           = Dep
@@ -124,5 +110,4 @@ in
 , Command       = Command
 , EnvVar        = EnvVar
 , Proc          = Proc
-, InstallVars   = InstallVars
 }

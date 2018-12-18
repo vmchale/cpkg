@@ -1,28 +1,14 @@
-module Package.C.Type.Vars ( ConfigureVars (..)
-                           , BuildVars (..)
-                           , InstallVars (..)
+module Package.C.Type.Vars ( BuildVars (..)
                            ) where
 
 import           Package.C.Type.Shared
 
-data ConfigureVars = ConfigureVars { installDir   :: FilePath
-                                   , targetTriple :: Maybe Platform
-                                   , includeDirs  :: [ FilePath ]
-                                   , linkDirs     :: [ FilePath ]
-                                   , binDirs      :: [ FilePath ]
-                                   , configOS     :: OS
-                                   , static       :: Bool
-                                   , cfgCpus      :: Int
-                                   }
-
-data BuildVars = BuildVars { cpus           :: Int
-                           , buildOS        :: OS
-                           , buildTgt       :: Maybe Platform
-                           , linkDirsBld    :: [ FilePath ]
-                           , includeDirsBld :: [ FilePath ]
+data BuildVars = BuildVars { installDir   :: FilePath
+                           , targetTriple :: Maybe Platform
+                           , includeDirs  :: [ FilePath ]
+                           , linkDirs     :: [ FilePath ]
+                           , binDirs      :: [ FilePath ]
+                           , configOS     :: OS
+                           , static       :: Bool
+                           , cpus         :: Int
                            }
-
-data InstallVars = InstallVars { installPath :: FilePath
-                               , installTgt  :: Maybe Platform
-                               , installOS   :: OS
-                               }

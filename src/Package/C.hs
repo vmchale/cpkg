@@ -1,7 +1,6 @@
 module Package.C (
                  -- * Types
                    CPkg (..)
-                 , ConfigureVars (..)
                  , BuildVars (..)
                  , Version (..)
                  , Verbosity (..)

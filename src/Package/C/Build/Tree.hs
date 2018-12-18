@@ -52,9 +52,9 @@ buildWithContext cTree host sta = zygoM' dirAlg buildAlg cTree
             let go f = fold (f <$> bds)
                 (ls, is, bs) = (go libraries, go include, go binaries)
 
-            (configureVars, buildVars, installVars) <- getVars host sta ls is bs
+            buildVars <- getVars host sta ls is bs
 
-            pkgDir <- cPkgToDir c host configureVars buildVars installVars
+            pkgDir <- cPkgToDir c host buildVars
 
             let linkDir = pkgDir </> "lib"
                 linkDir64 = pkgDir </> "lib64"

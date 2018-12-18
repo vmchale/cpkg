@@ -2,9 +2,7 @@
 {-# LANGUAGE DeriveGeneric  #-}
 
 module Package.C.Type ( CPkg (..)
-                      , ConfigureVars (..)
                       , BuildVars (..)
-                      , InstallVars (..)
                       , Verbosity (..)
                       , EnvVar (..)
                       , Command (..)
@@ -50,9 +48,9 @@ data CPkg = CPkg { pkgName          :: String
                  , pkgSubdir        :: String
                  , pkgBuildDeps     :: [ Dep ]
                  , pkgDeps          :: [ Dep ]
-                 , configureCommand :: ConfigureVars -> [ Command ]
+                 , configureCommand :: BuildVars -> [ Command ]
                  , buildCommand     :: BuildVars -> [ Command ]
-                 , installCommand   :: InstallVars -> [ Command ]
+                 , installCommand   :: BuildVars -> [ Command ]
                  }
 
 envVarDhallToEnvVar :: Dhall.EnvVar -> EnvVar
@@ -66,19 +64,15 @@ commandDhallToCommand (Dhall.SymlinkBinary b)     = SymlinkBinary (T.unpack b)
 commandDhallToCommand (Dhall.Write out fp)        = Write out (T.unpack fp)
 commandDhallToCommand (Dhall.CopyFile src' dest') = CopyFile (T.unpack src') (T.unpack dest')
 
-installVarsToDhallInstallVars :: InstallVars -> Dhall.InstallVars
-installVarsToDhallInstallVars (InstallVars fp tgt os) = Dhall.InstallVars (T.pack fp) (T.pack <$> tgt) os
-
-cfgVarsToDhallCfgVars :: ConfigureVars -> Dhall.ConfigureVars
-cfgVarsToDhallCfgVars (ConfigureVars dir' tgt incls lds bins os sta nproc) = Dhall.ConfigureVars (T.pack dir') (T.pack <$> tgt) (T.pack <$> incls) (T.pack <$> lds) (T.pack <$> bins) os sta (fromIntegral nproc)
 
 buildVarsToDhallBuildVars :: BuildVars -> Dhall.BuildVars
-buildVarsToDhallBuildVars (BuildVars nproc os tgt lds incls) = Dhall.BuildVars (fromIntegral nproc) os (T.pack <$> tgt) (T.pack <$> lds) (T.pack <$> incls)
+buildVarsToDhallBuildVars (BuildVars dir' tgt incls lds bins os sta nproc) = Dhall.BuildVars (T.pack dir') (T.pack <$> tgt) (T.pack <$> incls) (T.pack <$> lds) (T.pack <$> bins) os sta (fromIntegral nproc)
+
 
 cPkgDhallToCPkg :: Dhall.CPkg -> CPkg
 cPkgDhallToCPkg (Dhall.CPkg n v url subdir bldDeps deps cfgCmd buildCmd installCmd) =
     CPkg (T.unpack n) (Version v) (T.unpack url) (T.unpack subdir) bldDeps deps configure build install
 
-    where configure cfg = commandDhallToCommand <$> cfgCmd (cfgVarsToDhallCfgVars cfg)
+    where configure cfg = commandDhallToCommand <$> cfgCmd (buildVarsToDhallBuildVars cfg)
           build cfg = commandDhallToCommand <$> buildCmd (buildVarsToDhallBuildVars cfg)
-          install cfg = commandDhallToCommand <$> installCmd (installVarsToDhallInstallVars cfg)
+          install cfg = commandDhallToCommand <$> installCmd (buildVarsToDhallBuildVars cfg)
