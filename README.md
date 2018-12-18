@@ -80,11 +80,11 @@ let lua =
         in
 
         let ldflags =
-          (prelude.mkLDFlags (cfg.linkDirs)).value
+          (prelude.mkLDFlags cfg.linkDirs).value
         in
 
         let cflags =
-          (prelude.mkCFlags (cfg.includeDirs)).value
+          (prelude.mkCFlags cfg.includeDirs).value
         in
 
         [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
@@ -149,9 +149,9 @@ Lovingly provided by [polyglot](https://github.com/vmchale/polyglot):
  Cabal Project            1           2            2            0            0
  Dhall                    3        1749         1528            1          220
  Haskell                 25        1263         1013           21          229
- Markdown                 5         232          202            0           30
+ Markdown                 5         281          246            0           35
  YAML                     4         155          140            0           15
 -------------------------------------------------------------------------------
- Total                   41        3551         3025           22          504
+ Total                   41        3600         3069           22          509
 -------------------------------------------------------------------------------
 ```

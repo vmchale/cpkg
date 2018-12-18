@@ -539,6 +539,7 @@ in
 
 let lua =
   λ(v : List Natural) →
+    -- FIXME we should use the host OS
     let printLuaOS =
       λ(os : types.OS) →
         merge
@@ -568,11 +569,11 @@ let lua =
         in
 
         let ldflags =
-          (prelude.mkLDFlags (cfg.linkDirs)).value
+          (prelude.mkLDFlags cfg.linkDirs).value
         in
 
         let cflags =
-          (prelude.mkCFlags (cfg.includeDirs)).value
+          (prelude.mkCFlags cfg.includeDirs).value
         in
 
         [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
