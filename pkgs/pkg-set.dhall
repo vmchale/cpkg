@@ -2,6 +2,9 @@
 let concatMap = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/Text/concatMap
 in
 
+let concatMapSep = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/Text/concatMapSep
+in
+
 {- cpkg prelude imports -}
 let types = ../dhall/cpkg-types.dhall
 in
@@ -810,7 +813,9 @@ let fontconfig =
   λ(v : List Natural) →
     prelude.simplePackage { name = "fontconfig", version = v } ⫽
       { pkgUrl = "https://www.freedesktop.org/software/fontconfig/release/fontconfig-${prelude.showVersion v}.tar.bz2"
-      , pkgDeps = [ prelude.unbounded "freetype" ]
+      , pkgDeps = [ prelude.unbounded "freetype"
+                  , prelude.unbounded "expat"
+                  ]
       }
 in
 
@@ -1025,6 +1030,16 @@ let bzip2 =
       }
 in
 
+let expat =
+  let underscoreVersion =
+    concatMapSep "_" Natural Natural/show
+  in
+
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "expat", version = v } ⫽
+      { pkgUrl = "https://github.com/libexpat/libexpat/releases/download/R_${underscoreVersion v}/expat-${prelude.showVersion v}.tar.bz2" }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , atk { version = [2,26], patch = 1 }
@@ -1037,6 +1052,7 @@ in
 , curl [7,62,0]
 , dbus [1,12,10]
 , emacs [25,3]
+, expat [2,2,6]
 , fontconfig [2,13,1]
 , flex [2,6,3]
 , fltk { version = [1,3,4], patch = 2 }
