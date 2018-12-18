@@ -32,6 +32,7 @@
 - [ ] `cpkg list` should show what binaries it provides
 - [ ] `test` should map to commands such as `make check`; should not be run when
   cross-compiling
+- [ ] `wrap-cabal` subcommand to wrap cabal with a given set of packages?
 # Performance
 - [ ] Dhall is slow
 # Bugs

@@ -575,7 +575,7 @@ let lua =
           (prelude.mkCFlags (cfg.includeDirs)).value
         in
 
-        [ prelude.call (prelude.defaultCall ⫽ { program = "make"
+        [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
                                               , arguments = cc # [ printLuaOS cfg.buildOS, "MYLDFLAGS=${ldflags}", "MYCFLAGS=${cflags}" ]
                                               })
         ]
@@ -583,7 +583,7 @@ let lua =
 
     let luaInstall =
       λ(cfg : types.BuildVars) →
-        [ prelude.call (prelude.defaultCall ⫽ { program = "make"
+        [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
                                               , arguments = [ "install", "INSTALL_TOP=${cfg.installDir}" ]
                                               }) ]
           # prelude.symlinkBinaries [ "bin/lua", "bin/luac" ]
@@ -928,10 +928,10 @@ let chickenScheme =
         let cc =
           Optional/fold Text cfg.targetTriple (List Text) (λ(tgt : Text) → ["C_COMPILER=${tgt}-gcc"]) ([] : List Text)
         in
-        [ prelude.call (prelude.defaultCall ⫽ { program = "make"
+        [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
                                               , arguments = cc # [ "PLATFORM=${printChickenOS cfg.buildOS}", "PREFIX=${cfg.installDir}" ]
                                               })
-        , prelude.call (prelude.defaultCall ⫽ { program = "make"
+        , prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
                                               , arguments = cc # [ "PLATFORM=${printChickenOS cfg.buildOS}", "PREFIX=${cfg.installDir}", "install" ]
                                               })
         ]
