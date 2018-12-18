@@ -816,6 +816,7 @@ let fontconfig =
       , pkgDeps = [ prelude.unbounded "freetype"
                   , prelude.unbounded "expat"
                   ]
+      , pkgBuildDeps = [ prelude.unbounded "gperf" ]
       }
 in
 
@@ -878,7 +879,6 @@ let libxft =
       , pkgDeps = [ prelude.unbounded "freetype"
                   , prelude.unbounded "fontconfig"
                   ]
-      , pkgBuildDeps = [ prelude.unbounded "gperf" ]
       }
 in
 
