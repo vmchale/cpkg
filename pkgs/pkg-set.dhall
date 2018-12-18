@@ -1007,17 +1007,10 @@ let bzip2 =
     λ(cfg : types.BuildVars) →
       Optional/fold Text cfg.targetTriple (List Text) (λ(tgt : Text) → ["CC=${tgt}-gcc"]) ([] : List Text)
   in
-  let bzipBuild =
-    λ(cfg : types.BuildVars) →
-      [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
-                                            , arguments = cc cfg # [ "-j${Natural/show cfg.cpus}" ]
-                                            })
-      ]
-  in
   let bzipInstall =
     λ(cfg : types.BuildVars) →
       [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
-                                            , arguments = cc cfg # [ "PREFIX=${cfg.installDir}", "install" ]
+                                            , arguments = cc cfg # [ "PREFIX=${cfg.installDir}", "install", "-j${Natural/show cfg.cpus}" ]
                                             })
       ]
   in
@@ -1026,7 +1019,7 @@ let bzip2 =
     prelude.simplePackage { name = "bzip2", version = v } ⫽
       { pkgUrl = "https://cytranet.dl.sourceforge.net/project/bzip2/bzip2-${prelude.showVersion v}.tar.gz"
       , configureCommand = prelude.doNothing
-      , buildCommand = bzipBuild
+      , buildCommand = prelude.doNothing
       , installCommand = bzipInstall
       }
 in
