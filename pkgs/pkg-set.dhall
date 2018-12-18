@@ -367,7 +367,6 @@ let xz =
       }
 in
 
--- FIXME: fix cross-compilation/configuration
 let zlib =
   λ(v : List Natural) →
 
@@ -669,6 +668,7 @@ let freetype =
       { pkgUrl = "https://download.savannah.gnu.org/releases/freetype/freetype-${prelude.showVersion v}.tar.gz"
       , configureCommand = prelude.configureMkExes [ "builds/unix/configure" ]
       -- TODO: figure out circular situation with harfbuzz/freetype
+      -- ideally have a freetype-prebuild package?
       }
 in
 
