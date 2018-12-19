@@ -1057,6 +1057,31 @@ let gperf =
       { pkgUrl = "http://ftp.gnu.org/pub/gnu/gperf/gperf-${prelude.showVersion v}.tar.gz" }
 in
 
+let libsepol =
+  let cc =
+    λ(cfg : types.BuildVars) →
+      Optional/fold Text cfg.targetTriple (List Text) (λ(tgt : Text) → ["CC=${tgt}-gcc"]) ([] : List Text)
+  in
+  -- TODO: proper separation
+  let sepolInstall =
+    λ(cfg : types.BuildVars) →
+      [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
+                                            , arguments = cc cfg # [ "PREFIX=${cfg.installDir}", "SHLIBDIR=${cfg.installDir}/lib", "EXTRA_CFLAGS=-Wno-error", "install", "-j${Natural/show cfg.cpus}" ]
+                                            , environment =
+                                                Some (prelude.defaultPath cfg # [ prelude.mkLDFlags cfg.linkDirs, prelude.mkCFlags cfg.includeDirs, prelude.mkPkgConfigVar cfg.linkDirs ])
+                                            })
+      ]
+  in
+
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libsepol", version = v } ⫽
+      { pkgUrl = "https://github.com/SELinuxProject/selinux/releases/download/20180524/libsepol-${prelude.showVersion v}.tar.gz"
+      , configureCommand = prelude.doNothing
+      , buildCommand = prelude.doNothing
+      , installCommand = sepolInstall
+      }
+in
+
 let libselinux =
   let cc =
     λ(cfg : types.BuildVars) →
@@ -1079,7 +1104,7 @@ let libselinux =
       , configureCommand = prelude.doNothing
       , buildCommand = prelude.doNothing
       , installCommand = selinuxInstall
-      , pkgDeps = [ prelude.unbounded "pcre" ]
+      , pkgDeps = [ prelude.unbounded "pcre", prelude.unbounded "libsepol" ]
       }
 in
 
@@ -1134,6 +1159,7 @@ in
 , libpng [1,6,35]
 , libnettle [3,4,1]
 , libselinux [2,8]
+, libsepol [2,8]
 , libssh2 [1,8,0]
 , libtasn1 [4,13]
 , libtool [2,4,6]
