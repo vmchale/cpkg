@@ -496,6 +496,7 @@ in
 , maybeAppend         = maybeAppend
 , mkCFlags            = mkCFlags
 , mkLDFlags           = mkLDFlags
+, mkLDPath            = mkLDPath
 , isUnix              = isUnix
 , defaultPath         = defaultPath
 , simplePackage       = simplePackage

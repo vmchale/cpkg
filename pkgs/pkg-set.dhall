@@ -287,7 +287,13 @@ in
 let pcre2 =
   λ(v : List Natural) →
     prelude.simplePackage { name = "pcre2", version = v } ⫽
-      { pkgUrl = "https://ftp.pcre.org/pub/pcre/pcre2-${prelude.showVersion v}.tar.gz" }
+      { pkgUrl = "https://ftp.pcre.org/pub/pcre/pcre2-${prelude.showVersion v}.tar.bz2" }
+in
+
+let pcre =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "pcre", version = v } ⫽
+      { pkgUrl = "https://ftp.pcre.org/pub/pcre/pcre-${prelude.showVersion v}.tar.bz2" }
 in
 
 let perl5 =
@@ -1061,6 +1067,8 @@ let libselinux =
     λ(cfg : types.BuildVars) →
       [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
                                             , arguments = cc cfg # [ "PREFIX=${cfg.installDir}", "SHLIBDIR=${cfg.installDir}/lib", "EXTRA_CFLAGS=-Wno-error", "install", "-j${Natural/show cfg.cpus}" ]
+                                            , environment =
+                                                Some (prelude.defaultPath cfg # [ prelude.mkLDFlags cfg.linkDirs, prelude.mkCFlags cfg.includeDirs, prelude.mkPkgConfigVar cfg.linkDirs ])
                                             })
       ]
   in
@@ -1071,6 +1079,7 @@ let libselinux =
       , configureCommand = prelude.doNothing
       , buildCommand = prelude.doNothing
       , installCommand = selinuxInstall
+      , pkgDeps = [ prelude.unbounded "pcre" ]
       }
 in
 
@@ -1148,6 +1157,7 @@ in
 , npth [1,6]
 , openssl [1,1,1]
 , pango { version = [1,43], patch = 0 }
+, pcre [8,42]
 , pcre2 [10,32]
 , perl5 [5,28,1]
 , pixman [0,36,0]
