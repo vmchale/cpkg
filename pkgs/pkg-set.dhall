@@ -1079,6 +1079,7 @@ let libsepol =
       , configureCommand = prelude.doNothing
       , buildCommand = prelude.doNothing
       , installCommand = sepolInstall
+      , pkgBuildDeps = [ prelude.unbounded "flex" ]
       }
 in
 
