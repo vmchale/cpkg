@@ -865,7 +865,10 @@ let glib =
       , buildCommand = prelude.ninjaBuild
       , installCommand =
           prelude.ninjaInstallWithPkgConfig [ { src = "build/meson-private/glib-2.0.pc", dest = "lib/pkgconfig/glib-2.0.pc" } ]
-      , pkgBuildDeps = [ prelude.unbounded "meson", prelude.unbounded "ninja" ]
+      , pkgDeps = [ prelude.unbounded "libselinux" ]
+      , pkgBuildDeps = [ prelude.unbounded "meson"
+                       , prelude.unbounded "ninja"
+                       ]
       }
 in
 
@@ -1048,6 +1051,29 @@ let gperf =
       { pkgUrl = "http://ftp.gnu.org/pub/gnu/gperf/gperf-${prelude.showVersion v}.tar.gz" }
 in
 
+let libselinux =
+  let cc =
+    λ(cfg : types.BuildVars) →
+      Optional/fold Text cfg.targetTriple (List Text) (λ(tgt : Text) → ["CC=${tgt}-gcc"]) ([] : List Text)
+  in
+  -- TODO: proper separation
+  let selinuxInstall =
+    λ(cfg : types.BuildVars) →
+      [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
+                                            , arguments = cc cfg # [ "PREFIX=${cfg.installDir}", "SHLIBDIR=${cfg.installDir}/lib", "EXTRA_CFLAGS=-Wno-error", "install", "-j${Natural/show cfg.cpus}" ]
+                                            })
+      ]
+  in
+
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libselinux", version = v } ⫽
+      { pkgUrl = "https://github.com/SELinuxProject/selinux/releases/download/20180524/libselinux-${prelude.showVersion v}.tar.gz"
+      , configureCommand = prelude.doNothing
+      , buildCommand = prelude.doNothing
+      , installCommand = selinuxInstall
+      }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , atk { version = [2,26], patch = 1 }
@@ -1098,6 +1124,7 @@ in
 , libksba [1,3,5]
 , libpng [1,6,35]
 , libnettle [3,4,1]
+, libselinux [2,8]
 , libssh2 [1,8,0]
 , libtasn1 [4,13]
 , libtool [2,4,6]
