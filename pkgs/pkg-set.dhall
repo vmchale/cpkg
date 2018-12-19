@@ -1094,7 +1094,7 @@ let libselinux =
       [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
                                             , arguments = cc cfg # [ "PREFIX=${cfg.installDir}", "SHLIBDIR=${cfg.installDir}/lib", "EXTRA_CFLAGS=-Wno-error", "install", "-j${Natural/show cfg.cpus}" ]
                                             , environment =
-                                                Some (prelude.defaultPath cfg # [ prelude.mkLDFlags cfg.linkDirs, prelude.mkCFlags cfg.includeDirs, prelude.mkPkgConfigVar cfg.linkDirs ])
+                                                Some (prelude.defaultPath cfg # [ prelude.mkLDFlags cfg.linkDirs, prelude.mkCFlags cfg.includeDirs, prelude.mkPkgConfigVar cfg.linkDirs, prelude.mkLDPath cfg.linkDirs ])
                                             })
       ]
   in
