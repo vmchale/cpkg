@@ -536,6 +536,7 @@ let python =
       , pkgSubdir = "Python-${versionString}"
       -- , configureCommand = prelude.configureWithFlags [ "--enable-optimizations" ]
       , installCommand = prelude.installWithBinaries [ "bin/python${major}" ]
+      , pkgDeps = [ prelude.unbounded "libffi" ]
       }
 in
 
