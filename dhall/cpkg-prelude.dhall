@@ -171,7 +171,7 @@ in
 
 let mkLDFlags =
   λ(libDirs : List Text) →
-    let flag = concatMap Text (λ(dir : Text) → "-L${dir} ") libDirs
+    let flag = concatMapSep " " Text (λ(dir : Text) → "-L${dir}") libDirs
     in
 
     { var = "LDFLAGS", value = flag }
@@ -179,7 +179,7 @@ in
 
 let mkLDPath =
   λ(libDirs : List Text) →
-    let flag = concatMap Text (λ(dir : Text) → "${dir}:") libDirs
+    let flag = concatMapSep ":" Text (λ(dir : Text) → dir) libDirs
     in
 
     { var = "LD_LIBRARY_PATH", value = flag }
@@ -187,7 +187,7 @@ in
 
 let mkCFlags =
   λ(libDirs : List Text) →
-    let flag = concatMap Text (λ(dir : Text) → "-I${dir} ") libDirs
+    let flag = concatMapSep " " Text (λ(dir : Text) → "-I${dir}") libDirs
     in
 
     { var = "CPPFLAGS", value = flag }
@@ -195,7 +195,7 @@ in
 
 let mkPkgConfigVar =
   λ(libDirs : List Text) →
-    let flag = concatMap Text (λ(dir : Text) → "${dir}/pkgconfig:") libDirs
+    let flag = concatMapSep ":" Text (λ(dir : Text) → "${dir}/pkgconfig") libDirs
     in
 
     { var = "PKG_CONFIG_PATH", value = flag }
@@ -227,7 +227,11 @@ let generalConfigure =
     , call (defaultCall ⫽ { program = "./${filename}"
                           , arguments = modifyArgs [ "--prefix=${cfg.installDir}" ] # extraFlags
                           , environment =
-                              Some (defaultPath cfg # [ mkLDFlags cfg.linkDirs, mkCFlags cfg.includeDirs, mkPkgConfigVar cfg.linkDirs, mkLDPath cfg.linkDirs ])
+                              Some (defaultPath cfg # [ mkLDFlags cfg.linkDirs
+                                                      , mkCFlags cfg.includeDirs
+                                                      , mkPkgConfigVar cfg.linkDirs
+                                                      , mkLDPath cfg.linkDirs
+                                                      ])
                           })
     ]
 in
@@ -352,6 +356,17 @@ let cmakeConfigure =
            , procDir = Some "build"
            }
     ]
+in
+
+let perlConfigure =
+  λ(cfg : types.BuildVars) →
+
+  [ call { program = "perl"
+         , arguments = [ "Makefile.PL", "PREFIX=${cfg.installDir}" ]
+         , environment = defaultEnv
+         , procDir = None Text
+         }
+  ]
 in
 
 let cmakeBuild =
@@ -537,4 +552,5 @@ in
 , ninjaInstall        = ninjaInstall
 , ninjaInstallWithPkgConfig = ninjaInstallWithPkgConfig
 , doNothing           = doNothing
+, perlConfigure       = perlConfigure
 }

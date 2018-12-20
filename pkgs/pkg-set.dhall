@@ -732,7 +732,9 @@ let gtk2 =
                   , prelude.lowerBound { name = "pango", lower = [1,20] }
                   , prelude.lowerBound { name = "atk", lower = [1,29,2] }
                   , prelude.lowerBound { name = "glib", lower = [2,28,0] }
+                  , prelude.lowerBound { name = "gdk-pixbuf", lower = [2,38,0] }
                   ]
+      , pkgBuildDeps = [ prelude.lowerBound { name = "pkg-config", lower = [0,16] } ]
       }
 in
 
@@ -759,6 +761,37 @@ let pango =
                   , prelude.unbounded "fribidi"
                   ]
       }
+in
+
+let gdk-pixbuf =
+  λ(x : { version : List Natural, patch : Natural }) →
+    let versionString = prelude.showVersion x.version
+    in
+    let fullVersion = versionString ++ "." ++ Natural/show x.patch
+    in
+
+    prelude.simplePackage { name = "gdk-pixbuf", version = prelude.fullVersion x } ⫽
+      { pkgUrl = "http://ftp.gnome.org/pub/GNOME/sources/gdk-pixbuf/${versionString}/gdk-pixbuf-${fullVersion}.tar.xz"
+      , configureCommand = prelude.mesonConfigure
+      , buildCommand = prelude.ninjaBuild
+      , installCommand = prelude.ninjaInstall
+      , pkgDeps = [ prelude.unbounded "glib"
+                  , prelude.unbounded "libjpeg-turbo"
+                  , prelude.unbounded "libpng"
+                  , prelude.unbounded "gobject-introspection"
+                  -- , prelude.unbounded "share-mime-info"
+                  ]
+      }
+in
+
+let xmlParser =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "XML-Parser", version = v } ⫽
+     { pkgUrl = "https://cpan.metacpan.org/authors/id/T/TO/TODDR/XML-Parser-${prelude.showVersion v}.tar.gz"
+     , configureCommand = prelude.perlConfigure
+     , pkgBuildDeps = [ prelude.unbounded "perl" ]
+     , pkgDeps = [ prelude.unbounded "expat" ]
+     }
 in
 
 let meson =
@@ -868,9 +901,13 @@ let glib =
     prelude.simplePackage { name = "glib", version = prelude.fullVersion x } ⫽
       { pkgUrl = "http://ftp.gnome.org/pub/gnome/sources/glib/${versionString}/glib-${fullVersion}.tar.xz"
       , configureCommand = prelude.mesonConfigureWithFlags [ "-Dselinux=false" ]
-      , buildCommand = prelude.ninjaBuild
+      , buildCommand =
+        λ(cfg : types.BuildVars) →
+          prelude.ninjaBuild cfg
+            # prelude.mkExes [ "build/gobject/glib-mkenums", "build/gobject/glib-genmarshal" ]
       , installCommand =
           prelude.ninjaInstallWithPkgConfig [ { src = "build/meson-private/glib-2.0.pc", dest = "lib/pkgconfig/glib-2.0.pc" } ]
+      , pkgDeps = [ prelude.unbounded "pcre" ]
       , pkgBuildDeps = [ prelude.unbounded "meson"
                        , prelude.unbounded "ninja"
                        ]
@@ -900,6 +937,7 @@ let atk =
 
     prelude.simplePackage { name = "atk", version = prelude.fullVersion x } ⫽
       { pkgUrl = "https://ftp.gnome.org/pub/gnome/sources/atk/${versionString}/atk-${fullVersion}.tar.xz"
+      -- , pkgDeps = [ prelude.unbounded "glib" ]
       }
 in
 
@@ -1129,6 +1167,7 @@ in
 , gawk [4,2,1]
 , gc [8,0,0]
 , gdb [8,2]
+, gdk-pixbuf { version = [2,38], patch = 0 }
 , gettext [0,19,8]
 , gperf [3,1]
 , giflib [5,1,4]
@@ -1186,12 +1225,14 @@ in
 , pcre [8,42]
 , pcre2 [10,32]
 , perl5 [5,28,1]
+-- , perl5 [5,24,4]
 , pixman [0,36,0]
 , pkg-config [0,29,2]
 , qrencode [4,0,2]
 , re2c [1,1,1]
 , readline [7,0]
 , sdl2 [2,0,9]
+, shared-mime-info [1,10]
 , sed [4,5]
 , tar [1,30]
 , unistring [0,9,10]
@@ -1200,6 +1241,7 @@ in
 , wget [1,20]
 , which [2,21]
 , xcb-proto [1,13]
+, xmlParser [2,44]
 , xz [5,2,4]
 , zbar [0,10]
 , zlib [1,2,11]

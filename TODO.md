@@ -33,11 +33,13 @@
 - [ ] `test` should map to commands such as `make check`; should not be run when
   cross-compiling
 - [ ] `wrap-cabal` subcommand to wrap cabal with a given set of packages?
+- [ ] `pkgRuntimeDeps` field?
 # Performance
 - [ ] Dhall is slow
 # Bugs
 - [ ] Shouldn't be able to `cpkg dump compiler sed` since it provides no
   libraries
+- [ ] Figure out `ACLOCAL_PATH` and force it to use local m4
 - [ ] Fails when symlink already exists
 - [ ] Cross-compile shouldn't symlink
 - [ ] Don't rebuild `ncurses` when rebuilding `vim` with `lua` - `ncurses`
