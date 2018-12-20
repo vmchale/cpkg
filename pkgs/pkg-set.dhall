@@ -743,7 +743,10 @@ let libXrender =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libXrender", version = v } ⫽
       { pkgUrl = "https://www.x.org/releases/X11R7.7/src/lib/libXrender-${prelude.showVersion v}.tar.bz2"
-      , pkgDeps = [ prelude.unbounded "xproto" ]
+      , pkgDeps = [ prelude.unbounded "xproto"
+                  , prelude.unbounded "renderproto"
+                  -- TODO: should this depend on X11?
+                  ]
       }
 in
 
@@ -751,6 +754,12 @@ let xproto =
   λ(v : List Natural) →
     prelude.simplePackage { name = "xproto", version = v } ⫽
       { pkgUrl = "https://www.x.org/releases/X11R7.7/src/proto/xproto-${prelude.showVersion v}.tar.bz2" }
+in
+
+let renderproto =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "renderproto", version = v } ⫽
+      { pkgUrl = "https://www.x.org/releases/X11R7.7/src/proto/renderproto-${prelude.showVersion v}.tar.bz2" }
 in
 
 let pango =
@@ -1261,6 +1270,7 @@ in
 , qrencode [4,0,2]
 , re2c [1,1,1]
 , readline [7,0]
+, renderproto [0,11,1]
 , sdl2 [2,0,9]
 , sed [4,5]
 , tar [1,30]
