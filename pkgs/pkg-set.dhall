@@ -1232,7 +1232,6 @@ in
 , re2c [1,1,1]
 , readline [7,0]
 , sdl2 [2,0,9]
-, shared-mime-info [1,10]
 , sed [4,5]
 , tar [1,30]
 , unistring [0,9,10]
