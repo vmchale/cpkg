@@ -415,20 +415,29 @@ let mkPyPath =
     { var = "PYTHONPATH", value = flag }
 in
 
-let mesonConfigure =
+let mesonConfigureWithFlags =
+  λ(flags : List Text) →
   λ(cfg : types.BuildVars) →
 
     [ createDir "build"
     , call { program = "meson"
-           , arguments = [ "--prefix=${cfg.installDir}", ".." ]
+           , arguments = [ "--prefix=${cfg.installDir}", ".." ] # flags
            , environment = Some [ mkPkgConfigVar cfg.linkDirs
                                 , { var = "PATH", value = mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
                                 , mkPyPath cfg.linkDirs
+                                , mkLDPath cfg.linkDirs
+                                , mkLDFlags cfg.linkDirs
+                                , mkCFlags cfg.includeDirs
+                                , mkPkgConfigVar cfg.linkDirs
                                 ]
            , procDir = Some "build"
            }
     ]
 
+in
+
+let mesonConfigure =
+  mesonConfigureWithFlags ([] : List Text)
 in
 
 let ninjaBuild =
@@ -437,6 +446,10 @@ let ninjaBuild =
                           , environment = Some [ mkPkgConfigVar cfg.linkDirs
                                                , { var = "PATH", value = mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
                                                , mkPyPath cfg.linkDirs
+                                               , mkLDPath cfg.linkDirs
+                                               , mkLDFlags cfg.linkDirs
+                                               , mkCFlags cfg.includeDirs
+                                               , mkPkgConfigVar cfg.linkDirs
                                                ]
                           , procDir = Some "build" }) ]
 in
@@ -447,6 +460,10 @@ let ninjaInstall =
                           , environment = Some [ mkPkgConfigVar cfg.linkDirs
                                                , { var = "PATH", value = mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
                                                , mkPyPath cfg.linkDirs
+                                               , mkLDPath cfg.linkDirs
+                                               , mkLDFlags cfg.linkDirs
+                                               , mkCFlags cfg.includeDirs
+                                               , mkPkgConfigVar cfg.linkDirs
                                                ]
                           , arguments = [ "install" ]
                           , procDir = Some "build"
@@ -515,6 +532,7 @@ in
 , mkPkgConfigVar      = mkPkgConfigVar
 , fullVersion         = fullVersion
 , mesonConfigure      = mesonConfigure
+, mesonConfigureWithFlags = mesonConfigureWithFlags
 , ninjaBuild          = ninjaBuild
 , ninjaInstall        = ninjaInstall
 , ninjaInstallWithPkgConfig = ninjaInstallWithPkgConfig

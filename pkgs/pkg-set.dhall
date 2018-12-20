@@ -867,11 +867,10 @@ let glib =
 
     prelude.simplePackage { name = "glib", version = prelude.fullVersion x } ⫽
       { pkgUrl = "http://ftp.gnome.org/pub/gnome/sources/glib/${versionString}/glib-${fullVersion}.tar.xz"
-      , configureCommand = prelude.mesonConfigure
+      , configureCommand = prelude.mesonConfigureWithFlags [ "-Dselinux=false" ]
       , buildCommand = prelude.ninjaBuild
       , installCommand =
           prelude.ninjaInstallWithPkgConfig [ { src = "build/meson-private/glib-2.0.pc", dest = "lib/pkgconfig/glib-2.0.pc" } ]
-      , pkgDeps = [ prelude.unbounded "libselinux" ]
       , pkgBuildDeps = [ prelude.unbounded "meson"
                        , prelude.unbounded "ninja"
                        ]
