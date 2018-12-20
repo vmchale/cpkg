@@ -857,17 +857,8 @@ let fontconfig =
       { pkgUrl = "https://www.freedesktop.org/software/fontconfig/release/fontconfig-${prelude.showVersion v}.tar.bz2"
       , pkgDeps = [ prelude.unbounded "freetype"
                   , prelude.unbounded "expat"
-                  , prelude.unbounded "libuuid"
                   ]
       , pkgBuildDeps = [ prelude.unbounded "gperf" ]
-      }
-in
-
-let libuuid =
-  λ(v : List Natural) →
-    prelude.simplePackage { name = "libuuid", version = v } ⫽
-      { pkgUrl = "https://managedway.dl.sourceforge.net/project/libuuid/libuuid-${prelude.showVersion v}.tar.gz"
-      , pkgDeps = [ prelude.unbounded "util-linux" ]
       }
 in
 
@@ -1224,7 +1215,6 @@ in
 , libssh2 [1,8,0]
 , libtasn1 [4,13]
 , libtool [2,4,6]
-, libuuid [1,0,3]
 , libuv [1,24,0]
 , libx11 [1,5,0]
 , libxcb [1,13]
