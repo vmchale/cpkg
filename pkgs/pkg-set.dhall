@@ -677,6 +677,7 @@ let freetype =
     prelude.simplePackage { name = "freetype", version = v } ⫽
       { pkgUrl = "https://download.savannah.gnu.org/releases/freetype/freetype-${prelude.showVersion v}.tar.gz"
       , configureCommand = prelude.configureMkExes [ "builds/unix/configure" ]
+      , pkgDeps = [ prelude.unbounded "zlib" ]
       -- TODO: figure out circular situation with harfbuzz/freetype
       -- ideally have a freetype-prebuild package?
       }
@@ -759,6 +760,7 @@ let pango =
       , pkgDeps = [ prelude.unbounded "fontconfig"
                   , prelude.unbounded "cairo"
                   , prelude.unbounded "fribidi"
+                  , prelude.unbounded "harfbuzz"
                   ]
       }
 in
@@ -855,9 +857,27 @@ let fontconfig =
       { pkgUrl = "https://www.freedesktop.org/software/fontconfig/release/fontconfig-${prelude.showVersion v}.tar.bz2"
       , pkgDeps = [ prelude.unbounded "freetype"
                   , prelude.unbounded "expat"
+                  , prelude.unbounded "libuuid"
                   ]
       , pkgBuildDeps = [ prelude.unbounded "gperf" ]
       }
+in
+
+let libuuid =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libuuid", version = v } ⫽
+      { pkgUrl = "https://managedway.dl.sourceforge.net/project/libuuid/libuuid-${prelude.showVersion v}.tar.gz"
+      , pkgDeps = [ prelude.unbounded "util-linux" ]
+      }
+in
+
+let util-linux =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+      prelude.simplePackage { name = "util-linux", version = v } ⫽
+        { pkgUrl = "https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v${versionString}/util-linux-${versionString}.tar.xz"
+        , configureCommand = prelude.configureWithFlags [ "--disable-makeinstall-chown", "--disable-bash-completion" ]
+        }
 in
 
 let fribidi =
@@ -906,11 +926,13 @@ let glib =
           prelude.ninjaBuild cfg
             # prelude.mkExes [ "build/gobject/glib-mkenums", "build/gobject/glib-genmarshal" ]
       , installCommand =
-          prelude.ninjaInstallWithPkgConfig [ { src = "build/meson-private/glib-2.0.pc", dest = "lib/pkgconfig/glib-2.0.pc" } ]
-      , pkgDeps = [ prelude.unbounded "pcre" ]
+          prelude.ninjaInstallWithPkgConfig [ { src = "build/meson-private/glib-2.0.pc", dest = "lib/pkgconfig/glib-2.0.pc" }
+                                            , { src = "build/meson-private/gobject-2.0.pc", dest = "lib/pkgconfig/gobject-2.0.pc" }
+                                            ]
       , pkgBuildDeps = [ prelude.unbounded "meson"
                        , prelude.unbounded "ninja"
                        ]
+      , pkgDeps = [ prelude.unbounded "pcre" ]
       }
 in
 
@@ -1202,6 +1224,7 @@ in
 , libssh2 [1,8,0]
 , libtasn1 [4,13]
 , libtool [2,4,6]
+, libuuid [1,0,3]
 , libuv [1,24,0]
 , libx11 [1,5,0]
 , libxcb [1,13]
@@ -1235,6 +1258,7 @@ in
 , sed [4,5]
 , tar [1,30]
 , unistring [0,9,10]
+, util-linux [2,33]
 , valgrind [3,14,0]
 , vim [8,1]
 , wget [1,20]

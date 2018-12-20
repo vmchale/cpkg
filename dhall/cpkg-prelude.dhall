@@ -185,6 +185,14 @@ let mkLDPath =
     { var = "LD_LIBRARY_PATH", value = flag }
 in
 
+let mkIncludePath =
+  λ(incls : List Text) →
+    let flag = concatMapSep ":" Text (λ(dir : Text) → dir) incls
+    in
+
+    { var = "C_INCLUDE_PATH", value = flag }
+in
+
 let mkCFlags =
   λ(libDirs : List Text) →
     let flag = concatMapSep " " Text (λ(dir : Text) → "-I${dir}") libDirs
@@ -529,6 +537,7 @@ in
 , mkCFlags            = mkCFlags
 , mkLDFlags           = mkLDFlags
 , mkLDPath            = mkLDPath
+, mkIncludePath       = mkIncludePath
 , isUnix              = isUnix
 , defaultPath         = defaultPath
 , simplePackage       = simplePackage

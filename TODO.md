@@ -46,6 +46,7 @@
   does not depend on lua so its hash/include dirs should not be changed
 - [ ] If X depends on Y, Z and Y depends on Z, then it will not link things
   correctly...
+- [ ] Figure out `PERL5LIB` variable
 # Deficiencies
 - [ ] `mkExe` and `makeExe` are too similar
 - [ ] Cache package downloads globally
@@ -77,6 +78,8 @@
 - [ ] libexif
 - [ ] LibTIFF
 - [ ] FFmpeg
+- [ ] shared-mime-info
+- [ ] intltool
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in
