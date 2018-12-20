@@ -739,6 +739,20 @@ let gtk2 =
       }
 in
 
+let libXrender =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libXrender", version = v } ⫽
+      { pkgUrl = "https://www.x.org/releases/X11R7.7/src/lib/libXrender-${prelude.showVersion v}.tar.bz2"
+      , pkgDeps = [ prelude.unbounded "xproto" ]
+      }
+in
+
+let xproto =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "xproto", version = v } ⫽
+      { pkgUrl = "https://www.x.org/releases/X11R7.7/src/proto/xproto-${prelude.showVersion v}.tar.bz2" }
+in
+
 let pango =
   λ(x : { version : List Natural, patch : Natural }) →
     let versionString = prelude.showVersion x.version
@@ -761,6 +775,7 @@ let pango =
                   , prelude.unbounded "cairo"
                   , prelude.unbounded "fribidi"
                   , prelude.unbounded "harfbuzz"
+                  , prelude.unbounded "libXrender"
                   ]
       }
 in
@@ -857,6 +872,7 @@ let fontconfig =
       { pkgUrl = "https://www.freedesktop.org/software/fontconfig/release/fontconfig-${prelude.showVersion v}.tar.bz2"
       , pkgDeps = [ prelude.unbounded "freetype"
                   , prelude.unbounded "expat"
+                  , prelude.unbounded "util-linux"
                   ]
       , pkgBuildDeps = [ prelude.unbounded "gperf" ]
       }
@@ -1224,6 +1240,7 @@ in
 , libXinerama [1,1,4]
 , libXScrnSaver [1,2,3]
 , libXrandr [1,5,1]
+, libXrender [0,9,7]
 , lua [5,3,5]
 , m4 [1,4,18]
 , meson [0,49,0]
@@ -1255,6 +1272,7 @@ in
 , which [2,21]
 , xcb-proto [1,13]
 , xmlParser [2,44]
+, xproto [7,0,23]
 , xz [5,2,4]
 , zbar [0,10]
 , zlib [1,2,11]
