@@ -764,16 +764,19 @@ let libXrender =
       }
 in
 
-let xproto =
+let mkXProto =
+  λ(name : Text) →
   λ(v : List Natural) →
-    prelude.simplePackage { name = "xproto", version = v } ⫽
-      { pkgUrl = "https://www.x.org/archive/individual/proto/xproto-${prelude.showVersion v}.tar.bz2" }
+    prelude.simplePackage { name = name, version = v } ⫽
+      { pkgUrl = "https://www.x.org/releases/individual/proto/${name}-${prelude.showVersion v}.tar.bz2" }
+in
+
+let xproto =
+  mkXProto "xproto"
 in
 
 let renderproto =
-  λ(v : List Natural) →
-    prelude.simplePackage { name = "renderproto", version = v } ⫽
-      { pkgUrl = "https://www.x.org/archive/individual/proto/renderproto-${prelude.showVersion v}.tar.bz2" }
+  mkXProto "renderProto"
 in
 
 let pango =
@@ -1157,13 +1160,6 @@ let mkXLib =
   λ(v : List Natural) →
     prelude.simplePackage { name = name, version = v } ⫽
       { pkgUrl = "https://www.x.org/releases/individual/lib/${name}-${prelude.showVersion v}.tar.bz2" }
-in
-
-let mkXProto =
-  λ(name : Text) →
-  λ(v : List Natural) →
-    prelude.simplePackage { name = name, version = v } ⫽
-      { pkgUrl = "https://www.x.org/releases/individual/proto/${name}-${prelude.showVersion v}.tar.bz2" }
 in
 
 let kbproto =
