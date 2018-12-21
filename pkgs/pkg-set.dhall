@@ -825,10 +825,7 @@ let shared-mime-info =
                                                 , environment = Some (prelude.defaultPath cfg # [ prelude.mkLDPath cfg.linkDirs ])
                                                 })
           ]
-     , installCommand =
-        λ(cfg : types.BuildVars) →
-          prelude.defaultInstall cfg
-            # prelude.copyFiles [ { src = "shared-mime-info.pc", dest = "lib/pkgconfig/shared-mime-info.pc" } ]
+     , installCommand = prelude.installWithPkgConfig [ "shared-mime-info.pc" ]
      , pkgDeps = [ prelude.unbounded "glib"
                  , prelude.unbounded "libxml2"
                  ]
@@ -866,7 +863,7 @@ let gdk-pixbuf =
       , configureCommand = prelude.mesonConfigure
       , buildCommand = prelude.ninjaBuild
       , installCommand =
-          prelude.ninjaInstallWithPkgConfig [ { src = "build/meson-private/gdk-pixbuf-2.0.pc", dest = "lib/pkgconfig/gdk-pixbuf-2.0.pc" } ]
+          prelude.ninjaInstallWithPkgConfig (prelude.mesonMoves [ "gdk-pixbuf-2.0.pc" ])
       , pkgDeps = [ prelude.unbounded "glib"
                   , prelude.unbounded "libjpeg-turbo"
                   , prelude.unbounded "libpng"
@@ -1186,11 +1183,7 @@ in
 let xtrans =
   λ(v : List Natural) →
     mkXLib "xtrans" v ⫽
-      { installCommand =
-        λ(cfg : types.BuildVars) →
-          prelude.defaultInstall cfg
-            # prelude.copyFiles [ { src = "xtrans.pc", dest = "lib/pkgconfig/xtrans.pc" } ]
-      }
+      { installCommand = prelude.installWithPkgConfig [ "xtrans.pc" ] }
 in
 
 let libXrandr =

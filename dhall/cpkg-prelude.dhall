@@ -520,6 +520,13 @@ let mesonMoves =
   map Text { src : Text, dest : Text} (λ(pcFile : Text) → { src = "build/meson-private/${pcFile}", dest = "lib/pkgconfig/${pcFile}" })
 in
 
+let installWithPkgConfig =
+  λ(xs : List Text) →
+  λ(cfg : types.BuildVars) →
+    defaultInstall cfg
+      # copyFiles (map Text { src : Text, dest : Text} (λ(pcFile : Text) → { src = pcFile, dest = "lib/pkgconfig/${pcFile}" }) xs)
+in
+
 { showVersion         = showVersion
 , makeGnuLibrary      = makeGnuLibrary
 , makeGnuExe          = makeGnuExe
@@ -577,4 +584,5 @@ in
 , copyFiles           = copyFiles
 , mkPerlLib           = mkPerlLib
 , mesonMoves          = mesonMoves
+, installWithPkgConfig = installWithPkgConfig
 }
