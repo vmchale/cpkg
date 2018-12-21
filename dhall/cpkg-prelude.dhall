@@ -249,7 +249,7 @@ let configureWithFlags =
 in
 
 let defaultConfigure =
-  defaultConfigure ([] : List Text)
+  configureWithFlags ([] : List Text)
 in
 
 let bigConfigure =
