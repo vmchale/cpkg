@@ -244,12 +244,12 @@ let generalConfigure =
     ]
 in
 
-let defaultConfigure =
-  generalConfigure "configure" ([] : List Text)
+let configureWithFlags =
+  generalConfigure "configure"
 in
 
-let configureWithFlags =
-    generalConfigure "configure"
+let defaultConfigure =
+  defaultConfigure ([] : List Text)
 in
 
 let bigConfigure =

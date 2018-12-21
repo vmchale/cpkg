@@ -818,6 +818,9 @@ let shared-mime-info =
   λ(v : List Natural) →
     prelude.simplePackage { name = "shared-mime-info", version = v } ⫽
      { pkgUrl = "http://freedesktop.org/~hadess/shared-mime-info-${prelude.showVersion v}.tar.xz"
+     , buildCommand =
+        λ(cfg : types.BuildVars) →
+          [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS }) ]
      , pkgDeps = [ prelude.unbounded "glib"
                  , prelude.unbounded "libxml2"
                  ]
@@ -987,8 +990,8 @@ let glib =
       , pkgBuildDeps = [ prelude.unbounded "meson"
                        , prelude.unbounded "ninja"
                        ]
-      , pkgDeps = [ prelude.unbounded "pcre"
-                  , prelude.unbounded "util-linux"
+      , pkgDeps = [ prelude.unbounded "util-linux"
+                  , prelude.unbounded "pcre" -- >= 8.31
                   ]
       }
 in
