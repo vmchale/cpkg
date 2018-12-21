@@ -808,7 +808,10 @@ in
 let libxml2 =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libxml2", version = v } ⫽
-     { pkgUrl = "http://xmlsoft.org/sources/libxml2-${prelude.showVersion v}.tar.gz" }
+     { pkgUrl = "http://xmlsoft.org/sources/libxml2-${prelude.showVersion v}.tar.gz"
+     , configureCommand = prelude.configureWithFlags [ "--without-python" ]
+     }
+     -- TODO intltool-update should be patched/packaged
 in
 
 let shared-mime-info =
