@@ -754,10 +754,10 @@ in
 let libXrender =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libXrender", version = v } ⫽
-      { pkgUrl = "https://www.x.org/releases/X11R7.7/src/lib/libXrender-${prelude.showVersion v}.tar.bz2"
+      { pkgUrl = "https://www.x.org/archive/individual/lib/libXrender-${prelude.showVersion v}.tar.bz2"
       , pkgDeps = [ prelude.unbounded "xproto"
                   , prelude.unbounded "renderproto"
-                  -- TODO: should this depend on X11?
+                  , prelude.unbounded "libx11"
                   ]
       }
 in
@@ -765,13 +765,13 @@ in
 let xproto =
   λ(v : List Natural) →
     prelude.simplePackage { name = "xproto", version = v } ⫽
-      { pkgUrl = "https://www.x.org/releases/X11R7.7/src/proto/xproto-${prelude.showVersion v}.tar.bz2" }
+      { pkgUrl = "https://www.x.org/archive/individual/proto/xproto-${prelude.showVersion v}.tar.bz2" }
 in
 
 let renderproto =
   λ(v : List Natural) →
     prelude.simplePackage { name = "renderproto", version = v } ⫽
-      { pkgUrl = "https://www.x.org/releases/X11R7.7/src/proto/renderproto-${prelude.showVersion v}.tar.bz2" }
+      { pkgUrl = "https://www.x.org/archive/individual/proto/renderproto-${prelude.showVersion v}.tar.bz2" }
 in
 
 let pango =
@@ -1067,6 +1067,7 @@ let libxcb =
       , pkgDeps = [ prelude.lowerBound { name = "xcb-proto", lower = [1,13] }
                   , prelude.unbounded "libXau"
                   , prelude.unbounded "libpthread-stubs"
+                  , prelude.unbounded "libXdmcp"
                   ]
       }
 in
@@ -1075,20 +1076,34 @@ let libpthread-stubs =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libpthread-stubs", version = v } ⫽
       -- TODO: mkXLib function?
-      { pkgUrl = "https://www.x.org/releases/X11R7.7/src/xcb/libpthread-stubs-${prelude.showVersion v}.tar.bz2" }
+      { pkgUrl = "https://www.x.org/archive/individual/xcb/libpthread-stubs-${prelude.showVersion v}.tar.bz2" }
+in
+
+let libXdmcp =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libXdmcp", version = v } ⫽
+      { pkgUrl = "https://www.x.org/archive/individual/lib/libXdmcp-${prelude.showVersion v}.tar.bz2" }
 in
 
 let libXau =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libXau", version = v } ⫽
-      { pkgUrl = "https://www.x.org/releases/X11R7.7/src/lib/libXau-${prelude.showVersion v}.tar.bz2" }
+      { pkgUrl = "https://www.x.org/archive/individual/lib/libXau-${prelude.showVersion v}.tar.bz2" }
+in
+
+let kbproto =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "kbproto", version = v } ⫽
+      { pkgUrl = "https://www.x.org/archive/individual/proto/kbproto-${prelude.showVersion v}.tar.bz2" }
 in
 
 let libx11 =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libx11", version = v } ⫽
-      { pkgUrl = "https://www.x.org/releases/X11R7.7/src/lib/libX11-${prelude.showVersion v}.tar.bz2"
-      , pkgDeps = [ prelude.unbounded "libxcb" ]
+      { pkgUrl = "https://www.x.org/archive/individual/lib/libX11-${prelude.showVersion v}.tar.bz2"
+      , pkgDeps = [ prelude.unbounded "libxcb"
+                  , prelude.unbounded "kbproto"
+                  ]
       , pkgSubdir = "libX11-${prelude.showVersion v}"
       }
 in
@@ -1251,6 +1266,7 @@ in
 , python [3,7,1]
 , lapack [3,8,0]
 , jpegTurbo [2,0,1]
+, kbproto [1,0,7]
 , libassuan [2,5,1]
 , libatomic_ops [7,6,8]
 , libffi [3,2,1]
@@ -1258,7 +1274,7 @@ in
 , libgpgError [1,32]
 , libksba [1,3,5]
 , libpng [1,6,35]
-, libpthread-stubs [0,3]
+, libpthread-stubs [0,4]
 , libnettle [3,4,1]
 , libselinux [2,8]
 , libsepol [2,8]
@@ -1266,15 +1282,16 @@ in
 , libtasn1 [4,13]
 , libtool [2,4,6]
 , libuv [1,24,0]
-, libx11 [1,5,0]
+, libx11 [1,6,7]
 , libxcb [1,13]
 , libxft [2,3,2]
-, libXau [1,0,7]
+, libXau [1,0,8]
+, libXdmcp [1,1,2]
 , libXext [1,3,3]
 , libXinerama [1,1,4]
 , libXScrnSaver [1,2,3]
 , libXrandr [1,5,1]
-, libXrender [0,9,7]
+, libXrender [0,9,10]
 , lua [5,3,5]
 , m4 [1,4,18]
 , meson [0,49,0]
@@ -1307,7 +1324,7 @@ in
 , which [2,21]
 , xcb-proto [1,13]
 , xmlParser [2,44]
-, xproto [7,0,23]
+, xproto [7,0,31]
 , xz [5,2,4]
 , zbar [0,10]
 , zlib [1,2,11]
