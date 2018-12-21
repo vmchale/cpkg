@@ -1164,7 +1164,7 @@ let libXext =
       { pkgUrl = "https://www.x.org/releases/individual/lib/libXext-${prelude.showVersion v}.tar.bz2"
       , pkgDeps = [ prelude.lowerBound { name = "xextproto", lower = [7,1,99] }
                   , prelude.lowerBound { name = "xproto", lower = [7,0,13] }
-                  , prelude.lowerBound { name = "x11", lower = [1,6] }
+                  , prelude.lowerBound { name = "libx11", lower = [1,6] }
                   ]
       }
 in
