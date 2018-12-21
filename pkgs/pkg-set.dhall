@@ -1182,12 +1182,12 @@ let libx11 =
 in
 
 let inputproto =
-  mkXProto "inputproto" v
+  mkXProto "inputproto"
 in
 
 let xtrans =
   λ(v : List Natural) →
-    mkXLib "xtrans" ⫽
+    mkXLib "xtrans" v ⫽
       { installCommand =
         λ(cfg : types.BuildVars) →
           prelude.defaultInstall cfg
