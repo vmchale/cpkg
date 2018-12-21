@@ -816,12 +816,14 @@ let gdk-pixbuf =
       { pkgUrl = "http://ftp.gnome.org/pub/GNOME/sources/gdk-pixbuf/${versionString}/gdk-pixbuf-${fullVersion}.tar.xz"
       , configureCommand = prelude.mesonConfigure
       , buildCommand = prelude.ninjaBuild
-      , installCommand = prelude.ninjaInstall
+      , installCommand =
+          prelude.ninjaInstallWithPkgConfig [ { src = "build/meson-private/gdk-pixbuf-2.0.pc", dest = "lib/pkgconfig/gdk-pixbuf-2.0.pc" } ]
       , pkgDeps = [ prelude.unbounded "glib"
                   , prelude.unbounded "libjpeg-turbo"
                   , prelude.unbounded "libpng"
                   , prelude.unbounded "gobject-introspection"
                   -- , prelude.unbounded "share-mime-info"
+                  -- TODO: gobject >= 2.38.0
                   ]
       }
 in
