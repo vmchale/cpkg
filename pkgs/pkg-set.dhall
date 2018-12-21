@@ -749,7 +749,7 @@ let gtk2 =
                   , prelude.lowerBound { name = "glib", lower = [2,28,0] }
                   , prelude.lowerBound { name = "gdk-pixbuf", lower = [2,38,0] }
                   ]
-      , pkgBuildDeps = [ prelude.lowerBound { name = "pkg-config", lower = [0,16] } ]
+      -- , pkgBuildDeps = [ prelude.lowerBound { name = "pkg-config", lower = [0,16] } ]
       }
 in
 
@@ -1162,7 +1162,10 @@ let libXext =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libXext", version = v } ⫽
       { pkgUrl = "https://www.x.org/releases/individual/lib/libXext-${prelude.showVersion v}.tar.bz2"
-      , pkgDeps = [ prelude.unbounded "xextproto" ]
+      , pkgDeps = [ prelude.lowerBound { name = "xextproto", lower = [7,1,99] }
+                  , prelude.lowerBound { name = "xproto", lower = [7,0,13] }
+                  , prelude.lowerBound { name = "x11", lower = [1,6] }
+                  ]
       }
 in
 
