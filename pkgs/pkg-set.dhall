@@ -962,6 +962,7 @@ let glib =
       , installCommand =
           prelude.ninjaInstallWithPkgConfig [ { src = "build/meson-private/glib-2.0.pc", dest = "lib/pkgconfig/glib-2.0.pc" }
                                             , { src = "build/meson-private/gobject-2.0.pc", dest = "lib/pkgconfig/gobject-2.0.pc" }
+                                            , { src = "build/meson-private/gio-2.0.pc", dest = "lib/pkgconfig/gio-2.0.pc" }
                                             , { src = "build/meson-private/gmodule-no-export-2.0.pc", dest = "lib/pkgconfig/gmodule-no-export-2.0.pc" }
                                             ]
       , pkgBuildDeps = [ prelude.unbounded "meson"
