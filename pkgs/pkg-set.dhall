@@ -993,6 +993,8 @@ let glib =
                                             , { src = "build/meson-private/gobject-2.0.pc", dest = "lib/pkgconfig/gobject-2.0.pc" }
                                             , { src = "build/meson-private/gio-2.0.pc", dest = "lib/pkgconfig/gio-2.0.pc" }
                                             , { src = "build/meson-private/gmodule-no-export-2.0.pc", dest = "lib/pkgconfig/gmodule-no-export-2.0.pc" }
+                                            , { src = "build/meson-private/gmodule-2.0.pc", dest = "lib/pkgconfig/gmodule-2.0.pc" }
+                                            , { src = "build/meson-private/gthread-2.0.pc", dest = "lib/pkgconfig/gthread-2.0.pc" }
                                             ]
       , pkgBuildDeps = [ prelude.unbounded "meson"
                        , prelude.unbounded "ninja"
