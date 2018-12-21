@@ -1178,22 +1178,23 @@ let inputproto =
       { pkgUrl = "https://www.x.org/archive/individual/proto/inputproto-${prelude.showVersion v}.tar.bz2" }
 in
 
-let xtrans =
+let mkXLib =
+  λ(name : Text) →
   λ(v : List Natural) →
-    prelude.simplePackage { name = "xtrans", version = v } ⫽
-      { pkgUrl = "https://www.x.org/archive/individual/lib/xtrans-${prelude.showVersion v}.tar.bz2" }
+    prelude.simplePackage { name = name, version = v } ⫽
+      { pkgUrl = "https://www.x.org/releases/individual/lib/${name}-${prelude.showVersion v}.tar.bz2" }
+in
+
+let xtrans =
+  mkXLib "xtrans"
 in
 
 let libXrandr =
-  λ(v : List Natural) →
-    prelude.simplePackage { name = "libXrandr", version = v } ⫽
-      { pkgUrl = "https://www.x.org/releases/individual/lib/libXrandr-${prelude.showVersion v}.tar.bz2" }
+  mkXLib "libXrandr"
 in
 
 let libXinerama =
-  λ(v : List Natural) →
-    prelude.simplePackage { name = "libXinerama", version = v } ⫽
-      { pkgUrl = "https://www.x.org/releases/individual/lib/libXinerama-${prelude.showVersion v}.tar.bz2" }
+  mkXLib "libXinerama"
 in
 
 let libXext =
@@ -1214,9 +1215,7 @@ let xextproto =
 in
 
 let libXScrnSaver =
-  λ(v : List Natural) →
-    prelude.simplePackage { name = "libXScrnSaver", version = v } ⫽
-      { pkgUrl = "https://www.x.org/releases/individual/lib/libXScrnSaver-${prelude.showVersion v}.tar.bz2" }
+  mkXLib "libXScrnSaver"
 in
 
 let bzip2 =
