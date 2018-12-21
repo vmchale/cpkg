@@ -797,6 +797,7 @@ let pango =
                   , prelude.unbounded "fribidi"
                   , prelude.unbounded "harfbuzz"
                   , prelude.unbounded "libXrender"
+                  , prelude.unbounded "libxcb"
                   ]
       }
 in
@@ -1065,8 +1066,16 @@ let libxcb =
       { pkgUrl = "https://xorg.freedesktop.org/archive/individual/xcb/libxcb-${prelude.showVersion v}.tar.bz2"
       , pkgDeps = [ prelude.lowerBound { name = "xcb-proto", lower = [1,13] }
                   , prelude.unbounded "libXau"
+                  , prelude.unbounded "libpthread-stubs"
                   ]
       }
+in
+
+let libpthread-stubs =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libpthread-stubs", version = v } ⫽
+      -- TODO: mkXLib function?
+      { pkgUrl = "https://www.x.org/releases/X11R7.7/src/xcb/libpthread-stubs-${prelude.showVersion v}.tar.bz2" }
 in
 
 let libXau =
@@ -1249,6 +1258,7 @@ in
 , libgpgError [1,32]
 , libksba [1,3,5]
 , libpng [1,6,35]
+, libpthread-stubs [0,3]
 , libnettle [3,4,1]
 , libselinux [2,8]
 , libsepol [2,8]
