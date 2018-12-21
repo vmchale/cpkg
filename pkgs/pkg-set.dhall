@@ -820,7 +820,10 @@ let shared-mime-info =
      { pkgUrl = "http://freedesktop.org/~hadess/shared-mime-info-${prelude.showVersion v}.tar.xz"
      , buildCommand =
         λ(cfg : types.BuildVars) →
-          [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS }) ]
+          [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
+                                                , environment = Some (prelude.defaultPath cfg # [ prelude.mkLDPath cfg.linkDirs ])
+                                                })
+          ]
      , pkgDeps = [ prelude.unbounded "glib"
                  , prelude.unbounded "libxml2"
                  ]
