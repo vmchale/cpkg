@@ -1191,7 +1191,7 @@ let xtrans =
       { installCommand =
         λ(cfg : types.BuildVars) →
           prelude.defaultInstall cfg
-            # prelude.copyFiles [ { src = "shared-mime-info.pc", dest = "lib/pkgconfig/shared-mime-info.pc" } ]
+            # prelude.copyFiles [ { src = "xtrans.pc", dest = "lib/pkgconfig/xtrans.pc" } ]
       }
 in
 
