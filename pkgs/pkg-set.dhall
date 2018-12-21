@@ -776,7 +776,7 @@ let xproto =
 in
 
 let renderproto =
-  mkXProto "renderProto"
+  mkXProto "renderproto"
 in
 
 let pango =
