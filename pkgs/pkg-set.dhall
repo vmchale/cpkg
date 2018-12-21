@@ -824,6 +824,10 @@ let shared-mime-info =
                                                 , environment = Some (prelude.defaultPath cfg # [ prelude.mkLDPath cfg.linkDirs ])
                                                 })
           ]
+     , installCommand =
+        λ(cfg : types.BuildVars) →
+          prelude.defaultInstall cfg
+            # prelude.copyFiles [ { src = "shared-mime-info.pc", dest = "lib/pkgconfig/shared-mime-info.pc" } ]
      , pkgDeps = [ prelude.unbounded "glib"
                  , prelude.unbounded "libxml2"
                  ]

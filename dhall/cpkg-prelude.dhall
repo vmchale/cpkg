@@ -562,4 +562,5 @@ in
 , ninjaInstallWithPkgConfig = ninjaInstallWithPkgConfig
 , doNothing           = doNothing
 , perlConfigure       = perlConfigure
+, copyFiles           = copyFiles
 }
