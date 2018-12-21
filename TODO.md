@@ -11,6 +11,7 @@
 - [ ] Use a more sensible monad
 - [ ] Stop being a mess
 # Features
+- [ ] Pass verbosity to configuration/build script
 - [ ] Constraint solver
 - [ ] Build/handle preprocessors
   - [ ] Don't try to use cross-compiler on preprocessors

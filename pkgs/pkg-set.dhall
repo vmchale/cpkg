@@ -1260,6 +1260,12 @@ let gperf =
       { pkgUrl = "http://ftp.gnu.org/pub/gnu/gperf/gperf-${prelude.showVersion v}.tar.gz" }
 in
 
+let coreutils =
+  λ(v : List Natural) →
+    prelude.makeGnuExe { name = "coreutils", version = v } ⫽
+      { installCommand = prelude.installWithBinaries [ "bin/install" ] }
+in
+
 let libsepol =
   let cc =
     λ(cfg : types.BuildVars) →
@@ -1321,6 +1327,7 @@ in
 , cairo [1,16,0]
 , chickenScheme [5,0,0]
 , cmake { version = [3,13], patch = 0 }
+, coreutils [8,30]
 , curl [7,62,0]
 , dbus [1,12,10]
 , emacs [25,3]
