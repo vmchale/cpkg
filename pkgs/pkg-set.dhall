@@ -453,9 +453,11 @@ let cairo =
   λ(v : List Natural) →
     prelude.simplePackage { name = "cairo", version = v } ⫽
      { pkgUrl = "https://www.cairographics.org/releases/cairo-${prelude.showVersion v}.tar.xz"
-     , pkgDeps = [ prelude.lowerBound { name = "pixman", lower = [0,3,0] }
-                 , prelude.unbounded "freetype"
-                 , prelude.unbounded "fontconfig"
+     , pkgDeps = [ prelude.lowerBound { name = "pixman", lower = [0,30,0] }
+                 , prelude.lowerBound { name = "freetype", lower = [9,7,3] }
+                 , prelude.lowerBound { name = "fontconfig", lower = [2,2,95] }
+                 , prelude.unbounded "libXext"
+                 -- TODO: gobject, glib >= 2.14, libpng, xcb, xrender, x11
                  ]
      }
 in
@@ -792,12 +794,13 @@ let pango =
       , pkgBuildDeps = [ prelude.lowerBound { name = "meson", lower = [0,48,0] }
                        , prelude.unbounded "gobject-introspection"
                        ]
-      , pkgDeps = [ prelude.unbounded "fontconfig"
-                  , prelude.unbounded "cairo"
-                  , prelude.unbounded "fribidi"
-                  , prelude.unbounded "harfbuzz"
+      , pkgDeps = [ prelude.unbounded "fontconfig" -- >= 2.11.91
+                  , prelude.unbounded "cairo" -- >= 1.12.10
+                  , prelude.unbounded "fribidi" -- >= 0.19.7
+                  , prelude.unbounded "harfbuzz" -- >= 1.4.2
                   , prelude.unbounded "libXrender"
                   , prelude.unbounded "libxcb"
+                  -- TODO: glib >= 2.38.0, gobject >= 2.38.0,
                   ]
       }
 in
@@ -1123,7 +1126,15 @@ in
 let libXext =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libXext", version = v } ⫽
-      { pkgUrl = "https://www.x.org/releases/individual/lib/libXext-${prelude.showVersion v}.tar.bz2" }
+      { pkgUrl = "https://www.x.org/releases/individual/lib/libXext-${prelude.showVersion v}.tar.bz2"
+      , pkgDeps = [ prelude.unbounded "xextproto" ]
+      }
+in
+
+let xextproto =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "xextproto", version = v } ⫽
+      { pkgUrl = "https://www.x.org/archive/individual/proto/xextproto-${prelude.showVersion v}.tar.bz2" }
 in
 
 let libXScrnSaver =
@@ -1323,6 +1334,7 @@ in
 , wget [1,20]
 , which [2,21]
 , xcb-proto [1,13]
+, xextproto [7,3,0]
 , xmlParser [2,44]
 , xproto [7,0,31]
 , xz [5,2,4]
