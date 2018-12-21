@@ -245,7 +245,9 @@ in
 let harfbuzz =
   λ(v : List Natural) →
     prelude.simplePackage { name = "harfbuzz", version = v } ⫽
-      { pkgUrl = "https://www.freedesktop.org/software/harfbuzz/release/harfbuzz-${prelude.showVersion v}.tar.bz2" }
+      { pkgUrl = "https://www.freedesktop.org/software/harfbuzz/release/harfbuzz-${prelude.showVersion v}.tar.bz2"
+      , pkgDeps = [ prelude.unbounded "freetype-prebuild" ]
+      }
 in
 
 let jpegTurbo =
@@ -672,14 +674,24 @@ let pixman =
       }
 in
 
+let freetype-prebuild =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "freetype-prebuild", version = v } ⫽
+      { pkgUrl = "https://download.savannah.gnu.org/releases/freetype/freetype-${prelude.showVersion v}.tar.gz"
+      , configureCommand = prelude.configureMkExes [ "builds/unix/configure" ]
+      , pkgDeps = [ prelude.unbounded "zlib" ]
+      , pkgSubdir = "freetype-${prelude.showVersion v}"
+      }
+in
+
 let freetype =
   λ(v : List Natural) →
     prelude.simplePackage { name = "freetype", version = v } ⫽
       { pkgUrl = "https://download.savannah.gnu.org/releases/freetype/freetype-${prelude.showVersion v}.tar.gz"
       , configureCommand = prelude.configureMkExes [ "builds/unix/configure" ]
-      , pkgDeps = [ prelude.unbounded "zlib" ]
-      -- TODO: figure out circular situation with harfbuzz/freetype
-      -- ideally have a freetype-prebuild package?
+      , pkgDeps = [ prelude.unbounded "zlib"
+                  , prelude.unbounded "harfbuzz"
+                  ]
       }
 in
 
@@ -948,7 +960,9 @@ let glib =
       , pkgBuildDeps = [ prelude.unbounded "meson"
                        , prelude.unbounded "ninja"
                        ]
-      , pkgDeps = [ prelude.unbounded "pcre" ]
+      , pkgDeps = [ prelude.unbounded "pcre"
+                  , prelude.unbounded "util-linux"
+                  ]
       }
 in
 
@@ -1200,6 +1214,7 @@ in
 , fontconfig [2,13,1]
 , flex [2,6,3]
 , fltk { version = [1,3,4], patch = 2 }
+, freetype-prebuild [2,9,1] -- TODO: force both to have same version?
 , freetype [2,9,1]
 , fribidi [1,0,5]
 , gawk [4,2,1]
