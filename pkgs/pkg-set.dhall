@@ -1164,9 +1164,24 @@ let libx11 =
       { pkgUrl = "https://www.x.org/archive/individual/lib/libX11-${prelude.showVersion v}.tar.bz2"
       , pkgDeps = [ prelude.unbounded "libxcb"
                   , prelude.unbounded "kbproto"
+                  , prelude.unbounded "xextproto"
+                  , prelude.unbounded "inputproto"
+                  , prelude.unbounded "xtrans"
                   ]
       , pkgSubdir = "libX11-${prelude.showVersion v}"
       }
+in
+
+let inputproto =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "inputproto", version = v } ⫽
+      { pkgUrl = "https://www.x.org/archive/individual/proto/inputproto-${prelude.showVersion v}.tar.bz2" }
+in
+
+let xtrans =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "xtrans", version = v } ⫽
+      { pkgUrl = "https://www.x.org/archive/individual/lib/xtrans-${prelude.showVersion v}.tar.bz2" }
 in
 
 let libXrandr =
@@ -1333,6 +1348,7 @@ in
 , harfbuzz [2,2,0]
 , imageMagick [7,0,8]
 , imageMagick [6,9,10]
+, inputproto [2,3,2]
 , intltool [0,51,0]
 , p11kit [0,23,14]
 , python [2,7,15]
@@ -1401,6 +1417,7 @@ in
 , xextproto [7,3,0]
 , xmlParser [2,44]
 , xproto [7,0,31]
+, xtrans [1,3,5]
 , xz [5,2,4]
 , zbar [0,10]
 , zlib [1,2,11]
