@@ -834,6 +834,22 @@ let shared-mime-info =
      }
 in
 
+let intltool =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "intltool", version = v } ⫽
+      { pkgUrl = "https://launchpad.net/intltool/trunk/0.51.0/+download/intltool-0.51.0.tar.gz"
+      , configureCommand =
+          λ(cfg : types.BuildVars) →
+            [ prelude.mkExe "configure"
+            , prelude.call (prelude.defaultCall ⫽ { program = "./configure"
+                                                  , arguments = [ "--prefix=${cfg.installDir}" ]
+                                                  , environment = Some (prelude.defaultPath cfg # [ prelude.mkPerlLib cfg.linkDirs ])
+                                                  })
+            ]
+    , pkgBuildDeps = [ prelude.upperBound { name = "perl", upper = [5,30] } ] -- lower bound: 5.8.1
+    }
+in
+
 let gdk-pixbuf =
   λ(x : { version : List Natural, patch : Natural }) →
     let versionString = prelude.showVersion x.version
@@ -1126,7 +1142,9 @@ in
 let libXau =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libXau", version = v } ⫽
-      { pkgUrl = "https://www.x.org/archive/individual/lib/libXau-${prelude.showVersion v}.tar.bz2" }
+      { pkgUrl = "https://www.x.org/archive/individual/lib/libXau-${prelude.showVersion v}.tar.bz2"
+      , pkgDeps = [ prelude.unbounded "xproto" ]
+      }
 in
 
 let kbproto =
@@ -1310,6 +1328,7 @@ in
 , harfbuzz [2,2,0]
 , imageMagick [7,0,8]
 , imageMagick [6,9,10]
+, intltool [0,51,0]
 , p11kit [0,23,14]
 , python [2,7,15]
 , python [3,7,1]

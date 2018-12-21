@@ -185,6 +185,14 @@ let mkLDPath =
     { var = "LD_LIBRARY_PATH", value = flag }
 in
 
+let mkPerlLib =
+  λ(libDirs : List Text) →
+    let flag = concatMapSep ":" Text (λ(dir : Text) → dir ++ "/site_perl/5.28.1/x86_64-linux/") libDirs
+    in
+
+    { var = "PERL5LIB", value = flag }
+in
+
 let mkIncludePath =
   λ(incls : List Text) →
     let flag = concatMapSep ":" Text (λ(dir : Text) → dir) incls
@@ -563,4 +571,5 @@ in
 , doNothing           = doNothing
 , perlConfigure       = perlConfigure
 , copyFiles           = copyFiles
+, mkPerlLib           = mkPerlLib
 }
