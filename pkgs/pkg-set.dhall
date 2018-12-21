@@ -834,6 +834,7 @@ let shared-mime-info =
      }
 in
 
+-- FIXME: this is screwy...
 let intltool =
   λ(v : List Natural) →
     prelude.simplePackage { name = "intltool", version = v } ⫽
@@ -846,7 +847,9 @@ let intltool =
                                                   , environment = Some (prelude.defaultPath cfg # [ prelude.mkPerlLib cfg.linkDirs ])
                                                   })
             ]
-    , pkgBuildDeps = [ prelude.upperBound { name = "perl", upper = [5,30] } ] -- lower bound: 5.8.1
+    , pkgBuildDeps = [ prelude.unbounded "gawk"
+                     , prelude.upperBound { name = "perl", upper = [5,30] }
+                     ] -- lower bound: 5.8.1
     }
 in
 
@@ -1136,7 +1139,9 @@ in
 let libXdmcp =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libXdmcp", version = v } ⫽
-      { pkgUrl = "https://www.x.org/archive/individual/lib/libXdmcp-${prelude.showVersion v}.tar.bz2" }
+      { pkgUrl = "https://www.x.org/archive/individual/lib/libXdmcp-${prelude.showVersion v}.tar.bz2"
+      , pkgDeps = [ prelude.unbounded "xproto" ]
+      }
 in
 
 let libXau =
