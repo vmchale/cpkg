@@ -1208,9 +1208,7 @@ let libXext =
 in
 
 let xextproto =
-  λ(v : List Natural) →
-    prelude.simplePackage { name = "xextproto", version = v } ⫽
-      { pkgUrl = "https://www.x.org/archive/individual/proto/xextproto-${prelude.showVersion v}.tar.bz2" }
+  mkXProto "xextproto"
 in
 
 let libXScrnSaver =
