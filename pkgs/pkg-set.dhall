@@ -1155,6 +1155,7 @@ let libXau =
       }
 in
 
+-- TODO: mkXLibWithDeps
 let mkXLib =
   λ(name : Text) →
   λ(v : List Natural) →
@@ -1181,11 +1182,17 @@ let libx11 =
 in
 
 let inputproto =
-  mkXProto "inputproto"
+  mkXProto "inputproto" v
 in
 
 let xtrans =
-  mkXLib "xtrans"
+  λ(v : List Natural) →
+    mkXLib "xtrans" ⫽
+      { installCommand =
+        λ(cfg : types.BuildVars) →
+          prelude.defaultInstall cfg
+            # prelude.copyFiles [ { src = "shared-mime-info.pc", dest = "lib/pkgconfig/shared-mime-info.pc" } ]
+      }
 in
 
 let libXrandr =
