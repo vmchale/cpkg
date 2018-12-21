@@ -805,6 +805,22 @@ let pango =
       }
 in
 
+let libxml2 =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libxml2", version = v } ⫽
+     { pkgUrl = "http://xmlsoft.org/sources/libxml2-${prelude.showVersion v}.tar.gz" }
+in
+
+let shared-mime-info =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "shared-mime-info", version = v } ⫽
+     { pkgUrl = "http://freedesktop.org/~hadess/shared-mime-info-${prelude.showVersion v}.tar.xz"
+     , pkgDeps = [ prelude.unbounded "glib"
+                 , prelude.unbounded "libxml2"
+                 ]
+     }
+in
+
 let gdk-pixbuf =
   λ(x : { version : List Natural, patch : Natural }) →
     let versionString = prelude.showVersion x.version
@@ -822,7 +838,7 @@ let gdk-pixbuf =
                   , prelude.unbounded "libjpeg-turbo"
                   , prelude.unbounded "libpng"
                   , prelude.unbounded "gobject-introspection"
-                  -- , prelude.unbounded "share-mime-info"
+                  , prelude.unbounded "shared-mime-info"
                   -- TODO: gobject >= 2.38.0
                   ]
       }
@@ -960,7 +976,7 @@ let glib =
           prelude.ninjaBuild cfg
             # prelude.mkExes [ "build/gobject/glib-mkenums", "build/gobject/glib-genmarshal" ]
       , installCommand =
-          prelude.ninjaInstallWithPkgConfig [ { src = "build/meson-private/glib-2.0.pc", dest = "lib/pkgconfig/glib-2.0.pc" }
+          prelude.ninjaInstallWithPkgConfig [ { src = "build/meson-private/glib-2.0.pc", dest = "lib/pkgconfig/glib-2.0.pc" } -- TODO: mesonToPkgConfig file?
                                             , { src = "build/meson-private/gobject-2.0.pc", dest = "lib/pkgconfig/gobject-2.0.pc" }
                                             , { src = "build/meson-private/gio-2.0.pc", dest = "lib/pkgconfig/gio-2.0.pc" }
                                             , { src = "build/meson-private/gmodule-no-export-2.0.pc", dest = "lib/pkgconfig/gmodule-no-export-2.0.pc" }
@@ -1300,6 +1316,7 @@ in
 , libx11 [1,6,7]
 , libxcb [1,13]
 , libxft [2,3,2]
+, libxml2 [2,9,8]
 , libXau [1,0,8]
 , libXdmcp [1,1,2]
 , libXext [1,3,3]
@@ -1330,6 +1347,7 @@ in
 , renderproto [0,11,1]
 , sdl2 [2,0,9]
 , sed [4,5]
+, shared-mime-info [1,10]
 , tar [1,30]
 , unistring [0,9,10]
 , util-linux [2,33]
