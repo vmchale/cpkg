@@ -516,6 +516,10 @@ let doNothing =
   λ(_ : types.BuildVars) → [] : List types.Command
 in
 
+let mesonMoves =
+  map Text { src : Text, dest : Text} (λ(pcFile : Text) → { src = "build/meson-private/${pcFile}", dest = "lib/pkgconfig/${pcFile}" })
+in
+
 { showVersion         = showVersion
 , makeGnuLibrary      = makeGnuLibrary
 , makeGnuExe          = makeGnuExe
@@ -572,4 +576,5 @@ in
 , perlConfigure       = perlConfigure
 , copyFiles           = copyFiles
 , mkPerlLib           = mkPerlLib
+, mesonMoves          = mesonMoves
 }

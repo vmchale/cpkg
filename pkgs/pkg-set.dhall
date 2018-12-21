@@ -791,9 +791,7 @@ let pango =
       , configureCommand = prelude.mesonConfigure
       , buildCommand = prelude.ninjaBuild
       , installCommand =
-          prelude.ninjaInstallWithPkgConfig [ { src = "build/meson-private/pango.pc", dest = "lib/pkgconfig/pango.pc" }
-                                            , { src = "build/meson-private/pangocairo.pc", dest = "lib/pkgconfig/pangocairo.pc" }
-                                            ]
+          prelude.ninjaInstallWithPkgConfig (prelude.mesonMoves [ "pango.pc", "pangocairo.pc" ])
       , pkgBuildDeps = [ prelude.lowerBound { name = "meson", lower = [0,48,0] }
                        , prelude.unbounded "gobject-introspection"
                        ]
@@ -1011,13 +1009,13 @@ let glib =
           prelude.ninjaBuild cfg
             # prelude.mkExes [ "build/gobject/glib-mkenums", "build/gobject/glib-genmarshal" ]
       , installCommand =
-          prelude.ninjaInstallWithPkgConfig [ { src = "build/meson-private/glib-2.0.pc", dest = "lib/pkgconfig/glib-2.0.pc" } -- TODO: mesonToPkgConfig file?
-                                            , { src = "build/meson-private/gobject-2.0.pc", dest = "lib/pkgconfig/gobject-2.0.pc" }
-                                            , { src = "build/meson-private/gio-2.0.pc", dest = "lib/pkgconfig/gio-2.0.pc" }
-                                            , { src = "build/meson-private/gmodule-no-export-2.0.pc", dest = "lib/pkgconfig/gmodule-no-export-2.0.pc" }
-                                            , { src = "build/meson-private/gmodule-2.0.pc", dest = "lib/pkgconfig/gmodule-2.0.pc" }
-                                            , { src = "build/meson-private/gthread-2.0.pc", dest = "lib/pkgconfig/gthread-2.0.pc" }
-                                            ]
+          prelude.ninjaInstallWithPkgConfig (prelude.mesonMoves [ "glib-2.0.pc"
+                                                                , "gobject-2.0.pc"
+                                                                , "gio-2.0.pc"
+                                                                , "gmodule-no-export-2.0.pc"
+                                                                , "gmodule-2.0.pc"
+                                                                , "gthread-2.0.pc"
+                                                                ])
       , pkgBuildDeps = [ prelude.unbounded "meson"
                        , prelude.unbounded "ninja"
                        ]
