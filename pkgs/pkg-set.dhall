@@ -1152,10 +1152,22 @@ let libXau =
       }
 in
 
-let kbproto =
+let mkXLib =
+  λ(name : Text) →
   λ(v : List Natural) →
-    prelude.simplePackage { name = "kbproto", version = v } ⫽
-      { pkgUrl = "https://www.x.org/archive/individual/proto/kbproto-${prelude.showVersion v}.tar.bz2" }
+    prelude.simplePackage { name = name, version = v } ⫽
+      { pkgUrl = "https://www.x.org/releases/individual/lib/${name}-${prelude.showVersion v}.tar.bz2" }
+in
+
+let mkXProto =
+  λ(name : Text) →
+  λ(v : List Natural) →
+    prelude.simplePackage { name = name, version = v } ⫽
+      { pkgUrl = "https://www.x.org/releases/individual/proto/${name}-${prelude.showVersion v}.tar.bz2" }
+in
+
+let kbproto =
+  mkXProto "kbproto"
 in
 
 let libx11 =
@@ -1173,16 +1185,7 @@ let libx11 =
 in
 
 let inputproto =
-  λ(v : List Natural) →
-    prelude.simplePackage { name = "inputproto", version = v } ⫽
-      { pkgUrl = "https://www.x.org/archive/individual/proto/inputproto-${prelude.showVersion v}.tar.bz2" }
-in
-
-let mkXLib =
-  λ(name : Text) →
-  λ(v : List Natural) →
-    prelude.simplePackage { name = name, version = v } ⫽
-      { pkgUrl = "https://www.x.org/releases/individual/lib/${name}-${prelude.showVersion v}.tar.bz2" }
+  mkXProto "inputproto"
 in
 
 let xtrans =
