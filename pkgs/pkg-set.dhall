@@ -692,7 +692,7 @@ in
 
 let freetype-prebuild =
   λ(v : List Natural) →
-    freetype-shared v "freetype-prebuilde" ⫽
+    freetype-shared v "freetype-prebuild" ⫽
       { pkgDeps = [ prelude.unbounded "zlib" ]
       , pkgSubdir = "freetype-${prelude.showVersion v}"
       }
