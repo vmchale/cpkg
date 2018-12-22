@@ -36,6 +36,7 @@ data Command = CreateDirectory { dir :: String }
                     , procDir     :: Maybe String
                     }
              | SymlinkBinary { file :: String }
+             | SymlinkLibrary { file :: String }
              | Write { contents :: T.Text, file :: FilePath }
              | CopyFile { src :: FilePath, dest :: FilePath }
              deriving (Eq, Ord, Generic, Binary, Hashable)
@@ -63,11 +64,10 @@ commandDhallToCommand (Dhall.Call p as env proc)  = Call (T.unpack p) (T.unpack 
 commandDhallToCommand (Dhall.SymlinkBinary b)     = SymlinkBinary (T.unpack b)
 commandDhallToCommand (Dhall.Write out fp)        = Write out (T.unpack fp)
 commandDhallToCommand (Dhall.CopyFile src' dest') = CopyFile (T.unpack src') (T.unpack dest')
-
+commandDhallToCommand (Dhall.SymlinkLibrary l)    = SymlinkLibrary (T.unpack l)
 
 buildVarsToDhallBuildVars :: BuildVars -> Dhall.BuildVars
-buildVarsToDhallBuildVars (BuildVars dir' tgt incls lds bins os sta nproc) = Dhall.BuildVars (T.pack dir') (T.pack <$> tgt) (T.pack <$> incls) (T.pack <$> lds) (T.pack <$> bins) os sta (fromIntegral nproc)
-
+buildVarsToDhallBuildVars (BuildVars dir' tgt incls lds bins os arch sta nproc) = Dhall.BuildVars (T.pack dir') (T.pack <$> tgt) (T.pack <$> incls) (T.pack <$> lds) (T.pack <$> bins) os arch sta (fromIntegral nproc)
 
 cPkgDhallToCPkg :: Dhall.CPkg -> CPkg
 cPkgDhallToCPkg (Dhall.CPkg n v url subdir bldDeps deps cfgCmd buildCmd installCmd) =

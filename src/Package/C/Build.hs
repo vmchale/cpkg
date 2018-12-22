@@ -41,6 +41,11 @@ stepToProc _ p (SymlinkBinary file') = do
     let actualBin = p </> file'
     liftIO $ createDirectoryIfMissing True binDir
     liftIO $ createFileLink actualBin (binDir </> takeFileName file')
+stepToProc _ p (SymlinkLibrary file') = do
+    let libDir = p </> "lib"
+        actualBin = p </> file'
+    liftIO $ createDirectoryIfMissing True libDir
+    liftIO $ createFileLink actualBin (libDir </> takeFileName file')
 stepToProc dir' _ (Write out fp) =
     liftIO (TIO.writeFile (dir' </> fp) out)
 stepToProc dir' p (CopyFile src' dest') = do
@@ -119,10 +124,10 @@ getVars :: Maybe Platform
         -> [FilePath] -- ^ Library directories
         -> [FilePath] -- ^ Include directories
         -> [FilePath] -- ^ Directories to add to @PATH@
-        -> PkgM (BuildVars)
+        -> PkgM BuildVars
 getVars host sta links incls bins = do
     nproc <- liftIO getNumCapabilities
-    pure (BuildVars "" host incls links bins dhallOS sta nproc)
+    pure (BuildVars "" host incls links bins dhallOS dhallArch sta nproc)
 
 -- TODO: more complicated solver, garbage collector, and all that.
 -- Basically nix-style builds for C libraries

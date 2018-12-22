@@ -1,8 +1,17 @@
 module Package.C.Build.OS ( dhallOS
+                          , dhallArch
                           ) where
 
+import           Package.C.Triple      hiding (arch, os)
 import           Package.C.Type.Shared
-import           System.Info           (os)
+import           System.Info           (arch, os)
+
+dhallArch :: Arch
+dhallArch = case arch of
+    "x86_64" -> X64
+    "x86"    -> X86
+    "arm"    -> Arm
+    _        -> error "unrecognized architecture"
 
 dhallOS :: OS
 dhallOS = case os of

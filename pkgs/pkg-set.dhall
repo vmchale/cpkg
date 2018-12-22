@@ -76,7 +76,7 @@ let binutils =
       { pkgUrl = "https://mirrors.ocf.berkeley.edu/gnu/binutils/binutils-${prelude.showVersion v}.tar.xz"
       , configureCommand = prelude.configureMkExes [ "mkinstalldirs" ]
       , installCommand =
-          prelude.installWithBinaries [ "bin/ar", "bin/as", "bin/ld", "bin/strip", "bin/strings", "bin/readelf", "bin/objdump", "bin/nm" ]
+          prelude.installWithBinaries [ "bin/ar", "bin/as", "bin/ld", "bin/strip", "bin/strings", "bin/readelf", "bin/objdump", "bin/nm", "bin/ranlib" ]
       }
 in
 
@@ -85,7 +85,7 @@ let bison =
     prelude.makeGnuExe { name = "bison", version = v } ⫽
       { configureCommand = prelude.configureMkExes [ "build-aux/move-if-change" ]
       , installCommand = prelude.installWithBinaries [ "bin/bison", "bin/yacc" ]
-      , pkgBuildDeps = [ prelude.unbounded "m4" ]
+      , pkgBuildDeps = [ prelude.unbounded "m4" ] -- coreutils
       }
 in
 
@@ -296,6 +296,7 @@ let pcre =
   λ(v : List Natural) →
     prelude.simplePackage { name = "pcre", version = v } ⫽
       { pkgUrl = "https://ftp.pcre.org/pub/pcre/pcre-${prelude.showVersion v}.tar.bz2" }
+    -- pkgBuildDeps coreutils
 in
 
 let perl5 =
@@ -460,6 +461,7 @@ let cairo =
                  , prelude.unbounded "libXext"
                  -- TODO: gobject, glib >= 2.14, libpng, xcb, xrender, x11
                  ]
+     -- pkgBuildDeps libtool coreutils binutils
      }
 in
 
@@ -632,6 +634,7 @@ let libffi =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libffi", version = v } ⫽
       { pkgUrl = "https://sourceware.org/ftp/libffi/libffi-${prelude.showVersion v}.tar.gz" }
+      -- pkgBuildDeps coreutils?
 in
 
 let gdb =
@@ -756,7 +759,8 @@ let gtk2 =
         let flag = concatMapSep " " Text (λ(dir : Text) → dir ++ "/lib/x86_64-linux-gnu/libglib-2.0.so") libDirs
         in
 
-        { var = "LD_PRELOAD", value = flag }
+        -- FIXME: make this non-stupid
+        { var = "LD_PRELOAD", value = "/home/vanessa/.cpkg/glib-2.58.1-69a9f6bf1795a3d2/lib/libglib-2.0.so" } -- flag }
     in
 
     let gtkConfig =
@@ -765,7 +769,7 @@ let gtk2 =
         , prelude.call (prelude.defaultCall ⫽ { program = "./configure"
                                               , arguments = [ "--prefix=${cfg.installDir}" ]
                                               , environment =
-                                                  Some (prelude.defaultPath cfg # [ prelude.mkLDFlags cfg.linkDirs
+                                                  Some (prelude.defaultPath cfg # [ { var = "LDFLAGS", value = (prelude.mkLDFlags cfg.linkDirs).value ++ " -lpcre -lfribidi" }
                                                                                   , prelude.mkCFlags cfg.includeDirs
                                                                                   , prelude.mkPkgConfigVar cfg.linkDirs
                                                                                   , prelude.mkLDPath cfg.linkDirs
@@ -785,7 +789,7 @@ let gtk2 =
                   , prelude.lowerBound { name = "glib", lower = [2,28,0] }
                   , prelude.lowerBound { name = "gdk-pixbuf", lower = [2,38,0] }
                   ]
-      -- , pkgBuildDeps = [ prelude.lowerBound { name = "pkg-config", lower = [0,16] } ]
+      -- , pkgBuildDeps = [ prelude.lowerBound { name = "pkg-config", lower = [0,16] } ] also libtool + coreutils
       }
 in
 
@@ -850,6 +854,7 @@ let libxml2 =
      , configureCommand = prelude.configureWithFlags [ "--without-python" ]
      }
      -- TODO intltool-update should be patched/packaged
+     -- pkgBuildDeps coreutils
 in
 
 let shared-mime-info =
@@ -980,7 +985,7 @@ let util-linux =
       prelude.simplePackage { name = "util-linux", version = v } ⫽
         { pkgUrl = "https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v${versionString}/util-linux-${versionString}.tar.xz"
         , configureCommand = prelude.configureWithFlags [ "--disable-makeinstall-chown", "--disable-bash-completion" ]
-        -- , pkgBuildDeps = [ prelude.unbounded "python2", prelude.unbounded "coreutils" ]
+        -- , pkgBuildDeps = [ prelude.unbounded "python2", prelude.unbounded "coreutils", libtool ]
         }
 in
 
@@ -999,7 +1004,7 @@ let gobject-introspection =
 
     prelude.simplePackage { name = "gobject-introspection", version = prelude.fullVersion x } ⫽
       { pkgUrl = "https://download.gnome.org/sources/gobject-introspection/${versionString}/gobject-introspection-${fullVersion}.tar.xz"
-      , pkgBuildDeps = [ prelude.unbounded "flex" ]
+      , pkgBuildDeps = [ prelude.unbounded "flex" ] -- coreutils
       , pkgDeps = [ prelude.lowerBound { name = "glib", lower = [2,58,0] } ]
       }
 in
@@ -1030,13 +1035,15 @@ let glib =
           prelude.ninjaBuild cfg
             # prelude.mkExes [ "build/gobject/glib-mkenums", "build/gobject/glib-genmarshal" ]
       , installCommand =
-          prelude.ninjaInstallWithPkgConfig (prelude.mesonMoves [ "glib-2.0.pc"
-                                                                , "gobject-2.0.pc"
-                                                                , "gio-2.0.pc"
-                                                                , "gmodule-no-export-2.0.pc"
-                                                                , "gmodule-2.0.pc"
-                                                                , "gthread-2.0.pc"
-                                                                ])
+          λ(cfg : types.BuildVars) →
+            prelude.ninjaInstallWithPkgConfig (prelude.mesonMoves [ "glib-2.0.pc"
+                                                                  , "gobject-2.0.pc"
+                                                                  , "gio-2.0.pc"
+                                                                  , "gmodule-no-export-2.0.pc"
+                                                                  , "gmodule-2.0.pc"
+                                                                  , "gthread-2.0.pc"
+                                                                  ]) cfg
+              # [ prelude.symlinkLibrary "lib/${prelude.printArch cfg.buildArch}-${prelude.printOS cfg.buildOS}-gnu/libglib-2.0.so" ]
       , pkgBuildDeps = [ prelude.unbounded "meson"
                        , prelude.unbounded "ninja"
                        ]
@@ -1070,6 +1077,7 @@ let atk =
     prelude.simplePackage { name = "atk", version = prelude.fullVersion x } ⫽
       { pkgUrl = "https://ftp.gnome.org/pub/gnome/sources/atk/${versionString}/atk-${fullVersion}.tar.xz"
       -- , pkgDeps = [ prelude.unbounded "glib" ]
+      -- pkgBuildDeps coreutils
       }
 in
 
@@ -1137,6 +1145,7 @@ let xcb-proto =
   λ(v : List Natural) →
     prelude.simplePackage { name = "xcb-proto", version = v } ⫽
       { pkgUrl = "https://xorg.freedesktop.org/archive/individual/xcb/xcb-proto-${prelude.showVersion v}.tar.bz2" }
+      -- pkgBuildDeps coreutils
 in
 
 let libxcb =
@@ -1164,6 +1173,7 @@ let libXdmcp =
     prelude.simplePackage { name = "libXdmcp", version = v } ⫽
       { pkgUrl = "https://www.x.org/archive/individual/lib/libXdmcp-${prelude.showVersion v}.tar.bz2"
       , pkgDeps = [ prelude.unbounded "xproto" ]
+      -- pkgBuildDeps coreutils
       }
 in
 
@@ -1210,6 +1220,7 @@ let xtrans =
   λ(v : List Natural) →
     mkXLib "xtrans" v ⫽
       { installCommand = prelude.installWithPkgConfig [ "xtrans.pc" ] }
+      -- pkgBuildDeps coreutils
 in
 
 let libXrandr =
@@ -1228,11 +1239,13 @@ let libXext =
                   , prelude.lowerBound { name = "xproto", lower = [7,0,13] }
                   , prelude.lowerBound { name = "libx11", lower = [1,6] }
                   ]
+      -- pkgBuildDeps coreutils, libtool, binutils
       }
 in
 
 let xextproto =
   mkXProto "xextproto"
+  -- pkgBuildDeps coreutils
 in
 
 let libXScrnSaver =
@@ -1269,12 +1282,14 @@ let expat =
   λ(v : List Natural) →
     prelude.simplePackage { name = "expat", version = v } ⫽
       { pkgUrl = "https://github.com/libexpat/libexpat/releases/download/R_${underscoreVersion v}/expat-${prelude.showVersion v}.tar.bz2" }
+      -- pkgBuildDeps on libtool
 in
 
 let gperf =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "gperf", version = v } ⫽
       { pkgUrl = "http://ftp.gnu.org/pub/gnu/gperf/gperf-${prelude.showVersion v}.tar.gz" }
+      -- pkgBuildDeps on coreutils
 in
 
 let coreutils =

@@ -70,6 +70,28 @@ let printManufacturer =
       x
 in
 
+let printOS =
+  λ(os : types.OS) →
+    merge
+      { FreeBSD   = λ(_ : {}) → "freebsd"
+      , OpenBSD   = λ(_ : {}) → "openbsd"
+      , NetBSD    = λ(_ : {}) → "netbsd"
+      , Solaris   = λ(_ : {}) → "solaris"
+      , Dragonfly = λ(_ : {}) → "dragonfly"
+      , Linux     = λ(_ : {}) → "linux"
+      , Darwin    = λ(_ : {}) → "darwin"
+      , Windows   = λ(_ : {}) → "mingw32"
+      , Redox     = λ(_ : {}) → "redox"
+      , Haiku     = λ(_ : {}) → "haiku"
+      , IOS       = λ(_ : {}) → "darwin"
+      , AIX       = λ(_ : {}) → "aix"
+      , Hurd      = λ(_ : {}) → "hurd"
+      , Android   = λ(_ : {}) → "android"
+      , NoOs      = λ(_ : {}) → "none"
+      }
+      os
+in
+
 let makeExe =
   λ(os : types.OS) →
 
@@ -129,6 +151,11 @@ in
 let symlinkBinary =
   λ(file : Text) →
     types.Command.SymlinkBinary { file = file }
+in
+
+let symlinkLibrary =
+  λ(lib : Text) →
+    types.Command.SymlinkLibrary { file = lib }
 in
 
 let copyFile =
@@ -549,6 +576,7 @@ in
 , makeExe             = makeExe
 , printArch           = printArch
 , printManufacturer   = printManufacturer
+, printOS             = printOS
 , call                = call
 , mkExe               = mkExe -- TODO: rename this so it's not so confusing
 , mkExes              = mkExes
@@ -573,6 +601,7 @@ in
 , defaultPath         = defaultPath
 , simplePackage       = simplePackage
 , symlinkBinary       = symlinkBinary
+, symlinkLibrary      = symlinkLibrary
 , symlinkBinaries     = symlinkBinaries
 , installWithBinaries = installWithBinaries
 , configureMkExes     = configureMkExes

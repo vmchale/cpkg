@@ -55,6 +55,7 @@
 - [ ] Build step should take OS as an argument
 - [ ] Make e.g. `vim` depend on `glibc`
 # Packages
+- [ ] bash
 - [ ] jemalloc
 - [ ] GTK+
 - [ ] GraphViz
@@ -78,6 +79,9 @@
 - [ ] FFmpeg
 - [ ] intltool
 - [ ] TCmalloc
+- [ ] https://ftp.gnu.org/gnu/texinfo/ ?
+- [ ] charset (?)
+- [ ] https://sourceware.org/newlib/
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in

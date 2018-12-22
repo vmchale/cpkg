@@ -13,15 +13,18 @@ import           Data.Text.Prettyprint.Doc
 import           Data.Text.Prettyprint.Doc.Custom
 import           Dhall
 import           GHC.Natural                      (Natural)
+import           Package.C.Triple
 import           Package.C.Type.Shared
 import           Package.C.Type.Version
 
 data BuildVars = BuildVars { installDir   :: T.Text
                            , targetTriple :: Maybe T.Text
                            , includeDirs  :: [ T.Text ]
+                           -- TODO: nameToLinkDir function??
                            , linkDirs     :: [ T.Text ]
                            , binDirs      :: [ T.Text ]
                            , buildOS      :: OS
+                           , buildArch    :: Arch
                            , static       :: Bool
                            , cpus         :: Natural
                            } deriving (Generic, Inject)
@@ -37,6 +40,7 @@ data Command = CreateDirectory { dir :: T.Text }
                     , procDir     :: Maybe T.Text
                     }
              | SymlinkBinary { file :: T.Text }
+             | SymlinkLibrary { file :: T.Text }
              | Write { contents :: T.Text, file :: T.Text }
              | CopyFile { src :: T.Text, dest :: T.Text }
              deriving (Generic, Interpret)

@@ -66,6 +66,7 @@ let BuildVars = { installDir : Text
                 , linkDirs : List Text
                 , binDirs : List Text
                 , buildOS : OS
+                , buildArch : Arch
                 , static : Bool
                 , cpus : Natural
                 }
@@ -94,6 +95,7 @@ let Command = < CreateDirectory : { dir : Text }
               | MakeExecutable : { file : Text }
               | Call : Proc
               | SymlinkBinary : { file : Text }
+              | SymlinkLibrary : { file : Text }
               | Write : { contents : Text, file : Text }
               | CopyFile : { src : Text, dest : Text }
               >
