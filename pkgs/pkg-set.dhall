@@ -755,12 +755,11 @@ let gtk2 =
     in
 
     let mkLDPreload =
-      λ(libDirs : List Text) →
-        let flag = concatMapSep " " Text (λ(dir : Text) → dir ++ "/lib/x86_64-linux-gnu/libglib-2.0.so") libDirs
+      λ(libs : List Text) →
+        let flag = concatMapSep " " Text (λ(lib : Text) → lib) libs
         in
 
-        -- FIXME: make this non-stupid
-        { var = "LD_PRELOAD", value = "/home/vanessa/.cpkg/glib-2.58.1-69a9f6bf1795a3d2/lib/libglib-2.0.so" } -- flag }
+        { var = "LD_PRELOAD", value = flag }
     in
 
     let gtkConfig =
@@ -773,7 +772,7 @@ let gtk2 =
                                                                                   , prelude.mkCFlags cfg.includeDirs
                                                                                   , prelude.mkPkgConfigVar cfg.linkDirs
                                                                                   , prelude.mkLDPath cfg.linkDirs
-                                                                                  , mkLDPreload cfg.linkDirs
+                                                                                  , mkLDPreload cfg.preloadLibs
                                                                                   ])
                                               })
         ]

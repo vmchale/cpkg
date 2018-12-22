@@ -14,6 +14,7 @@ import           Package.C.Type
 import           System.Directory
 import           System.Directory.Executable (mkExecutable)
 import           System.FilePath             (takeDirectory, takeFileName, (</>))
+import           System.FilePath.Glob
 import           System.IO.Temp              (withSystemTempDirectory)
 import           System.Process
 import           System.Process.Ext
@@ -115,6 +116,10 @@ buildCPkg cpkg host sta libs incls bins = do
     unless installed $
         forceBuildCPkg cpkg host buildVars
 
+getPreloads :: [ FilePath ] -> IO [ FilePath ]
+getPreloads =
+    fmap fold . traverse (\fp -> namesMatching (fp </> "*.so"))
+
 -- only really suitable for hashing at this point, since we use @""@ as the
 -- install directory. we use this to get a hash which we then use to get the
 -- *real* install directory, which we then use with @configureVars@ to set
@@ -127,7 +132,8 @@ getVars :: Maybe Platform
         -> PkgM BuildVars
 getVars host sta links incls bins = do
     nproc <- liftIO getNumCapabilities
-    pure (BuildVars "" host incls links bins dhallOS dhallArch sta nproc)
+    lds <- liftIO $ getPreloads links
+    pure (BuildVars "" host incls lds links bins dhallOS dhallArch sta nproc)
 
 -- TODO: more complicated solver, garbage collector, and all that.
 -- Basically nix-style builds for C libraries

@@ -63,6 +63,7 @@ in
 let BuildVars = { installDir : Text
                 , targetTriple : Optional Text
                 , includeDirs : List Text
+                , preloadLibs : List Text
                 , linkDirs : List Text
                 , binDirs : List Text
                 , buildOS : OS

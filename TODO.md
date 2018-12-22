@@ -54,6 +54,7 @@
 - [ ] No database w/ graph right now
 - [ ] Build step should take OS as an argument
 - [ ] Make e.g. `vim` depend on `glibc`
+- [ ] Get rid of annoying `LD_PRELOAD` hack?
 # Packages
 - [ ] bash
 - [ ] jemalloc

@@ -84,7 +84,8 @@ library
         binary -any,
         microlens -any,
         composition-prelude,
-        recursion >=2.0.0.0
+        recursion >=2.0.0.0,
+        filemanip
 
     if (flag(development) && impl(ghc <=8.2))
         ghc-options: -Werror

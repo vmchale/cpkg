@@ -20,6 +20,7 @@ import           Package.C.Type.Version
 data BuildVars = BuildVars { installDir   :: T.Text
                            , targetTriple :: Maybe T.Text
                            , includeDirs  :: [ T.Text ]
+                           , preloadLibs  :: [ T.Text ]
                            -- TODO: nameToLinkDir function??
                            , linkDirs     :: [ T.Text ]
                            , binDirs      :: [ T.Text ]

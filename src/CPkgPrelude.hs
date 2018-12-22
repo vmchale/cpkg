@@ -7,6 +7,7 @@ module CPkgPrelude ( -- * Base reëxports
                    , traverse_
                    , fold
                    , toList
+                   , filterM
                    , (<=<)
                    , MonadIO (..)
                    -- Dhall reëxports
