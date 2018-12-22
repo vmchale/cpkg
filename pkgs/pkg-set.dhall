@@ -678,12 +678,14 @@ let pixman =
 in
 
 let freetype-shared =
-  λ(v : List Natural) →
-  λ(x : Text) →
-    prelude.simplePackage { name = x, version = v } ⫽
-      { pkgUrl = "https://download.savannah.gnu.org/releases/freetype/freetype-${prelude.showVersion v}.tar.gz"
+  λ(x : { name : Text, version : List Natural }) →
+    let versionString = prelude.showVersion x.version
+    in
+
+    prelude.simplePackage x ⫽
+      { pkgUrl = "https://download.savannah.gnu.org/releases/freetype/freetype-${versionString}.tar.gz"
       , configureCommand = prelude.configureMkExes [ "builds/unix/configure" ]
-      , pkgSubdir = "freetype-${prelude.showVersion v}"
+      , pkgSubdir = "freetype-${versionString}"
       , pkgBuildDeps = [ prelude.unbounded "coreutils"
                        , prelude.unbounded "sed"
                        ]
@@ -692,7 +694,7 @@ in
 
 let freetype-prebuild =
   λ(v : List Natural) →
-    freetype-shared v "freetype-prebuild" ⫽
+    freetype-shared { name = "freetype-prebuild", version = v } ⫽
       { pkgDeps = [ prelude.unbounded "zlib" ]
       , pkgSubdir = "freetype-${prelude.showVersion v}"
       }
@@ -700,7 +702,7 @@ in
 
 let freetype =
   λ(v : List Natural) →
-    freetype-shared v "freetype" ⫽
+    freetype-shared { name = "freetype", version = v } ⫽
       { pkgDeps = [ prelude.unbounded "zlib"
                   , prelude.unbounded "harfbuzz"
                   ]
