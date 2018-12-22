@@ -527,6 +527,18 @@ let installWithPkgConfig =
       # copyFiles (map Text { src : Text, dest : Text} (λ(pcFile : Text) → { src = pcFile, dest = "lib/pkgconfig/${pcFile}" }) xs)
 in
 
+let python3Install =
+  λ(cfg : types.BuildVars) →
+    [ createDir "${cfg.installDir}/lib/python3.7/site-packages"
+    , call (defaultCall ⫽ { program = "python3"
+                          , arguments = [ "setup.py", "install", "--prefix=${cfg.installDir}", "--optimize=1" ]
+                          , environment = Some [ { var = "PYTHONPATH", value = "${cfg.installDir}/lib/python3.7/site-packages" }
+                                               , { var = "PATH", value = mkPathVar cfg.binDirs }
+                                               ]
+                          })
+    ]
+in
+
 { showVersion         = showVersion
 , makeGnuLibrary      = makeGnuLibrary
 , makeGnuExe          = makeGnuExe
@@ -585,4 +597,5 @@ in
 , mkPerlLib           = mkPerlLib
 , mesonMoves          = mesonMoves
 , installWithPkgConfig = installWithPkgConfig
+, python3Install      = python3Install
 }

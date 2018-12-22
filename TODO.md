@@ -56,7 +56,6 @@
 - [ ] Make e.g. `vim` depend on `glibc`
 # Packages
 - [ ] jemalloc
-- [ ] Pango (huge PITA)
 - [ ] GTK+
 - [ ] GraphViz
 - [ ] Ruby
@@ -64,13 +63,11 @@
 - [ ] ImageMagick
 - [ ] GHC cross-compiler?
 - [ ] https://sourceforge.net/projects/infozip/files/
-- [ ] https://www.gnu.org/software/coreutils/
 - [ ] fdupes
 - [ ] Figlet
 - [ ] GHC (`https://downloads.haskell.org/~ghc/8.6.3/ghc-8.6.3-src.tar.xz`)
   & cross-compiler
 - [ ] `http://prdownloads.sourceforge.net/ctags/ctags-5.8.tar.gz`
-- [ ] https://ftp.gnu.org/gnu/coreutils/coreutils-8.30.tar.xz
 - [ ] https://www.libarchive.org/downloads/libarchive-3.3.3.tar.gz
 - [ ] `patscc`
 - [ ] `rustc`
@@ -79,8 +76,8 @@
 - [ ] libexif
 - [ ] LibTIFF
 - [ ] FFmpeg
-- [ ] shared-mime-info
 - [ ] intltool
+- [ ] TCmalloc
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in

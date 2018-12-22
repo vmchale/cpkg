@@ -548,6 +548,7 @@ let python =
       -- , configureCommand = prelude.configureWithFlags [ "--enable-optimizations" ]
       , installCommand = prelude.installWithBinaries [ "bin/python${major}" ]
       , pkgDeps = [ prelude.unbounded "libffi" ]
+      -- , pkgBuildDeps = [ prelude.unbounded "coreutils" ]
       }
 in
 
@@ -922,25 +923,11 @@ in
 
 let meson =
   λ(v : List Natural) →
-    let versionString = prelude.showVersion v
-    in
-
-    let pythonInstall =
-      λ(cfg : types.BuildVars) →
-        [ prelude.createDir "${cfg.installDir}/lib/python3.7/site-packages"
-        , prelude.call (prelude.defaultCall ⫽ { program = "python3"
-                                              , arguments = [ "setup.py", "install", "--prefix=${cfg.installDir}" ]
-                                              , environment = Some [ { var = "PYTHONPATH", value = "${cfg.installDir}/lib/python3.7/site-packages" }
-                                                                   , { var = "PATH", value = prelude.mkPathVar cfg.binDirs }
-                                                                   ]
-                                              })
-        , prelude.symlinkBinary "bin/meson"
-        ]
-    in
-
     prelude.simplePackage { name = "meson", version = v } ⫽
-      { pkgUrl = "https://github.com/mesonbuild/meson/archive/${versionString}.tar.gz"
-      , configureCommand = pythonInstall
+      { pkgUrl = "https://github.com/mesonbuild/meson/archive/${prelude.showVersion v}.tar.gz"
+      , configureCommand =
+          λ(cfg : types.BuildVars) →
+            prelude.python3Install cfg # [ prelude.symlinkBinary "bin/meson" ]
       , buildCommand = prelude.doNothing
       , installCommand = prelude.doNothing
       , pkgDeps = [ prelude.unbounded "python3" ]
