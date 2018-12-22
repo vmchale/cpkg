@@ -679,7 +679,8 @@ in
 
 let freetype-shared =
   λ(v : List Natural) →
-    prelude.simplePackage { name = "freetype-prebuild", version = v } ⫽
+  λ(x : Text) →
+    prelude.simplePackage { name = x, version = v } ⫽
       { pkgUrl = "https://download.savannah.gnu.org/releases/freetype/freetype-${prelude.showVersion v}.tar.gz"
       , configureCommand = prelude.configureMkExes [ "builds/unix/configure" ]
       , pkgSubdir = "freetype-${prelude.showVersion v}"
@@ -691,7 +692,7 @@ in
 
 let freetype-prebuild =
   λ(v : List Natural) →
-    freetype-shared v ⫽
+    freetype-shared v "freetype-prebuilde" ⫽
       { pkgDeps = [ prelude.unbounded "zlib" ]
       , pkgSubdir = "freetype-${prelude.showVersion v}"
       }
@@ -699,7 +700,7 @@ in
 
 let freetype =
   λ(v : List Natural) →
-    freetype-shared v ⫽
+    freetype-shared v "freetype" ⫽
       { pkgDeps = [ prelude.unbounded "zlib"
                   , prelude.unbounded "harfbuzz"
                   ]
@@ -966,6 +967,7 @@ let util-linux =
       prelude.simplePackage { name = "util-linux", version = v } ⫽
         { pkgUrl = "https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v${versionString}/util-linux-${versionString}.tar.xz"
         , configureCommand = prelude.configureWithFlags [ "--disable-makeinstall-chown", "--disable-bash-completion" ]
+        -- , pkgBuildDeps = [ prelude.unbounded "python2", prelude.unbounded "coreutils" ]
         }
 in
 
@@ -1133,6 +1135,7 @@ let libxcb =
                   , prelude.unbounded "libpthread-stubs"
                   , prelude.unbounded "libXdmcp"
                   ]
+      , pkgBuildDeps = [ prelude.unbounded "coreutils" ]
       }
 in
 
@@ -1169,6 +1172,7 @@ in
 
 let kbproto =
   mkXProto "kbproto"
+  -- TODO: pkgBuildDeps on coreutils
 in
 
 let libx11 =
@@ -1263,7 +1267,7 @@ in
 let coreutils =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "coreutils", version = v } ⫽
-      { installCommand = prelude.installWithBinaries [ "bin/install", "bin/chmod", "bin/rm", "bin/cp", "bin/ln" ] }
+      { installCommand = prelude.installWithBinaries [ "bin/install", "bin/chmod", "bin/rm", "bin/cp", "bin/ln", "bin/mkdir" ] }
 in
 
 let libsepol =
