@@ -695,9 +695,7 @@ in
 let freetype-prebuild =
   λ(v : List Natural) →
     freetype-shared { name = "freetype-prebuild", version = v } ⫽
-      { pkgDeps = [ prelude.unbounded "zlib" ]
-      , pkgSubdir = "freetype-${prelude.showVersion v}"
-      }
+      { pkgDeps = [ prelude.unbounded "zlib" ] }
 in
 
 let freetype =
@@ -752,9 +750,34 @@ let gtk2 =
     let fullVersion = versionString ++ "." ++ Natural/show x.patch
     in
 
+    let mkLDPreload =
+      λ(libDirs : List Text) →
+        let flag = concatMapSep " " Text (λ(dir : Text) → dir ++ "/lib/x86_64-linux-gnu/libglib-2.0.so") libDirs
+        in
+
+        { var = "LD_PRELOAD", value = flag }
+    in
+
+    let gtkConfig =
+      λ(cfg : types.BuildVars) →
+        [ prelude.mkExe "configure"
+        , prelude.call (prelude.defaultCall ⫽ { program = "./configure"
+                                              , arguments = [ "--prefix=${cfg.installDir}" ]
+                                              , environment =
+                                                  Some (prelude.defaultPath cfg # [ prelude.mkLDFlags cfg.linkDirs
+                                                                                  , prelude.mkCFlags cfg.includeDirs
+                                                                                  , prelude.mkPkgConfigVar cfg.linkDirs
+                                                                                  , prelude.mkLDPath cfg.linkDirs
+                                                                                  , mkLDPreload cfg.linkDirs
+                                                                                  ])
+                                              })
+        ]
+    in
+
     prelude.simplePackage { name = "gtk2", version = prelude.fullVersion x } ⫽
       { pkgUrl = "http://ftp.gnome.org/pub/gnome/sources/gtk+/${versionString}/gtk+-${fullVersion}.tar.xz"
       , pkgSubdir = "gtk+-${fullVersion}"
+      , configureCommand = gtkConfig
       , pkgDeps = [ prelude.lowerBound { name = "cairo", lower = [1,6] }
                   , prelude.lowerBound { name = "pango", lower = [1,20] }
                   , prelude.lowerBound { name = "atk", lower = [1,29,2] }
@@ -789,6 +812,7 @@ in
 
 let renderproto =
   mkXProto "renderproto"
+  -- pkgBuildDeps = [ prelude.unbounded "gawk", prelude.unbounded "pkg-config", coreutils ]
 in
 
 let pango =
@@ -1269,7 +1293,7 @@ in
 let coreutils =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "coreutils", version = v } ⫽
-      { installCommand = prelude.installWithBinaries [ "bin/install", "bin/chmod", "bin/rm", "bin/cp", "bin/ln", "bin/mkdir" ] }
+      { installCommand = prelude.installWithBinaries [ "bin/install", "bin/chmod", "bin/rm", "bin/cp", "bin/ln", "bin/mkdir", "bin/test" ] }
 in
 
 let libsepol =
