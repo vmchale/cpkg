@@ -399,6 +399,7 @@ let zlib =
     prelude.simplePackage { name = "zlib", version = v } ⫽
       { pkgUrl = "http://www.zlib.net/zlib-${prelude.showVersion v}.tar.xz"
       , configureCommand = zlibConfigure
+      , pkgBuildDeps = [ prelude.unbounded "coreutils" ]
       }
 in
 
@@ -676,22 +677,30 @@ let pixman =
       }
 in
 
-let freetype-prebuild =
+let freetype-shared =
   λ(v : List Natural) →
     prelude.simplePackage { name = "freetype-prebuild", version = v } ⫽
       { pkgUrl = "https://download.savannah.gnu.org/releases/freetype/freetype-${prelude.showVersion v}.tar.gz"
       , configureCommand = prelude.configureMkExes [ "builds/unix/configure" ]
-      , pkgDeps = [ prelude.unbounded "zlib" ]
+      , pkgSubdir = "freetype-${prelude.showVersion v}"
+      , pkgBuildDeps = [ prelude.unbounded "coreutils"
+                       , prelude.unbounded "sed"
+                       ]
+      }
+in
+
+let freetype-prebuild =
+  λ(v : List Natural) →
+    freetype-shared v ⫽
+      { pkgDeps = [ prelude.unbounded "zlib" ]
       , pkgSubdir = "freetype-${prelude.showVersion v}"
       }
 in
 
 let freetype =
   λ(v : List Natural) →
-    prelude.simplePackage { name = "freetype", version = v } ⫽
-      { pkgUrl = "https://download.savannah.gnu.org/releases/freetype/freetype-${prelude.showVersion v}.tar.gz"
-      , configureCommand = prelude.configureMkExes [ "builds/unix/configure" ]
-      , pkgDeps = [ prelude.unbounded "zlib"
+    freetype-shared v ⫽
+      { pkgDeps = [ prelude.unbounded "zlib"
                   , prelude.unbounded "harfbuzz"
                   ]
       }
@@ -1254,7 +1263,7 @@ in
 let coreutils =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "coreutils", version = v } ⫽
-      { installCommand = prelude.installWithBinaries [ "bin/install" ] }
+      { installCommand = prelude.installWithBinaries [ "bin/install", "bin/chmod", "bin/rm", "bin/cp", "bin/ln" ] }
 in
 
 let libsepol =
