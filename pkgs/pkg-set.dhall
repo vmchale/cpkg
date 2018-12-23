@@ -305,7 +305,7 @@ let perl5 =
 
       [ prelude.mkExe "Configure"
       , prelude.call (prelude.defaultCall ⫽ { program = "./Configure"
-                                            , arguments = [ "-des", "-Duseshrplib", "-Dprefix=${cfg.installDir}" ]
+                                            , arguments = [ "-des", "-Dprefix=${cfg.installDir}" ] # (if cfg.static then [] : List Text else [ "-Duseshrplib" ])
                                             })
       ]
   in
@@ -316,8 +316,14 @@ let perl5 =
       , configureCommand = perlConfigure
       , installCommand =
         λ(cfg : types.BuildVars) →
+          let libperlFile =
+            if cfg.static
+              then "libperl.a"
+              else "libperl.so"
+          in
+
           prelude.installWithBinaries [ "bin/perl", "bin/cpan" ] cfg
-            # [ prelude.symlinkLibrary "lib/${prelude.showVersion v}/${prelude.printArch cfg.buildArch}-${prelude.printOS cfg.buildOS}/libperl.so" ]
+            # [ prelude.symlinkLibrary "lib/${prelude.showVersion v}/${prelude.printArch cfg.buildArch}-${prelude.printOS cfg.buildOS}/CORE/${libperlFile}" ]
       -- pkgBuildDeps coreutils
       }
 in
