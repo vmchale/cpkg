@@ -202,12 +202,20 @@ let isUnix =
       os
 in
 
-let mkLDFlags =
+let mkLDFlagsGeneral =
   λ(libDirs : List Text) →
-    let flag = concatMapSep " " Text (λ(dir : Text) → "-L${dir}") libDirs
+  λ(linkLibs : List Text) →
+    let flag0 = concatMapSep " " Text (λ(dir : Text) → "-L${dir}") libDirs
+    in
+    let flag1 = concatMap Text (λ(dir : Text) → " -l${dir}") linkLibs
     in
 
-    { var = "LDFLAGS", value = flag }
+    { var = "LDFLAGS", value = flag0 ++ flag1 }
+in
+
+let mkLDFlags =
+  λ(libDirs : List Text) →
+    mkLDFlagsGeneral libDirs ([] : List Text)
 in
 
 let mkLDPath =
@@ -265,6 +273,7 @@ in
 
 let generalConfigure =
   λ(filename : Text) →
+  λ(linkLibs : List Text) →
   λ(extraFlags : List Text) →
   λ(cfg : types.BuildVars) →
     let maybeHost = mkHost cfg.targetTriple
@@ -276,7 +285,7 @@ let generalConfigure =
     , call (defaultCall ⫽ { program = "./${filename}"
                           , arguments = modifyArgs [ "--prefix=${cfg.installDir}" ] # extraFlags
                           , environment =
-                              Some (defaultPath cfg # [ mkLDFlags cfg.linkDirs
+                              Some (defaultPath cfg # [ mkLDFlagsGeneral cfg.linkDirs linkLibs
                                                       , mkCFlags cfg.includeDirs
                                                       , mkPkgConfigVar cfg.linkDirs
                                                       , mkLDPath cfg.linkDirs
@@ -286,15 +295,16 @@ let generalConfigure =
 in
 
 let configureWithFlags =
-  generalConfigure "configure"
+  generalConfigure "configure" ([] : List Text)
 in
 
 let defaultConfigure =
   configureWithFlags ([] : List Text)
 in
 
-let bigConfigure =
-  generalConfigure "Configure" ([] : List Text)
+let configureLinkExtraLibs =
+  λ(linkLibs : List Text) →
+    generalConfigure "configure" linkLibs ([] : List Text)
 in
 
 let configureMkExesExtraFlags =
@@ -322,7 +332,10 @@ in
 let defaultInstall =
   λ(cfg : types.BuildVars) →
     [ call (defaultCall ⫽ { program = makeExe (cfg.buildOS)
-                          , arguments = [ "install" ] })
+                          , arguments = [ "install" ]
+                          , environment =
+                              Some (defaultPath cfg # [ mkPkgConfigVar cfg.linkDirs ])
+                          })
     ]
 in
 
@@ -509,7 +522,7 @@ let ninjaBuild =
   λ(cfg : types.BuildVars) →
     [ call (defaultCall ⫽ { program = "ninja"
                           , environment = Some [ mkPkgConfigVar cfg.linkDirs
-                                               , { var = "PATH", value = mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
+                                               , { var = "PATH", value = mkPathVar cfg.binDirs ++ ":/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
                                                , mkPyPath cfg.linkDirs
                                                , mkLDPath cfg.linkDirs
                                                , mkLDFlags cfg.linkDirs
@@ -519,11 +532,17 @@ let ninjaBuild =
                           , procDir = Some "build" }) ]
 in
 
+-- let cpkgBinDir =
+  -- λ(os : types.OS) →
+
+
 let ninjaInstall =
   λ(cfg : types.BuildVars) →
     [ call (defaultCall ⫽ { program = "ninja"
                           , environment = Some [ mkPkgConfigVar cfg.linkDirs
-                                               , { var = "PATH", value = mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
+                                               -- TODO: remove this hack for gdk-pixbuf
+                                               -- Or alternately use %APPDATA%/<app> on windows
+                                               , { var = "PATH", value = mkPathVar cfg.binDirs ++ ":${(env:HOME as Text)}/.cpkg/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
                                                , mkPyPath cfg.linkDirs
                                                , mkLDPath cfg.linkDirs
                                                , mkLDFlags cfg.linkDirs
@@ -645,6 +664,7 @@ in
 , mkCFlags            = mkCFlags
 , mkLDFlags           = mkLDFlags
 , mkLDPath            = mkLDPath
+, mkPyPath            = mkPyPath
 , mkIncludePath       = mkIncludePath
 , isUnix              = isUnix
 , defaultPath         = defaultPath
@@ -655,7 +675,6 @@ in
 , symlinkBinaries     = symlinkBinaries
 , installWithBinaries = installWithBinaries
 , configureMkExes     = configureMkExes
-, bigConfigure        = bigConfigure
 , generalConfigure    = generalConfigure
 , configureWithFlags  = configureWithFlags
 , configureMkExesExtraFlags = configureMkExesExtraFlags
@@ -681,4 +700,5 @@ in
 , python3Build        = python3Build
 , python3Package      = python3Package
 , mkLDPreload         = mkLDPreload
+, configureLinkExtraLibs = configureLinkExtraLibs
 }

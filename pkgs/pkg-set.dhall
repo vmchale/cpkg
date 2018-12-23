@@ -246,7 +246,10 @@ let harfbuzz =
   λ(v : List Natural) →
     prelude.simplePackage { name = "harfbuzz", version = v } ⫽
       { pkgUrl = "https://www.freedesktop.org/software/harfbuzz/release/harfbuzz-${prelude.showVersion v}.tar.bz2"
-      , pkgDeps = [ prelude.unbounded "freetype-prebuild" ]
+      , pkgDeps = [ prelude.unbounded "freetype-prebuild"
+                  , prelude.unbounded "glib"
+                  ]
+      , configureCommand = prelude.configureLinkExtraLibs [ "pcre" ]
       }
 in
 
@@ -500,7 +503,7 @@ let openssl =
   λ(v : List Natural) →
     prelude.simplePackage { name = "openssl", version = v } ⫽
       { pkgUrl = "https://www.openssl.org/source/openssl-${prelude.showVersion v}a.tar.gz"
-      , configureCommand = prelude.generalConfigure "config" ([] : List Text)
+      , configureCommand = prelude.generalConfigure "config" ([] : List Text) ([] : List Text)
       , pkgSubdir = "openssl-${prelude.showVersion v}a"
       }
 in
@@ -768,6 +771,7 @@ let gtk2 =
                                                                                 , prelude.mkCFlags cfg.includeDirs
                                                                                 , prelude.mkPkgConfigVar cfg.linkDirs
                                                                                 , prelude.mkLDPath cfg.linkDirs
+                                                                                -- FIXME: remove this hack for gtk3
                                                                                 , prelude.mkLDPreload cfg.preloadLibs
                                                                                 ])
                                             })
@@ -790,6 +794,7 @@ let gtk2 =
                   , prelude.lowerBound { name = "gdk-pixbuf", lower = [2,38,0] }
                   ]
       -- , pkgBuildDeps = [ prelude.lowerBound { name = "pkg-config", lower = [0,16] } ] also libtool + coreutils
+      , configureCommand = gtkConfig
       }
 in
 
@@ -905,7 +910,9 @@ let gdk-pixbuf =
       , configureCommand = prelude.mesonConfigure
       , buildCommand = prelude.ninjaBuild
       , installCommand =
-          prelude.ninjaInstallWithPkgConfig (prelude.mesonMoves [ "gdk-pixbuf-2.0.pc" ])
+          λ(cfg : types.BuildVars) →
+            prelude.symlinkBinaries [ "bin/gdk-pixbuf-query-loaders" ] #
+              prelude.ninjaInstallWithPkgConfig (prelude.mesonMoves [ "gdk-pixbuf-2.0.pc" ]) cfg
       , pkgDeps = [ prelude.unbounded "glib"
                   , prelude.unbounded "libjpeg-turbo"
                   , prelude.unbounded "libpng"
@@ -1043,9 +1050,29 @@ let glib =
     let fullVersion = versionString ++ "." ++ Natural/show x.patch
     in
 
+    let glibConfigure =
+      λ(cfg : types.BuildVars) →
+
+        [ prelude.createDir "build"
+        , prelude.call { program = "meson"
+                       , arguments = [ "--prefix=${cfg.installDir}", "..", "-Dselinux=false" ]
+                       , environment = Some [ prelude.mkPkgConfigVar cfg.linkDirs
+                                            , { var = "PATH", value = prelude.mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
+                                            , { var = "LDFLAGS", value = (prelude.mkLDFlags cfg.linkDirs).value ++ " -lpcre" }
+                                            , prelude.mkPyPath cfg.linkDirs
+                                            , prelude.mkLDPath cfg.linkDirs
+                                            , prelude.mkCFlags cfg.includeDirs
+                                            , prelude.mkPkgConfigVar cfg.linkDirs
+                                            ]
+                       , procDir = Some "build"
+                       }
+        ]
+
+    in
+
     prelude.simplePackage { name = "glib", version = prelude.fullVersion x } ⫽
       { pkgUrl = "http://ftp.gnome.org/pub/gnome/sources/glib/${versionString}/glib-${fullVersion}.tar.xz"
-      , configureCommand = prelude.mesonConfigureWithFlags [ "-Dselinux=false" ]
+      , configureCommand = glibConfigure
       , buildCommand =
         λ(cfg : types.BuildVars) →
           prelude.ninjaBuild cfg
