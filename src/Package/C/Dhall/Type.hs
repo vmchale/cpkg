@@ -42,6 +42,7 @@ data Command = CreateDirectory { dir :: T.Text }
                     }
              | SymlinkBinary { file :: T.Text }
              | SymlinkLibrary { file :: T.Text }
+             | Symlink { tgt :: T.Text, linkName :: T.Text }
              | Write { contents :: T.Text, file :: T.Text }
              | CopyFile { src :: T.Text, dest :: T.Text }
              deriving (Generic, Interpret)

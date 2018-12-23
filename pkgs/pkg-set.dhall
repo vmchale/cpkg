@@ -1044,7 +1044,9 @@ let glib =
                                                                   , "gmodule-2.0.pc"
                                                                   , "gthread-2.0.pc"
                                                                   ]) cfg
-              # [ prelude.symlinkLibrary "lib/${prelude.printArch cfg.buildArch}-${prelude.printOS cfg.buildOS}-gnu/libglib-2.0.so" ]
+              # [ prelude.symlinkLibrary "lib/${prelude.printArch cfg.buildArch}-${prelude.printOS cfg.buildOS}-gnu/libglib-2.0.so"
+                , prelude.symlink "include/gio-unix-2.0/gio/gunixoutputstream.h" "include/gio/gunixoutputstream.h"
+                ]
       , pkgBuildDeps = [ prelude.unbounded "meson"
                        , prelude.unbounded "ninja"
                        ]
@@ -1479,6 +1481,24 @@ let libepoxy =
       }
 in
 
+let wayland =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "wayland", version = v } ⫽
+      { pkgUrl = "https://wayland.freedesktop.org/releases/wayland-${prelude.showVersion v}.tar.xz"
+      , pkgDeps = [ prelude.unbounded "libxml2" ]
+      , configureCommand = prelude.configureWithFlags [ "--disable-documentation" ]
+      }
+in
+
+let swig =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "swig", version = v } ⫽
+      { pkgUrl = "https://downloads.sourceforge.net/swig/swig-${prelude.showVersion v}.tar.gz"
+      , configureCommand = prelude.configureMkExes [ "Tools/config/install-sh" ]
+      , installCommand = prelude.installWithBinaries [ "bin/swig" ]
+      }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
@@ -1510,10 +1530,10 @@ in
 , gperf [3,1]
 , giflib [5,1,4]
 , git [2,19,2]
-, glib { version = [2,58], patch = 1 }
+, glib { version = [2,58], patch = 2 }
 , glibc [2,28]
 , gmp [6,1,2]
-, gobject-introspection { version = [1,58], patch = 2 }
+, gobject-introspection { version = [1,59], patch = 1 }
 , gnupg [2,2,11]
 , gnutls { version = [3,6], patch = 5 }
 , gnutls { version = [3,5], patch = 19 }
@@ -1589,11 +1609,13 @@ in
 , sdl2 [2,0,9]
 , sed [4,5]
 , shared-mime-info [1,10]
+, swig [3,0,12]
 , tar [1,30]
 , unistring [0,9,10]
 , util-linux [2,33]
 , valgrind [3,14,0]
 , vim [8,1]
+, wayland [1,16,0]
 , wget [1,20]
 , which [2,21]
 , xcb-proto [1,13]

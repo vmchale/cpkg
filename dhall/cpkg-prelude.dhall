@@ -158,6 +158,12 @@ let symlinkLibrary =
     types.Command.SymlinkLibrary { file = lib }
 in
 
+let symlink =
+  λ(tgt : Text) →
+  λ(lnk : Text) →
+    types.Command.Symlink { tgt = tgt, linkName = lnk }
+in
+
 let copyFile =
   λ(src : Text) →
   λ(dest : Text) →
@@ -307,7 +313,8 @@ let defaultBuild =
   λ(cfg : types.BuildVars) →
     [ call (defaultCall ⫽ { program = makeExe cfg.buildOS
                           , arguments = [ "-j${Natural/show cfg.cpus}" ]
-                          , environment = Some (defaultPath cfg) -- TODO: mkLDPath here
+                          , environment =
+                              Some (defaultPath cfg # [ mkPkgConfigVar cfg.linkDirs ])
                           })
     ]
 in
@@ -644,6 +651,7 @@ in
 , simplePackage       = simplePackage
 , symlinkBinary       = symlinkBinary
 , symlinkLibrary      = symlinkLibrary
+, symlink             = symlink
 , symlinkBinaries     = symlinkBinaries
 , installWithBinaries = installWithBinaries
 , configureMkExes     = configureMkExes

@@ -54,11 +54,13 @@
 - [ ] Figure out `PERL5LIB` variable
 # Deficiencies
 - [ ] `mkExe` and `makeExe` are too similar
+- [ ] Get rid of `symlinkLibrary`? And just use `symlink`...
 - [ ] Cache package downloads globally
 - [ ] No database w/ graph right now
 - [ ] Build step should take OS as an argument
 - [ ] Make e.g. `vim` depend on `glibc`
 - [ ] Get rid of annoying `LD_PRELOAD` hack?
+- [ ] dhall library should prefer `symlink` to `copyFile` when possible? hmm
 # Packages
 - [ ] bash
 - [ ] jemalloc
@@ -91,6 +93,7 @@
 - [ ] libtizcore
 - [ ] https://cairosvg.org/
 - [ ] ghostscript
+- [ ] http://www.linuxfromscratch.org/blfs/view/svn/general/boost.html
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in

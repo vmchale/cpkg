@@ -47,6 +47,11 @@ stepToProc _ p (SymlinkLibrary file') = do
         actualBin = p </> file'
     liftIO $ createDirectoryIfMissing True libDir
     liftIO $ createFileLink actualBin (libDir </> takeFileName file')
+stepToProc _ p (Symlink tgt' lnk) = do
+    let linkAbs = p </> lnk
+    putDiagnostic ("Creating directory" ++ takeDirectory linkAbs ++ "...")
+    liftIO $ createDirectoryIfMissing True (takeDirectory linkAbs)
+    liftIO $ createFileLink (p </> tgt') linkAbs
 stepToProc dir' _ (Write out fp) =
     liftIO (TIO.writeFile (dir' </> fp) out)
 stepToProc dir' p (CopyFile src' dest') = do
