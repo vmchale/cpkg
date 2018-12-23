@@ -837,7 +837,7 @@ let pango =
       , configureCommand = prelude.mesonConfigure
       , buildCommand = prelude.ninjaBuild
       , installCommand =
-          prelude.ninjaInstallWithPkgConfig (prelude.mesonMoves [ "pango.pc", "pangocairo.pc" ])
+          prelude.ninjaInstallWithPkgConfig (prelude.mesonMoves [ "pango.pc", "pangocairo.pc", "pangoft2.pc" ])
       , pkgBuildDeps = [ prelude.lowerBound { name = "meson", lower = [0,48,0] }
                        , prelude.unbounded "gobject-introspection"
                        ]
@@ -1093,6 +1093,8 @@ let glib =
                 , prelude.symlinkLibrary "${libDir}/libgobject-2.0.so"
                 , prelude.symlinkLibrary "${libDir}/libgio-2.0.so"
                 , prelude.symlink "include/gio-unix-2.0/gio/gunixoutputstream.h" "include/gio/gunixoutputstream.h"
+                , prelude.symlink "include/glib-2.0/glib.h" "include/glib.h"
+                , prelude.symlink "include/glib-2.0/gio/gio.h" "include/gio/gio.h"
                 ]
       , pkgBuildDeps = [ prelude.unbounded "meson"
                        , prelude.unbounded "ninja"
@@ -1404,7 +1406,9 @@ let libselinux =
 in
 
 let libXtst =
-  mkXLib "libXtst"
+  λ(v : List Natural) →
+    mkXLib "libXtst" v ⫽
+      { pkgDeps = [ prelude.unbounded "libXi" ] }
   -- TODO: depend on recordproto, ?? x11, xext, xextproto, ??? xi
 in
 
@@ -1421,7 +1425,9 @@ let at-spi-core =
 
     prelude.ninjaPackage { name = "at-spi2-core", version = prelude.fullVersion x } ⫽
       { pkgUrl = "http://ftp.gnome.org/pub/gnome/sources/at-spi2-core/${versionString}/at-spi2-core-${fullVersion}.tar.xz"
-      , pkgDeps = [ prelude.unbounded "libXtst" ] -- dbus, glib?
+      , pkgDeps = [ prelude.unbounded "libXtst"
+                  , prelude.unbounded "glib"
+                  ] -- dbus, glib?
       , installCommand =
           prelude.ninjaInstallWithPkgConfig [{ src = "build/atspi-2.pc", dest = "lib/pkgconfig/atspi-2.pc" }]
       }
@@ -1502,8 +1508,10 @@ let gtk3 =
       { pkgUrl = "http://ftp.gnome.org/pub/gnome/sources/gtk+/${versionString}/gtk+-${fullVersion}.tar.xz"
       , pkgSubdir = "gtk+-${fullVersion}"
       , configureCommand = gtkConfig
-      , pkgDeps = [ prelude.unbounded "pango"
+      , pkgDeps = [ prelude.lowerBound { name = "pango", lower = [1,41,0] }
                   , prelude.unbounded "at-spi2-atk"
+                  , prelude.lowerBound { name = "atk", lower = [2,15,1] }
+                  , prelude.lowerBound { name = "gdk-pixbuf", lower = [2,30,0] }
                   ]
       }
 in
@@ -1570,7 +1578,7 @@ in
 , freetype [2,9,1]
 , fribidi [1,0,5]
 , gawk [4,2,1]
-, gc [8,0,0]
+, gc [8,0,2]
 , gdb [8,2]
 , gdk-pixbuf { version = [2,38], patch = 0 }
 , gettext [0,19,8]
