@@ -314,7 +314,11 @@ let perl5 =
     prelude.simplePackage { name = "perl", version = v } ⫽
       { pkgUrl = "https://www.cpan.org/src/5.0/perl-${prelude.showVersion v}.tar.gz"
       , configureCommand = perlConfigure
-      , installCommand = prelude.installWithBinaries [ "bin/perl", "bin/cpan" ]
+      , installCommand =
+        λ(cfg : types.BuildVars) →
+          prelude.installWithBinaries [ "bin/perl", "bin/cpan" ] cfg
+            # [ prelude.symlinkLibrary "lib/${prelude.showVersion v}/${prelude.printArch cfg.buildArch}-${prelude.printOS cfg.buildOS}/libperl.a" ]
+      -- pkgBuildDeps coreutils
       }
 in
 
@@ -1381,6 +1385,8 @@ let at-spi-atk =
                   , prelude.lowerBound { name = "atk", lower = [2,29,2] }
                   , prelude.unbounded "libxml2"
                   ]
+      , installCommand =
+          prelude.ninjaInstallWithPkgConfig (prelude.mesonMoves [ "atk-bridge-2.0.pc" ])
       }
 in
 
@@ -1413,6 +1419,47 @@ let elfutils =
     let versionString = prelude.showVersion v in
     prelude.simplePackage { name = "elfutils", version = v } ⫽
       { pkgUrl = "https://sourceware.org/ftp/elfutils/${versionString}/elfutils-${versionString}.tar.bz2" }
+in
+
+let gtk3 =
+  let gtkConfig =
+    λ(cfg : types.BuildVars) →
+      [ prelude.mkExe "configure"
+      , prelude.call (prelude.defaultCall ⫽ { program = "./configure"
+                                            , arguments = [ "--prefix=${cfg.installDir}" ]
+                                            , environment =
+                                                Some (prelude.defaultPath cfg # [ { var = "LDFLAGS", value = (prelude.mkLDFlags cfg.linkDirs).value ++ " -lpcre -lfribidi" }
+                                                                                , prelude.mkCFlags cfg.includeDirs
+                                                                                , prelude.mkPkgConfigVar cfg.linkDirs
+                                                                                , prelude.mkLDPath cfg.linkDirs
+                                                                                , prelude.mkLDPreload cfg.preloadLibs
+                                                                                ])
+                                            })
+      ]
+  in
+
+  λ(x : { version : List Natural, patch : Natural }) →
+    let versionString = prelude.showVersion x.version
+    in
+    let fullVersion = versionString ++ "." ++ Natural/show x.patch
+    in
+    prelude.simplePackage { name = "gtk3", version = prelude.fullVersion x } ⫽
+      { pkgUrl = "http://ftp.gnome.org/pub/gnome/sources/gtk+/${versionString}/gtk+-${fullVersion}.tar.xz"
+      , pkgSubdir = "gtk+-${fullVersion}"
+      , configureCommand = gtkConfig
+      , pkgDeps = [ prelude.unbounded "pango"
+                  , prelude.unbounded "at-spi2-atk"
+                  ]
+      }
+in
+
+let graphviz =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "graphviz", version = v } ⫽
+      { pkgUrl = "https://graphviz.gitlab.io/pub/graphviz/stable/SOURCES/graphviz.tar.gz"
+      , configureCommand = prelude.configureMkExes [ "iffe" ]
+      , pkgDeps = [ prelude.unbounded "perl" ]
+      }
 in
 
 [ autoconf [2,69]
@@ -1453,7 +1500,9 @@ in
 , gnupg [2,2,11]
 , gnutls { version = [3,6], patch = 5 }
 , gnutls { version = [3,5], patch = 19 }
+, graphviz [2,40,1]
 , gtk2 { version = [2,24], patch = 32 }
+, gtk3 { version = [3,24], patch = 1 }
 , gzip [1,9]
 , harfbuzz [2,2,0]
 , imageMagick [7,0,8]

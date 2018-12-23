@@ -10,7 +10,10 @@
 # Code Maintenance
 - [ ] Use a more sensible monad
 - [ ] Stop being a mess
+# Documentation
+- [ ] Document the difference between `symlinkBinary` and `symlinkLibrary`...
 # Features
+- [ ] CACHE DOWNLOADS
 - [ ] Pass verbosity to configuration/build script
 - [ ] Constraint solver
 - [ ] Build/handle preprocessors
@@ -86,6 +89,7 @@
 - [ ] https://sourceware.org/newlib/
 - [ ] https://pypi.org/project/scour/
 - [ ] libtizcore
+- [ ] https://cairosvg.org/
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in
