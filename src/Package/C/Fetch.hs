@@ -55,6 +55,9 @@ fetchUrl url name dirName = do
                 else
                     liftIO $ BSL.readFile tarballDir
 
+        when shouldDownload $
+            liftIO (BSL.writeFile tarballDir response)
+
         putNormal ("Unpacking " ++ name)
 
         liftIO $ unpackResponse compression dirName response
