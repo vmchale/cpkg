@@ -1408,14 +1408,6 @@ let mako =
       { pkgUrl = "https://files.pythonhosted.org/packages/source/M/Mako/Mako-${prelude.showVersion v}.tar.gz" }
 in
 
-let mesa =
-  λ(v : List Natural) →
-    prelude.simplePackage { name = "mesa", version = v } ⫽
-      { pkgUrl = "https://mesa.freedesktop.org/archive/mesa-${prelude.showVersion v}.tar.xz"
-      , pkgDeps = [ prelude.unbounded "elfutils" ]
-      }
-in
-
 let elfutils =
   λ(v : List Natural) →
     let versionString = prelude.showVersion v in
@@ -1508,7 +1500,6 @@ in
 , m4 [1,4,18]
 , mako [1,0,7]
 , markupSafe [1,0]
-, mesa [18,3,1]
 , meson [0,49,0]
 , musl [1,1,20]
 , nasm [2,14]
