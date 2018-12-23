@@ -748,34 +748,26 @@ let imageMagick =
 in
 
 let gtk2 =
+  let gtkConfig =
+    λ(cfg : types.BuildVars) →
+      [ prelude.mkExe "configure"
+      , prelude.call (prelude.defaultCall ⫽ { program = "./configure"
+                                            , arguments = [ "--prefix=${cfg.installDir}" ]
+                                            , environment =
+                                                Some (prelude.defaultPath cfg # [ { var = "LDFLAGS", value = (prelude.mkLDFlags cfg.linkDirs).value ++ " -lpcre -lfribidi" }
+                                                                                , prelude.mkCFlags cfg.includeDirs
+                                                                                , prelude.mkPkgConfigVar cfg.linkDirs
+                                                                                , prelude.mkLDPath cfg.linkDirs
+                                                                                , prelude.mkLDPreload cfg.preloadLibs
+                                                                                ])
+                                            })
+      ]
+  in
+
   λ(x : { version : List Natural, patch : Natural }) →
     let versionString = prelude.showVersion x.version
     in
     let fullVersion = versionString ++ "." ++ Natural/show x.patch
-    in
-
-    let mkLDPreload =
-      λ(libs : List Text) →
-        let flag = concatMapSep " " Text (λ(lib : Text) → lib) libs
-        in
-
-        { var = "LD_PRELOAD", value = flag }
-    in
-
-    let gtkConfig =
-      λ(cfg : types.BuildVars) →
-        [ prelude.mkExe "configure"
-        , prelude.call (prelude.defaultCall ⫽ { program = "./configure"
-                                              , arguments = [ "--prefix=${cfg.installDir}" ]
-                                              , environment =
-                                                  Some (prelude.defaultPath cfg # [ { var = "LDFLAGS", value = (prelude.mkLDFlags cfg.linkDirs).value ++ " -lpcre -lfribidi" }
-                                                                                  , prelude.mkCFlags cfg.includeDirs
-                                                                                  , prelude.mkPkgConfigVar cfg.linkDirs
-                                                                                  , prelude.mkLDPath cfg.linkDirs
-                                                                                  , mkLDPreload cfg.preloadLibs
-                                                                                  ])
-                                              })
-        ]
     in
 
     prelude.simplePackage { name = "gtk2", version = prelude.fullVersion x } ⫽
@@ -1073,8 +1065,11 @@ let atk =
     let fullVersion = versionString ++ "." ++ Natural/show x.patch
     in
 
-    prelude.simplePackage { name = "atk", version = prelude.fullVersion x } ⫽
+    prelude.ninjaPackage { name = "atk", version = prelude.fullVersion x } ⫽
       { pkgUrl = "https://ftp.gnome.org/pub/gnome/sources/atk/${versionString}/atk-${fullVersion}.tar.xz"
+      , pkgBuildDeps = [ prelude.unbounded "gobject-introspection" ]
+      , installCommand =
+          prelude.ninjaInstallWithPkgConfig [{ src = "build/atk.pc", dest = "lib/pkgconfig/atk.pc" }]
       -- , pkgDeps = [ prelude.unbounded "glib" ]
       -- pkgBuildDeps coreutils
       }
@@ -1349,9 +1344,90 @@ let libselinux =
       }
 in
 
+let libXtst =
+  mkXLib "libXtst"
+  -- TODO: depend on recordproto, ?? x11, xext, xextproto, ??? xi
+in
+
+let libXi =
+  mkXLib "libXi"
+in
+
+let at-spi-core =
+  λ(x : { version : List Natural, patch : Natural }) →
+    let versionString = prelude.showVersion x.version
+    in
+    let fullVersion = versionString ++ "." ++ Natural/show x.patch
+    in
+
+    prelude.ninjaPackage { name = "at-spi2-core", version = prelude.fullVersion x } ⫽
+      { pkgUrl = "http://ftp.gnome.org/pub/gnome/sources/at-spi2-core/${versionString}/at-spi2-core-${fullVersion}.tar.xz"
+      , pkgDeps = [ prelude.unbounded "libXtst" ] -- dbus, glib?
+      , installCommand =
+          prelude.ninjaInstallWithPkgConfig [{ src = "build/atspi-2.pc", dest = "lib/pkgconfig/atspi-2.pc" }]
+      }
+in
+
+let at-spi-atk =
+  λ(x : { version : List Natural, patch : Natural }) →
+    let versionString = prelude.showVersion x.version
+    in
+    let fullVersion = versionString ++ "." ++ Natural/show x.patch
+    in
+
+    prelude.ninjaPackage { name = "at-spi2-atk", version = prelude.fullVersion x } ⫽
+      { pkgUrl = "http://ftp.gnome.org/pub/gnome/sources/at-spi2-atk/${versionString}/at-spi2-atk-${fullVersion}.tar.xz"
+      , pkgDeps = [ prelude.unbounded "at-spi2-core"
+                  , prelude.lowerBound { name = "atk", lower = [2,29,2] }
+                  , prelude.unbounded "libxml2"
+                  ]
+      }
+in
+
+let libdrm =
+  λ(v : List Natural) →
+    prelude.ninjaPackage { name = "libdrm", version = v } ⫽
+      { pkgUrl = "https://dri.freedesktop.org/libdrm/libdrm-${prelude.showVersion v}.tar.bz2"
+      , pkgDeps = [ prelude.unbounded "libpciaccess" ]
+      }
+in
+
+let libpciaccess =
+  mkXLib "libpciaccess"
+in
+
+let markupSafe =
+  λ(v : List Natural) →
+    prelude.python3Package { name = "MarkupSafe", version = v } ⫽
+      { pkgUrl = "https://files.pythonhosted.org/packages/source/M/MarkupSafe/MarkupSafe-${prelude.showVersion v}.tar.gz" }
+in
+
+let mako =
+  λ(v : List Natural) →
+    prelude.python3Package { name = "Mako", version = v } ⫽
+      { pkgUrl = "https://files.pythonhosted.org/packages/source/M/Mako/Mako-${prelude.showVersion v}.tar.gz" }
+in
+
+let mesa =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "mesa", version = v } ⫽
+      { pkgUrl = "https://mesa.freedesktop.org/archive/mesa-${prelude.showVersion v}.tar.xz"
+      , pkgDeps = [ prelude.unbounded "elfutils" ]
+      }
+in
+
+let elfutils =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "elfutils", version = v } ⫽
+      { pkgUrl = "https://sourceware.org/ftp/elfutils/${versionString}/elfutils-${versionString}.tar.bz2" }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
-, atk { version = [2,26], patch = 1 }
+, at-spi-atk { version = [2,30], patch = 0 }
+, at-spi-core { version = [2,30], patch = 0 }
+, atk { version = [2,30], patch = 0 }
 , binutils [2,31]
 , bison [3,2,2]
 , bzip2 [1,0,6]
@@ -1361,6 +1437,7 @@ in
 , coreutils [8,30]
 , curl [7,62,0]
 , dbus [1,12,10]
+, elfutils [0,170]
 , emacs [25,3]
 , expat [2,2,6]
 , fontconfig [2,13,1]
@@ -1399,10 +1476,12 @@ in
 , kbproto [1,0,7]
 , libassuan [2,5,1]
 , libatomic_ops [7,6,8]
+, libdrm [2,4,96]
 , libffi [3,2,1]
 , libgcrypt [1,8,4]
 , libgpgError [1,32]
 , libksba [1,3,5]
+, libpciaccess [0,14]
 , libpng [1,6,35]
 , libpthread-stubs [0,4]
 , libnettle [3,4,1]
@@ -1419,12 +1498,17 @@ in
 , libXau [1,0,8]
 , libXdmcp [1,1,2]
 , libXext [1,3,3]
+, libXi [1,7]
 , libXinerama [1,1,4]
 , libXScrnSaver [1,2,3]
 , libXrandr [1,5,1]
 , libXrender [0,9,10]
+, libXtst [1,2,3]
 , lua [5,3,5]
 , m4 [1,4,18]
+, mako [1,0,7]
+, markupSafe [1,0]
+, mesa [18,3,1]
 , meson [0,49,0]
 , musl [1,1,20]
 , nasm [2,14]

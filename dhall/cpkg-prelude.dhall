@@ -529,6 +529,18 @@ let ninjaInstall =
     ]
 in
 
+let ninjaPackage =
+  λ(x : { name : Text, version : List Natural }) →
+    simplePackage x ⫽
+      { configureCommand = mesonConfigure
+      , buildCommand = ninjaBuild
+      , installCommand = ninjaInstall
+      , pkgBuildDeps = [ unbounded "meson"
+                       , unbounded "ninja"
+                       ]
+      }
+in
+
 let copyFiles =
   map { src : Text, dest : Text } types.Command types.Command.CopyFile
 in
@@ -554,6 +566,18 @@ let installWithPkgConfig =
       # copyFiles (map Text { src : Text, dest : Text} (λ(pcFile : Text) → { src = pcFile, dest = "lib/pkgconfig/${pcFile}" }) xs)
 in
 
+let python3Build =
+  λ(cfg : types.BuildVars) →
+    [ createDir "${cfg.installDir}/lib/python3.7/site-packages"
+    , call (defaultCall ⫽ { program = "python3"
+                          , arguments = [ "setup.py", "build" ]
+                          , environment = Some [ { var = "PYTHONPATH", value = "${cfg.installDir}/lib/python3.7/site-packages" }
+                                               , { var = "PATH", value = mkPathVar cfg.binDirs }
+                                               ]
+                          })
+    ]
+in
+
 let python3Install =
   λ(cfg : types.BuildVars) →
     [ createDir "${cfg.installDir}/lib/python3.7/site-packages"
@@ -564,6 +588,24 @@ let python3Install =
                                                ]
                           })
     ]
+in
+
+let python3Package =
+  λ(x : { name : Text, version : List Natural }) →
+    simplePackage x ⫽
+      { configureCommand = doNothing
+      , buildCommand = python3Build
+      , installCommand = python3Install
+      , pkgBuildDeps = [ unbounded "python3" ]
+      }
+in
+
+let mkLDPreload =
+  λ(libs : List Text) →
+    let flag = concatMapSep " " Text (λ(lib : Text) → lib) libs
+    in
+
+    { var = "LD_PRELOAD", value = flag }
 in
 
 { showVersion         = showVersion
@@ -620,6 +662,7 @@ in
 , ninjaBuild          = ninjaBuild
 , ninjaInstall        = ninjaInstall
 , ninjaInstallWithPkgConfig = ninjaInstallWithPkgConfig
+, ninjaPackage        = ninjaPackage
 , doNothing           = doNothing
 , perlConfigure       = perlConfigure
 , copyFiles           = copyFiles
@@ -627,4 +670,7 @@ in
 , mesonMoves          = mesonMoves
 , installWithPkgConfig = installWithPkgConfig
 , python3Install      = python3Install
+, python3Build        = python3Build
+, python3Package      = python3Package
+, mkLDPreload         = mkLDPreload
 }

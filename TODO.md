@@ -37,6 +37,7 @@
 - [ ] `pkgRuntimeDeps` field?
 # Performance
 - [ ] Dhall is slow
+- [ ] Space leak due to zygomorphism? or maybe dhall (lol)
 # Bugs
 - [ ] Shouldn't be able to `cpkg dump compiler sed` since it provides no
   libraries
@@ -83,6 +84,8 @@
 - [ ] https://ftp.gnu.org/gnu/texinfo/ ?
 - [ ] charset (?)
 - [ ] https://sourceware.org/newlib/
+- [ ] https://pypi.org/project/scour/
+- [ ] libtizcore
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in
