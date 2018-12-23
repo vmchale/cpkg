@@ -90,6 +90,7 @@
 - [ ] https://pypi.org/project/scour/
 - [ ] libtizcore
 - [ ] https://cairosvg.org/
+- [ ] ghostscript
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in

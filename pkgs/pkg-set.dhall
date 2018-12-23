@@ -1465,6 +1465,17 @@ let graphviz =
       { pkgUrl = "https://graphviz.gitlab.io/pub/graphviz/stable/SOURCES/graphviz.tar.gz"
       , configureCommand = prelude.configureMkExes [ "iffe" ]
       , pkgDeps = [ prelude.unbounded "perl" ]
+      , installCommand = prelude.installWithBinaries [ "bin/dot" ]
+      }
+in
+
+let libepoxy =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.ninjaPackage { name = "libepoxy", version = v } ⫽
+      { pkgUrl = "https://github.com/anholt/libepoxy/releases/download/${versionString}/libepoxy-${versionString}.tar.xz"
+      , installCommand =
+          prelude.ninjaInstallWithPkgConfig (prelude.mesonMoves [ "epoxy.pc" ])
       }
 in
 
@@ -1524,6 +1535,7 @@ in
 , libassuan [2,5,1]
 , libatomic_ops [7,6,8]
 , libdrm [2,4,96]
+, libepoxy [1,5,3]
 , libffi [3,2,1]
 , libgcrypt [1,8,4]
 , libgpgError [1,32]

@@ -6,7 +6,7 @@ module Package.C.Fetch ( fetchUrl
 import           CPkgPrelude
 import qualified Data.ByteString.Lazy    as BSL
 import           Data.List               (isSuffixOf)
-import           Data.Maybe              (fromMaybe)
+import           Data.Maybe              (fromJust)
 import           Network.HTTP.Client
 import           Network.HTTP.Client.TLS (tlsManagerSettings)
 import           Network.URI
@@ -37,7 +37,7 @@ fetchUrl :: String -- ^ URL
          -> PkgM ()
 fetchUrl url name dirName = do
 
-        let tarballName = fromMaybe (error "Bad filename") (asFilename url)
+        let tarballName = fromJust (asFilename url)
         tarballDir <- (</> tarballName) <$> cacheDir
         shouldDownload <- not <$> liftIO (doesFileExist tarballDir)
 
@@ -62,6 +62,7 @@ fetchUrl url name dirName = do
             (liftIO $ createDirectoryIfMissing True =<< cacheDir)
 
         when shouldDownload $ do
+            -- TODO: should cache/compress to .tar.xz?
             putNormal ("Caching " ++ tarballName)
             liftIO $ BSL.writeFile tarballDir response
 
