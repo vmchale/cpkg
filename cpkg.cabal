@@ -85,7 +85,8 @@ library
         microlens -any,
         composition-prelude,
         recursion >=2.0.0.0,
-        filemanip
+        filemanip,
+        network-uri
 
     if (flag(development) && impl(ghc <=8.2))
         ghc-options: -Werror
