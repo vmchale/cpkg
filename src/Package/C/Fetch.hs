@@ -38,7 +38,7 @@ fetchUrl url name dirName = do
 
         let tarballName = fromMaybe (error "Bad filename") (asFilename url)
         tarballDir <- (</> tarballName) <$> cacheDir
-        shouldDownload <- liftIO $ doesFileExist tarballDir
+        shouldDownload <- not <$> liftIO (doesFileExist tarballDir)
 
         compression <- urlToCompression url
 
