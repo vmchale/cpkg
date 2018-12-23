@@ -94,6 +94,7 @@
 - [ ] https://cairosvg.org/
 - [ ] ghostscript
 - [ ] http://www.linuxfromscratch.org/blfs/view/svn/general/boost.html
+- [ ] brlcad https://jaist.dl.sourceforge.net/project/brlcad/BRL-CAD%20Source/7.28.0/brlcad-7.28.0.tar.bz2
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in

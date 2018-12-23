@@ -764,7 +764,7 @@ let gtk2 =
       , prelude.call (prelude.defaultCall ⫽ { program = "./configure"
                                             , arguments = [ "--prefix=${cfg.installDir}" ]
                                             , environment =
-                                                Some (prelude.defaultPath cfg # [ { var = "LDFLAGS", value = (prelude.mkLDFlags cfg.linkDirs).value ++ " -lpcre -lfribidi" }
+                                                Some (prelude.defaultPath cfg # [ { var = "LDFLAGS", value = (prelude.mkLDFlags cfg.linkDirs).value ++ " -lfribidi" }
                                                                                 , prelude.mkCFlags cfg.includeDirs
                                                                                 , prelude.mkPkgConfigVar cfg.linkDirs
                                                                                 , prelude.mkLDPath cfg.linkDirs
@@ -783,7 +783,6 @@ let gtk2 =
     prelude.simplePackage { name = "gtk2", version = prelude.fullVersion x } ⫽
       { pkgUrl = "http://ftp.gnome.org/pub/gnome/sources/gtk+/${versionString}/gtk+-${fullVersion}.tar.xz"
       , pkgSubdir = "gtk+-${fullVersion}"
-      , configureCommand = gtkConfig
       , pkgDeps = [ prelude.lowerBound { name = "cairo", lower = [1,6] }
                   , prelude.lowerBound { name = "pango", lower = [1,20] }
                   , prelude.lowerBound { name = "atk", lower = [1,29,2] }
@@ -997,6 +996,21 @@ let fribidi =
 in
 
 let gobject-introspection =
+  let gobjectConfig =
+    λ(cfg : types.BuildVars) →
+      [ prelude.mkExe "configure"
+      , prelude.call (prelude.defaultCall ⫽ { program = "./configure"
+                                            , arguments = [ "--prefix=${cfg.installDir}" ]
+                                            , environment =
+                                                Some (prelude.defaultPath cfg # [ { var = "LDFLAGS", value = (prelude.mkLDFlags cfg.linkDirs).value ++ " -lpcre -lgobject-2.0 -lgio-2.0" }
+                                                                                , prelude.mkCFlags cfg.includeDirs
+                                                                                , prelude.mkPkgConfigVar cfg.linkDirs
+                                                                                , prelude.mkLDPath cfg.linkDirs
+                                                                                ])
+                                            })
+      ]
+  in
+
   λ(x : { version : List Natural, patch : Natural }) →
     let versionString = prelude.showVersion x.version
     in
@@ -1006,6 +1020,7 @@ let gobject-introspection =
     prelude.simplePackage { name = "gobject-introspection", version = prelude.fullVersion x } ⫽
       { pkgUrl = "https://download.gnome.org/sources/gobject-introspection/${versionString}/gobject-introspection-${fullVersion}.tar.xz"
       , pkgBuildDeps = [ prelude.unbounded "flex" ] -- coreutils
+      , configureCommand = gobjectConfig
       , pkgDeps = [ prelude.lowerBound { name = "glib", lower = [2,58,0] } ]
       }
 in
@@ -1037,6 +1052,9 @@ let glib =
             # prelude.mkExes [ "build/gobject/glib-mkenums", "build/gobject/glib-genmarshal" ]
       , installCommand =
           λ(cfg : types.BuildVars) →
+            let libDir = "lib/${prelude.printArch cfg.buildArch}-${prelude.printOS cfg.buildOS}-gnu/"
+            in
+
             prelude.ninjaInstallWithPkgConfig (prelude.mesonMoves [ "glib-2.0.pc"
                                                                   , "gobject-2.0.pc"
                                                                   , "gio-2.0.pc"
@@ -1044,7 +1062,9 @@ let glib =
                                                                   , "gmodule-2.0.pc"
                                                                   , "gthread-2.0.pc"
                                                                   ]) cfg
-              # [ prelude.symlinkLibrary "lib/${prelude.printArch cfg.buildArch}-${prelude.printOS cfg.buildOS}-gnu/libglib-2.0.so"
+              # [ prelude.symlinkLibrary "${libDir}/libglib-2.0.so"
+                , prelude.symlinkLibrary "${libDir}/libgobject-2.0.so"
+                , prelude.symlinkLibrary "${libDir}/libgio-2.0.so"
                 , prelude.symlink "include/gio-unix-2.0/gio/gunixoutputstream.h" "include/gio/gunixoutputstream.h"
                 ]
       , pkgBuildDeps = [ prelude.unbounded "meson"
