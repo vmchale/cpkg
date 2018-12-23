@@ -14,6 +14,7 @@ import           Package.C.Db.Register
 import           Package.C.Error
 import           Package.C.Monad
 import           Package.C.Unpack
+import           System.Directory        (createDirectoryIfMissing)
 import           System.FilePath         (takeFileName)
 
 urlToCompression :: MonadIO m => String -> m Compression
@@ -52,11 +53,17 @@ fetchUrl url name dirName = do
                     manager <- liftIO $ newManager tlsManagerSettings
                     initialRequest <- liftIO $ parseRequest url
                     liftIO $ responseBody <$> httpLbs (initialRequest { method = "GET" }) manager
-                else
+                else do
+                    putDiagnostic ("Using cached tarball at " ++ tarballDir)
                     liftIO $ BSL.readFile tarballDir
 
-        when shouldDownload $
-            liftIO (BSL.writeFile tarballDir response)
+        cacheDirExists <- liftIO (doesFileExist =<< cacheDir)
+        unless cacheDirExists
+            (liftIO $ createDirectoryIfMissing True =<< cacheDir)
+
+        when shouldDownload $ do
+            putNormal ("Caching " ++ tarballName)
+            liftIO $ BSL.writeFile tarballDir response
 
         putNormal ("Unpacking " ++ name)
 
