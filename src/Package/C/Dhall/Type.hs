@@ -18,6 +18,7 @@ import           Package.C.Type.Shared
 import           Package.C.Type.Version
 
 data BuildVars = BuildVars { installDir   :: T.Text
+                           , currentDir   :: T.Text
                            , targetTriple :: Maybe T.Text
                            , includeDirs  :: [ T.Text ]
                            , preloadLibs  :: [ T.Text ]

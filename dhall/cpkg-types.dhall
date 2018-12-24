@@ -61,6 +61,7 @@ let TargetTriple = { arch : Arch
 in
 
 let BuildVars = { installDir : Text
+                , currentDir : Text
                 , targetTriple : Optional Text
                 , includeDirs : List Text
                 , preloadLibs : List Text

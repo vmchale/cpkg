@@ -5,6 +5,7 @@ import           Package.C.Triple
 import           Package.C.Type.Shared
 
 data BuildVars = BuildVars { installDir   :: FilePath
+                           , currentDir   :: FilePath
                            , targetTriple :: Maybe Platform
                            , includeDirs  :: [ FilePath ]
                            , preloadLibs  :: [ FilePath ]

@@ -23,11 +23,7 @@ import           Package.C.Type
 
 defaultPackageSetDhall :: Maybe String -> IO PackageSetDhall
 defaultPackageSetDhall (Just pkSet) = input auto (T.pack pkSet)
--- TODO: use getAppUser... below
-defaultPackageSetDhall Nothing      = input auto $
-    "let types = https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-types.dhall " <>
-    "in " <>
-    "https://raw.githubusercontent.com/vmchale/cpkg/master/pkgs/pre-pkg-set.dhall (λ(_ : types.BuildVars) → env:HOME as Text)"
+defaultPackageSetDhall Nothing      = input auto "https://raw.githubusercontent.com/vmchale/cpkg/master/pkgs/pre-pkg-set.dhall"
 
 displayPackageSet :: Maybe String -> IO ()
 displayPackageSet = putDoc . pretty <=< defaultPackageSetDhall

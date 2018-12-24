@@ -98,6 +98,7 @@
 - [ ] brlcad https://jaist.dl.sourceforge.net/project/brlcad/BRL-CAD%20Source/7.28.0/brlcad-7.28.0.tar.bz2
 - [ ] ragel
 - [ ] https://ftp.gnu.org/gnu/parallel/parallel-20181222.tar.bz2
+- [ ] http://savannah.gnu.org/projects/patch/
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in

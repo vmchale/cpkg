@@ -142,7 +142,7 @@ getVars :: Maybe Platform
 getVars host sta links incls bins = do
     nproc <- liftIO getNumCapabilities
     lds <- liftIO $ getPreloads links
-    pure (BuildVars "" host incls lds links bins dhallOS dhallArch sta nproc)
+    pure (BuildVars "" "" host incls lds links bins dhallOS dhallArch sta nproc)
 
 -- TODO: more complicated solver, garbage collector, and all that.
 -- Basically nix-style builds for C libraries
@@ -164,7 +164,7 @@ forceBuildCPkg cpkg host buildVars = do
 
         let p' = p </> pkgSubdir cpkg
 
-        let buildConfigured = buildVars { installDir = pkgDir }
+        let buildConfigured = buildVars { installDir = pkgDir, currentDir = p }
 
         configureInDir cpkg buildConfigured p'
 
