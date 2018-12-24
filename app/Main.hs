@@ -136,9 +136,9 @@ run (Install pkId v host' sta pkSet) =
     runPkgM v $ buildByName (T.pack pkId) host' pkSet sta
 run (Check file v) = void $ getCPkg v file
 run (CheckSet file v) = void $ getPkgs v file
-run (Dump (Linker name) host) = printLinkerFlags name host
-run (Dump (Compiler name) host) = printCompilerFlags name host
-run (Dump (PkgConfig name) host) = printPkgConfigPath name host
+run (Dump (Linker name) host) = runPkgM Normal $ printLinkerFlags name host
+run (Dump (Compiler name) host) = runPkgM Normal $ printCompilerFlags name host
+run (Dump (PkgConfig name) host) = runPkgM Normal $ printPkgConfigPath name host
 run Nuke = do
     pkgDir <- globalPkgDir
     exists <- doesDirectoryExist pkgDir

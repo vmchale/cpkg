@@ -51,6 +51,8 @@ library
         Package.C.Monad
         Package.C.Db.Type
         Package.C.Db.Register
+        Package.C.Db.Monad
+        Package.C.Db.Memory
         Package.C.PackageSet
         System.Process.Ext
         System.Directory.Executable
@@ -83,10 +85,10 @@ library
         hashable -any,
         binary -any,
         microlens -any,
-        composition-prelude,
+        composition-prelude -any,
         recursion >=2.0.0.0,
-        filemanip,
-        network-uri
+        filemanip -any,
+        network-uri -any
 
     if (flag(development) && impl(ghc <=8.2))
         ghc-options: -Werror

@@ -892,35 +892,33 @@ let intltool =
                                                   , environment = Some (prelude.defaultPath cfg # [ prelude.mkPerlLib cfg.linkDirs ])
                                                   })
             ]
-    , pkgBuildDeps = [ prelude.unbounded "gawk"
-                     , prelude.upperBound { name = "perl", upper = [5,30] }
+    , pkgBuildDeps = [ prelude.upperBound { name = "perl", upper = [5,30] }
                      ] -- lower bound: 5.8.1
     }
 in
 
 let gdk-pixbuf =
-  let gdkInstall =
-    λ(fs : List { src : Text, dest : Text }) →
-    λ(cfg : types.BuildVars) →
-      [ prelude.symlinkBinary "bin/gdk-pixbuf-query-loaders"
-      , prelude.call (prelude.defaultCall ⫽ { program = "ninja"
-                                            , environment = Some [ prelude.mkPkgConfigVar cfg.linkDirs
-                                                                 , { var = "PATH", value = prelude.mkPathVar cfg.binDirs ++ ":${cfg.currentDir}/gdk-pixbuf-2.38.0/build/gdk-pixbuf:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
-                                                                 , prelude.mkPyPath cfg.linkDirs
-                                                                 , prelude.mkLDPath cfg.linkDirs
-                                                                 , prelude.mkLDFlags cfg.linkDirs
-                                                                 , prelude.mkCFlags cfg.includeDirs
-                                                                 ]
-                                            , arguments = [ "install" ]
-                                            , procDir = Some "build"
-                                            })
-      ] # prelude.copyFiles fs
-  in
-
   λ(x : { version : List Natural, patch : Natural }) →
     let versionString = prelude.showVersion x.version
     in
     let fullVersion = versionString ++ "." ++ Natural/show x.patch
+    in
+
+    let gdkInstall =
+      λ(fs : List { src : Text, dest : Text }) →
+      λ(cfg : types.BuildVars) →
+        [ prelude.call (prelude.defaultCall ⫽ { program = "ninja"
+                                              , environment = Some [ prelude.mkPkgConfigVar cfg.linkDirs
+                                                                  , { var = "PATH", value = prelude.mkPathVar cfg.binDirs ++ ":${cfg.currentDir}/gdk-pixbuf-${fullVersion}/build/gdk-pixbuf:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
+                                                                  , prelude.mkPyPath cfg.linkDirs
+                                                                  , prelude.mkLDPath cfg.linkDirs
+                                                                  , prelude.mkLDFlags cfg.linkDirs
+                                                                  , prelude.mkCFlags cfg.includeDirs
+                                                                  ]
+                                              , arguments = [ "install" ]
+                                              , procDir = Some "build"
+                                              })
+        ] # prelude.copyFiles fs
     in
 
     prelude.simplePackage { name = "gdk-pixbuf", version = prelude.fullVersion x } ⫽
@@ -1085,9 +1083,20 @@ let glib =
         ]
 
     in
+
     let symlinkGlib =
       λ(h : Text) →
         prelude.symlink "include/glib-2.0/glib/${h}" "include/glib/${h}"
+    in
+
+    let symlinkGobject =
+      λ(h : Text) →
+        prelude.symlink "include/glib-2.0/gobject/${h}" "include/gobject/${h}"
+    in
+
+    let symlinkGio =
+      λ(h : Text) →
+        prelude.symlink "include/glib-2.0/gio/${h}" "include/gio/${h}"
     in
 
     prelude.simplePackage { name = "glib", version = prelude.fullVersion x } ⫽
@@ -1112,91 +1121,16 @@ let glib =
               # [ prelude.symlinkLibrary "${libDir}/libglib-2.0.so"
                 , prelude.symlinkLibrary "${libDir}/libgobject-2.0.so"
                 , prelude.symlinkLibrary "${libDir}/libgio-2.0.so"
+                , prelude.symlink "include/glib-2.0/glib" "include/glib"
+                , prelude.symlink "include/glib-2.0/gobject" "include/gobject"
                 , prelude.symlink "include/gio-unix-2.0/gio/gunixoutputstream.h" "include/gio/gunixoutputstream.h"
                 , prelude.symlink "include/glib-2.0/glib.h" "include/glib.h"
                 , prelude.symlink "include/glib-2.0/gio/gio.h" "include/gio/gio.h"
                 , prelude.symlink "include/glib-2.0/gio/giotypes.h" "include/gio/giotypes.h"
                 , prelude.symlink "include/glib-2.0/gio/gioenums.h" "include/gio/gioenums.h"
                 , prelude.symlink "include/glib-2.0/glib-object.h" "include/glib-object.h"
-                , prelude.symlink "include/glib-2.0/gobject/gbinding.h" "include/gobject/gbinding.h"
                 , prelude.symlink "${libDir}/glib-2.0/include/glibconfig.h" "include/glibconfig.h"
-                , symlinkGlib "galloca.h"
-                , symlinkGlib "garray.h"
-                , symlinkGlib "gasyncqueue.h"
-                , symlinkGlib "gatomic.h"
-                , symlinkGlib "gbacktrace.h"
-                , symlinkGlib "gbase64.h"
-                , symlinkGlib "gbitlock.h"
-                , symlinkGlib "gbookmarkfile.h"
-                , symlinkGlib "gbytes.h"
-                , symlinkGlib "gcharset.h"
-                , symlinkGlib "gchecksum.h"
-                , symlinkGlib "gconvert.h"
-                , symlinkGlib "gdataset.h"
-                , symlinkGlib "gdate.h"
-                , symlinkGlib "gdatetime.h"
-                , symlinkGlib "gdir.h"
-                , symlinkGlib "genviron.h"
-                , symlinkGlib "gerror.h"
-                , symlinkGlib "gfileutils.h"
-                , symlinkGlib "ggettext.h"
-                , symlinkGlib "ghash.h"
-                , symlinkGlib "ghmac.h"
-                , symlinkGlib "ghook.h"
-                , symlinkGlib "ghostutils.h"
-                , symlinkGlib "gi18n-lib.h"
-                , symlinkGlib "gi18n.h"
-                , symlinkGlib "giochannel.h"
-                , symlinkGlib "gkeyfile.h"
-                , symlinkGlib "glib-autocleanups.h"
-                , symlinkGlib "glist.h"
-                , symlinkGlib "gmacros.h"
-                , symlinkGlib "gmain.h"
-                , symlinkGlib "gmappedfile.h"
-                , symlinkGlib "gmarkup.h"
-                , symlinkGlib "gmem.h"
-                , symlinkGlib "gmessages.h"
-                , symlinkGlib "gnode.h"
-                , symlinkGlib "goption.h"
-                , symlinkGlib "gpattern.h"
-                , symlinkGlib "gpoll.h"
-                , symlinkGlib "gprimes.h"
-                , symlinkGlib "gprintf.h"
-                , symlinkGlib "gqsort.h"
-                , symlinkGlib "gquark.h"
-                , symlinkGlib "gqueue.h"
-                , symlinkGlib "grand.h"
-                , symlinkGlib "grcbox.h"
-                , symlinkGlib "grefcount.h"
-                , symlinkGlib "grefstring.h"
-                , symlinkGlib "gregex.h"
-                , symlinkGlib "gscanner.h"
-                , symlinkGlib "gsequence.h"
-                , symlinkGlib "gshell.h"
-                , symlinkGlib "gslice.h"
-                , symlinkGlib "gslist.h"
-                , symlinkGlib "gspawn.h"
-                , symlinkGlib "gstdio.h"
-                , symlinkGlib "gstrfuncs.h"
-                , symlinkGlib "gstring.h"
-                , symlinkGlib "gsrtingchunk.h"
-                , symlinkGlib "gtestutils.h"
-                , symlinkGlib "gthread.h"
-                , symlinkGlib "gthreadpool.h"
-                , symlinkGlib "gtimer.h"
-                , symlinkGlib "gtimezone.h"
-                , symlinkGlib "gtrashstack.h"
-                , symlinkGlib "gtree.h"
-                , symlinkGlib "gtypes.h"
-                , symlinkGlib "gunicode.h"
-                , symlinkGlib "gurifuncs.h"
-                , symlinkGlib "gutils.h"
-                , symlinkGlib "guuid.h"
-                , symlinkGlib "gvariant.h"
-                , symlinkGlib "gvarianttype.h"
-                , symlinkGlib "gversion.h"
-                , symlinkGlib "gversionmacros.h"
-                , symlinkGlib "gwin32.h"
+                , symlinkGio "gaction.h"
                 ]
       , pkgBuildDeps = [ prelude.unbounded "meson"
                        , prelude.unbounded "ninja"

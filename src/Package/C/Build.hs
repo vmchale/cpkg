@@ -117,6 +117,7 @@ buildCPkg cpkg host sta libs incls bins = do
 
     buildVars <- getVars host sta libs incls bins
 
+    -- TODO: use a real database
     installed <- packageInstalled cpkg host buildVars
 
     when installed $
@@ -141,8 +142,8 @@ getVars :: Maybe Platform
         -> PkgM BuildVars
 getVars host sta links incls bins = do
     nproc <- liftIO getNumCapabilities
-    lds <- liftIO $ getPreloads links
-    pure (BuildVars "" "" host incls lds links bins dhallOS dhallArch sta nproc)
+    pure (BuildVars "" "" host incls [] links bins dhallOS dhallArch sta nproc)
+    -- we don't run getPreloads until later because that might be slow
 
 -- TODO: more complicated solver, garbage collector, and all that.
 -- Basically nix-style builds for C libraries
@@ -164,7 +165,9 @@ forceBuildCPkg cpkg host buildVars = do
 
         let p' = p </> pkgSubdir cpkg
 
-        let buildConfigured = buildVars { installDir = pkgDir, currentDir = p }
+        lds <- liftIO $ getPreloads $ linkDirs buildVars
+
+        let buildConfigured = buildVars { installDir = pkgDir, currentDir = p, preloadLibs = lds }
 
         configureInDir cpkg buildConfigured p'
 
@@ -172,4 +175,4 @@ forceBuildCPkg cpkg host buildVars = do
 
         installInDir cpkg buildConfigured p' pkgDir
 
-        registerPkg cpkg host buildVars -- not configured? I think?
+        registerPkg cpkg host buildVars -- not configured
