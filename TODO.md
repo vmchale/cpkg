@@ -9,6 +9,7 @@
 - [ ] Fix tar library and/or rewrite it
 - [ ] Dhall space leak
 - [ ] Fix `hp2pretty` completions to work with `.hp` files alone
+- [ ] Investigate performance problems while decoding `index.bin`
 # Code Maintenance
 - [ ] Use a more sensible monad
 - [ ] Stop being a mess

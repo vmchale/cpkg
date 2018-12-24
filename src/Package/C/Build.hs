@@ -9,6 +9,7 @@ import qualified Data.Text.IO                as TIO
 import           Package.C.Build.OS
 import           Package.C.Db.Register
 import           Package.C.Fetch
+import           Package.C.Logging
 import           Package.C.Monad
 import           Package.C.Type
 import           System.Directory

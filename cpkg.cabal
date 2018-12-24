@@ -54,6 +54,7 @@ library
         Package.C.Db.Monad
         Package.C.Db.Memory
         Package.C.PackageSet
+        Package.C.Logging
         System.Process.Ext
         System.Directory.Executable
         Data.Text.Prettyprint.Doc.Custom

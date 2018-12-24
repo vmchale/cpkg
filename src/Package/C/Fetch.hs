@@ -12,6 +12,7 @@ import           Network.HTTP.Client.TLS (tlsManagerSettings)
 import           Network.URI
 import           Package.C.Db.Register
 import           Package.C.Error
+import           Package.C.Logging
 import           Package.C.Monad
 import           Package.C.Unpack
 import           System.Directory        (createDirectoryIfMissing)

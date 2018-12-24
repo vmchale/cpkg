@@ -13,6 +13,7 @@ module Package.C.Db.Register ( registerPkg
                              , allPackages
                              ) where
 
+import           Control.Monad.Reader
 import           Control.Monad.State  (modify)
 import           CPkgPrelude
 import           Data.Binary          (encode)
@@ -24,6 +25,7 @@ import           Package.C.Db.Memory
 import           Package.C.Db.Monad
 import           Package.C.Db.Type
 import           Package.C.Error
+import           Package.C.Logging
 import           Package.C.Type       hiding (Dep (name))
 
 type FlagPrint = forall m. MonadIO m => BuildCfg -> m String
@@ -83,12 +85,14 @@ lookupPackage name host = do
     pure (S.lookupMax matches)
 
 -- TODO: replace this with a proper/sensible database
-registerPkg :: (MonadIO m, MonadDb m)
+registerPkg :: (MonadIO m, MonadDb m, MonadReader Verbosity m)
             => CPkg
             -> Maybe Platform
             -> BuildVars
             -> m ()
 registerPkg cpkg host b = do
+
+    putDiagnostic ("Registering package " ++ pkgName cpkg ++ "...")
 
     indexFile <- pkgIndex
     indexContents <- memIndex
