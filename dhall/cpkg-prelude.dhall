@@ -532,22 +532,15 @@ let ninjaBuild =
                           , procDir = Some "build" }) ]
 in
 
--- let cpkgBinDir =
-  -- λ(os : types.OS) →
-
-
 let ninjaInstall =
   λ(cfg : types.BuildVars) →
     [ call (defaultCall ⫽ { program = "ninja"
                           , environment = Some [ mkPkgConfigVar cfg.linkDirs
-                                               -- TODO: remove this hack for gdk-pixbuf
-                                               -- Or alternately use %APPDATA%/<app> on windows
-                                               , { var = "PATH", value = mkPathVar cfg.binDirs ++ ":${(env:HOME as Text)}/.cpkg/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
+                                               , { var = "PATH", value = mkPathVar cfg.binDirs ++ ":/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
                                                , mkPyPath cfg.linkDirs
                                                , mkLDPath cfg.linkDirs
                                                , mkLDFlags cfg.linkDirs
                                                , mkCFlags cfg.includeDirs
-                                               , mkPkgConfigVar cfg.linkDirs
                                                ]
                           , arguments = [ "install" ]
                           , procDir = Some "build"
