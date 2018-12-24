@@ -465,6 +465,11 @@ let lapack =
 in
 
 let cairo =
+  let symlinkCairo =
+    λ(h : Text) →
+      prelude.symlink "include/cairo/${h}" "include/${h}"
+  in
+
   λ(v : List Natural) →
     prelude.simplePackage { name = "cairo", version = v } ⫽
      { pkgUrl = "https://www.cairographics.org/releases/cairo-${prelude.showVersion v}.tar.xz"
@@ -475,6 +480,14 @@ let cairo =
                  -- TODO: gobject, glib >= 2.14, libpng, xcb, xrender, x11
                  ]
      -- pkgBuildDeps libtool coreutils binutils
+     , installCommand =
+        λ(cfg : types.BuildVars) →
+          prelude.defaultInstall cfg #
+            [ symlinkCairo "cairo.h"
+            , symlinkCairo "cairo-features.h"
+            , symlinkCairo "cairo-version.h"
+            , symlinkCairo "cairo-deprecated.h"
+            ]
      }
 in
 
@@ -795,6 +808,10 @@ let gtk2 =
                   ]
       -- , pkgBuildDeps = [ prelude.lowerBound { name = "pkg-config", lower = [0,16] } ] also libtool + coreutils
       , configureCommand = gtkConfig
+      , installCommand =
+          λ(cfg : types.BuildVars) →
+            prelude.defaultInstall cfg #
+              [ prelude.symlink "include/gdk-pixbuf-2.0/gdk-pixbuf" "include/gdk-pixbuf" ]
       }
 in
 
@@ -837,7 +854,9 @@ let pango =
       , configureCommand = prelude.mesonConfigure
       , buildCommand = prelude.ninjaBuild
       , installCommand =
-          prelude.ninjaInstallWithPkgConfig (prelude.mesonMoves [ "pango.pc", "pangocairo.pc", "pangoft2.pc" ])
+          λ(cfg : types.BuildVars) →
+            prelude.ninjaInstallWithPkgConfig (prelude.mesonMoves [ "pango.pc", "pangocairo.pc", "pangoft2.pc" ]) cfg
+              # [ prelude.symlink "include/pango-1.0/pango" "include/pango" ]
       , pkgBuildDeps = [ prelude.lowerBound { name = "meson", lower = [0,48,0] }
                        , prelude.unbounded "gobject-introspection"
                        ]
@@ -918,6 +937,7 @@ let gdk-pixbuf =
                                               , arguments = [ "install" ]
                                               , procDir = Some "build"
                                               })
+        , prelude.symlink "include/gdk-pixbuf-2.0/gdk-pixbuf" "include/gdk-pixbuf"
         ] # prelude.copyFiles fs
     in
 
@@ -1082,16 +1102,6 @@ let glib =
                        }
         ]
 
-    in
-
-    let symlinkGlib =
-      λ(h : Text) →
-        prelude.symlink "include/glib-2.0/glib/${h}" "include/glib/${h}"
-    in
-
-    let symlinkGobject =
-      λ(h : Text) →
-        prelude.symlink "include/glib-2.0/gobject/${h}" "include/gobject/${h}"
     in
 
     let symlinkGio =
