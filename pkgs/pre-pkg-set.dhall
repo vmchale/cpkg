@@ -1099,7 +1099,7 @@ let glib =
             # prelude.mkExes [ "build/gobject/glib-mkenums", "build/gobject/glib-genmarshal" ]
       , installCommand =
           λ(cfg : types.BuildVars) →
-            let libDir = "lib/${prelude.printArch cfg.buildArch}-${prelude.printOS cfg.buildOS}-gnu/"
+            let libDir = "lib/${prelude.printArch cfg.buildArch}-${prelude.printOS cfg.buildOS}-gnu"
             in
 
             prelude.ninjaInstallWithPkgConfig (prelude.mesonMoves [ "glib-2.0.pc"
@@ -1119,6 +1119,10 @@ let glib =
                 , prelude.symlink "include/glib-2.0/glib/galloca.h" "include/glib/galloca.h"
                 , prelude.symlink "include/glib-2.0/gio/gioenums.h" "include/gio/gioenums.h"
                 , prelude.symlink "include/glib-2.0/glib-object.h" "include/glib-object.h"
+                , prelude.symlink "include/glib-2.0/gobject/gbinding.h" "include/gobject/gbinding.h"
+                , prelude.symlink "include/glib-2.0/glib/gtypes.h" "include/glib/gtypes.h"
+                , prelude.symlink "${libDir}/glib-2.0/include/glibconfig.h" "include/glibconfig.h"
+                , prelude.symlink "include/glib-2.0/glib/gmacros.h" "include/glib/gmacros.h"
                 -- TODO: install all the headers?
                 ]
       , pkgBuildDeps = [ prelude.unbounded "meson"

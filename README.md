@@ -132,9 +132,15 @@ in
 sed [4,5]
 ```
 
-## Security
+## Known Deficiencies
+
+### Security
 
 This tool is insecure.
+
+### Performance
+
+This tool is not performant.
 
 ## Contents
 

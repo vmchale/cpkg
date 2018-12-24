@@ -51,6 +51,7 @@ stepToProc _ p (Symlink tgt' lnk) = do
     let linkAbs = p </> lnk
     putDiagnostic ("Creating directory" ++ takeDirectory linkAbs ++ "...")
     liftIO $ createDirectoryIfMissing True (takeDirectory linkAbs)
+    -- TODO: diagnostics for symlinks
     liftIO $ createFileLink (p </> tgt') linkAbs
 stepToProc dir' _ (Write out fp) =
     liftIO (TIO.writeFile (dir' </> fp) out)
@@ -117,6 +118,9 @@ buildCPkg cpkg host sta libs incls bins = do
     buildVars <- getVars host sta libs incls bins
 
     installed <- packageInstalled cpkg host buildVars
+
+    when installed $
+        putDiagnostic ("Package " ++ pkgName cpkg ++ " already installed, skipping.")
 
     unless installed $
         forceBuildCPkg cpkg host buildVars

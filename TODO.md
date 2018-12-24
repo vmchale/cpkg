@@ -7,6 +7,7 @@
 - [ ] Investigate possible upstream bug when downloading `fltk` and unpacking
   the `.tar.gz`
 - [ ] Fix tar library and/or rewrite it
+- [ ] Dhall space leak
 # Code Maintenance
 - [ ] Use a more sensible monad
 - [ ] Stop being a mess
@@ -40,7 +41,7 @@
 - [ ] `pkgRuntimeDeps` field?
 # Performance
 - [ ] Dhall is slow
-- [ ] Space leak due to zygomorphism? or maybe dhall (lol)
+- [ ] Space leak due to zygomorphism?
 # Bugs
 - [ ] Shouldn't be able to `cpkg dump compiler sed` since it provides no
   libraries
@@ -96,6 +97,7 @@
 - [ ] http://www.linuxfromscratch.org/blfs/view/svn/general/boost.html
 - [ ] brlcad https://jaist.dl.sourceforge.net/project/brlcad/BRL-CAD%20Source/7.28.0/brlcad-7.28.0.tar.bz2
 - [ ] ragel
+- [ ] https://ftp.gnu.org/gnu/parallel/parallel-20181222.tar.bz2
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in
