@@ -1377,20 +1377,6 @@ let glib =
       }
 in
 
-let libxft =
-  λ(v : List Natural) →
-    let versionString = prelude.showVersion v
-    in
-
-    prelude.simplePackage { name = "libxft", version = v } ⫽
-      { pkgUrl = "https://www.x.org/releases/individual/lib/libXft-${versionString}.tar.bz2"
-      , pkgSubdir = "libXft-${versionString}"
-      , pkgDeps = [ prelude.unbounded "freetype"
-                  , prelude.unbounded "fontconfig"
-                  ]
-      }
-in
-
 let atk =
   λ(x : { version : List Natural, patch : Natural }) →
     let versionString = prelude.showVersion x.version
@@ -1518,6 +1504,15 @@ let mkXLib =
   λ(v : List Natural) →
     prelude.simplePackage { name = name, version = v } ⫽
       { pkgUrl = "https://www.x.org/releases/individual/lib/${name}-${prelude.showVersion v}.tar.bz2" }
+in
+
+let libXft =
+  λ(v : List Natural) →
+    mkXLib "libXft" v ⫽
+      { pkgDeps = [ prelude.unbounded "freetype"
+                  , prelude.unbounded "fontconfig"
+                  ]
+      }
 in
 
 let kbproto =
@@ -1795,7 +1790,7 @@ let gtk3 =
                   , prelude.unbounded "at-spi2-atk"
                   , prelude.lowerBound { name = "atk", lower = [2,15,1] }
                   , prelude.lowerBound { name = "gdk-pixbuf", lower = [2,30,0] }
-                  , prelude.unbounded "libxft"
+                  , prelude.unbounded "libXft"
                   ]
       }
 in
@@ -1911,7 +1906,7 @@ in
 , libuv [1,24,0]
 , libx11 [1,6,7]
 , libxcb [1,13]
-, libxft [2,3,2]
+, libXft [2,3,2]
 , libxml2 [2,9,8]
 , libXau [1,0,8]
 , libXdmcp [1,1,2]
