@@ -665,7 +665,7 @@ let lua =
           (prelude.mkCFlags cfg.includeDirs).value
         in
 
-        [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
+        [ prelude.call (prelude.defaultCall ⫽ { program = "make"
                                               , arguments = cc # [ printLuaOS cfg.buildOS, "MYLDFLAGS=${ldflags}", "MYCFLAGS=${cflags}" ]
                                               })
         ]
@@ -673,7 +673,7 @@ let lua =
 
     let luaInstall =
       λ(cfg : types.BuildVars) →
-        [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
+        [ prelude.call (prelude.defaultCall ⫽ { program = "make"
                                               , arguments = [ "install", "INSTALL_TOP=${cfg.installDir}" ]
                                               }) ]
           # prelude.symlinkBinaries [ "bin/lua", "bin/luac" ]
@@ -873,6 +873,7 @@ let gtk2 =
       }
 in
 
+-- TODO: mkXLibWithDeps function
 let libXrender =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libXrender", version = v } ⫽
@@ -1833,6 +1834,39 @@ let swig =
       }
 in
 
+let lmdb =
+
+  let cc =
+    λ(cfg : types.BuildVars) →
+      Optional/fold Text cfg.targetTriple (List Text) (λ(tgt : Text) → ["CC=${tgt}-gcc"]) ([] : List Text)
+  in
+
+  let ar =
+    λ(cfg : types.BuildVars) →
+      Optional/fold Text cfg.targetTriple (List Text) (λ(tgt : Text) → ["AR=${tgt}-ar"]) ([] : List Text)
+  in
+
+  let lldbInstall =
+    λ(cfg : types.BuildVars) →
+      [ prelude.call (prelude.defaultCall ⫽ { program = "make"
+                                            , arguments = cc cfg # ar cfg # [ "prefix=${cfg.installDir}", "install", "-j${Natural/show cfg.cpus}" ]
+                                            , procDir = Some "libraries/liblmdb" -- TODO: path on windows?
+                                            })
+      ]
+  in
+
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "lmdb", version = v } ⫽
+      { pkgUrl = "https://github.com/LMDB/lmdb/archive/LMDB_${versionString}.tar.gz"
+      , pkgSubdir = "lmdb-LMDB_${versionString}"
+      , configureCommand = prelude.doNothing
+      , buildCommand = prelude.doNothing
+      , installCommand = lldbInstall
+      -- coreutils in pkgBuildDeps?
+      }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
@@ -1880,12 +1914,9 @@ in
 , imageMagick [6,9,10]
 , inputproto [2,3,2]
 , intltool [0,51,0]
-, p11kit [0,23,14]
-, python [2,7,15]
-, python [3,7,2]
-, lapack [3,8,0]
 , jpegTurbo [2,0,1]
 , kbproto [1,0,7]
+, lapack [3,8,0]
 , libassuan [2,5,1]
 , libatomic_ops [7,6,8]
 , libdrm [2,4,96]
@@ -1917,6 +1948,7 @@ in
 , libXrandr [1,5,1]
 , libXrender [0,9,10]
 , libXtst [1,2,3]
+, lmdb [0,9,23]
 , lua [5,3,5]
 , m4 [1,4,18]
 , mako [1,0,7]
@@ -1929,6 +1961,7 @@ in
 , ninja [1,8,2]
 , npth [1,6]
 , openssl [1,1,1]
+, p11kit [0,23,14]
 , pango { version = [1,43], patch = 0 }
 , pcre [8,42]
 , pcre2 [10,32]
@@ -1936,6 +1969,8 @@ in
 -- , perl5 [5,24,4]
 , pixman [0,36,0]
 , pkg-config [0,29,2]
+, python [2,7,15]
+, python [3,7,2]
 , qrencode [4,0,2]
 , re2c [1,1,1]
 , readline [7,0]
