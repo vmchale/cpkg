@@ -49,7 +49,7 @@ fetchUrl url name dirName = do
                 then do
                     putNormal ("Downloading " ++ name)
 
-                    putDiagnostic ("from URL " ++ url)
+                    putLoud ("from URL " ++ url)
 
                     manager <- liftIO $ newManager tlsManagerSettings
                     initialRequest <- liftIO $ parseRequest url
@@ -64,7 +64,7 @@ fetchUrl url name dirName = do
 
         when shouldDownload $ do
             -- TODO: should cache/compress to .tar.xz?
-            putNormal ("Caching " ++ tarballName)
+            putLoud ("Caching " ++ tarballName)
             liftIO $ BSL.writeFile tarballDir response
 
         putNormal ("Unpacking " ++ name)

@@ -2,6 +2,7 @@
 
 module Package.C.Logging ( putNormal
                          , putDiagnostic
+                         , putLoud
                          ) where
 
 import           Control.Monad.Reader
@@ -18,3 +19,6 @@ putNormal = putVerbosity Normal
 
 putDiagnostic :: (MonadReader Verbosity m, MonadIO m) => String -> m ()
 putDiagnostic = putVerbosity Diagnostic
+
+putLoud :: (MonadReader Verbosity m, MonadIO m) => String -> m ()
+putLoud = putVerbosity Loud
