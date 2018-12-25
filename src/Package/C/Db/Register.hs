@@ -9,6 +9,8 @@ module Package.C.Db.Register ( registerPkg
                              , printCompilerFlags
                              , printLinkerFlags
                              , printPkgConfigPath
+                             , printIncludePath
+                             , printLibPath
                              , packageInstalled
                              , allPackages
                              ) where
@@ -44,6 +46,12 @@ printLinkerFlags = printFlagsWith buildCfgToLinkerFlags
 printPkgConfigPath :: (MonadIO m, MonadDb m) => String -> Maybe String -> m ()
 printPkgConfigPath = printFlagsWith buildCfgToPkgConfigPath
 
+printIncludePath :: (MonadIO m, MonadDb m) => String -> Maybe String -> m ()
+printIncludePath = printFlagsWith buildCfgToIncludePath
+
+printLibPath :: (MonadIO m, MonadDb m) => String -> Maybe String -> m ()
+printLibPath = printFlagsWith buildCfgToLibPath
+
 printFlagsWith :: (MonadIO m, MonadDb m) => FlagPrint -> String -> Maybe String -> m ()
 printFlagsWith f name host = do
 
@@ -63,6 +71,12 @@ buildCfgToCFlags = fmap (("-I" ++) . (</> "include")) . buildCfgToDir
 
 buildCfgToPkgConfigPath :: MonadIO m => BuildCfg -> m String
 buildCfgToPkgConfigPath = fmap (</> "lib" </> "pkgconfig") . buildCfgToDir
+
+buildCfgToLibPath :: MonadIO m => BuildCfg -> m String
+buildCfgToLibPath = fmap (</> "lib") . buildCfgToDir
+
+buildCfgToIncludePath :: MonadIO m => BuildCfg -> m String
+buildCfgToIncludePath = fmap (</> "include") . buildCfgToDir
 
 packageInstalled :: (MonadIO m, MonadDb m)
                  => CPkg

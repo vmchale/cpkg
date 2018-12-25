@@ -15,6 +15,8 @@ cpkgVersion = P.version
 data DumpTarget = Linker { _pkgGet :: String }
                 | Compiler { _pkgGet :: String }
                 | PkgConfig { _pkgGet :: String }
+                | IncludePath { _pkgGet :: String }
+                | LibPath { _pkgGet :: String }
 
 data Command = Install { _pkgName :: String, _verbosity :: Verbosity, _target :: Maybe Platform, _static :: Bool, _packageSet :: Maybe String }
              | Check { _dhallFile :: String, _verbosity :: Verbosity }
@@ -50,7 +52,9 @@ dumpTarget :: Parser DumpTarget
 dumpTarget = hsubparser
     (command "linker" (info (Linker <$> package) (progDesc "Dump linker flags for a package"))
     <> command "compiler" (info (Compiler <$> package) (progDesc "Dump compiler flags for a package"))
-    <> command "pkg-config" (info (PkgConfig <$> package) (progDesc "Dump pkg-config path for a package"))
+    <> command "pkg-config" (info (PkgConfig <$> package) (progDesc "Dump pkg-config path for a package")) -- TODO: make pkg-config recursive or something?
+    <> command "include" (info (IncludePath <$> package) (progDesc "Dump C_INCLUDE_PATH for a package"))
+    <> command "library" (info (LibPath <$> package) (progDesc "Dump LD_LIBRARY_PATH or LIBRARY_PATH for a package"))
     )
 
 userCmd :: Parser Command
@@ -139,6 +143,8 @@ run (CheckSet file v) = void $ getPkgs v file
 run (Dump (Linker name) host) = runPkgM Normal $ printLinkerFlags name host
 run (Dump (Compiler name) host) = runPkgM Normal $ printCompilerFlags name host
 run (Dump (PkgConfig name) host) = runPkgM Normal $ printPkgConfigPath name host
+run (Dump (IncludePath name) host) = runPkgM Normal $ printIncludePath name host
+run (Dump (LibPath name) host) = runPkgM Normal $ printLibPath name host
 run Nuke = do
     pkgDir <- globalPkgDir
     exists <- doesDirectoryExist pkgDir

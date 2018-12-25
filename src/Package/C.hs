@@ -13,6 +13,8 @@ module Package.C (
                  , printLinkerFlags
                  , printCompilerFlags
                  , printPkgConfigPath
+                 , printIncludePath
+                 , printLibPath
                  , buildByName
                  -- * Dhall functionality
                  , cPkgDhallToCPkg
