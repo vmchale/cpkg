@@ -101,6 +101,9 @@
 - [ ] ragel
 - [ ] https://ftp.gnu.org/gnu/parallel/parallel-20181222.tar.bz2
 - [ ] http://savannah.gnu.org/projects/patch/
+- [ ] Blender https://download.blender.org/source/blender-2.79b.tar.gz
+- [ ] http://www.ibiblio.org/pub/Linux/utils/file/symlinks-1.4.tar.gz
+- [ ] http://www.linuxfromscratch.org/blfs/view/8.2/general/tree.html
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in

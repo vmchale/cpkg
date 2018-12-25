@@ -23,6 +23,7 @@ data BuildVars = BuildVars { installDir   :: T.Text
                            , includeDirs  :: [ T.Text ]
                            , preloadLibs  :: [ T.Text ]
                            -- TODO: nameToLinkDir function??
+                           , shareDirs    :: [ T.Text ]
                            , linkDirs     :: [ T.Text ]
                            , binDirs      :: [ T.Text ]
                            , buildOS      :: OS

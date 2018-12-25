@@ -226,6 +226,14 @@ let mkLDPath =
     { var = "LD_LIBRARY_PATH", value = flag }
 in
 
+let mkStaPath =
+  λ(libDirs : List Text) →
+    let flag = concatMapSep ":" Text (λ(dir : Text) → dir) libDirs
+    in
+
+    { var = "LIBRARY_PATH", value = flag }
+in
+
 let mkPerlLib =
   λ(libDirs : List Text) →
     let flag = concatMapSep ":" Text (λ(dir : Text) → dir ++ "/site_perl/5.28.1/x86_64-linux/") libDirs
@@ -258,6 +266,13 @@ let mkPkgConfigVar =
     { var = "PKG_CONFIG_PATH", value = flag }
 in
 
+let mkXdgDataDirs =
+  λ(shareDirs : List Text) →
+    let flag = concatMapSep ":" Text (λ(dir : Text) → dir) shareDirs
+    in
+
+    { var = "XDG_DATA_DIRS", value = flag }
+in
 
 let mkPathVar =
   λ(binDirs : List Text) →
@@ -269,6 +284,15 @@ let defaultPath =
     if isUnix cfg.buildOS
       then [ { var = "PATH", value = mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" } ] : List types.EnvVar
       else [] : List types.EnvVar
+in
+
+let libPath =
+  λ(cfg : types.BuildVars) →
+    if cfg.static
+      then
+        mkStaPath cfg.linkDirs
+      else
+        mkLDPath cfg.linkDirs
 in
 
 let generalConfigure =
@@ -288,7 +312,7 @@ let generalConfigure =
                               Some (defaultPath cfg # [ mkLDFlagsGeneral cfg.linkDirs linkLibs
                                                       , mkCFlags cfg.includeDirs
                                                       , mkPkgConfigVar cfg.linkDirs
-                                                      , mkLDPath cfg.linkDirs
+                                                      , libPath cfg
                                                       ])
                           })
     ]
@@ -319,14 +343,20 @@ let configureMkExes =
     configureMkExesExtraFlags { bins = bins, extraFlags = ([] : List Text) }
 in
 
-let defaultBuild =
+let buildWith =
+  λ(envs : List types.EnvVar) →
   λ(cfg : types.BuildVars) →
     [ call (defaultCall ⫽ { program = makeExe cfg.buildOS
                           , arguments = [ "-j${Natural/show cfg.cpus}" ]
                           , environment =
-                              Some (defaultPath cfg # [ mkPkgConfigVar cfg.linkDirs ])
+                              Some envs
                           })
     ]
+in
+
+let defaultBuild =
+  λ(cfg : types.BuildVars) →
+    buildWith (defaultPath cfg # [ mkPkgConfigVar cfg.linkDirs ]) cfg
 in
 
 let defaultInstall =
@@ -503,7 +533,7 @@ let mesonConfigureWithFlags =
            , environment = Some [ mkPkgConfigVar cfg.linkDirs
                                 , { var = "PATH", value = mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
                                 , mkPyPath cfg.linkDirs
-                                , mkLDPath cfg.linkDirs
+                                , libPath cfg
                                 , mkLDFlags cfg.linkDirs
                                 , mkCFlags cfg.includeDirs
                                 , mkPkgConfigVar cfg.linkDirs
@@ -524,7 +554,7 @@ let ninjaBuild =
                           , environment = Some [ mkPkgConfigVar cfg.linkDirs
                                                , { var = "PATH", value = mkPathVar cfg.binDirs ++ ":/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
                                                , mkPyPath cfg.linkDirs
-                                               , mkLDPath cfg.linkDirs
+                                               , libPath cfg
                                                , mkLDFlags cfg.linkDirs
                                                , mkCFlags cfg.includeDirs
                                                , mkPkgConfigVar cfg.linkDirs
@@ -538,7 +568,7 @@ let ninjaInstall =
                           , environment = Some [ mkPkgConfigVar cfg.linkDirs
                                                , { var = "PATH", value = mkPathVar cfg.binDirs ++ ":/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
                                                , mkPyPath cfg.linkDirs
-                                               , mkLDPath cfg.linkDirs
+                                               , libPath cfg
                                                , mkLDFlags cfg.linkDirs
                                                , mkCFlags cfg.includeDirs
                                                ]
@@ -657,6 +687,8 @@ in
 , mkCFlags            = mkCFlags
 , mkLDFlags           = mkLDFlags
 , mkLDPath            = mkLDPath
+, mkStaPath           = mkStaPath
+, libPath             = libPath
 , mkPyPath            = mkPyPath
 , mkIncludePath       = mkIncludePath
 , isUnix              = isUnix
@@ -694,4 +726,6 @@ in
 , python3Package      = python3Package
 , mkLDPreload         = mkLDPreload
 , configureLinkExtraLibs = configureLinkExtraLibs
+, mkXdgDataDirs       = mkXdgDataDirs
+, buildWith           = buildWith
 }

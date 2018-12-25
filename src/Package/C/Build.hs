@@ -110,13 +110,14 @@ fetchCPkg cpkg = fetchUrl (pkgUrl cpkg) (pkgName cpkg)
 buildCPkg :: CPkg
           -> Maybe Platform
           -> Bool -- ^ Should we build static libraries?
+          -> [FilePath] -- ^ Shared data directories
           -> [FilePath] -- ^ Library directories
           -> [FilePath] -- ^ Include directories
           -> [FilePath] -- ^ Directories to add to @PATH@
           -> PkgM ()
-buildCPkg cpkg host sta libs incls bins = do
+buildCPkg cpkg host sta shr libs incls bins = do
 
-    buildVars <- getVars host sta libs incls bins
+    buildVars <- getVars host sta shr libs incls bins
 
     -- TODO: use a real database
     installed <- packageInstalled cpkg host buildVars
@@ -137,13 +138,14 @@ getPreloads =
 -- things up correctly - otherwise we would have a circularity
 getVars :: Maybe Platform
         -> Bool -- ^ Should we build static libraries?
+        -> [FilePath] -- ^ Shared data directories
         -> [FilePath] -- ^ Library directories
         -> [FilePath] -- ^ Include directories
         -> [FilePath] -- ^ Directories to add to @PATH@
         -> PkgM BuildVars
-getVars host sta links incls bins = do
+getVars host sta shr links incls bins = do
     nproc <- liftIO getNumCapabilities
-    pure (BuildVars "" "" host incls [] links bins dhallOS dhallArch sta nproc)
+    pure (BuildVars "" "" host incls [] shr links bins dhallOS dhallArch sta nproc)
     -- we don't run getPreloads until later because that might be slow
 
 -- TODO: more complicated solver, garbage collector, and all that.

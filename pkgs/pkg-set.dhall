@@ -243,6 +243,11 @@ let gmp =
 in
 
 let harfbuzz =
+  let symlinkHarfbuzz =
+    λ(h : Text) →
+      prelude.symlink "include/harfbuzz/${h}" "include/${h}"
+  in
+
   λ(v : List Natural) →
     prelude.simplePackage { name = "harfbuzz", version = v } ⫽
       { pkgUrl = "https://www.freedesktop.org/software/harfbuzz/release/harfbuzz-${prelude.showVersion v}.tar.bz2"
@@ -250,6 +255,37 @@ let harfbuzz =
                   , prelude.unbounded "glib"
                   ]
       , configureCommand = prelude.configureLinkExtraLibs [ "pcre" ]
+      , installCommand =
+          λ(cfg : types.BuildVars) →
+            prelude.defaultInstall cfg
+              # [ symlinkHarfbuzz "hb-aat-layout.h"
+                , symlinkHarfbuzz "hb-aat.h"
+                , symlinkHarfbuzz "hb-blob.h"
+                , symlinkHarfbuzz "hb-buffer.h"
+                , symlinkHarfbuzz "hb-common.h"
+                , symlinkHarfbuzz "hb-deprecated.h"
+                , symlinkHarfbuzz "hb-face.h"
+                , symlinkHarfbuzz "hb-font.h"
+                , symlinkHarfbuzz "hb-ft.h"
+                , symlinkHarfbuzz "hb-glib.h"
+                , symlinkHarfbuzz "hb-icu.h"
+                , symlinkHarfbuzz "hb-map.h"
+                , symlinkHarfbuzz "hb-ot-color.h"
+                , symlinkHarfbuzz "hb-ot-font.h"
+                , symlinkHarfbuzz "hb-ot-layout.h"
+                , symlinkHarfbuzz "hb-ot-math.h"
+                , symlinkHarfbuzz "hb-ot-name.h"
+                , symlinkHarfbuzz "hb-ot-shape.h"
+                , symlinkHarfbuzz "hb-ot-var.h"
+                , symlinkHarfbuzz "hb-ot.h"
+                , symlinkHarfbuzz "hb-set.h"
+                , symlinkHarfbuzz "hb-shape-plan.h"
+                , symlinkHarfbuzz "hb-shape.h"
+                , symlinkHarfbuzz "hb-subset.h"
+                , symlinkHarfbuzz "hb-unicode.h"
+                , symlinkHarfbuzz "hb-version.h"
+                , symlinkHarfbuzz "hb.h"
+                ]
       }
 in
 
@@ -729,6 +765,12 @@ let freetype-shared =
       , pkgBuildDeps = [ prelude.unbounded "coreutils"
                        , prelude.unbounded "sed"
                        ]
+      , installCommand =
+          λ(cfg : types.BuildVars) →
+            prelude.defaultInstall cfg
+              # [ prelude.symlink "include/freetype2/ft2build.h" "include/ft2build.h"
+                , prelude.symlink "include/freetype2/freetype" "include/freetype"
+                ]
       }
 in
 
@@ -784,19 +826,22 @@ let imageMagick =
 in
 
 let gtk2 =
+  let gtkEnv =
+    λ(cfg : types.BuildVars) →
+      prelude.defaultPath cfg # [ { var = "LDFLAGS", value = (prelude.mkLDFlags cfg.linkDirs).value ++ " -lpcre -lfribidi" }
+                                , prelude.mkCFlags cfg.includeDirs
+                                , prelude.mkPkgConfigVar cfg.linkDirs
+                                , prelude.libPath cfg
+                                , prelude.mkXdgDataDirs cfg.shareDirs
+                                , prelude.mkLDPreload cfg.preloadLibs
+                                ]
+  in
   let gtkConfig =
     λ(cfg : types.BuildVars) →
       [ prelude.mkExe "configure"
       , prelude.call (prelude.defaultCall ⫽ { program = "./configure"
                                             , arguments = [ "--prefix=${cfg.installDir}" ]
-                                            , environment =
-                                                Some (prelude.defaultPath cfg # [ { var = "LDFLAGS", value = (prelude.mkLDFlags cfg.linkDirs).value ++ " -lpcre -lfribidi" }
-                                                                                , prelude.mkCFlags cfg.includeDirs
-                                                                                , prelude.mkPkgConfigVar cfg.linkDirs
-                                                                                , prelude.mkLDPath cfg.linkDirs
-                                                                                -- FIXME: remove this hack for gtk3
-                                                                                , prelude.mkLDPreload cfg.preloadLibs
-                                                                                ])
+                                            , environment = Some (gtkEnv cfg)
                                             })
       ]
   in
@@ -817,6 +862,9 @@ let gtk2 =
                   , prelude.lowerBound { name = "gdk-pixbuf", lower = [2,38,0] }
                   ]
       -- , pkgBuildDeps = [ prelude.lowerBound { name = "pkg-config", lower = [0,16] } ] also libtool + coreutils
+      , buildCommand =
+          λ(cfg : types.BuildVars) →
+            prelude.buildWith (gtkEnv cfg) cfg
       , configureCommand = gtkConfig
       , installCommand =
           λ(cfg : types.BuildVars) →
@@ -898,7 +946,7 @@ let shared-mime-info =
      , buildCommand =
         λ(cfg : types.BuildVars) →
           [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
-                                                , environment = Some (prelude.defaultPath cfg # [ prelude.mkLDPath cfg.linkDirs ])
+                                                , environment = Some (prelude.defaultPath cfg # [ prelude.libPath cfg ])
                                                 })
           ]
      , installCommand = prelude.installWithPkgConfig [ "shared-mime-info.pc" ]
@@ -938,12 +986,12 @@ let gdk-pixbuf =
       λ(cfg : types.BuildVars) →
         [ prelude.call (prelude.defaultCall ⫽ { program = "ninja"
                                               , environment = Some [ prelude.mkPkgConfigVar cfg.linkDirs
-                                                                  , { var = "PATH", value = prelude.mkPathVar cfg.binDirs ++ ":${cfg.currentDir}/gdk-pixbuf-${fullVersion}/build/gdk-pixbuf:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
-                                                                  , prelude.mkPyPath cfg.linkDirs
-                                                                  , prelude.mkLDPath cfg.linkDirs
-                                                                  , prelude.mkLDFlags cfg.linkDirs
-                                                                  , prelude.mkCFlags cfg.includeDirs
-                                                                  ]
+                                                                   , { var = "PATH", value = prelude.mkPathVar cfg.binDirs ++ ":${cfg.currentDir}/gdk-pixbuf-${fullVersion}/build/gdk-pixbuf:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
+                                                                   , prelude.mkPyPath cfg.linkDirs
+                                                                   , prelude.libPath cfg
+                                                                   , prelude.mkLDFlags cfg.linkDirs
+                                                                   , prelude.mkCFlags cfg.includeDirs
+                                                                   ]
                                               , arguments = [ "install" ]
                                               , procDir = Some "build"
                                               })
@@ -1056,7 +1104,7 @@ let gobject-introspection =
                                                 Some (prelude.defaultPath cfg # [ { var = "LDFLAGS", value = (prelude.mkLDFlags cfg.linkDirs).value ++ " -lpcre -lgobject-2.0 -lgio-2.0" }
                                                                                 , prelude.mkCFlags cfg.includeDirs
                                                                                 , prelude.mkPkgConfigVar cfg.linkDirs
-                                                                                , prelude.mkLDPath cfg.linkDirs
+                                                                                , prelude.libPath cfg
                                                                                 ])
                                             })
       ]
@@ -1104,7 +1152,7 @@ let glib =
                                             , { var = "PATH", value = prelude.mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
                                             , { var = "LDFLAGS", value = (prelude.mkLDFlags cfg.linkDirs).value ++ " -lpcre" }
                                             , prelude.mkPyPath cfg.linkDirs
-                                            , prelude.mkLDPath cfg.linkDirs
+                                            , prelude.libPath cfg
                                             , prelude.mkCFlags cfg.includeDirs
                                             , prelude.mkPkgConfigVar cfg.linkDirs
                                             ]
@@ -1130,7 +1178,11 @@ let glib =
       , buildCommand =
         λ(cfg : types.BuildVars) →
           prelude.ninjaBuild cfg
-            # prelude.mkExes [ "build/gobject/glib-mkenums", "build/gobject/glib-genmarshal" ]
+            # prelude.mkExes [ "build/gobject/glib-mkenums"
+                             , "build/gobject/glib-genmarshal"
+                             , "build/gio/gdbus-2.0/codegen/gdbus-codegen"
+                             , "build/glib-gettextize"
+                             ]
       , installCommand =
           λ(cfg : types.BuildVars) →
             let libDir = "lib/${prelude.printArch cfg.buildArch}-${prelude.printOS cfg.buildOS}-gnu"
@@ -1139,10 +1191,12 @@ let glib =
             prelude.ninjaInstallWithPkgConfig (prelude.mesonMoves [ "glib-2.0.pc"
                                                                   , "gobject-2.0.pc"
                                                                   , "gio-2.0.pc"
+                                                                  , "gio-unix-2.0.pc" -- TODO: only on unix
                                                                   , "gmodule-no-export-2.0.pc"
                                                                   , "gmodule-2.0.pc"
                                                                   , "gthread-2.0.pc"
                                                                   ]) cfg
+
               # [ prelude.symlinkLibrary "${libDir}/libglib-2.0.so"
                 , prelude.symlinkLibrary "${libDir}/libgobject-2.0.so"
                 , prelude.symlinkLibrary "${libDir}/libgio-2.0.so"
@@ -1313,6 +1367,7 @@ let glib =
                 , symlinkGunix "gunixoutputstream.h"
                 , symlinkGunix "gunixsocketaddress.h"
                 ]
+
       , pkgBuildDeps = [ prelude.unbounded "meson"
                        , prelude.unbounded "ninja"
                        ]
@@ -1607,7 +1662,11 @@ let libselinux =
       [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
                                             , arguments = cc cfg # [ "PREFIX=${cfg.installDir}", "SHLIBDIR=${cfg.installDir}/lib", "EXTRA_CFLAGS=-Wno-error", "install", "-j${Natural/show cfg.cpus}" ]
                                             , environment =
-                                                Some (prelude.defaultPath cfg # [ prelude.mkLDFlags cfg.linkDirs, prelude.mkCFlags cfg.includeDirs, prelude.mkPkgConfigVar cfg.linkDirs, prelude.mkLDPath cfg.linkDirs ])
+                                                Some (prelude.defaultPath cfg # [ prelude.mkLDFlags cfg.linkDirs
+                                                                                , prelude.mkCFlags cfg.includeDirs
+                                                                                , prelude.mkPkgConfigVar cfg.linkDirs
+                                                                                , prelude.libPath cfg
+                                                                                ])
                                             })
       ]
   in
@@ -1700,18 +1759,22 @@ let elfutils =
 in
 
 let gtk3 =
+  let gtkEnv =
+    λ(cfg : types.BuildVars) →
+      prelude.defaultPath cfg # [ { var = "LDFLAGS", value = (prelude.mkLDFlags cfg.linkDirs).value ++ " -lpcre -lfribidi" }
+                                , prelude.mkCFlags cfg.includeDirs
+                                , prelude.mkPkgConfigVar cfg.linkDirs
+                                , prelude.libPath cfg
+                                , prelude.mkXdgDataDirs cfg.shareDirs
+                                , prelude.mkLDPreload cfg.preloadLibs
+                                ]
+  in
   let gtkConfig =
     λ(cfg : types.BuildVars) →
       [ prelude.mkExe "configure"
       , prelude.call (prelude.defaultCall ⫽ { program = "./configure"
                                             , arguments = [ "--prefix=${cfg.installDir}" ]
-                                            , environment =
-                                                Some (prelude.defaultPath cfg # [ { var = "LDFLAGS", value = (prelude.mkLDFlags cfg.linkDirs).value ++ " -lpcre -lfribidi" }
-                                                                                , prelude.mkCFlags cfg.includeDirs
-                                                                                , prelude.mkPkgConfigVar cfg.linkDirs
-                                                                                , prelude.mkLDPath cfg.linkDirs
-                                                                                , prelude.mkLDPreload cfg.preloadLibs
-                                                                                ])
+                                            , environment = Some (gtkEnv cfg)
                                             })
       ]
   in
@@ -1725,10 +1788,14 @@ let gtk3 =
       { pkgUrl = "http://ftp.gnome.org/pub/gnome/sources/gtk+/${versionString}/gtk+-${fullVersion}.tar.xz"
       , pkgSubdir = "gtk+-${fullVersion}"
       , configureCommand = gtkConfig
+      , buildCommand =
+          λ(cfg : types.BuildVars) →
+            prelude.buildWith (gtkEnv cfg) cfg
       , pkgDeps = [ prelude.lowerBound { name = "pango", lower = [1,41,0] }
                   , prelude.unbounded "at-spi2-atk"
                   , prelude.lowerBound { name = "atk", lower = [2,15,1] }
                   , prelude.lowerBound { name = "gdk-pixbuf", lower = [2,30,0] }
+                  , prelude.unbounded "libxft"
                   ]
       }
 in
@@ -1781,7 +1848,7 @@ in
 , bzip2 [1,0,6]
 , cairo [1,16,0]
 , chickenScheme [5,0,0]
-, cmake { version = [3,13], patch = 0 }
+, cmake { version = [3,13], patch = 2 }
 , coreutils [8,30]
 , curl [7,62,0]
 , dbus [1,12,10]
@@ -1820,7 +1887,7 @@ in
 , intltool [0,51,0]
 , p11kit [0,23,14]
 , python [2,7,15]
-, python [3,7,1]
+, python [3,7,2]
 , lapack [3,8,0]
 , jpegTurbo [2,0,1]
 , kbproto [1,0,7]
