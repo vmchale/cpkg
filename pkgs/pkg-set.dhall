@@ -362,7 +362,7 @@ let perl5 =
           in
 
           prelude.installWithBinaries [ "bin/perl", "bin/cpan" ] cfg
-            # [ prelude.symlinkLibrary "lib/${prelude.showVersion v}/${prelude.printArch cfg.buildArch}-${prelude.printOS cfg.buildOS}/CORE/${libperlFile}" ]
+            # [ prelude.symlink "lib/${prelude.showVersion v}/${prelude.printArch cfg.buildArch}-${prelude.printOS cfg.buildOS}/CORE/${libperlFile}" "lib/${libperlFile}" ]
       -- pkgBuildDeps coreutils
       }
 in
@@ -1197,9 +1197,9 @@ let glib =
                                                                   , "gthread-2.0.pc"
                                                                   ]) cfg
 
-              # [ prelude.symlinkLibrary "${libDir}/libglib-2.0.so"
-                , prelude.symlinkLibrary "${libDir}/libgobject-2.0.so"
-                , prelude.symlinkLibrary "${libDir}/libgio-2.0.so"
+              # [ prelude.symlink "${libDir}/libglib-2.0.so" "lib/libglib-2.0.so"
+                , prelude.symlink "${libDir}/libgobject-2.0.so" "lib/libgobject-2.0.so"
+                , prelude.symlink "${libDir}/libgio-2.0.so" "lib/libgio-2.0.so"
                 , prelude.symlink "${libDir}/glib-2.0/include/glibconfig.h" "include/glibconfig.h"
                 , prelude.symlink "include/glib-2.0/glib" "include/glib"
                 , prelude.symlink "include/glib-2.0/gobject" "include/gobject"

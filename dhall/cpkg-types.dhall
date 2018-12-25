@@ -98,7 +98,6 @@ let Command = < CreateDirectory : { dir : Text }
               | MakeExecutable : { file : Text }
               | Call : Proc
               | SymlinkBinary : { file : Text }
-              | SymlinkLibrary : { file : Text }
               | Symlink : { tgt : Text, linkName : Text }
               | Write : { contents : Text, file : Text }
               | CopyFile : { src : Text, dest : Text }

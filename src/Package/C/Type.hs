@@ -36,7 +36,6 @@ data Command = CreateDirectory { dir :: String }
                     , procDir     :: Maybe String
                     }
              | SymlinkBinary { file :: String }
-             | SymlinkLibrary { file :: String }
              | Symlink { tgt :: String, linkName :: String }
              | Write { contents :: T.Text, file :: FilePath }
              | CopyFile { src :: FilePath, dest :: FilePath }
@@ -65,7 +64,6 @@ commandDhallToCommand (Dhall.Call p as env proc)  = Call (T.unpack p) (T.unpack 
 commandDhallToCommand (Dhall.SymlinkBinary b)     = SymlinkBinary (T.unpack b)
 commandDhallToCommand (Dhall.Write out fp)        = Write out (T.unpack fp)
 commandDhallToCommand (Dhall.CopyFile src' dest') = CopyFile (T.unpack src') (T.unpack dest')
-commandDhallToCommand (Dhall.SymlinkLibrary l)    = SymlinkLibrary (T.unpack l)
 commandDhallToCommand (Dhall.Symlink t l)         = Symlink (T.unpack t) (T.unpack l)
 
 buildVarsToDhallBuildVars :: BuildVars -> Dhall.BuildVars

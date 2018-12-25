@@ -153,11 +153,6 @@ let symlinkBinary =
     types.Command.SymlinkBinary { file = file }
 in
 
-let symlinkLibrary =
-  λ(lib : Text) →
-    types.Command.SymlinkLibrary { file = lib }
-in
-
 let symlink =
   λ(tgt : Text) →
   λ(lnk : Text) →
@@ -695,7 +690,6 @@ in
 , defaultPath         = defaultPath
 , simplePackage       = simplePackage
 , symlinkBinary       = symlinkBinary
-, symlinkLibrary      = symlinkLibrary
 , symlink             = symlink
 , symlinkBinaries     = symlinkBinaries
 , installWithBinaries = installWithBinaries
