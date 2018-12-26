@@ -656,7 +656,7 @@ let lua =
       λ(cfg : types.BuildVars) →
         let cc =
           Optional/fold types.TargetTriple cfg.targetTriple (List Text)
-            (λ(tgt : types.TargetTriple) → ["CC=${prelude.printTargetTriple tgt}-gcc"])
+            (λ(tgt : types.TargetTriple) → [ "CC=${prelude.printTargetTriple tgt}-gcc" ])
               ([] : List Text)
         in
 
@@ -669,9 +669,7 @@ let lua =
         in
 
         let os =
-          Optional/fold types.TargetTriple cfg.targetTriple types.OS
-            (λ(tgt : types.TargetTriple) → tgt.os)
-              cfg.buildOS
+          prelude.osCfg cfg
         in
 
         [ prelude.call (prelude.defaultCall ⫽ { program = "make"
@@ -771,8 +769,8 @@ let freetype-shared =
       { pkgUrl = "https://download.savannah.gnu.org/releases/freetype/freetype-${versionString}.tar.gz"
       , configureCommand = prelude.configureMkExes [ "builds/unix/configure" ]
       , pkgSubdir = "freetype-${versionString}"
-      , pkgBuildDeps = [ prelude.unbounded "coreutils"
-                       , prelude.unbounded "sed"
+      , pkgBuildDeps = [ prelude.unbounded "sed"
+                       -- , prelude.unbounded "coreutils"
                        ]
       , installCommand =
           λ(cfg : types.BuildVars) →
@@ -882,18 +880,6 @@ let gtk2 =
       }
 in
 
--- TODO: mkXLibWithDeps function
-let libXrender =
-  λ(v : List Natural) →
-    prelude.simplePackage { name = "libXrender", version = v } ⫽
-      { pkgUrl = "https://www.x.org/archive/individual/lib/libXrender-${prelude.showVersion v}.tar.bz2"
-      , pkgDeps = [ prelude.unbounded "xproto"
-                  , prelude.unbounded "renderproto"
-                  , prelude.unbounded "libx11"
-                  ]
-      }
-in
-
 let mkXProto =
   λ(name : Text) →
   λ(v : List Natural) →
@@ -959,7 +945,6 @@ let shared-mime-info =
                                                 , environment = Some (prelude.defaultPath cfg # [ prelude.libPath cfg ])
                                                 })
           ]
-     , installCommand = prelude.installWithPkgConfig [ "shared-mime-info.pc" ]
      , pkgDeps = [ prelude.unbounded "glib"
                  , prelude.unbounded "libxml2"
                  ]
@@ -976,7 +961,7 @@ let intltool =
             [ prelude.mkExe "configure"
             , prelude.call (prelude.defaultCall ⫽ { program = "./configure"
                                                   , arguments = [ "--prefix=${cfg.installDir}" ]
-                                                  , environment = Some (prelude.defaultPath cfg # [ prelude.mkPerlLib cfg.linkDirs ])
+                                                  , environment = Some (prelude.defaultPath cfg # [ prelude.mkPerlLib { libDirs = cfg.linkDirs, perlVersion = [5,28,1], cfg = cfg } ])
                                                   })
             ]
     , pkgBuildDeps = [ prelude.upperBound { name = "perl", upper = [5,30] } ] -- lower bound: 5.8.1
@@ -1443,13 +1428,11 @@ let chickenScheme =
       λ(cfg : types.BuildVars) →
         let cc =
           Optional/fold types.TargetTriple cfg.targetTriple (List Text)
-            (λ(tgt : types.TargetTriple) → ["C_COMPILER=${prelude.printTargetTriple tgt}-gcc"])
+            (λ(tgt : types.TargetTriple) → [ "C_COMPILER=${prelude.printTargetTriple tgt}-gcc" ])
               ([] : List Text)
         in
         let os =
-          Optional/fold types.TargetTriple cfg.targetTriple types.OS
-            (λ(tgt : types.TargetTriple) → tgt.os)
-              cfg.buildOS
+          prelude.osCfg cfg
         in
         [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
                                               , arguments = cc # [ "PLATFORM=${printChickenOS os}", "PREFIX=${cfg.installDir}" ]
@@ -1486,7 +1469,7 @@ let libxcb =
                   , prelude.unbounded "libpthread-stubs"
                   , prelude.unbounded "libXdmcp"
                   ]
-      , pkgBuildDeps = [ prelude.unbounded "coreutils" ]
+      -- , pkgBuildDeps = [ prelude.unbounded "coreutils" ]
       }
 in
 
@@ -1514,12 +1497,40 @@ let libXau =
       }
 in
 
+let xorgConfigure =
+  prelude.configureWithFlags [ "--disable-malloc0returnsnull" ] -- necessary for cross-compilation
+in
+
 -- TODO: mkXLibWithDeps
 let mkXLib =
   λ(name : Text) →
   λ(v : List Natural) →
     prelude.simplePackage { name = name, version = v } ⫽
-      { pkgUrl = "https://www.x.org/releases/individual/lib/${name}-${prelude.showVersion v}.tar.bz2" }
+      { pkgUrl = "https://www.x.org/releases/individual/lib/${name}-${prelude.showVersion v}.tar.bz2"
+      , configureCommand = xorgConfigure
+      }
+in
+
+let mkXUtil =
+  λ(name : Text) →
+  λ(v : List Natural) →
+    prelude.simplePackage { name = name, version = v } ⫽
+      { pkgUrl = "https://www.x.org/releases/individual/util/${name}-${prelude.showVersion v}.tar.bz2" }
+in
+
+-- TODO: mkXLibWithDeps function
+let libXrender =
+  λ(v : List Natural) →
+    mkXLib "libXrender" v ⫽
+      { pkgDeps = [ prelude.unbounded "xproto"
+                  , prelude.unbounded "renderproto"
+                  , prelude.unbounded "libX11"
+                  ]
+      }
+in
+
+let util-macros =
+  mkXUtil "util-macros"
 in
 
 let libXft =
@@ -1528,7 +1539,7 @@ let libXft =
       { pkgDeps = [ prelude.unbounded "freetype"
                   , prelude.unbounded "fontconfig"
                   , prelude.unbounded "libXrender"
-                  , prelude.unbounded "libx11"
+                  , prelude.unbounded "libX11"
                   ]
       }
 in
@@ -1538,17 +1549,15 @@ let kbproto =
   -- TODO: pkgBuildDeps on coreutils
 in
 
-let libx11 =
+let libX11 =
   λ(v : List Natural) →
-    prelude.simplePackage { name = "libx11", version = v } ⫽
-      { pkgUrl = "https://www.x.org/archive/individual/lib/libX11-${prelude.showVersion v}.tar.bz2"
-      , pkgDeps = [ prelude.unbounded "libxcb"
+    mkXLib "libX11" v ⫽
+      { pkgDeps = [ prelude.unbounded "libxcb"
                   , prelude.unbounded "kbproto"
                   , prelude.unbounded "xextproto"
                   , prelude.unbounded "inputproto"
                   , prelude.unbounded "xtrans"
                   ]
-      , pkgSubdir = "libX11-${prelude.showVersion v}"
       }
 in
 
@@ -1557,27 +1566,34 @@ let inputproto =
 in
 
 let xtrans =
-  λ(v : List Natural) →
-    mkXLib "xtrans" v ⫽
-      { installCommand = prelude.installWithPkgConfig [ "xtrans.pc" ] }
-      -- pkgBuildDeps coreutils
+  mkXLib "xtrans"
+      -- pkgBuildDeps coreutils sed (?)
 in
 
 let libXrandr =
-  mkXLib "libXrandr"
+  λ(v : List Natural) →
+    mkXLib "libXrandr" v ⫽
+      { pkgDeps = [ prelude.unbounded "util-macros"
+                  , prelude.unbounded "libXext"
+                  , prelude.unbounded "libXrender"
+                  , prelude.unbounded "libX11"
+                  ]
+      -- EXTRA_CFLAGS=-Wno-error
+      }
 in
 
 let libXinerama =
-  mkXLib "libXinerama"
+  λ(v : List Natural) →
+    mkXLib "libXinerama" v ⫽
+      { pkgDeps = [ prelude.unbounded "util-macros" ] }
 in
 
 let libXext =
   λ(v : List Natural) →
-    prelude.simplePackage { name = "libXext", version = v } ⫽
-      { pkgUrl = "https://www.x.org/releases/individual/lib/libXext-${prelude.showVersion v}.tar.bz2"
-      , pkgDeps = [ prelude.lowerBound { name = "xextproto", lower = [7,1,99] }
+    mkXLib "libXext" v ⫽
+      { pkgDeps = [ prelude.lowerBound { name = "xextproto", lower = [7,1,99] }
                   , prelude.lowerBound { name = "xproto", lower = [7,0,13] }
-                  , prelude.lowerBound { name = "libx11", lower = [1,6] }
+                  , prelude.lowerBound { name = "libX11", lower = [1,6] }
                   ]
       -- pkgBuildDeps coreutils, libtool, binutils
       }
@@ -1589,7 +1605,12 @@ let xextproto =
 in
 
 let libXScrnSaver =
-  mkXLib "libXScrnSaver"
+  λ(v : List Natural) →
+    mkXLib "libXScrnSaver" v ⫽
+      { pkgDeps = [ prelude.unbounded "util-macros"
+                  , prelude.unbounded "libXext"
+                  ]
+      }
 in
 
 let bzip2 =
@@ -1872,7 +1893,7 @@ let lmdb =
           ([] : List Text)
   in
 
-  let lldbInstall =
+  let lmdbInstall =
     λ(cfg : types.BuildVars) →
       [ prelude.call (prelude.defaultCall ⫽ { program = "make"
                                             , arguments = cc cfg # ar cfg # [ "prefix=${cfg.installDir}", "install", "-j${Natural/show cfg.cpus}" ]
@@ -1888,7 +1909,7 @@ let lmdb =
       , pkgSubdir = "lmdb-LMDB_${versionString}"
       , configureCommand = prelude.doNothing
       , buildCommand = prelude.doNothing
-      , installCommand = lldbInstall
+      , installCommand = lmdbInstall
       -- coreutils in pkgBuildDeps?
       }
 in
@@ -1995,7 +2016,7 @@ in
 , libtasn1 [4,13]
 , libtool [2,4,6]
 , libuv [1,24,0]
-, libx11 [1,6,7]
+, libX11 [1,6,7]
 , libxcb [1,13]
 , libXft [2,3,2]
 , libxml2 [2,9,8]
@@ -2045,6 +2066,7 @@ in
 , tar [1,30]
 , unistring [0,9,10]
 , util-linux [2,33]
+, util-macros [1,19,2]
 , valgrind [3,14,0]
 , vim [8,1]
 , wayland [1,16,0]

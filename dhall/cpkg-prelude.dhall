@@ -247,9 +247,30 @@ let mkStaPath =
     { var = "LIBRARY_PATH", value = flag }
 in
 
+let osCfg =
+  λ(cfg : types.BuildVars) →
+    Optional/fold types.TargetTriple cfg.targetTriple types.OS
+      (λ(tgt : types.TargetTriple) → tgt.os)
+        cfg.buildOS
+in
+
+let archCfg =
+  λ(cfg : types.BuildVars) →
+    Optional/fold types.TargetTriple cfg.targetTriple types.Arch
+      (λ(tgt : types.TargetTriple) → tgt.arch)
+        cfg.buildArch
+in
+
+
 let mkPerlLib =
-  λ(libDirs : List Text) →
-    let flag = concatMapSep ":" Text (λ(dir : Text) → dir ++ "/site_perl/5.28.1/x86_64-linux/") libDirs
+  λ(x : { libDirs : List Text, perlVersion : List Natural, cfg : types.BuildVars }) →
+    let tgt = x.cfg.targetTriple
+    in
+    let os = osCfg x.cfg
+    in
+    let arch = archCfg x.cfg
+    in
+    let flag = concatMapSep ":" Text (λ(dir : Text) → dir ++ "/site_perl/${showVersion x.perlVersion}/${printArch arch}-${printOS os}/") x.libDirs
     in
 
     { var = "PERL5LIB", value = flag }
@@ -324,7 +345,7 @@ let generalConfigure =
                           , environment =
                               Some (defaultPath cfg # [ mkLDFlagsGeneral cfg.linkDirs linkLibs
                                                       , mkCFlags cfg.includeDirs
-                                                      , mkPkgConfigVar cfg.linkDirs
+                                                      , mkPkgConfigVar (cfg.shareDirs # cfg.linkDirs)
                                                       , libPath cfg
                                                       ])
                           })
@@ -374,7 +395,7 @@ in
 
 let defaultInstall =
   λ(cfg : types.BuildVars) →
-    [ call (defaultCall ⫽ { program = makeExe (cfg.buildOS)
+    [ call (defaultCall ⫽ { program = makeExe cfg.buildOS
                           , arguments = [ "install" ]
                           , environment =
                               Some (defaultPath cfg # [ mkPkgConfigVar cfg.linkDirs ])
@@ -504,18 +525,17 @@ in
 
 let cmakePackage =
   defaultPackage ⫽
-  { configureCommand = cmakeConfigure
-  , buildCommand     = cmakeBuild
-  , installCommand   = cmakeInstall
-  }
+    { configureCommand = cmakeConfigure
+    , buildCommand     = cmakeBuild
+    , installCommand   = cmakeInstall
+    }
 in
 
 let autogenConfigure =
   λ(cfg : types.BuildVars) →
     [ mkExe "autogen.sh"
     , call (defaultCall ⫽ { program = "./autogen.sh"
-                          -- https://www.gnu.org/software/automake/manual/html_node/Macro-Search-Path.html
-                          -- ACLOCAL_PATH / ACLOCAL_FLAGS ??
+                          -- ACLOCAL_PATH ??
                           })
     ] # defaultConfigure cfg
 in
@@ -619,13 +639,6 @@ in
 
 let mesonMoves =
   map Text { src : Text, dest : Text} (λ(pcFile : Text) → { src = "build/meson-private/${pcFile}", dest = "lib/pkgconfig/${pcFile}" })
-in
-
-let installWithPkgConfig =
-  λ(xs : List Text) →
-  λ(cfg : types.BuildVars) →
-    defaultInstall cfg
-      # copyFiles (map Text { src : Text, dest : Text} (λ(pcFile : Text) → { src = pcFile, dest = "lib/pkgconfig/${pcFile}" }) xs)
 in
 
 let python3Build =
@@ -744,7 +757,6 @@ in
 , copyFiles           = copyFiles
 , mkPerlLib           = mkPerlLib
 , mesonMoves          = mesonMoves
-, installWithPkgConfig = installWithPkgConfig
 , python3Install      = python3Install
 , python3Build        = python3Build
 , python3Package      = python3Package
@@ -754,4 +766,6 @@ in
 , buildWith           = buildWith
 , mkCCVar             = mkCCVar
 , squishVersion       = squishVersion
+, osCfg               = osCfg
+, archCfg             = archCfg
 }

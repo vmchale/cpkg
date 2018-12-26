@@ -111,6 +111,7 @@
 - [ ] weirdo levenshtein distance in ATS
 - [ ] https://github.com/jmcnamara/libxlsxwriter/archive/RELEASE_0.8.4.tar.gz
 - [ ] https://github.com/gildor2/fast_zlib
+- [ ] grep
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in
