@@ -1565,6 +1565,10 @@ let inputproto =
   mkXProto "inputproto"
 in
 
+let xineramaproto =
+  mkXProto "xineramaproto"
+in
+
 let xtrans =
   mkXLib "xtrans"
       -- pkgBuildDeps coreutils sed (?)
@@ -1585,7 +1589,11 @@ in
 let libXinerama =
   λ(v : List Natural) →
     mkXLib "libXinerama" v ⫽
-      { pkgDeps = [ prelude.unbounded "util-macros" ] }
+      { pkgDeps = [ prelude.unbounded "util-macros"
+                  , prelude.unbounded "libX11"
+                  , prelude.unbounded "libXext"
+                  ]
+      }
 in
 
 let libXext =
@@ -2074,6 +2082,7 @@ in
 , which [2,21]
 , xcb-proto [1,13]
 , xextproto [7,3,0]
+, xineramaproto [1,2]
 , xmlParser [2,44]
 , xproto [7,0,31]
 , xtrans [1,3,5]
