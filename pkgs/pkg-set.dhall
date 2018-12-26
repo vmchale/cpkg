@@ -343,7 +343,6 @@ in
 let perl5 =
   let perlConfigure =
     λ(cfg : types.BuildVars) →
-
       [ prelude.mkExe "Configure"
       , prelude.call (prelude.defaultCall ⫽ { program = "./Configure"
                                             , arguments = [ "-des", "-Dprefix=${cfg.installDir}" ] # (if cfg.static then [] : List Text else [ "-Duseshrplib" ])
@@ -352,8 +351,11 @@ let perl5 =
   in
 
   λ(v : List Natural) →
+    let major = Optional/fold Natural (List/head Natural v) Text (Natural/show) ""
+    in
+
     prelude.simplePackage { name = "perl", version = v } ⫽
-      { pkgUrl = "https://www.cpan.org/src/5.0/perl-${prelude.showVersion v}.tar.gz"
+      { pkgUrl = "https://www.cpan.org/src/${major}.0/perl-${prelude.showVersion v}.tar.gz"
       , configureCommand = perlConfigure
       , installCommand =
         λ(cfg : types.BuildVars) →
@@ -977,8 +979,7 @@ let intltool =
                                                   , environment = Some (prelude.defaultPath cfg # [ prelude.mkPerlLib cfg.linkDirs ])
                                                   })
             ]
-    , pkgBuildDeps = [ prelude.upperBound { name = "perl", upper = [5,30] }
-                     ] -- lower bound: 5.8.1
+    , pkgBuildDeps = [ prelude.upperBound { name = "perl", upper = [5,30] } ] -- lower bound: 5.8.1
     }
 in
 
