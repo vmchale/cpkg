@@ -1,5 +1,5 @@
+{-# LANGUAGE ConstraintKinds  #-}
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE ConstraintKinds #-}
 
 module Package.C.Monad ( PkgM
                        , MonadPkg
