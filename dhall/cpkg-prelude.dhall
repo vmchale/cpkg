@@ -677,6 +677,10 @@ let mkCCVar =
         ([] : List types.EnvVar)
 in
 
+let squishVersion =
+  concatMap Natural Natural/show
+in
+
 { showVersion         = showVersion
 , makeGnuLibrary      = makeGnuLibrary
 , makeGnuExe          = makeGnuExe
@@ -749,4 +753,5 @@ in
 , mkXdgDataDirs       = mkXdgDataDirs
 , buildWith           = buildWith
 , mkCCVar             = mkCCVar
+, squishVersion       = squishVersion
 }

@@ -76,7 +76,9 @@ let lua =
     let luaBuild =
       λ(cfg : types.BuildVars) →
         let cc =
-          Optional/fold Text cfg.targetTriple (List Text) (λ(tgt : Text) → ["CC=${tgt}-gcc"]) ([] : List Text)
+          Optional/fold types.TargetTriple cfg.targetTriple (List Text)
+            (λ(tgt : types.TargetTriple) → ["CC=${prelude.printTargetTriple tgt}-gcc"])
+              ([] : List Text)
         in
 
         let ldflags =
@@ -87,15 +89,21 @@ let lua =
           (prelude.mkCFlags cfg.includeDirs).value
         in
 
-        [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
-                                              , arguments = cc # [ printLuaOS cfg.buildOS, "MYLDFLAGS=${ldflags}", "MYCFLAGS=${cflags}" ]
+        let os =
+          Optional/fold types.TargetTriple cfg.targetTriple types.OS
+            (λ(tgt : types.TargetTriple) → tgt.os)
+              cfg.buildOS
+        in
+
+        [ prelude.call (prelude.defaultCall ⫽ { program = "make"
+                                              , arguments = cc # [ printLuaOS os, "MYLDFLAGS=${ldflags}", "MYCFLAGS=${cflags}" ]
                                               })
         ]
     in
 
     let luaInstall =
       λ(cfg : types.BuildVars) →
-        [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
+        [ prelude.call (prelude.defaultCall ⫽ { program = "make"
                                               , arguments = [ "install", "INSTALL_TOP=${cfg.installDir}" ]
                                               }) ]
           # prelude.symlinkBinaries [ "bin/lua", "bin/luac" ]
@@ -150,14 +158,14 @@ Lovingly provided by [polyglot](https://github.com/vmchale/polyglot):
 -------------------------------------------------------------------------------
  Language             Files       Lines         Code     Comments       Blanks
 -------------------------------------------------------------------------------
- Bash                     2          30           29            0            1
+ Bash                     3          35           34            0            1
  Cabal                    1         154          140            0           14
  Cabal Project            1           2            2            0            0
  Dhall                    3        2916         2601            4          311
- Haskell                 31        1619         1326           22          271
+ Haskell                 31        1622         1328           22          272
  Markdown                 5         321          283            0           38
  YAML                     4         155          140            0           15
 -------------------------------------------------------------------------------
- Total                   47        5197         4521           26          650
+ Total                   48        5205         4528           26          651
 -------------------------------------------------------------------------------
 ```

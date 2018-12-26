@@ -72,6 +72,7 @@ buildWithContext cTree host sta = zygoM' dirAlg buildAlg cTree
 
             pure (BuildDirs links shares includes bins)
 
+-- TODO: should this parse a string into a TargetTriple instead?
 buildByName :: PackId -> Maybe TargetTriple -> Maybe String -> Bool -> PkgM ()
 buildByName pkId host pkSet sta = do
     allPkgs <- liftIO (pkgsM pkId pkSet)

@@ -109,6 +109,8 @@
 - [ ] http://www.linuxfromscratch.org/blfs/view/8.2/general/tree.html
 - [ ] libsigsegv
 - [ ] weirdo levenshtein distance in ATS
+- [ ] https://github.com/jmcnamara/libxlsxwriter/archive/RELEASE_0.8.4.tar.gz
+- [ ] https://github.com/gildor2/fast_zlib
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in

@@ -400,16 +400,12 @@ let valgrind =
 in
 
 let vim =
-  let squishVersion =
-    concatMap Natural Natural/show
-  in
-
   λ(v : List Natural) →
     prelude.defaultPackage ⫽
       { pkgName = "vim"
       , pkgVersion = v
       , pkgUrl = "http://ftp.vim.org/vim/unix/vim-${prelude.showVersion v}.tar.bz2"
-      , pkgSubdir = "vim${squishVersion v}"
+      , pkgSubdir = "vim${prelude.squishVersion v}"
       , configureCommand =
           prelude.configureMkExesExtraFlags { bins = [ "src/configure", "src/auto/configure", "src/which.sh" ]
                                             , extraFlags = [ "--enable-luainterp=yes"
@@ -562,8 +558,7 @@ in
 
 let openssl =
   λ(v : List Natural) →
-    -- TODO: need a printArch thing to convert (parsed) arm to armv4
-    -- aka CC=arm-linux-gnueabihf-gcc ./Configure linux-armv4 works....
+    -- CC=arm-linux-gnueabihf-gcc ./Configure linux-armv4 works....
     prelude.simplePackage { name = "openssl", version = v } ⫽
       { pkgUrl = "https://www.openssl.org/source/openssl-${prelude.showVersion v}a.tar.gz"
       , configureCommand = prelude.generalConfigure "config" ([] : List Text) ([] : List Text)
@@ -633,7 +628,6 @@ in
 
 let lua =
   λ(v : List Natural) →
-    -- FIXME we should use the host OS
     let printLuaOS =
       λ(os : types.OS) →
         merge
@@ -1911,6 +1905,24 @@ let postgresql =
       }
 in
 
+let sqlite =
+  λ(x : { year : Natural, version : List Natural }) →
+    let versionString = prelude.squishVersion x.version in
+    prelude.simplePackage { name = "sqlite", version = x.version } ⫽
+      { pkgUrl = "https://sqlite.org/${Natural/show x.year}/sqlite-autoconf-${versionString}000.tar.gz"
+      , pkgSubdir = "sqlite-autoconf-${versionString}000"
+      -- pkgBuildDeps on libtool and coreutils...
+      }
+in
+
+let ragel =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "ragel", version = v } ⫽
+      { pkgUrl = "http://www.colm.net/files/ragel/ragel-${prelude.showVersion v}.tar.gz"
+      , installCommand = prelude.installWithBinaries [ "bin/ragel" ]
+      }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
@@ -2018,12 +2030,14 @@ in
 , python [2,7,15]
 , python [3,7,2]
 , qrencode [4,0,2]
+, ragel [6,10]
 , re2c [1,1,1]
 , readline [7,0]
 , renderproto [0,11,1]
 , sdl2 [2,0,9]
 , sed [4,5]
 , shared-mime-info [1,10]
+, sqlite { year = 2018, version = [3,26,0] }
 , swig [3,0,12]
 , tar [1,30]
 , unistring [0,9,10]
