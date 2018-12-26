@@ -92,7 +92,7 @@ let printABI =
       , GNUeabi   = λ(_ : {}) → "gnueabi"
       , GNUeabihf = λ(_ : {}) → "gnueabihf"
       , GNUspe    = λ(_ : {}) → "gnuspe"
-      , MinGw     = λ(_ : {}) → "mingw"
+      , MinGw     = λ(_ : {}) → "mingw32"
       }
       os
 in
