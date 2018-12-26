@@ -1627,8 +1627,8 @@ let libXScrnSaver =
   λ(v : List Natural) →
     mkXLib "libXScrnSaver" v ⫽
       { pkgDeps = [ prelude.unbounded "util-macros"
-                  , prelude.unbounded "libXext"
-                  , prelude.unbounded "scrnsaver"
+                  , prelude.unbounded "libXext" -- >= 1.2
+                  , prelude.unbounded "scrnsaverproto" -- >= 1.2
                   ]
       }
 in
