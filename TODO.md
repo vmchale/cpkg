@@ -14,9 +14,12 @@
 - [ ] complain about ncurses 6.1 not cross-compiling
 - [ ] complain about Xorg libraries and bad defaults (malloc) related to
   cross-compiling
-- [ ] complain about m4
-- [ ] cabal should pass verbosity options to `hsc2hs`
+- [ ] definitely complain about intltool
+- [ ] complain about m4 (?)
+- [ ] `hsc2hs` takes too long when cross-compiling
 - [ ] `cabal new-build -v4` needs better error message
+- [ ] Figure out why `libX11` stalls when not watched (i.e. when `-vv` is not
+  passed...)
 # Libraries
 - [ ] Consider splitting off library for parsing triples &c.
 # Code Maintenance
@@ -35,7 +38,6 @@
   - [ ] Cache global package set?
 - [ ] `unpack` subcommand for packages
 - [ ] Cabal integration?
-- [ ] Generate pkg-config files?
 - [ ] Allow a package's function to specify a `pkg-config` dir, etc.
 - [ ] Bootstrap "fancy" tar?
 - [ ] Package "components"? Like cabal: build executables or not...
@@ -47,7 +49,6 @@
 - [ ] `cpkg list` should show what binaries it provides
 - [ ] `test` should map to commands such as `make check`; should not be run when
   cross-compiling
-- [ ] `wrap-cabal` subcommand to wrap cabal with a given set of packages?
 - [ ] `pkgRuntimeDeps` field?
 # Performance
 - [ ] Dhall is slow
@@ -64,7 +65,6 @@
   correctly...
 - [ ] Figure out `PERL5LIB` variable
 # Deficiencies
-- [ ] `mkExe` and `makeExe` are too similar
 - [ ] Get rid of `symlinkLibrary`? And just use `symlink`...
 - [ ] Cache package downloads globally
 - [ ] No database w/ graph right now
@@ -124,14 +124,5 @@
   - [ ] German
 - [ ] Write `info` thing like `info sed`
 # Dhall Libraries
-- [ ] Use something other than `Optional Text` for target architectures
-- [ ] Fix `makeGnuExe` to install binaries
+- [ ] `mkExe` and `makeExe` are too similar
 # Tests
-- [ ] Nontrivial example where we have to link w/ another package installed by
-  `cpkg`.
-  - [ ] GPG
-- [ ] Figure out something w/ Lua
-  - [ ] Use `sed` to delete 13th line
-  - [ ] Then set `INSTALL_TOP` using an environment var?
-# Packages
-- [ ] GMP

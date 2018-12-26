@@ -896,6 +896,10 @@ let renderproto =
   -- pkgBuildDeps = [ prelude.unbounded "gawk", prelude.unbounded "pkg-config", coreutils ]
 in
 
+let randrproto =
+  mkXProto "randrproto"
+in
+
 let pango =
   λ(x : { version : List Natural, patch : Natural }) →
     let versionString = prelude.showVersion x.version
@@ -931,7 +935,6 @@ let libxml2 =
      { pkgUrl = "http://xmlsoft.org/sources/libxml2-${prelude.showVersion v}.tar.gz"
      , configureCommand = prelude.configureWithFlags [ "--without-python" ]
      }
-     -- TODO intltool-update should be patched/packaged
      -- pkgBuildDeps coreutils
 in
 
@@ -954,16 +957,19 @@ in
 -- FIXME: this is screwy...
 let intltool =
   λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
     prelude.simplePackage { name = "intltool", version = v } ⫽
-      { pkgUrl = "https://launchpad.net/intltool/trunk/0.51.0/+download/intltool-0.51.0.tar.gz"
+      { pkgUrl = "https://launchpad.net/intltool/trunk/${versionString}/+download/intltool-${versionString}.tar.gz"
       , configureCommand =
           λ(cfg : types.BuildVars) →
             [ prelude.mkExe "configure"
             , prelude.call (prelude.defaultCall ⫽ { program = "./configure"
                                                   , arguments = [ "--prefix=${cfg.installDir}" ]
-                                                  , environment = Some (prelude.defaultPath cfg # [ prelude.mkPerlLib { libDirs = cfg.linkDirs, perlVersion = [5,28,1], cfg = cfg } ])
+                                                  , environment = Some (prelude.defaultPath cfg
+                                                      # [ prelude.mkPerlLib { libDirs = cfg.linkDirs, perlVersion = [5,28,1], cfg = cfg } ])
                                                   })
             ]
+    , pkgDeps = [ prelude.unbounded "XML-Parser" ]
     , pkgBuildDeps = [ prelude.upperBound { name = "perl", upper = [5,30] } ] -- lower bound: 5.8.1
     }
 in
@@ -1581,6 +1587,7 @@ let libXrandr =
                   , prelude.unbounded "libXext"
                   , prelude.unbounded "libXrender"
                   , prelude.unbounded "libX11"
+                  , prelude.unbounded "randrproto"
                   ]
       -- EXTRA_CFLAGS=-Wno-error
       }
@@ -2063,6 +2070,7 @@ in
 , python [3,7,2]
 , qrencode [4,0,2]
 , ragel [6,10]
+, randrproto [1,5,0]
 , re2c [1,1,1]
 , readline [7,0]
 , renderproto [0,11,1]
