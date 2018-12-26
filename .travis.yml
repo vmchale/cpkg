@@ -38,8 +38,9 @@ before_install:
   - export PATH=$HOME/.cabal/bin:$PATH
 
 script:
-  - cabal new-build all
+  - cabal new-build
   - cabal new-run cpkg -- check-set pkgs/pkg-set.dhall
+  - cabal new-test
   - |
     if [ `uname` = "Darwin" ]
     then

@@ -43,10 +43,10 @@ parseArch =
     <|> (tryString "s390x" $> S390x)
     <|> (tryString "alpha" $> Alpha)
     <|> (tryString "m68k" $> M68k)
-    <|> (tryString "mipsel" $> MipsEl)
-    <|> (tryString "mips" $> Mips)
     <|> (tryString "mips64el" $> Mips64El)
     <|> (tryString "mips64" $> Mips64)
+    <|> (tryString "mipsel" $> MipsEl)
+    <|> (tryString "mips" $> Mips)
     <|> (tryString "i686" $> X86)
     <|> (tryString "sh4" $> SH4)
     <|> (tryString "hppa64" $> HPPA64)
@@ -80,8 +80,8 @@ parseOS =
 parseABI :: Parser ABI
 parseABI =
         (tryString "gnueabihf" $> GNUeabihf)
-    <|> (tryString "gnueabi" $> GNUeabi)
     <|> (tryString "gnuabi64" $> GNUabi64)
+    <|> (tryString "gnueabi" $> GNUeabi)
     <|> (tryString "gnuspe" $> GNUspe)
     <|> (tryString "gnu" $> GNU)
     <|> (tryString "mingw32" $> MinGw)
