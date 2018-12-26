@@ -103,7 +103,7 @@ fetchCPkg cpkg = fetchUrl (pkgUrl cpkg) (pkgName cpkg)
 -- diagnosticDirectory s f = f (s ++ "-diagnostic")
 
 buildCPkg :: CPkg
-          -> Maybe Platform
+          -> Maybe TargetTriple
           -> Bool -- ^ Should we build static libraries?
           -> [FilePath] -- ^ Shared data directories
           -> [FilePath] -- ^ Library directories
@@ -131,7 +131,7 @@ getPreloads =
 -- install directory. we use this to get a hash which we then use to get the
 -- *real* install directory, which we then use with @configureVars@ to set
 -- things up correctly - otherwise we would have a circularity
-getVars :: Maybe Platform
+getVars :: Maybe TargetTriple
         -> Bool -- ^ Should we build static libraries?
         -> [FilePath] -- ^ Shared data directories
         -> [FilePath] -- ^ Library directories
@@ -146,7 +146,7 @@ getVars host sta shr links incls bins = do
 -- TODO: more complicated solver, garbage collector, and all that.
 -- Basically nix-style builds for C libraries
 forceBuildCPkg :: CPkg
-               -> Maybe Platform
+               -> Maybe TargetTriple
                -> BuildVars
                -> PkgM ()
 forceBuildCPkg cpkg host buildVars = do

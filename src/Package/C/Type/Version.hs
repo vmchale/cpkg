@@ -6,8 +6,7 @@ module Package.C.Type.Version ( Version (..)
                               ) where
 
 import           CPkgPrelude
-import           Data.Hashable (Hashable)
-import           Data.List     (intercalate)
+import           Data.List   (intercalate)
 
 newtype Version = Version [ Natural ]
     deriving (Eq, Ord, Interpret, Binary, Hashable)

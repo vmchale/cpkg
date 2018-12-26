@@ -4,8 +4,12 @@ module Package.C (
                  , BuildVars (..)
                  , Version (..)
                  , Verbosity (..)
+                 , TargetTriple (..)
+                 , OS (..)
+                 , Arch (..)
+                 , Manufacturer (..)
+                 , ABI (..)
                  , PkgM
-                 , Platform
                  -- * Functions
                  , buildCPkg
                  , runPkgM
@@ -23,6 +27,9 @@ module Package.C (
                  -- * Packaging
                  , displayPackageSet
                  , allPackages
+                 -- * Parsers
+                 , parseTriple
+                 , parseTripleIO
                  ) where
 
 import           Package.C.Build
@@ -31,4 +38,5 @@ import           Package.C.Db.Register
 import           Package.C.Dhall
 import           Package.C.Monad
 import           Package.C.PackageSet
+import           Package.C.Triple
 import           Package.C.Type

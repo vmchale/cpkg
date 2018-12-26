@@ -1,6 +1,9 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Data.Text.Prettyprint.Doc.Custom ( (<#>)
                                         , (<##>)
                                         , vdisplay
+                                        , dashed
                                         ) where
 
 import           Data.Foldable             (foldl')
@@ -17,3 +20,6 @@ infixr 5 <##>
 
 vdisplay :: [Doc a] -> Doc a
 vdisplay = foldl' (<#>) mempty
+
+dashed :: [Doc a] -> Doc a
+dashed = concatWith (\x y -> x <> "-" <> y)

@@ -9,17 +9,17 @@ module Package.C.Type ( CPkg (..)
                       , Dep (..)
                       , Version (..)
                       , OS (..)
-                      , Platform
+                      , TargetTriple (..)
                       -- * Helper functions
                       , cPkgDhallToCPkg
                       , showVersion
                       ) where
 
 import           CPkgPrelude
-import           Data.Hashable            (Hashable)
 import qualified Data.Text                as T
 import           GHC.Generics             (Generic)
 import qualified Package.C.Dhall.Type     as Dhall
+import           Package.C.Triple.Type
 import           Package.C.Type.Shared
 import           Package.C.Type.Vars
 import           Package.C.Type.Verbosity
@@ -67,7 +67,7 @@ commandDhallToCommand (Dhall.CopyFile src' dest') = CopyFile (T.unpack src') (T.
 commandDhallToCommand (Dhall.Symlink t l)         = Symlink (T.unpack t) (T.unpack l)
 
 buildVarsToDhallBuildVars :: BuildVars -> Dhall.BuildVars
-buildVarsToDhallBuildVars (BuildVars dir' cd tgt' incls prelds shr lds bins os arch sta nproc) = Dhall.BuildVars (T.pack dir') (T.pack cd) (T.pack <$> tgt') (T.pack <$> incls) (T.pack <$> prelds) (T.pack <$> shr) (T.pack <$> lds) (T.pack <$> bins) os arch sta (fromIntegral nproc)
+buildVarsToDhallBuildVars (BuildVars dir' cd tgt' incls prelds shr lds bins os' arch' sta nproc) = Dhall.BuildVars (T.pack dir') (T.pack cd) tgt' (T.pack <$> incls) (T.pack <$> prelds) (T.pack <$> shr) (T.pack <$> lds) (T.pack <$> bins) os' arch' sta (fromIntegral nproc)
 
 cPkgDhallToCPkg :: Dhall.CPkg -> CPkg
 cPkgDhallToCPkg (Dhall.CPkg n v url subdir bldDeps deps cfgCmd buildCmd installCmd) =

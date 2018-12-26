@@ -322,7 +322,9 @@ in
 let ncurses =
   λ(v : List Natural) →
     prelude.simplePackage { name = "ncurses", version = v } ⫽
-      { pkgUrl = "https://invisible-mirror.net/archives/ncurses/ncurses-${prelude.showVersion v}.tar.gz" }
+      { pkgUrl = "https://ftp.gnu.org/pub/gnu/ncurses/ncurses-${prelude.showVersion v}.tar.gz"
+      , configureCommand = prelude.configureWithFlags [ "--disable-stripping" ] -- we disable stripping because otherwise the script fails during cross-compilation
+      }
 in
 
 let pcre2 =
@@ -435,7 +437,7 @@ let zlib =
       λ(cfg : types.BuildVars) →
 
         let host =
-          Optional/fold Text cfg.targetTriple (List types.EnvVar) (λ(tgt : Text) → [{ var = "CC", value = "${tgt}-gcc" }]) ([] : List types.EnvVar)
+          prelude.mkCCVar cfg
         in
 
         [ prelude.mkExe "configure"
@@ -560,10 +562,13 @@ in
 
 let openssl =
   λ(v : List Natural) →
+    -- TODO: need a printArch thing to convert (parsed) arm to armv4
+    -- aka CC=arm-linux-gnueabihf-gcc ./Configure linux-armv4 works....
     prelude.simplePackage { name = "openssl", version = v } ⫽
       { pkgUrl = "https://www.openssl.org/source/openssl-${prelude.showVersion v}a.tar.gz"
       , configureCommand = prelude.generalConfigure "config" ([] : List Text) ([] : List Text)
       , pkgSubdir = "openssl-${prelude.showVersion v}a"
+      , pkgBuildDeps = [ prelude.unbounded "perl" ]
       }
 in
 
@@ -654,7 +659,9 @@ let lua =
     let luaBuild =
       λ(cfg : types.BuildVars) →
         let cc =
-          Optional/fold Text cfg.targetTriple (List Text) (λ(tgt : Text) → ["CC=${tgt}-gcc"]) ([] : List Text)
+          Optional/fold types.TargetTriple cfg.targetTriple (List Text)
+            (λ(tgt : types.TargetTriple) → ["CC=${prelude.printTargetTriple tgt}-gcc"])
+              ([] : List Text)
         in
 
         let ldflags =
@@ -665,8 +672,14 @@ let lua =
           (prelude.mkCFlags cfg.includeDirs).value
         in
 
+        let os =
+          Optional/fold types.TargetTriple cfg.targetTriple types.OS
+            (λ(tgt : types.TargetTriple) → tgt.os)
+              cfg.buildOS
+        in
+
         [ prelude.call (prelude.defaultCall ⫽ { program = "make"
-                                              , arguments = cc # [ printLuaOS cfg.buildOS, "MYLDFLAGS=${ldflags}", "MYCFLAGS=${cflags}" ]
+                                              , arguments = cc # [ printLuaOS os, "MYLDFLAGS=${ldflags}", "MYCFLAGS=${cflags}" ]
                                               })
         ]
     in
@@ -1434,13 +1447,20 @@ let chickenScheme =
     let chickenBuild =
       λ(cfg : types.BuildVars) →
         let cc =
-          Optional/fold Text cfg.targetTriple (List Text) (λ(tgt : Text) → ["C_COMPILER=${tgt}-gcc"]) ([] : List Text)
+          Optional/fold types.TargetTriple cfg.targetTriple (List Text)
+            (λ(tgt : types.TargetTriple) → ["C_COMPILER=${prelude.printTargetTriple tgt}-gcc"])
+              ([] : List Text)
+        in
+        let os =
+          Optional/fold types.TargetTriple cfg.targetTriple types.OS
+            (λ(tgt : types.TargetTriple) → tgt.os)
+              cfg.buildOS
         in
         [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
-                                              , arguments = cc # [ "PLATFORM=${printChickenOS cfg.buildOS}", "PREFIX=${cfg.installDir}" ]
+                                              , arguments = cc # [ "PLATFORM=${printChickenOS os}", "PREFIX=${cfg.installDir}" ]
                                               })
         , prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
-                                              , arguments = cc # [ "PLATFORM=${printChickenOS cfg.buildOS}", "PREFIX=${cfg.installDir}", "install" ]
+                                              , arguments = cc # [ "PLATFORM=${printChickenOS os}", "PREFIX=${cfg.installDir}", "install" ]
                                               })
         ]
           # prelude.symlinkBinaries [ "bin/csc", "bin/chicken-install", "bin/csi" ]
@@ -1578,7 +1598,9 @@ in
 let bzip2 =
   let cc =
     λ(cfg : types.BuildVars) →
-      Optional/fold Text cfg.targetTriple (List Text) (λ(tgt : Text) → ["CC=${tgt}-gcc"]) ([] : List Text)
+      Optional/fold types.TargetTriple cfg.targetTriple (List Text)
+        (λ(tgt : types.TargetTriple) → ["CC=${prelude.printTargetTriple tgt}-gcc"])
+          ([] : List Text)
   in
   let bzipInstall =
     λ(cfg : types.BuildVars) →
@@ -1624,7 +1646,9 @@ in
 let libsepol =
   let cc =
     λ(cfg : types.BuildVars) →
-      Optional/fold Text cfg.targetTriple (List Text) (λ(tgt : Text) → ["CC=${tgt}-gcc"]) ([] : List Text)
+      Optional/fold types.TargetTriple cfg.targetTriple (List Text)
+        (λ(tgt : types.TargetTriple) → ["CC=${prelude.printTargetTriple tgt}-gcc"])
+          ([] : List Text)
   in
   -- TODO: proper separation
   let sepolInstall =
@@ -1650,7 +1674,9 @@ in
 let libselinux =
   let cc =
     λ(cfg : types.BuildVars) →
-      Optional/fold Text cfg.targetTriple (List Text) (λ(tgt : Text) → ["CC=${tgt}-gcc"]) ([] : List Text)
+      Optional/fold types.TargetTriple cfg.targetTriple (List Text)
+        (λ(tgt : types.TargetTriple) → ["CC=${prelude.printTargetTriple tgt}-gcc"])
+          ([] : List Text)
   in
   -- TODO: proper separation
   let selinuxInstall =
@@ -1838,12 +1864,15 @@ let lmdb =
 
   let cc =
     λ(cfg : types.BuildVars) →
-      Optional/fold Text cfg.targetTriple (List Text) (λ(tgt : Text) → ["CC=${tgt}-gcc"]) ([] : List Text)
+      Optional/fold types.TargetTriple cfg.targetTriple (List Text)
+        (λ(tgt : types.TargetTriple) → ["CC=${prelude.printTargetTriple tgt}-gcc"]) -- TODO: mkCCArg in prelude
+          ([] : List Text)
   in
-
   let ar =
     λ(cfg : types.BuildVars) →
-      Optional/fold Text cfg.targetTriple (List Text) (λ(tgt : Text) → ["AR=${tgt}-ar"]) ([] : List Text)
+      Optional/fold types.TargetTriple cfg.targetTriple (List Text)
+        (λ(tgt : types.TargetTriple) → ["AR=${prelude.printTargetTriple tgt}-ar"])
+          ([] : List Text)
   in
 
   let lldbInstall =
@@ -1864,6 +1893,21 @@ let lmdb =
       , buildCommand = prelude.doNothing
       , installCommand = lldbInstall
       -- coreutils in pkgBuildDeps?
+      }
+in
+
+let gsl =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "gsl", version = v } ⫽
+      { pkgUrl = "http://gnu.mirror.constant.com/gsl/gsl-${prelude.showVersion v}.tar.gz" }
+in
+
+let postgresql =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "postgresql", version = v } ⫽
+      { pkgUrl = "https://ftp.postgresql.org/pub/source/v${versionString}/postgresql-${versionString}.tar.bz2"
+      , configureCommand = prelude.configureWithFlags [ "--without-readline" ] -- TODO: set USE_DEV_URANDOM=1 or USE_WIN32_RANDOM=1 on windows
       }
 in
 
@@ -1906,6 +1950,7 @@ in
 , gnutls { version = [3,6], patch = 5 }
 , gnutls { version = [3,5], patch = 19 }
 , graphviz [2,40,1]
+, gsl [2,5]
 , gtk2 { version = [2,24], patch = 32 }
 , gtk3 { version = [3,24], patch = 1 }
 , gzip [1,9]
@@ -1969,6 +2014,7 @@ in
 -- , perl5 [5,24,4]
 , pixman [0,36,0]
 , pkg-config [0,29,2]
+, postgresql [11,1]
 , python [2,7,15]
 , python [3,7,2]
 , qrencode [4,0,2]

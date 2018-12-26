@@ -47,9 +47,11 @@ let Manufacturer = < Unknown : {}
 in
 
 let ABI = < GNU : {}
+          | GNUabi64 : {}
           | GNUeabi : {}
           | GNUeabihf : {}
           | GNUspe : {}
+          | MinGw : {}
           >
 in
 
@@ -62,7 +64,7 @@ in
 
 let BuildVars = { installDir : Text
                 , currentDir : Text
-                , targetTriple : Optional Text
+                , targetTriple : Optional TargetTriple
                 , includeDirs : List Text
                 , preloadLibs : List Text
                 , shareDirs : List Text

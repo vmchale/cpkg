@@ -10,7 +10,6 @@ module Package.C.Db.Type ( BuildCfg (..)
                          ) where
 
 import           CPkgPrelude
-import           Data.Hashable  (Hashable)
 import           Data.Semigroup
 import qualified Data.Set       as S
 import qualified Data.Text      as T
@@ -28,7 +27,7 @@ data BuildCfg = BuildCfg { buildName       :: String
                          , buildVersion    :: Version
                          , pinnedBuildDeps :: [(T.Text, Version)]
                          , pinnedDeps      :: [(T.Text, Version)]
-                         , targetArch      :: Maybe Platform
+                         , targetArch      :: Maybe TargetTriple
                          , configureCmds   :: [ Command ]
                          , buildCmds       :: [ Command ]
                          , installCmds     :: [ Command ]

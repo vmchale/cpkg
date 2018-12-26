@@ -10,6 +10,7 @@
 - [ ] Dhall space leak
 - [ ] Fix `hp2pretty` completions to work with `.hp` files alone
 - [ ] Investigate performance problems while decoding `index.bin`
+- [ ] complain about ncurses 6.1 not cross-compiling
 # Code Maintenance
 - [ ] Use a more sensible monad
 - [ ] Stop being a mess
@@ -105,6 +106,7 @@
 - [ ] http://www.ibiblio.org/pub/Linux/utils/file/symlinks-1.4.tar.gz
 - [ ] http://www.linuxfromscratch.org/blfs/view/8.2/general/tree.html
 - [ ] libsigsegv
+- [ ] weirdo levenshtein distance in ATS
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in

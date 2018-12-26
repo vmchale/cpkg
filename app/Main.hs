@@ -12,6 +12,8 @@ import           System.Directory    (doesDirectoryExist, removeDirectoryRecursi
 cpkgVersion :: V.Version
 cpkgVersion = P.version
 
+type Platform = String
+
 data DumpTarget = Linker { _pkgGet :: String }
                 | Compiler { _pkgGet :: String }
                 | PkgConfig { _pkgGet :: String }
@@ -136,8 +138,11 @@ dhallFile =
     )
 
 run :: Command -> IO ()
-run (Install pkId v host' sta pkSet) =
-    runPkgM v $ buildByName (T.pack pkId) host' pkSet sta
+run (Install pkId v host' sta pkSet) = do
+    parsedHost <- case host' of
+        Just x  -> fmap Just (parseTripleIO x)
+        Nothing -> pure Nothing
+    runPkgM v $ buildByName (T.pack pkId) parsedHost pkSet sta
 run (Check file v) = void $ getCPkg v file
 run (CheckSet file v) = void $ getPkgs v file
 run (Dump (Linker name) host) = runPkgM Normal $ printLinkerFlags name host
@@ -153,4 +158,4 @@ run Nuke = do
 run (List pkSet) = displayPackageSet pkSet
 
 main :: IO ()
-main = execParser wrapper >>= run
+main = run =<< execParser wrapper

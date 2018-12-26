@@ -42,6 +42,8 @@ library
         Package.C.Type.Version
         Package.C.Type.Vars
         Package.C.Triple
+        Package.C.Triple.Type
+        Package.C.Triple.Parse
         Package.C.Build
         Package.C.Build.OS
         Package.C.Build.Tree
@@ -86,10 +88,11 @@ library
         hashable -any,
         binary -any,
         microlens -any,
-        composition-prelude -any,
+        composition-prelude >=2.0.2.0,
         recursion >=2.0.0.0,
         filemanip -any,
-        network-uri -any
+        network-uri -any,
+        megaparsec -any
 
     if (flag(development) && impl(ghc <=8.2))
         ghc-options: -Werror
@@ -116,6 +119,30 @@ executable cpkg
         text -any
 
     if (flag(development) && impl(ghc <=8.2))
+        ghc-options: -Werror
+
+    if impl(ghc >=8.0)
+        ghc-options:
+            -Wincomplete-uni-patterns -Wincomplete-record-updates
+            -Wredundant-constraints -Widentities
+
+    if impl(ghc >=8.4)
+        ghc-options: -Wmissing-export-lists
+
+test-suite cpkg-test
+    type:             exitcode-stdio-1.0
+    main-is:          Spec.hs
+    hs-source-dirs:   test
+    default-language: Haskell2010
+    ghc-options:      -threaded -rtsopts -with-rtsopts=-N -Wall
+    build-depends:
+        base -any,
+        cpkg -any,
+        hspec -any,
+        hspec-megaparsec -any,
+        megaparsec -any
+
+    if flag(development)
         ghc-options: -Werror
 
     if impl(ghc >=8.0)

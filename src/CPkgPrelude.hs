@@ -8,16 +8,22 @@ module CPkgPrelude ( -- * Base reëxports
                    , fold
                    , toList
                    , filterM
+                   , ($>)
                    , (<=<)
                    , MonadIO (..)
-                   -- Dhall reëxports
+                   , Void
+                   -- * Dhall reëxports
                    , Inject
                    , Interpret
+                   -- * hashable reëxports
+                   , Hashable
                    -- * Exports from "Control.Composition"
+                   , (.$)
                    , (.**)
                    -- * Exports from "Data.Binary"
                    , Binary
                    -- prettyprinter reëxports
+                   , Doc
                    , Pretty (..)
                    , punctuate
                    -- * microlens reëxports
@@ -30,12 +36,15 @@ module CPkgPrelude ( -- * Base reëxports
                    , getAppUserDataDirectory
                    ) where
 
-import           Control.Composition       ((.**))
+import           Control.Composition       ((.$), (.**))
 import           Control.Monad
 import           Control.Monad.IO.Class    (MonadIO (..))
 import           Data.Binary               (Binary)
 import           Data.Foldable
+import           Data.Functor              (($>))
+import           Data.Hashable             (Hashable)
 import           Data.Text.Prettyprint.Doc
+import           Data.Void                 (Void)
 import           Dhall                     (Inject, Interpret)
 import           GHC.Generics              (Generic)
 import           GHC.Natural               (Natural)

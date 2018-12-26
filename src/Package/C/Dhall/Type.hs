@@ -13,13 +13,13 @@ import           Data.Text.Prettyprint.Doc
 import           Data.Text.Prettyprint.Doc.Custom
 import           Dhall
 import           GHC.Natural                      (Natural)
-import           Package.C.Triple
+import           Package.C.Triple.Type
 import           Package.C.Type.Shared
 import           Package.C.Type.Version
 
 data BuildVars = BuildVars { installDir   :: T.Text
                            , currentDir   :: T.Text
-                           , targetTriple :: Maybe T.Text
+                           , targetTriple :: Maybe TargetTriple
                            , includeDirs  :: [ T.Text ]
                            , preloadLibs  :: [ T.Text ]
                            -- TODO: nameToLinkDir function??

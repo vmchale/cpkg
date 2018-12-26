@@ -18,14 +18,6 @@ let showVersion =
   concatMapSep "." Natural Natural/show
 in
 
-let mkHost =
-  mapOptional Text Text (λ(tgt : Text) → "--host=${tgt}")
-in
-
-let mkHostEnv =
-  mapOptional Text Text (λ(tgt : Text) → "CHOST=${tgt}")
-in
-
 let maybeAppend =
   λ(a : Type) →
   λ(x : Optional a) →
@@ -80,7 +72,7 @@ let printOS =
       , Dragonfly = λ(_ : {}) → "dragonfly"
       , Linux     = λ(_ : {}) → "linux"
       , Darwin    = λ(_ : {}) → "darwin"
-      , Windows   = λ(_ : {}) → "mingw32"
+      , Windows   = λ(_ : {}) → "w64-mingw32"
       , Redox     = λ(_ : {}) → "redox"
       , Haiku     = λ(_ : {}) → "haiku"
       , IOS       = λ(_ : {}) → "darwin"
@@ -90,6 +82,32 @@ let printOS =
       , NoOs      = λ(_ : {}) → "none"
       }
       os
+in
+
+let printABI =
+  λ(os : types.ABI) →
+    merge
+      { GNU       = λ(_ : {}) → "gnu"
+      , GNUabi64  = λ(_ : {}) → "gnuabi64"
+      , GNUeabi   = λ(_ : {}) → "gnueabi"
+      , GNUeabihf = λ(_ : {}) → "gnueabihf"
+      , GNUspe    = λ(_ : {}) → "gnuspe"
+      , MinGw     = λ(_ : {}) → "mingw"
+      }
+      os
+in
+
+let printTargetTriple =
+  λ(t : types.TargetTriple) →
+    "${printArch t.arch}-${printOS t.os}" ++ Optional/fold types.ABI t.abi Text (λ(abi : types.ABI) → "-${printABI abi}") ""
+in
+
+let mkHost =
+  mapOptional types.TargetTriple Text (λ(tgt : types.TargetTriple) → "--host=${printTargetTriple tgt}")
+in
+
+let mkHostEnv =
+  mapOptional types.TargetTriple Text (λ(tgt : types.TargetTriple) → "CHOST=${printTargetTriple tgt}")
 in
 
 let makeExe =
@@ -434,7 +452,7 @@ in
 let cmakeConfigure =
   λ(cfg : types.BuildVars) →
     let host =
-      Optional/fold Text cfg.targetTriple (List Text) (λ(tgt : Text) → ["-DCMAKE_C_COMPILER=${tgt}-gcc"]) ([] : List Text)
+      Optional/fold types.TargetTriple cfg.targetTriple (List Text) (λ(tgt : types.TargetTriple) → ["-DCMAKE_C_COMPILER=${printTargetTriple tgt}-gcc"]) ([] : List Text)
     in
 
     [ createDir "build"
@@ -652,6 +670,13 @@ let mkLDPreload =
     { var = "LD_PRELOAD", value = flag }
 in
 
+let mkCCVar =
+  λ(cfg : types.BuildVars) →
+    Optional/fold types.TargetTriple cfg.targetTriple (List types.EnvVar)
+      (λ(tgt : types.TargetTriple) → [{ var = "CC", value = "${printTargetTriple tgt}-gcc" }])
+        ([] : List types.EnvVar)
+in
+
 { showVersion         = showVersion
 , makeGnuLibrary      = makeGnuLibrary
 , makeGnuExe          = makeGnuExe
@@ -663,6 +688,7 @@ in
 , printArch           = printArch
 , printManufacturer   = printManufacturer
 , printOS             = printOS
+, printTargetTriple   = printTargetTriple
 , call                = call
 , mkExe               = mkExe -- TODO: rename this so it's not so confusing
 , mkExes              = mkExes
@@ -722,4 +748,5 @@ in
 , configureLinkExtraLibs = configureLinkExtraLibs
 , mkXdgDataDirs       = mkXdgDataDirs
 , buildWith           = buildWith
+, mkCCVar             = mkCCVar
 }

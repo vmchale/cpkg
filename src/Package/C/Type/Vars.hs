@@ -1,12 +1,12 @@
 module Package.C.Type.Vars ( BuildVars (..)
                            ) where
 
-import           Package.C.Triple
+import           Package.C.Triple.Type
 import           Package.C.Type.Shared
 
 data BuildVars = BuildVars { installDir   :: FilePath
                            , currentDir   :: FilePath
-                           , targetTriple :: Maybe Platform
+                           , targetTriple :: Maybe TargetTriple
                            , includeDirs  :: [ FilePath ]
                            , preloadLibs  :: [ FilePath ]
                            , shareDirs    :: [ FilePath ]

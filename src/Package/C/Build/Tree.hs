@@ -32,7 +32,7 @@ data BuildDirs = BuildDirs { libraries :: [FilePath]
                            }
 
 buildWithContext :: Tree CPkg
-                 -> Maybe Platform
+                 -> Maybe TargetTriple
                  -> Bool -- ^ Should we build static libraries?
                  -> PkgM ()
 buildWithContext cTree host sta = zygoM' dirAlg buildAlg cTree
@@ -72,7 +72,7 @@ buildWithContext cTree host sta = zygoM' dirAlg buildAlg cTree
 
             pure (BuildDirs links shares includes bins)
 
-buildByName :: PackId -> Maybe Platform -> Maybe String -> Bool -> PkgM ()
+buildByName :: PackId -> Maybe TargetTriple -> Maybe String -> Bool -> PkgM ()
 buildByName pkId host pkSet sta = do
     allPkgs <- liftIO (pkgsM pkId pkSet)
     buildWithContext allPkgs host sta
