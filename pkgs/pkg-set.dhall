@@ -1603,6 +1603,7 @@ let libXinerama =
       { pkgDeps = [ prelude.unbounded "util-macros"
                   , prelude.unbounded "libX11"
                   , prelude.unbounded "libXext"
+                  , prelude.unbounded "xineramaproto"
                   ]
       }
 in
