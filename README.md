@@ -19,6 +19,7 @@ with better support for cross-compilation.
 - [Example](#example)
   - [Configuration](#configuration)
   - [Dhall Prelude](#dhall-prelude)
+  - [Cabal Integration](#cabal-integration)
 - [Security](#security)
 - [Contents](#contents)
 
@@ -49,6 +50,9 @@ cpkg install tar
 Here is the configuration for Lua:
 
 ```dhall
+let prelude = https://raw.githubusercontent.com/vmchale/cpkg/master/dhall/cpkg-prelude.dhall
+in
+
 let lua =
   λ(v : List Natural) →
     let printLuaOS =
@@ -121,7 +125,7 @@ in
 lua [5,3,5]
 ```
 
-### Cabal
+### Cabal Integration
 
 After running
 
@@ -138,10 +142,16 @@ You can dump flags to be passed to cabal with
 cpkg dump-cabal libXext libXrandr libXinerama libXScrnSaver --target=arm-linux-gnueabihf
 ```
 
+which will produce something like
+
+```
+--extra-lib-dirs=/home/vanessa/.cpkg/arm-linux-gnueabihf/libXext-1.3.3-63648c4324869741/lib --extra-lib-dirs=/home/vanessa/.cpkg/arm-linux-gnueabihf/libXrandr-1.5.1-72c136ebb1cdbee4/lib --extra-lib-dirs=/home/vanessa/.cpkg/arm-linux-gnueabihf/libXinerama-1.1.4-49761ceb8fb134d8/lib --extra-lib-dirs=/home/vanessa/.cpkg/arm-linux-gnueabihf/libXScrnSaver-1.2.3-11409d560d940784/lib
+```
+
 This could be used, for example, to cross-compile `X11`:
 
 ```
-cabal new-install --with-ghc arm-linux-gnueabihf-ghc --with-ghc-pkg arm-linux-gnueabihf-ghc-pkg X11 $(cpkg dump-cabal libXext libXrandr libXinerama libXScrnSaver --target=arm-linux-gnueabihf)
+cabal new-install X11 --with-ghc arm-linux-gnueabihf-ghc --with-ghc-pkg arm-linux-gnueabihf-ghc-pkg $(cpkg dump-cabal libXext libXrandr libXinerama libXScrnSaver --target=arm-linux-gnueabihf)
 ```
 
 ### Dhall Prelude

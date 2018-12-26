@@ -20,6 +20,7 @@
 - [ ] `cabal new-build -v4` needs better error message
 - [ ] Figure out why `libX11` stalls when not watched (i.e. when `-vv` is not
   passed...)
+- [ ] `xextproto` doesn't like `aarch64`
 # Libraries
 - [ ] Consider splitting off library for parsing triples &c.
 # Code Maintenance

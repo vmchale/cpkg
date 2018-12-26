@@ -900,6 +900,10 @@ let randrproto =
   mkXProto "randrproto"
 in
 
+let scrnsaverproto =
+  mkXProto "scrnsaverproto"
+in
+
 let pango =
   λ(x : { version : List Natural, patch : Natural }) →
     let versionString = prelude.showVersion x.version
@@ -1624,6 +1628,7 @@ let libXScrnSaver =
     mkXLib "libXScrnSaver" v ⫽
       { pkgDeps = [ prelude.unbounded "util-macros"
                   , prelude.unbounded "libXext"
+                  , prelude.unbounded "scrnsaver"
                   ]
       }
 in
@@ -2074,6 +2079,7 @@ in
 , re2c [1,1,1]
 , readline [7,0]
 , renderproto [0,11,1]
+, scrnsaverproto [1,2,2]
 , sdl2 [2,0,9]
 , sed [4,5]
 , shared-mime-info [1,10]
