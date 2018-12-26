@@ -12,8 +12,6 @@ import           System.Directory    (doesDirectoryExist, removeDirectoryRecursi
 cpkgVersion :: V.Version
 cpkgVersion = P.version
 
-type Platform = String
-
 data DumpTarget = Linker { _pkgGet :: String }
                 | Compiler { _pkgGet :: String }
                 | PkgConfig { _pkgGet :: String }
@@ -24,6 +22,7 @@ data Command = Install { _pkgName :: String, _verbosity :: Verbosity, _target ::
              | Check { _dhallFile :: String, _verbosity :: Verbosity }
              | CheckSet { _dhallFile :: String, _verbosity :: Verbosity }
              | Dump { _dumpTarget :: DumpTarget, _host :: Maybe Platform }
+             | DumpCabal { _pkgGets :: [String], _host :: Maybe Platform }
              | List { _packageSet :: Maybe String }
              | Nuke
 
@@ -65,6 +64,7 @@ userCmd = hsubparser
     <> command "check" (info check (progDesc "Check a Dhall expression to ensure it can be used to build a package"))
     <> command "check-set" (info checkSet (progDesc "Check a package set defined in Dhall"))
     <> command "dump" (info dump (progDesc "Display flags to link against a particular library"))
+    <> command "dump-cabal" (info dumpCabal (progDesc "Display flags to use with cabal new-build"))
     <> command "list" (info list (progDesc "List all available packages"))
     <> command "nuke" (info (pure Nuke) (progDesc "Remove all globally installed libraries"))
     )
@@ -124,6 +124,11 @@ package =
     <> completer (listIOCompleter allPackages)
     )
 
+dumpCabal :: Parser Command
+dumpCabal = DumpCabal
+    <$> some package
+    <*> target
+
 dump :: Parser Command
 dump = Dump
     <$> dumpTarget
@@ -139,9 +144,7 @@ dhallFile =
 
 run :: Command -> IO ()
 run (Install pkId v host' sta pkSet) = do
-    parsedHost <- case host' of
-        Just x  -> fmap Just (parseTripleIO x)
-        Nothing -> pure Nothing
+    parsedHost <- parseHostIO host'
     runPkgM v $ buildByName (T.pack pkId) parsedHost pkSet sta
 run (Check file v) = void $ getCPkg v file
 run (CheckSet file v) = void $ getPkgs v file
@@ -150,6 +153,7 @@ run (Dump (Compiler name) host) = runPkgM Normal $ printCompilerFlags name host
 run (Dump (PkgConfig name) host) = runPkgM Normal $ printPkgConfigPath name host
 run (Dump (IncludePath name) host) = runPkgM Normal $ printIncludePath name host
 run (Dump (LibPath name) host) = runPkgM Normal $ printLibPath name host
+run (DumpCabal names host) = runPkgM Normal $ printCabalFlags names host
 run Nuke = do
     pkgDir <- globalPkgDir
     exists <- doesDirectoryExist pkgDir

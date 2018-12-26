@@ -449,7 +449,7 @@ let zlib =
     prelude.simplePackage { name = "zlib", version = v } ⫽
       { pkgUrl = "http://www.zlib.net/zlib-${prelude.showVersion v}.tar.xz"
       , configureCommand = zlibConfigure
-      , pkgBuildDeps = [ prelude.unbounded "coreutils" ]
+      -- , pkgBuildDeps = [ prelude.unbounded "coreutils" ]
       }
 in
 

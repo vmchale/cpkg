@@ -11,8 +11,11 @@ module Package.C.Db.Register ( registerPkg
                              , printPkgConfigPath
                              , printIncludePath
                              , printLibPath
+                             , printCabalFlags
                              , packageInstalled
                              , allPackages
+                             , parseHostIO
+                             , Platform
                              ) where
 
 import           Control.Monad.Reader
@@ -31,6 +34,7 @@ import           Package.C.Logging
 import           Package.C.Triple
 import           Package.C.Type       hiding (Dep (name))
 
+type Platform = String
 type FlagPrint = forall m. MonadIO m => BuildCfg -> m String
 
 allPackages :: IO [String]
@@ -38,33 +42,49 @@ allPackages = do
     (InstallDb index) <- strictIndex
     pure (buildName <$> toList index)
 
-printCompilerFlags :: (MonadIO m, MonadDb m) => String -> Maybe String -> m ()
+printCompilerFlags :: (MonadIO m, MonadDb m) => String -> Maybe Platform -> m ()
 printCompilerFlags = printFlagsWith buildCfgToCFlags
 
-printLinkerFlags :: (MonadIO m, MonadDb m) => String -> Maybe String -> m ()
+printLinkerFlags :: (MonadIO m, MonadDb m) => String -> Maybe Platform -> m ()
 printLinkerFlags = printFlagsWith buildCfgToLinkerFlags
 
-printPkgConfigPath :: (MonadIO m, MonadDb m) => String -> Maybe String -> m ()
+printPkgConfigPath :: (MonadIO m, MonadDb m) => String -> Maybe Platform -> m ()
 printPkgConfigPath = printFlagsWith buildCfgToPkgConfigPath
 
-printIncludePath :: (MonadIO m, MonadDb m) => String -> Maybe String -> m ()
+printIncludePath :: (MonadIO m, MonadDb m) => String -> Maybe Platform -> m ()
 printIncludePath = printFlagsWith buildCfgToIncludePath
 
-printLibPath :: (MonadIO m, MonadDb m) => String -> Maybe String -> m ()
+printLibPath :: (MonadIO m, MonadDb m) => String -> Maybe Platform -> m ()
 printLibPath = printFlagsWith buildCfgToLibPath
 
-printFlagsWith :: (MonadIO m, MonadDb m) => FlagPrint -> String -> Maybe String -> m ()
+parseHostIO :: MonadIO m => Maybe Platform -> m (Maybe TargetTriple)
+parseHostIO (Just x) = fmap Just (parseTripleIO x)
+parseHostIO Nothing  = pure Nothing
+
+printFlagsWith :: (MonadIO m, MonadDb m) => FlagPrint -> String -> Maybe Platform -> m ()
 printFlagsWith f name host = do
 
-    parsedHost <- case host of
-        Just x  -> fmap Just (parseTripleIO x)
-        Nothing -> pure Nothing
+    parsedHost <- parseHostIO host
 
     maybePackage <- lookupPackage name parsedHost
 
     case maybePackage of
         Nothing -> indexError name
         Just p  -> liftIO (putStrLn =<< f p)
+
+printCabalFlags :: (MonadIO m, MonadDb m) => [String] -> Maybe Platform -> m ()
+printCabalFlags names host = do
+
+    parsedHost <- parseHostIO host
+
+    maybePackages <- sequenceA <$> traverse (\n -> lookupPackage n parsedHost) names
+
+    case maybePackages of
+        Nothing -> indexError (head names)
+        Just ps -> liftIO (putStrLn =<< (unwords <$> traverse buildCfgToCabalFlag ps))
+
+buildCfgToCabalFlag :: MonadIO m => BuildCfg -> m String
+buildCfgToCabalFlag = fmap (("--extra-lib-dirs=" ++) . (</> "lib")) . buildCfgToDir
 
 -- TODO: do something more sophisticated; allow packages to return their own
 -- dir?

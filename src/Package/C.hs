@@ -10,6 +10,7 @@ module Package.C (
                  , Manufacturer (..)
                  , ABI (..)
                  , PkgM
+                 , Platform
                  -- * Functions
                  , buildCPkg
                  , runPkgM
@@ -19,6 +20,7 @@ module Package.C (
                  , printPkgConfigPath
                  , printIncludePath
                  , printLibPath
+                 , printCabalFlags
                  , buildByName
                  -- * Dhall functionality
                  , cPkgDhallToCPkg
@@ -30,6 +32,7 @@ module Package.C (
                  -- * Parsers
                  , parseTriple
                  , parseTripleIO
+                 , parseHostIO
                  ) where
 
 import           Package.C.Build

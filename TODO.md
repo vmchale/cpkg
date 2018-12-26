@@ -7,10 +7,16 @@
 - [ ] Investigate possible upstream bug when downloading `fltk` and unpacking
   the `.tar.gz`
 - [ ] Fix tar library and/or rewrite it
-- [ ] Dhall space leak
+- [x] Dhall space leak
+  - [ ] Dhall performance problems
 - [ ] Fix `hp2pretty` completions to work with `.hp` files alone
 - [ ] Investigate performance problems while decoding `index.bin`
 - [ ] complain about ncurses 6.1 not cross-compiling
+- [ ] complain about Xorg libraries and bad defaults (malloc) related to
+  cross-compiling
+- [ ] complain about m4
+- [ ] cabal should pass verbosity options to `hsc2hs`
+- [ ] `cabal new-build -v4` needs better error message
 # Libraries
 - [ ] Consider splitting off library for parsing triples &c.
 # Code Maintenance
@@ -19,7 +25,6 @@
 # Documentation
 - [ ] Document the difference between `symlinkBinary` and `symlinkLibrary`...
 # Features
-- [ ] CACHE DOWNLOADS
 - [ ] Pass verbosity to configuration/build script
 - [ ] Constraint solver
 - [ ] Build/handle preprocessors
@@ -38,7 +43,7 @@
 - [ ] Completions
   - [ ] `cpkg install` should use `cpkg list`?
 - [ ] Custom package sets
-- [ ] Make Haskell library API better
+- [ ] Haskell library API should be better
 - [ ] `cpkg list` should show what binaries it provides
 - [ ] `test` should map to commands such as `make check`; should not be run when
   cross-compiling
