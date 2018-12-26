@@ -11,6 +11,8 @@
 - [ ] Fix `hp2pretty` completions to work with `.hp` files alone
 - [ ] Investigate performance problems while decoding `index.bin`
 - [ ] complain about ncurses 6.1 not cross-compiling
+# Libraries
+- [ ] Consider splitting off library for parsing triples &c.
 # Code Maintenance
 - [ ] Use a more sensible monad
 - [ ] Stop being a mess
