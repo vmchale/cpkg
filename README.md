@@ -94,9 +94,7 @@ let lua =
         in
 
         let os =
-          Optional/fold types.TargetTriple cfg.targetTriple types.OS
-            (λ(tgt : types.TargetTriple) → tgt.os)
-              cfg.buildOS
+          prelude.osCfg cfg
         in
 
         [ prelude.call (prelude.defaultCall ⫽ { program = "make"
