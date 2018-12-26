@@ -1527,6 +1527,8 @@ let libXft =
     mkXLib "libXft" v ⫽
       { pkgDeps = [ prelude.unbounded "freetype"
                   , prelude.unbounded "fontconfig"
+                  , prelude.unbounded "libXrender"
+                  , prelude.unbounded "libx11"
                   ]
       }
 in
