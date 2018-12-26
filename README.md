@@ -121,6 +121,29 @@ in
 lua [5,3,5]
 ```
 
+### Cabal
+
+After running
+
+```
+cpkg install libXext --target=arm-linux-gnueabihf
+cpkg install libXrandr --target=arm-linux-gnueabihf
+cpkg install libXinerama --target=arm-linux-gnueabihf
+cpkg install libXScrnSaver --target=arm-linux-gnueabihf
+```
+
+You can dump flags to be passed to cabal with
+
+```
+cpkg dump-cabal libXext libXrandr libXinerama libXScrnSaver --target=arm-linux-gnueabihf
+```
+
+This could be used, for example, to cross-compile `X11`:
+
+```
+cabal new-install --with-ghc arm-linux-gnueabihf-ghc --with-ghc-pkg arm-linux-gnueabihf-ghc-pkg X11 $(cpkg dump-cabal libXext libXrandr libXinerama libXScrnSaver --target=arm-linux-gnueabihf)
+```
+
 ### Dhall Prelude
 
 There is
@@ -161,11 +184,11 @@ Lovingly provided by [polyglot](https://github.com/vmchale/polyglot):
  Bash                     3          35           34            0            1
  Cabal                    1         154          140            0           14
  Cabal Project            1           2            2            0            0
- Dhall                    3        2983         2660            4          319
+ Dhall                    3        2991         2666            4          321
  Haskell                 31        1650         1349           23          278
- Markdown                 5         337          298            0           39
+ Markdown                 5         328          289            0           39
  YAML                     4         155          140            0           15
 -------------------------------------------------------------------------------
- Total                   48        5316         4623           27          666
+ Total                   48        5315         4620           27          668
 -------------------------------------------------------------------------------
 ```
