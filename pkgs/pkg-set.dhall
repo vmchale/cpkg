@@ -622,7 +622,7 @@ let python =
       { pkgUrl = "https://www.python.org/ftp/python/${versionString}/Python-${versionString}.tar.xz"
       , pkgSubdir = "Python-${versionString}"
       -- , configureCommand = prelude.configureWithFlags [ "--enable-optimizations" ]
-      , installCommand = prelude.installWithBinaries [ "bin/python${major}" ]
+      -- , installCommand = prelude.installWithBinaries [ "bin/python${major}" ]
       , pkgDeps = [ prelude.unbounded "libffi" ]
       -- , pkgBuildDeps = [ prelude.unbounded "coreutils" ]
       }
@@ -679,7 +679,8 @@ let lua =
       λ(cfg : types.BuildVars) →
         [ prelude.call (prelude.defaultCall ⫽ { program = "make"
                                               , arguments = [ "install", "INSTALL_TOP=${cfg.installDir}" ]
-                                              }) ]
+                                              })
+        ]
           # prelude.symlinkBinaries [ "bin/lua", "bin/luac" ]
     in
 
@@ -1090,6 +1091,7 @@ let util-linux =
       prelude.simplePackage { name = "util-linux", version = v } ⫽
         { pkgUrl = "https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v${versionString}/util-linux-${versionString}.tar.xz"
         , configureCommand = prelude.configureWithFlags [ "--disable-makeinstall-chown", "--disable-bash-completion" ]
+        -- , pkgDeps = [ prelude.unbounded "python2" ]
         -- , pkgBuildDeps = [ prelude.unbounded "python2", prelude.unbounded "coreutils", libtool ]
         }
 in

@@ -15,11 +15,11 @@ import qualified Data.Text                             as T
 import           Data.Text.Prettyprint.Doc
 import           Data.Text.Prettyprint.Doc.Custom
 import           Data.Text.Prettyprint.Doc.Render.Text
-import           Data.Tree                             (Tree (..))
 import           Dhall
 import qualified Package.C.Dhall.Type                  as Dhall
 import           Package.C.Error
 import           Package.C.Type
+import           Package.C.Type.Tree
 
 defaultPackageSetDhall :: Maybe String -> IO PackageSetDhall
 defaultPackageSetDhall (Just pkSet) = input auto (T.pack pkSet)
@@ -45,24 +45,27 @@ packageSetDhallToPackageSet (PackageSetDhall pkgs'') =
 
         in PackageSet $ M.fromList (zip names pkgs')
 
--- FIXME: this whole thing is bad
-getDeps :: PackId -> PackageSet -> Maybe (Tree PackId)
+getDeps :: PackId -> PackageSet -> Maybe (DepTree PackId)
 getDeps pkgName' set@(PackageSet ps) = do
     cpkg <- M.lookup pkgName' ps
-    let depNames = (name <$> pkgDeps cpkg) ++ (name <$> pkgBuildDeps cpkg)
-    case nubOrd depNames of
-        xs -> Node pkgName' <$> traverse (\p -> getDeps p set) xs
+    let depNames = name <$> pkgDeps cpkg
+        bldDepNames = name <$> pkgBuildDeps cpkg
+        ds = nubOrd depNames
+        bds = nubOrd bldDepNames
+    nextDeps <- traverse (\p -> getDeps p set) ds
+    nextBldDeps <- traverse (\p -> asBldDep <$> getDeps p set) bds
+    pure $ DepNode pkgName' (nextDeps ++ nextBldDeps)
 
 -- TODO: use dfsForest but check for cycles
-pkgPlan :: PackId -> PackageSet -> Maybe (Tree PackId)
+pkgPlan :: PackId -> PackageSet -> Maybe (DepTree PackId)
 pkgPlan = getDeps
 
-pkgs :: PackId -> PackageSet -> Maybe (Tree CPkg)
+pkgs :: PackId -> PackageSet -> Maybe (DepTree CPkg)
 pkgs pkId set@(PackageSet pset) = do
     plan <- pkgPlan pkId set
     traverse (`M.lookup` pset) plan
 
-pkgsM :: PackId -> Maybe String -> IO (Tree CPkg)
+pkgsM :: PackId -> Maybe String -> IO (DepTree CPkg)
 pkgsM pkId pkSet = do
     pks <- pkgs pkId . packageSetDhallToPackageSet <$> defaultPackageSetDhall pkSet
     case pks of

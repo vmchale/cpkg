@@ -72,8 +72,8 @@ printFlagsWith f name host = do
         Nothing -> indexError name
         Just p  -> liftIO (putStrLn =<< f p)
 
-printCabalFlags :: (MonadIO m, MonadDb m) => [String] -> Maybe Platform -> m ()
-printCabalFlags names host = do
+printMany :: (MonadIO m, MonadDb m) => ([BuildCfg] -> m ()) -> [String] -> Maybe Platform -> m ()
+printMany f names host = do
 
     parsedHost <- parseHostIO host
 
@@ -81,7 +81,10 @@ printCabalFlags names host = do
 
     case maybePackages of
         Nothing -> indexError (head names)
-        Just ps -> liftIO (putStrLn =<< (unwords <$> traverse buildCfgToCabalFlag ps))
+        Just ps -> f ps
+
+printCabalFlags :: (MonadIO m, MonadDb m) => [String] -> Maybe Platform -> m ()
+printCabalFlags = printMany (liftIO . putStrLn <=< (fmap unwords . traverse buildCfgToCabalFlag))
 
 buildCfgToCabalFlag :: MonadIO m => BuildCfg -> m String
 buildCfgToCabalFlag = fmap (("--extra-lib-dirs=" ++) . (</> "lib")) . buildCfgToDir

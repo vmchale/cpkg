@@ -51,6 +51,7 @@
 - [ ] `test` should map to commands such as `make check`; should not be run when
   cross-compiling
 - [ ] `pkgRuntimeDeps` field?
+- [ ] append to `cabal.project` file
 # Performance
 - [ ] Dhall is slow
 - [ ] Space leak due to zygomorphism?
