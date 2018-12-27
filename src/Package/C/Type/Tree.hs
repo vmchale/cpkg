@@ -24,5 +24,5 @@ instance Recursive (DepTree a) where
     project (BldDepNode p ps) = BldDepNodeF p ps
 
 asBldDep :: DepTree p -> DepTree p
-asBldDep (DepNode p ps) = BldDepNode p (fmap asBldDep ps)
-asBldDep x@BldDepNode{} = x
+asBldDep (DepNode p ps)    = BldDepNode p (fmap asBldDep ps)
+asBldDep (BldDepNode p ps) = BldDepNode p (fmap asBldDep ps)

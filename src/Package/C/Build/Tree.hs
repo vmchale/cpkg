@@ -33,7 +33,7 @@ buildWithContext cTree host sta = zygoM' dirAlg buildAlg cTree
             buildCPkg c host sta ds ls is bs
                 where (BuildDirs ls ds is bs) = getAll (fst <$> preBds)
           buildAlg (BldDepNodeF c preBds) =
-            buildCPkg c Nothing False ds ls is bs -- don't bother using static libraries for build dependencies (save space)
+            buildCPkg c Nothing False ds ls is bs -- don't use static libraries for build dependencies
                 where (BuildDirs ls ds is bs) = getAll (fst <$> preBds)
 
           dirAlg :: DepTreeF CPkg BuildDirs -> PkgM BuildDirs
