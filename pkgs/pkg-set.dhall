@@ -654,10 +654,7 @@ let lua =
 
     let luaBuild =
       λ(cfg : types.BuildVars) →
-        let cc =
-          Optional/fold types.TargetTriple cfg.targetTriple (List Text)
-            (λ(tgt : types.TargetTriple) → [ "CC=${prelude.printTargetTriple tgt}-gcc" ])
-              ([] : List Text)
+        let cc = prelude.mkCCArg cfg
         in
 
         let ldflags =
@@ -1640,11 +1637,7 @@ let libXScrnSaver =
 in
 
 let bzip2 =
-  let cc =
-    λ(cfg : types.BuildVars) →
-      Optional/fold types.TargetTriple cfg.targetTriple (List Text)
-        (λ(tgt : types.TargetTriple) → ["CC=${prelude.printTargetTriple tgt}-gcc"])
-          ([] : List Text)
+  let cc = prelude.mkCCArg
   in
   let bzipInstall =
     λ(cfg : types.BuildVars) →
@@ -1688,11 +1681,7 @@ let coreutils =
 in
 
 let libsepol =
-  let cc =
-    λ(cfg : types.BuildVars) →
-      Optional/fold types.TargetTriple cfg.targetTriple (List Text)
-        (λ(tgt : types.TargetTriple) → ["CC=${prelude.printTargetTriple tgt}-gcc"])
-          ([] : List Text)
+  let cc = prelude.mkCCArg
   in
   -- TODO: proper separation
   let sepolInstall =
@@ -1716,11 +1705,7 @@ let libsepol =
 in
 
 let libselinux =
-  let cc =
-    λ(cfg : types.BuildVars) →
-      Optional/fold types.TargetTriple cfg.targetTriple (List Text)
-        (λ(tgt : types.TargetTriple) → ["CC=${prelude.printTargetTriple tgt}-gcc"])
-          ([] : List Text)
+  let cc = prelude.mkCCArg
   in
   -- TODO: proper separation
   let selinuxInstall =
@@ -1906,12 +1891,9 @@ in
 
 let lmdb =
 
-  let cc =
-    λ(cfg : types.BuildVars) →
-      Optional/fold types.TargetTriple cfg.targetTriple (List Text)
-        (λ(tgt : types.TargetTriple) → ["CC=${prelude.printTargetTriple tgt}-gcc"]) -- TODO: mkCCArg in prelude
-          ([] : List Text)
+  let cc = prelude.mkCCArg
   in
+
   let ar =
     λ(cfg : types.BuildVars) →
       Optional/fold types.TargetTriple cfg.targetTriple (List Text)

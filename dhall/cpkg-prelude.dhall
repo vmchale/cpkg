@@ -697,6 +697,13 @@ let squishVersion =
   concatMap Natural Natural/show
 in
 
+let mkCCArg =
+  λ(cfg : types.BuildVars) →
+    Optional/fold types.TargetTriple cfg.targetTriple (List Text)
+      (λ(tgt : types.TargetTriple) → ["CC=${printTargetTriple tgt}-gcc"]) -- TODO: mkCCArg in prelude
+        ([] : List Text)
+in
+
 { showVersion         = showVersion
 , makeGnuLibrary      = makeGnuLibrary
 , makeGnuExe          = makeGnuExe
@@ -771,4 +778,5 @@ in
 , squishVersion       = squishVersion
 , osCfg               = osCfg
 , archCfg             = archCfg
+, mkCCArg             = mkCCArg
 }
