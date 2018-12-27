@@ -272,8 +272,10 @@ let mkPerlLib =
     in
     let flag = concatMapSep ":" Text (λ(dir : Text) → dir ++ "/site_perl/${showVersion x.perlVersion}/${printArch arch}-${printOS os}/") x.libDirs
     in
+    let major = Optional/fold Natural (List/head Natural x.perlVersion) Text (Natural/show) ""
+    in
 
-    { var = "PERL5LIB", value = flag }
+    { var = "PERL${major}LIB", value = flag }
 in
 
 let mkIncludePath =
@@ -347,6 +349,7 @@ let generalConfigure =
                                                       , mkCFlags cfg.includeDirs
                                                       , mkPkgConfigVar (cfg.shareDirs # cfg.linkDirs)
                                                       , libPath cfg
+                                                      , mkPerlLib { libDirs = cfg.linkDirs, perlVersion = [5,28,1], cfg = cfg } -- TODO: take this as a parameter
                                                       ])
                           })
     ]

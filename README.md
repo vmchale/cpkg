@@ -146,7 +146,7 @@ which will produce something like
 --extra-lib-dirs=/home/vanessa/.cpkg/arm-linux-gnueabihf/libXext-1.3.3-63648c4324869741/lib --extra-lib-dirs=/home/vanessa/.cpkg/arm-linux-gnueabihf/libXrandr-1.5.1-72c136ebb1cdbee4/lib --extra-lib-dirs=/home/vanessa/.cpkg/arm-linux-gnueabihf/libXinerama-1.1.4-49761ceb8fb134d8/lib --extra-lib-dirs=/home/vanessa/.cpkg/arm-linux-gnueabihf/libXScrnSaver-1.2.3-11409d560d940784/lib
 ```
 
-This could be used, for example, to cross-compile `X11`:
+This could be used, for example, to cross-compile `X11`, viz.
 
 ```
 cabal new-install X11 --with-ghc arm-linux-gnueabihf-ghc --with-ghc-pkg arm-linux-gnueabihf-ghc-pkg $(cpkg dump-cabal libXext libXrandr libXinerama libXScrnSaver --target=arm-linux-gnueabihf)
@@ -192,11 +192,11 @@ Lovingly provided by [polyglot](https://github.com/vmchale/polyglot):
  Bash                     3          35           34            0            1
  Cabal                    1         154          140            0           14
  Cabal Project            1           2            2            0            0
- Dhall                    3        2997         2672            4          321
+ Dhall                    3        2998         2673            4          321
  Haskell                 31        1650         1349           23          278
  Markdown                 5         360          311            0           49
  YAML                     4         155          140            0           15
 -------------------------------------------------------------------------------
- Total                   48        5353         4648           27          678
+ Total                   48        5354         4649           27          678
 -------------------------------------------------------------------------------
 ```

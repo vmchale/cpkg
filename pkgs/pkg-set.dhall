@@ -949,12 +949,17 @@ let shared-mime-info =
      , buildCommand =
         λ(cfg : types.BuildVars) →
           [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
-                                                , environment = Some (prelude.defaultPath cfg # [ prelude.libPath cfg ])
+                                                , environment = Some (prelude.defaultPath cfg # [ prelude.libPath cfg
+                                                                                                , prelude.mkPerlLib { libDirs = cfg.linkDirs, perlVersion = [5,28,1], cfg = cfg }
+                                                                                                ])
                                                 })
           ]
      , pkgDeps = [ prelude.unbounded "glib"
                  , prelude.unbounded "libxml2"
                  ]
+     , pkgBuildDeps = [ prelude.lowerBound { name = "intltool", lower = [0,35,0] }
+                      , prelude.unbounded "sed"
+                      ]
      }
 in
 

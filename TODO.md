@@ -57,11 +57,9 @@
 # Bugs
 - [ ] Shouldn't be able to `cpkg dump compiler sed` since it provides no
   libraries
-- [ ] Figure out `ACLOCAL_PATH` and force it to use local m4
+- [ ] Figure out `ACLOCAL_PATH`
 - [ ] Fails when symlink already exists
 - [ ] Cross-compile shouldn't symlink
-- [ ] Don't rebuild `ncurses` when rebuilding `vim` with `lua` - `ncurses`
-  does not depend on lua so its hash/include dirs should not be changed
 - [ ] If X depends on Y, Z and Y depends on Z, then it will not link things
   correctly...
 - [ ] Figure out `PERL5LIB` variable
@@ -80,6 +78,7 @@
 - [ ] GraphViz
 - [ ] Ruby
 - [ ] librsvg
+- [ ] https://github.com/linux-noah/noah
 - [ ] ImageMagick
 - [ ] GHC cross-compiler?
 - [ ] https://sourceforge.net/projects/infozip/files/
