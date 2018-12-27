@@ -621,9 +621,12 @@ let python =
     prelude.simplePackage { name = "python${major}", version = v } ⫽
       { pkgUrl = "https://www.python.org/ftp/python/${versionString}/Python-${versionString}.tar.xz"
       , pkgSubdir = "Python-${versionString}"
-      -- , configureCommand = prelude.configureWithFlags [ "--enable-optimizations" ]
-      -- , installCommand = prelude.installWithBinaries [ "bin/python${major}" ]
+      , configureCommand =
+        λ(cfg : types.BuildVars) →
+          prelude.configureWithFlags [ "--build=${prelude.printArch cfg.buildArch}" ] cfg
+          -- "--enable-optimizations" (takes forever)
       , pkgDeps = [ prelude.unbounded "libffi" ]
+      , installCommand = prelude.installWithBinaries [ "bin/python${major}" ]
       -- , pkgBuildDeps = [ prelude.unbounded "coreutils" ]
       }
 in
@@ -1090,9 +1093,13 @@ let util-linux =
     let versionString = prelude.showVersion v in
       prelude.simplePackage { name = "util-linux", version = v } ⫽
         { pkgUrl = "https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v${versionString}/util-linux-${versionString}.tar.xz"
-        , configureCommand = prelude.configureWithFlags [ "--disable-makeinstall-chown", "--disable-bash-completion" ]
-        -- , pkgDeps = [ prelude.unbounded "python2" ]
-        -- , pkgBuildDeps = [ prelude.unbounded "python2", prelude.unbounded "coreutils", libtool ]
+        , configureCommand = prelude.configureWithFlags [ "--disable-makeinstall-chown" -- otherwise we'd need sudo permissions
+                                                        , "--disable-bash-completion"
+                                                        , "--disable-pylibmount" -- easier for cross-compiling
+                                                        , "--without-tinfo" -- can't figure out what tinfo is or how to supply it when cross compiling
+                                                        ]
+        , pkgDeps = [ prelude.unbounded "ncurses" ]
+        -- , pkgBuildDeps = [ prelude.unbounded "coreutils" ]
         }
 in
 

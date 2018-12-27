@@ -5,7 +5,6 @@
 module Package.C.Type.Tree ( DepTree (..)
                            , DepTreeF (..)
                            , asBldDep
-                           , asBldDepF
                            ) where
 
 import           Control.Recursion
@@ -25,9 +24,5 @@ instance Recursive (DepTree a) where
     project (BldDepNode p ps) = BldDepNodeF p ps
 
 asBldDep :: DepTree p -> DepTree p
-asBldDep (DepNode p ps) = BldDepNode p ps
+asBldDep (DepNode p ps) = BldDepNode p (fmap asBldDep ps)
 asBldDep x@BldDepNode{} = x
-
-asBldDepF :: DepTreeF p x -> DepTreeF p x
-asBldDepF (DepNodeF p ps) = BldDepNodeF p ps
-asBldDepF x@BldDepNodeF{} = x

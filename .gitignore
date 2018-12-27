@@ -1,3 +1,4 @@
+*.svg
 tags
 cpkg-diagnostic
 dist
