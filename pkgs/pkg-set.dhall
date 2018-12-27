@@ -27,7 +27,6 @@ let gnupg =
                   , prelude.lowerBound { name = "libgcrypt", lower = [1,7,0] }
                   , prelude.lowerBound { name = "libassuan", lower = [2,5,0] }
                   , prelude.lowerBound { name = "libksba", lower = [1,3,4] }
-                  -- , prelude.unbounded "gnutls"
                   ]
       , configureCommand = prelude.configureMkExes [ "tests/inittests", "tests/runtest", "tests/pkits/inittests" ]
       , installCommand = prelude.installWithBinaries [ "bin/gpg" ]
@@ -85,7 +84,7 @@ let bison =
     prelude.makeGnuExe { name = "bison", version = v } ⫽
       { configureCommand = prelude.configureMkExes [ "build-aux/move-if-change" ]
       , installCommand = prelude.installWithBinaries [ "bin/bison", "bin/yacc" ]
-      , pkgBuildDeps = [ prelude.unbounded "m4" ] -- coreutils
+      , pkgBuildDeps = [ prelude.unbounded "m4" ]
       }
 in
 
@@ -238,7 +237,7 @@ let gmp =
       { pkgUrl = "https://gmplib.org/download/gmp/gmp-${prelude.showVersion v}.tar.xz"
       , configureCommand = prelude.configureMkExes [ "mpn/m4-ccas" ]
       , pkgBuildDeps = [ prelude.unbounded "m4" ]
-      -- TODO: run 'make check' if not cross-compiling?
+      -- TODO: run 'make check'?
       }
 in
 
@@ -337,7 +336,6 @@ let pcre =
   λ(v : List Natural) →
     prelude.simplePackage { name = "pcre", version = v } ⫽
       { pkgUrl = "https://ftp.pcre.org/pub/pcre/pcre-${prelude.showVersion v}.tar.bz2" }
-    -- pkgBuildDeps coreutils
 in
 
 let perl5 =
@@ -367,7 +365,6 @@ let perl5 =
 
           prelude.installWithBinaries [ "bin/perl", "bin/cpan" ] cfg
             # [ prelude.symlink "lib/${prelude.showVersion v}/${prelude.printArch cfg.buildArch}-${prelude.printOS cfg.buildOS}/CORE/${libperlFile}" "lib/${libperlFile}" ]
-      -- pkgBuildDeps coreutils
       }
 in
 
@@ -449,7 +446,6 @@ let zlib =
     prelude.simplePackage { name = "zlib", version = v } ⫽
       { pkgUrl = "http://www.zlib.net/zlib-${prelude.showVersion v}.tar.xz"
       , configureCommand = zlibConfigure
-      -- , pkgBuildDeps = [ prelude.unbounded "coreutils" ]
       }
 in
 
@@ -513,9 +509,7 @@ let cairo =
                  , prelude.lowerBound { name = "freetype", lower = [9,7,3] }
                  , prelude.lowerBound { name = "fontconfig", lower = [2,2,95] }
                  , prelude.unbounded "libXext"
-                 -- TODO: gobject, glib >= 2.14, libpng, xcb, xrender, x11
                  ]
-     -- pkgBuildDeps libtool coreutils binutils
      , installCommand =
         λ(cfg : types.BuildVars) →
           prelude.defaultInstall cfg #
@@ -627,7 +621,6 @@ let python =
           -- "--enable-optimizations" (takes forever)
       , pkgDeps = [ prelude.unbounded "libffi" ]
       , installCommand = prelude.installWithBinaries [ "bin/python${major}" ]
-      -- , pkgBuildDeps = [ prelude.unbounded "coreutils" ]
       }
 in
 
@@ -714,7 +707,6 @@ let libffi =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libffi", version = v } ⫽
       { pkgUrl = "https://sourceware.org/ftp/libffi/libffi-${prelude.showVersion v}.tar.gz" }
-      -- pkgBuildDeps coreutils?
 in
 
 let gdb =
@@ -770,9 +762,7 @@ let freetype-shared =
       { pkgUrl = "https://download.savannah.gnu.org/releases/freetype/freetype-${versionString}.tar.gz"
       , configureCommand = prelude.configureMkExes [ "builds/unix/configure" ]
       , pkgSubdir = "freetype-${versionString}"
-      , pkgBuildDeps = [ prelude.unbounded "sed"
-                       -- , prelude.unbounded "coreutils"
-                       ]
+      , pkgBuildDeps = [ prelude.unbounded "sed" ]
       , installCommand =
           λ(cfg : types.BuildVars) →
             prelude.defaultInstall cfg
@@ -869,7 +859,6 @@ let gtk2 =
                   , prelude.lowerBound { name = "glib", lower = [2,28,0] }
                   , prelude.lowerBound { name = "gdk-pixbuf", lower = [2,38,0] }
                   ]
-      -- , pkgBuildDeps = [ prelude.lowerBound { name = "pkg-config", lower = [0,16] } ] also libtool + coreutils
       , buildCommand =
           λ(cfg : types.BuildVars) →
             prelude.buildWith (gtkEnv cfg) cfg
@@ -894,7 +883,6 @@ in
 
 let renderproto =
   mkXProto "renderproto"
-  -- pkgBuildDeps = [ prelude.unbounded "gawk", prelude.unbounded "pkg-config", coreutils ]
 in
 
 let randrproto =
@@ -923,13 +911,12 @@ let pango =
       , pkgBuildDeps = [ prelude.lowerBound { name = "meson", lower = [0,48,0] }
                        , prelude.unbounded "gobject-introspection"
                        ]
-      , pkgDeps = [ prelude.unbounded "fontconfig" -- >= 2.11.91
-                  , prelude.unbounded "cairo" -- >= 1.12.10
-                  , prelude.unbounded "fribidi" -- >= 0.19.7
-                  , prelude.unbounded "harfbuzz" -- >= 1.4.2
+      , pkgDeps = [ prelude.lowerBound { name = "fontconfig", lower = [2,11,91] }
+                  , prelude.lowerBound { name = "cairo", lower = [1,12,10] }
+                  , prelude.lowerBound { name = "fribidi", lower = [0,19,7] }
+                  , prelude.lowerBound { name = "harfbuzz", lower = [1,4,2] }
                   , prelude.unbounded "libXrender"
                   , prelude.unbounded "libxcb"
-                  -- TODO: glib >= 2.38.0, gobject >= 2.38.0,
                   ]
       }
 in
@@ -940,7 +927,6 @@ let libxml2 =
      { pkgUrl = "http://xmlsoft.org/sources/libxml2-${prelude.showVersion v}.tar.gz"
      , configureCommand = prelude.configureWithFlags [ "--without-python" ]
      }
-     -- pkgBuildDeps coreutils
 in
 
 let shared-mime-info =
@@ -964,7 +950,6 @@ let shared-mime-info =
      }
 in
 
--- FIXME: this is screwy...
 let intltool =
   λ(v : List Natural) →
     let versionString = prelude.showVersion v in
@@ -1020,7 +1005,6 @@ let gdk-pixbuf =
                   , prelude.unbounded "libpng"
                   , prelude.unbounded "gobject-introspection"
                   , prelude.unbounded "shared-mime-info"
-                  -- TODO: gobject >= 2.38.0
                   ]
       }
 in
@@ -1099,7 +1083,6 @@ let util-linux =
                                                         , "--without-tinfo" -- can't figure out what tinfo is or how to supply it when cross compiling
                                                         ]
         , pkgDeps = [ prelude.unbounded "ncurses" ]
-        -- , pkgBuildDeps = [ prelude.unbounded "coreutils" ]
         }
 in
 
@@ -1133,7 +1116,7 @@ let gobject-introspection =
 
     prelude.simplePackage { name = "gobject-introspection", version = prelude.fullVersion x } ⫽
       { pkgUrl = "https://download.gnome.org/sources/gobject-introspection/${versionString}/gobject-introspection-${fullVersion}.tar.xz"
-      , pkgBuildDeps = [ prelude.unbounded "flex" ] -- coreutils
+      , pkgBuildDeps = [ prelude.unbounded "flex" ]
       , configureCommand = gobjectConfig
       , pkgDeps = [ prelude.lowerBound { name = "glib", lower = [2,58,0] } ]
       }
@@ -1404,8 +1387,6 @@ let atk =
       , pkgBuildDeps = [ prelude.unbounded "gobject-introspection" ]
       , installCommand =
           prelude.ninjaInstallWithPkgConfig [{ src = "build/atk.pc", dest = "lib/pkgconfig/atk.pc" }]
-      -- , pkgDeps = [ prelude.unbounded "glib" ]
-      -- pkgBuildDeps coreutils
       }
 in
 
@@ -1478,7 +1459,6 @@ let xcb-proto =
   λ(v : List Natural) →
     prelude.simplePackage { name = "xcb-proto", version = v } ⫽
       { pkgUrl = "https://xorg.freedesktop.org/archive/individual/xcb/xcb-proto-${prelude.showVersion v}.tar.bz2" }
-      -- pkgBuildDeps coreutils
 in
 
 let libxcb =
@@ -1490,14 +1470,12 @@ let libxcb =
                   , prelude.unbounded "libpthread-stubs"
                   , prelude.unbounded "libXdmcp"
                   ]
-      -- , pkgBuildDeps = [ prelude.unbounded "coreutils" ]
       }
 in
 
 let libpthread-stubs =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libpthread-stubs", version = v } ⫽
-      -- TODO: mkXLib function?
       { pkgUrl = "https://www.x.org/archive/individual/xcb/libpthread-stubs-${prelude.showVersion v}.tar.bz2" }
 in
 
@@ -1506,7 +1484,6 @@ let libXdmcp =
     prelude.simplePackage { name = "libXdmcp", version = v } ⫽
       { pkgUrl = "https://www.x.org/archive/individual/lib/libXdmcp-${prelude.showVersion v}.tar.bz2"
       , pkgDeps = [ prelude.unbounded "xproto" ]
-      -- pkgBuildDeps coreutils
       }
 in
 
@@ -1567,7 +1544,6 @@ in
 
 let kbproto =
   mkXProto "kbproto"
-  -- TODO: pkgBuildDeps on coreutils
 in
 
 let libX11 =
@@ -1592,7 +1568,6 @@ in
 
 let xtrans =
   mkXLib "xtrans"
-      -- pkgBuildDeps coreutils sed (?)
 in
 
 let libXrandr =
@@ -1604,7 +1579,6 @@ let libXrandr =
                   , prelude.unbounded "libX11"
                   , prelude.unbounded "randrproto"
                   ]
-      -- EXTRA_CFLAGS=-Wno-error
       }
 in
 
@@ -1626,13 +1600,11 @@ let libXext =
                   , prelude.lowerBound { name = "xproto", lower = [7,0,13] }
                   , prelude.lowerBound { name = "libX11", lower = [1,6] }
                   ]
-      -- pkgBuildDeps coreutils, libtool, binutils
       }
 in
 
 let xextproto =
   mkXProto "xextproto"
-  -- pkgBuildDeps coreutils
 in
 
 let libXScrnSaver =
@@ -1673,14 +1645,12 @@ let expat =
   λ(v : List Natural) →
     prelude.simplePackage { name = "expat", version = v } ⫽
       { pkgUrl = "https://github.com/libexpat/libexpat/releases/download/R_${underscoreVersion v}/expat-${prelude.showVersion v}.tar.bz2" }
-      -- pkgBuildDeps on libtool
 in
 
 let gperf =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "gperf", version = v } ⫽
       { pkgUrl = "http://ftp.gnu.org/pub/gnu/gperf/gperf-${prelude.showVersion v}.tar.gz" }
-      -- pkgBuildDeps on coreutils
 in
 
 let coreutils =
@@ -1745,7 +1715,6 @@ let libXtst =
   λ(v : List Natural) →
     mkXLib "libXtst" v ⫽
       { pkgDeps = [ prelude.unbounded "libXi" ] }
-  -- TODO: depend on recordproto, ?? x11, xext, xextproto, ??? xi
 in
 
 let libXi =
@@ -1763,7 +1732,7 @@ let at-spi-core =
       { pkgUrl = "http://ftp.gnome.org/pub/gnome/sources/at-spi2-core/${versionString}/at-spi2-core-${fullVersion}.tar.xz"
       , pkgDeps = [ prelude.unbounded "libXtst"
                   , prelude.unbounded "glib"
-                  ] -- dbus, glib?
+                  ]
       , installCommand =
           prelude.ninjaInstallWithPkgConfig [{ src = "build/atspi-2.pc", dest = "lib/pkgconfig/atspi-2.pc" }]
       }
@@ -1927,7 +1896,6 @@ let lmdb =
       , configureCommand = prelude.doNothing
       , buildCommand = prelude.doNothing
       , installCommand = lmdbInstall
-      -- coreutils in pkgBuildDeps?
       }
 in
 
@@ -1952,7 +1920,6 @@ let sqlite =
     prelude.simplePackage { name = "sqlite", version = x.version } ⫽
       { pkgUrl = "https://sqlite.org/${Natural/show x.year}/sqlite-autoconf-${versionString}000.tar.gz"
       , pkgSubdir = "sqlite-autoconf-${versionString}000"
-      -- pkgBuildDeps on libtool and coreutils...
       }
 in
 
@@ -2064,7 +2031,6 @@ in
 , pcre [8,42]
 , pcre2 [10,32]
 , perl5 [5,28,1]
--- , perl5 [5,24,4]
 , pixman [0,36,0]
 , pkg-config [0,29,2]
 , postgresql [11,1]
