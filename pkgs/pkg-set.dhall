@@ -376,7 +376,7 @@ in
 
 let sed =
   λ(v : List Natural) →
-    prelude.makeGnuExe { name = "sed", version = v }
+    prelude.makeGnuExe { name = "sed", version = v } -- TODO: require pcre?
 in
 
 let tar =
@@ -1719,7 +1719,9 @@ let libXtst =
 in
 
 let libXi =
-  mkXLib "libXi"
+  λ(v : List Natural) →
+    mkXLib "libXi" v ⫽
+      { pkgDeps = [ prelude.unbounded "libXext" ] }
 in
 
 let at-spi-core =

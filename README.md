@@ -148,10 +148,10 @@ which will produce something like
 --extra-lib-dirs=/home/vanessa/.cpkg/arm-linux-gnueabihf/libXext-1.3.3-63648c4324869741/lib --extra-lib-dirs=/home/vanessa/.cpkg/arm-linux-gnueabihf/libXrandr-1.5.1-72c136ebb1cdbee4/lib --extra-lib-dirs=/home/vanessa/.cpkg/arm-linux-gnueabihf/libXinerama-1.1.4-49761ceb8fb134d8/lib --extra-lib-dirs=/home/vanessa/.cpkg/arm-linux-gnueabihf/libXScrnSaver-1.2.3-11409d560d940784/lib
 ```
 
-This could be used, for example, to cross-compile `X11`, viz.
+This could be used, for example, to cross-compile `xmonad`, viz.
 
 ```
-cabal new-install X11 --with-ghc arm-linux-gnueabihf-ghc --with-ghc-pkg arm-linux-gnueabihf-ghc-pkg $(cpkg dump-cabal libXext libXrandr libXinerama libXScrnSaver --target=arm-linux-gnueabihf)
+cabal new-install xmonad --with-ghc arm-linux-gnueabihf-ghc --with-ghc-pkg arm-linux-gnueabihf-ghc-pkg $(cpkg dump-cabal libXext libXrandr libXinerama libXScrnSaver --target=arm-linux-gnueabihf)
 ```
 
 ### Dhall Prelude
@@ -196,9 +196,9 @@ Lovingly provided by [polyglot](https://github.com/vmchale/polyglot):
  Cabal Project            1           2            2            0            0
  Dhall                    3        3002         2673            2          327
  Haskell                 31        1665         1362           22          281
- Markdown                 5         363          314            0           49
+ Markdown                 5         365          316            0           49
  YAML                     4         155          140            0           15
 -------------------------------------------------------------------------------
- Total                   48        5377         4666           24          687
+ Total                   48        5379         4668           24          687
 -------------------------------------------------------------------------------
 ```

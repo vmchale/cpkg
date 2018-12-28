@@ -118,7 +118,9 @@
 - [ ] https://github.com/gildor2/fast_zlib
 - [ ] grep
 - [ ] https://github.com/chapel-lang/chapel/releases/download/1.18.0/chapel-1.18.0.tar.gz (https://chapel-lang.org/docs/usingchapel/QUICKSTART.html)
-- [ ] ed, nano
+- [ ] ed
+- [ ] libpeas
+- [ ] libcaca
 - [ ] alarm, pread, top, htop, kill, grep
 # Documentation
 - [ ] Write a manpage
