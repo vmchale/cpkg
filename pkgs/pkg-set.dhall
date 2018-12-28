@@ -482,11 +482,12 @@ let gnutls =
 
     prelude.simplePackage { name = "gnutls", version = prelude.fullVersion cfg } ⫽
       { pkgUrl = "https://www.gnupg.org/ftp/gcrypt/gnutls/v${versionString}/gnutls-${versionString}.${Natural/show cfg.patch}.tar.xz"
-      , pkgDeps = [ prelude.lowerBound { name = "nettle", lower = [3,4,1] }
+      , pkgDeps = [ prelude.lowerBound { name = "nettle", lower = [3,1] }
                   , prelude.unbounded "unistring"
                   , prelude.lowerBound { name = "libtasn1", lower = [4,9] }
                   , prelude.lowerBound { name = "p11-kit", lower = [0,23,1] }
                   ]
+      , configureCommand = prelude.configureLinkExtraLibs [ "nettle", "hogweed" ]
       }
 in
 
@@ -704,7 +705,9 @@ let p11kit =
   λ(v : List Natural) →
     prelude.simplePackage { name = "p11-kit", version = v } ⫽
       { pkgUrl = "https://github.com/p11-glue/p11-kit/releases/download/${prelude.showVersion v}/p11-kit-${prelude.showVersion v}.tar.gz"
-      , pkgDeps = [ prelude.lowerBound { name = "libffi", lower = [3,0,0] } ]
+      , pkgDeps = [ prelude.lowerBound { name = "libffi", lower = [3,0,0] }
+                  , prelude.unbounded "libtasn1"
+                  ]
       }
 in
 
@@ -823,8 +826,8 @@ let imageMagick =
     in
 
     prelude.simplePackage { name = "imagemagick", version = v } ⫽
-      { pkgUrl = "https://imagemagick.org/download/ImageMagick-${versionString}-16.tar.xz"
-      , pkgSubdir = "ImageMagick-${versionString}-16"
+      { pkgUrl = "https://imagemagick.org/download/ImageMagick-${versionString}-21.tar.xz"
+      , pkgSubdir = "ImageMagick-${versionString}-21"
       }
 in
 
@@ -1098,21 +1101,6 @@ let fribidi =
 in
 
 let gobject-introspection =
-  let gobjectConfig =
-    λ(cfg : types.BuildVars) →
-      [ prelude.mkExe "configure"
-      , prelude.call (prelude.defaultCall ⫽ { program = "./configure"
-                                            , arguments = [ "--prefix=${cfg.installDir}" ]
-                                            , environment =
-                                                Some (prelude.defaultPath cfg # [ { var = "LDFLAGS", value = (prelude.mkLDFlags cfg.linkDirs).value ++ " -lpcre -lgobject-2.0 -lgio-2.0" }
-                                                                                , prelude.mkCFlags cfg.includeDirs
-                                                                                , prelude.mkPkgConfigVar cfg.linkDirs
-                                                                                , prelude.libPath cfg
-                                                                                ])
-                                            })
-      ]
-  in
-
   λ(x : { version : List Natural, patch : Natural }) →
     let versionString = prelude.showVersion x.version
     in
@@ -1122,7 +1110,7 @@ let gobject-introspection =
     prelude.simplePackage { name = "gobject-introspection", version = prelude.fullVersion x } ⫽
       { pkgUrl = "https://download.gnome.org/sources/gobject-introspection/${versionString}/gobject-introspection-${fullVersion}.tar.xz"
       , pkgBuildDeps = [ prelude.unbounded "flex" ]
-      , configureCommand = gobjectConfig
+      , configureCommand = prelude.configureLinkExtraLibs [ "pcre", "gobject-2.0", "gio-2.0" ]
       , pkgDeps = [ prelude.lowerBound { name = "glib", lower = [2,58,0] } ]
       }
 in
@@ -1147,11 +1135,16 @@ let glib =
 
     let glibConfigure =
       λ(cfg : types.BuildVars) →
+        let crossArgs =
+          if cfg.isCross
+            then [ "--cross-file", "cross.txt" ]
+            else [] : List Text
+        in
 
         [ prelude.createDir "build"
         , prelude.writeFile { file = "build/cross.txt", contents = prelude.mesonCfgFile cfg }
         , prelude.call { program = "meson"
-                       , arguments = [ "--prefix=${cfg.installDir}", "..", "-Dselinux=false", "--cross-file", "cross.txt" ]
+                       , arguments = [ "--prefix=${cfg.installDir}", "..", "-Dselinux=false" ] # crossArgs
                        , environment = Some [ prelude.mkPkgConfigVar cfg.linkDirs
                                             , { var = "PATH", value = prelude.mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
                                             , { var = "LDFLAGS", value = (prelude.mkLDFlags cfg.linkDirs).value ++ " -lpcre" }
@@ -1771,7 +1764,9 @@ let libdrm =
   λ(v : List Natural) →
     prelude.ninjaPackage { name = "libdrm", version = v } ⫽
       { pkgUrl = "https://dri.freedesktop.org/libdrm/libdrm-${prelude.showVersion v}.tar.bz2"
-      , pkgDeps = [ prelude.unbounded "libpciaccess" ]
+      , pkgDeps = [ prelude.unbounded "libpciaccess"
+                  , prelude.unbounded "cairo"
+                  ]
       }
 in
 
@@ -1847,16 +1842,6 @@ let graphviz =
       , configureCommand = prelude.configureMkExes [ "iffe" ]
       , pkgDeps = [ prelude.unbounded "perl" ]
       , installCommand = prelude.installWithBinaries [ "bin/dot" ]
-      }
-in
-
-let libepoxy =
-  λ(v : List Natural) →
-    let versionString = prelude.showVersion v in
-    prelude.ninjaPackage { name = "libepoxy", version = v } ⫽
-      { pkgUrl = "https://github.com/anholt/libepoxy/releases/download/${versionString}/libepoxy-${versionString}.tar.xz"
-      , installCommand =
-          prelude.ninjaInstallWithPkgConfig (prelude.mesonMoves [ "epoxy.pc" ])
       }
 in
 
@@ -1948,6 +1933,12 @@ let nano =
       { pkgDeps = [ prelude.unbounded "ncurses" ] }
 in
 
+let libarchive =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libarchive", version = v } ⫽
+      { pkgUrl = "https://www.libarchive.org/downloads/libarchive-${prelude.showVersion v}.tar.gz" }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
@@ -1962,7 +1953,7 @@ in
 , coreutils [8,30]
 , curl [7,62,0]
 , dbus [1,12,10]
-, elfutils [0,170]
+, elfutils [0,175]
 , emacs [25,3]
 , expat [2,2,6]
 , fontconfig [2,13,1]
@@ -1992,16 +1983,15 @@ in
 , gzip [1,9]
 , harfbuzz [2,2,0]
 , imageMagick [7,0,8]
-, imageMagick [6,9,10]
 , inputproto [2,3,2]
 , intltool [0,51,0]
 , jpegTurbo [2,0,1]
 , kbproto [1,0,7]
 , lapack [3,8,0]
+, libarchive [3,3,3]
 , libassuan [2,5,1]
 , libatomic_ops [7,6,8]
 , libdrm [2,4,96]
-, libepoxy [1,5,3]
 , libffi [3,2,1]
 , libgcrypt [1,8,4]
 , libgpgError [1,32]

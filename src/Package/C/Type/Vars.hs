@@ -7,6 +7,7 @@ import           Package.C.Type.Shared
 data BuildVars = BuildVars { installDir   :: FilePath
                            , currentDir   :: FilePath
                            , targetTriple :: Maybe TargetTriple
+                           , isCross      :: Bool
                            , includeDirs  :: [ FilePath ]
                            , preloadLibs  :: [ FilePath ]
                            , shareDirs    :: [ FilePath ]

@@ -5,6 +5,7 @@ module Package.C.Build ( buildCPkg
 
 import           Control.Concurrent          (getNumCapabilities)
 import           CPkgPrelude
+import           Data.Maybe                  (isJust)
 import qualified Data.Text.IO                as TIO
 import           Package.C.Build.OS
 import           Package.C.Db.Register
@@ -137,7 +138,7 @@ getVars :: Maybe TargetTriple
         -> PkgM BuildVars
 getVars host sta shr links incls bins = do
     nproc <- liftIO getNumCapabilities
-    pure (BuildVars "" "" host incls [] shr links bins dhallOS dhallArch sta nproc)
+    pure (BuildVars "" "" host (isJust host) incls [] shr links bins dhallOS dhallArch sta nproc)
     -- we don't run getPreloads until later because that might be slow
 
 -- diagnosticDirectory :: String -> (FilePath -> m a) -> m a

@@ -69,7 +69,7 @@ buildWithContext cTree host sta = zygoM' dirAlg buildAlg cTree
 
             let bldDirs@(BuildDirs ls ds is bs) = getAll bds
 
-            buildVars <- getVars host sta ds ls is bs
+            buildVars <- getVars host sta ds (immoralFilter host ls) is bs
 
             pkgDir <- cPkgToDir c host buildVars
 

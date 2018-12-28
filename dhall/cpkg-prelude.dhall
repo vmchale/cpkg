@@ -567,9 +567,8 @@ let mesonCfgFile =
           ""
     in
 
-    -- slightly bad: we shouldn't default to gcc
     "[binaries]\n" ++
-    "c = '${prefix}gcc'\n" ++
+    "c = '${prefix}gcc'\n" ++ -- FIXME: default to cc/c++ when no cfg is passed
     "cpp = '${prefix}g++'\n" ++
     "ar = '${prefix}ar'\n" ++
     "strip = '${prefix}strip'\n" ++
@@ -579,17 +578,22 @@ let mesonCfgFile =
     "system = '${printOS (osCfg cfg)}'\n" ++ -- TODO: printOSMeson function (w64 -> windows)
     "cpu_family = '${printArch (archCfg cfg)}'\n" ++
     "cpu = '${printArch (archCfg cfg)}'\n" ++
-    "endian = 'little'" -- FIXME
+    "endian = 'little'" -- FIXME parse endianness in Haskell library?
 in
 
 let mesonConfigureWithFlags =
   λ(flags : List Text) →
   λ(cfg : types.BuildVars) →
+    let crossArgs =
+      if cfg.isCross
+        then [ "--cross-file", "cross.txt" ]
+        else [] : List Text
+    in
 
     [ createDir "build"
     , writeFile { file = "build/cross.txt", contents = mesonCfgFile cfg }
     , call { program = "meson"
-           , arguments = [ "--prefix=${cfg.installDir}", "..", "--cross-file", "cross.txt" ] # flags
+           , arguments = [ "--prefix=${cfg.installDir}", ".." ] # crossArgs # flags
            , environment = Some [ mkPkgConfigVar cfg.linkDirs
                                 , { var = "PATH", value = mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
                                 , mkPyPath cfg.linkDirs

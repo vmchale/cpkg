@@ -20,6 +20,7 @@
   passed...)
 - [ ] figure out why `libsepol` doesn't cross-compile
 - [ ] `xextproto` doesn't like `aarch64`
+- [ ] ImageMagick fails on ARM
 # Libraries
 - [ ] Consider splitting off library for parsing triples &c.
 # Code Maintenance
@@ -51,6 +52,7 @@
   cross-compiling
 - [ ] `pkgRuntimeDeps` field?
 - [ ] append to `cabal.project` file
+- [ ] pass `pi@32.32.43.00` or whatever on the command-line?
 # Performance
 - [ ] Dhall is slow
 - [ ] Space leak due to zygomorphism?
@@ -74,12 +76,9 @@
 # Packages
 - [ ] bash
 - [ ] jemalloc
-- [ ] GTK+
-- [ ] GraphViz
 - [ ] Ruby
 - [ ] librsvg
 - [ ] https://github.com/linux-noah/noah
-- [ ] ImageMagick
 - [ ] GHC cross-compiler?
 - [ ] https://sourceforge.net/projects/infozip/files/
 - [ ] fdupes
@@ -123,6 +122,7 @@
 - [ ] libcaca
 - [ ] alarm, pread, top, htop, kill, grep
 - [ ] http://www.linuxfromscratch.org/blfs/view/8.1/pst/xmlto.html
+- [ ] https://liquidtelecom.dl.sourceforge.net/project/schilytools/schily-2018-12-21.tar.bz2
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in

@@ -67,7 +67,7 @@ commandDhallToCommand (Dhall.CopyFile src' dest') = CopyFile (T.unpack src') (T.
 commandDhallToCommand (Dhall.Symlink t l)         = Symlink (T.unpack t) (T.unpack l)
 
 buildVarsToDhallBuildVars :: BuildVars -> Dhall.BuildVars
-buildVarsToDhallBuildVars (BuildVars dir' cd tgt' incls prelds shr lds bins os' arch' sta nproc) = Dhall.BuildVars (T.pack dir') (T.pack cd) tgt' (T.pack <$> incls) (T.pack <$> prelds) (T.pack <$> shr) (T.pack <$> lds) (T.pack <$> bins) os' arch' sta (fromIntegral nproc)
+buildVarsToDhallBuildVars (BuildVars dir' cd tgt' cross incls prelds shr lds bins os' arch' sta nproc) = Dhall.BuildVars (T.pack dir') (T.pack cd) tgt' cross (T.pack <$> incls) (T.pack <$> prelds) (T.pack <$> shr) (T.pack <$> lds) (T.pack <$> bins) os' arch' sta (fromIntegral nproc)
 
 cPkgDhallToCPkg :: Dhall.CPkg -> CPkg
 cPkgDhallToCPkg (Dhall.CPkg n v url subdir bldDeps deps cfgCmd buildCmd installCmd) =

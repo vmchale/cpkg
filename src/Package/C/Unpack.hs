@@ -38,3 +38,4 @@ zipResponse dirName response = do
 unpackResponse :: Compression -> FilePath -> BSL.ByteString -> IO ()
 unpackResponse (Tar tarCmp) fp response = tarResponse tarCmp fp response
 unpackResponse Zip fp response          = zipResponse fp response
+-- TODO: libarchive bindings??
