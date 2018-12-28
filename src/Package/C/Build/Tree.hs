@@ -3,6 +3,7 @@ module Package.C.Build.Tree ( buildByName
 
 import           Control.Recursion
 import           CPkgPrelude
+import           Data.List            (isInfixOf)
 import           Package.C.Build
 import           Package.C.Monad
 import           Package.C.PackageSet
@@ -22,6 +23,15 @@ getAll bds =
     let go f = fold (f <$> bds)
     in BuildDirs (go libraries) (go share) (go include) (go binaries)
 
+-- in order to prevent the "vanilla" libffi from preceding the *cross* libffi,
+-- we filter out any directory that doesn't contain the target triple. this
+-- causes further bugs and it's slow
+immoralFilter :: Maybe TargetTriple -> [FilePath] -> [FilePath]
+immoralFilter Nothing fps = fps
+immoralFilter (Just tgt') fps =
+    let infixDir = show tgt'
+    in filter (\fp -> infixDir `isInfixOf` fp || "meson" `isInfixOf` fp) fps
+
 buildWithContext :: DepTree CPkg
                  -> Maybe TargetTriple
                  -> Bool -- ^ Should we build static libraries?
@@ -30,7 +40,7 @@ buildWithContext cTree host sta = zygoM' dirAlg buildAlg cTree
 
     where buildAlg :: DepTreeF CPkg (BuildDirs, ()) -> PkgM ()
           buildAlg (DepNodeF c preBds) =
-            buildCPkg c host sta ds ls is bs
+            buildCPkg c host sta ds (immoralFilter host ls) is bs
                 where (BuildDirs ls ds is bs) = getAll (fst <$> preBds)
           buildAlg (BldDepNodeF c preBds) =
             buildCPkg c Nothing False ds ls is bs -- don't use static libraries for build dependencies

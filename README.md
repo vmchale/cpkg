@@ -131,6 +131,7 @@ lua [5,3,5]
 After running
 
 ```
+cpkg install libX11 --target=arm-linux-gnueabihf
 cpkg install libXext --target=arm-linux-gnueabihf
 cpkg install libXrandr --target=arm-linux-gnueabihf
 cpkg install libXinerama --target=arm-linux-gnueabihf
@@ -197,9 +198,9 @@ Lovingly provided by [polyglot](https://github.com/vmchale/polyglot):
  Cabal Project            1           2            2            0            0
  Dhall                    3        3004         2675            2          327
  Haskell                 31        1665         1362           22          281
- Markdown                 5         367          318            0           49
+ Markdown                 5         368          319            0           49
  YAML                     4         155          140            0           15
 -------------------------------------------------------------------------------
- Total                   48        5383         4672           24          687
+ Total                   48        5384         4673           24          687
 -------------------------------------------------------------------------------
 ```
