@@ -14,7 +14,7 @@ installation directory to a series of instructions, we can effectively package
 C projects with diverse build systems and handle dependencies between them.
 
 This tool provides reasonably good support for cross-compilation of C projects
-and packages. It is not a substitute for already extant package managers or
+and packages. It is not a substitute for extant package managers or
 build tools.
 
 - [Installation](#installation)
@@ -197,10 +197,10 @@ Lovingly provided by [polyglot](https://github.com/vmchale/polyglot):
  Cabal                    1         155          141            0           14
  Cabal Project            1           2            2            0            0
  Dhall                    3        3004         2675            2          327
- Haskell                 31        1665         1362           22          281
- Markdown                 5         368          319            0           49
+ Haskell                 31        1675         1368           25          282
+ Markdown                 5         369          320            0           49
  YAML                     4         155          140            0           15
 -------------------------------------------------------------------------------
- Total                   48        5384         4673           24          687
+ Total                   48        5395         4680           27          688
 -------------------------------------------------------------------------------
 ```
