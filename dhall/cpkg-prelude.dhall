@@ -573,7 +573,7 @@ let mesonCfgFile =
     "cpp = '${prefix}g++'\n" ++
     "ar = '${prefix}ar'\n" ++
     "strip = '${prefix}strip'\n" ++
-    "pkg-config = 'pkg-config'\n" ++
+    "pkgconfig = 'pkg-config'\n" ++
 
     "[host_machine]\n" ++
     "system = '${printOS (osCfg cfg)}'\n" ++ -- TODO: printOSMeson function (w64 -> windows)
@@ -587,8 +587,9 @@ let mesonConfigureWithFlags =
   λ(cfg : types.BuildVars) →
 
     [ createDir "build"
+    , writeFile { file = "build/cross.txt", contents = mesonCfgFile cfg }
     , call { program = "meson"
-           , arguments = [ "--prefix=${cfg.installDir}", ".." ] # flags
+           , arguments = [ "--prefix=${cfg.installDir}", "..", "--cross-file", "cross.txt" ] # flags
            , environment = Some [ mkPkgConfigVar cfg.linkDirs
                                 , { var = "PATH", value = mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
                                 , mkPyPath cfg.linkDirs

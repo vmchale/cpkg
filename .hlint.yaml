@@ -6,6 +6,7 @@
   - {name: foldl, within: []}
   - {name: traceShowId, within: []}
   - {name: traceShow, within: []}
+  - {name: diagnosticDirectory, within: []}
 
 - ignore: {name: "Avoid lambda using `infix`"}
 - ignore: {name: "Use section"}

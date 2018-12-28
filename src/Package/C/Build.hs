@@ -99,9 +99,6 @@ fetchCPkg :: CPkg
           -> PkgM ()
 fetchCPkg cpkg = fetchUrl (pkgUrl cpkg) (pkgName cpkg)
 
--- diagnosticDirectory :: String -> (FilePath -> m a) -> m a
--- diagnosticDirectory s f = f (s ++ "-diagnostic")
-
 buildCPkg :: CPkg
           -> Maybe TargetTriple
           -> Bool -- ^ Should we build static libraries?
@@ -142,6 +139,9 @@ getVars host sta shr links incls bins = do
     nproc <- liftIO getNumCapabilities
     pure (BuildVars "" "" host incls [] shr links bins dhallOS dhallArch sta nproc)
     -- we don't run getPreloads until later because that might be slow
+
+-- diagnosticDirectory :: String -> (FilePath -> m a) -> m a
+-- diagnosticDirectory s f = f (s ++ "-diagnostic")
 
 -- TODO: more complicated solver, garbage collector, and all that.
 -- Basically nix-style builds for C libraries

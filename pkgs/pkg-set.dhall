@@ -123,7 +123,12 @@ in
 let dbus =
   λ(v : List Natural) →
     prelude.simplePackage { name = "dbus", version = v } ⫽
-      { pkgUrl = "https://dbus.freedesktop.org/releases/dbus/dbus-${prelude.showVersion v}.tar.gz" }
+      { pkgUrl = "https://dbus.freedesktop.org/releases/dbus/dbus-${prelude.showVersion v}.tar.gz"
+      , pkgDeps = [ prelude.unbounded "expat"
+                  , prelude.unbounded "libselinux"
+                  ]
+      , configureCommand = prelude.configureLinkExtraLibs [ "pcre" ]
+      }
 in
 
 let fltk =
@@ -1144,8 +1149,9 @@ let glib =
       λ(cfg : types.BuildVars) →
 
         [ prelude.createDir "build"
+        , prelude.writeFile { file = "build/cross.txt", contents = prelude.mesonCfgFile cfg }
         , prelude.call { program = "meson"
-                       , arguments = [ "--prefix=${cfg.installDir}", "..", "-Dselinux=false" ]
+                       , arguments = [ "--prefix=${cfg.installDir}", "..", "-Dselinux=false", "--cross-file", "cross.txt" ]
                        , environment = Some [ prelude.mkPkgConfigVar cfg.linkDirs
                                             , { var = "PATH", value = prelude.mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
                                             , { var = "LDFLAGS", value = (prelude.mkLDFlags cfg.linkDirs).value ++ " -lpcre" }
@@ -1372,6 +1378,8 @@ let glib =
       , pkgDeps = [ prelude.unbounded "util-linux"
                   , prelude.unbounded "pcre" -- >= 8.31
                   , prelude.unbounded "libffi"
+                  , prelude.unbounded "zlib"
+                  , prelude.unbounded "dbus"
                   ]
       }
 in

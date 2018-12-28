@@ -14,8 +14,7 @@ installation directory to a series of instructions, we can effectively package
 C projects with diverse build systems and handle dependencies between them.
 
 This tool provides reasonably good support for cross-compilation of C projects
-and packages. It is not a substitute for extant package managers or
-build tools.
+and packages. It is not a full-fledged package manager.
 
 - [Installation](#installation)
   - [Shell Completions](#shell-completions)
