@@ -45,7 +45,8 @@ in
 
 let libgcrypt =
   λ(v : List Natural) →
-    gpgPackage { name = "libgcrypt", version = v }
+    gpgPackage { name = "libgcrypt", version = v } ⫽
+      { pkgDeps = [ prelude.lowerBound { name = "libgpg-error", lower = [1,25] } ] }
 in
 
 let libassuan =
@@ -56,7 +57,8 @@ in
 
 let libksba =
   λ(v : List Natural) →
-    gpgPackage { name = "libksba", version = v }
+    gpgPackage { name = "libksba", version = v } ⫽
+      { pkgDeps = [ prelude.lowerBound { name = "libgpg-error", lower = [1,8] } ] }
 in
 
 {- musl: https://www.musl-libc.org/ -}

@@ -21,6 +21,7 @@
 - [ ] figure out why `libsepol` doesn't cross-compile
 - [ ] `xextproto` doesn't like `aarch64`
 - [ ] ImageMagick fails on ARM
+- [ ] `wget` doesn't work with latest gnutls
 # Libraries
 - [ ] Consider splitting off library for parsing triples &c.
 # Code Maintenance
@@ -123,6 +124,7 @@
 - [ ] alarm, pread, top, htop, kill, grep
 - [ ] http://www.linuxfromscratch.org/blfs/view/8.1/pst/xmlto.html
 - [ ] https://liquidtelecom.dl.sourceforge.net/project/schilytools/schily-2018-12-21.tar.bz2
+- [ ] https://ftp.gnu.org/gnu/autogen/rel5.18.16/
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in
