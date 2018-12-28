@@ -36,15 +36,8 @@ buildWithContext cTree host sta = zygoM' dirAlg buildAlg cTree
             buildCPkg c Nothing False ds ls is bs -- don't use static libraries for build dependencies
                 where (BuildDirs ls ds is bs) = getAll (fst <$> preBds)
 
-          dirAlg :: DepTreeF CPkg BuildDirs -> PkgM BuildDirs
-          dirAlg dep = do
-
-            let (BuildDirs ls ds is bs) = getAll $ deps dep
-
-            buildVars <- getVars host sta ds ls is bs
-
-            pkgDir <- cPkgToDir (self dep) host buildVars
-
+          mkBuildDirs :: MonadIO m => FilePath -> BuildDirs -> m BuildDirs
+          mkBuildDirs pkgDir (BuildDirs ls ds is bs) = do
             let linkDir = pkgDir </> "lib"
                 linkDir64 = pkgDir </> "lib64"
                 includeDir = pkgDir </> "include"
@@ -60,6 +53,27 @@ buildWithContext cTree host sta = zygoM' dirAlg buildAlg cTree
                 else is
 
             pure (BuildDirs links shares includes bins)
+
+          dirAlg :: DepTreeF CPkg BuildDirs -> PkgM BuildDirs
+          dirAlg (DepNodeF c bds) = do
+
+            let bldDirs@(BuildDirs ls ds is bs) = getAll bds
+
+            buildVars <- getVars host sta ds ls is bs
+
+            pkgDir <- cPkgToDir c host buildVars
+
+            mkBuildDirs pkgDir bldDirs
+
+          dirAlg (BldDepNodeF c bds) = do
+
+            let bldDirs@(BuildDirs ls ds is bs) = getAll bds
+
+            buildVars <- getVars Nothing False ds ls is bs
+
+            pkgDir <- cPkgToDir c Nothing buildVars
+
+            mkBuildDirs pkgDir bldDirs
 
 -- TODO: should this parse a string into a TargetTriple instead?
 buildByName :: PackId -> Maybe TargetTriple -> Maybe String -> Bool -> PkgM ()

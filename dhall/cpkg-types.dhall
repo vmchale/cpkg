@@ -101,7 +101,7 @@ let Command = < CreateDirectory : { dir : Text }
               | Call : Proc
               | SymlinkBinary : { file : Text }
               | Symlink : { tgt : Text, linkName : Text }
-              | Write : { contents : Text, file : Text }
+              | Write : { file : Text, contents : Text }
               | CopyFile : { src : Text, dest : Text }
               >
 in

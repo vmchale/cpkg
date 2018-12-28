@@ -1371,6 +1371,7 @@ let glib =
                        ]
       , pkgDeps = [ prelude.unbounded "util-linux"
                   , prelude.unbounded "pcre" -- >= 8.31
+                  , prelude.unbounded "libffi"
                   ]
       }
 in
@@ -1931,6 +1932,12 @@ let ragel =
       }
 in
 
+let nano =
+  λ(v : List Natural) →
+    prelude.makeGnuExe { name = "nano", version = v } ⫽
+      { pkgDeps = [ prelude.unbounded "ncurses" ] }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
@@ -2020,6 +2027,7 @@ in
 , markupSafe [1,0]
 , meson [0,49,0]
 , musl [1,1,20]
+, nano [3,2]
 , nasm [2,14]
 , ncurses [6,1]
 , nginx [1,15,7]

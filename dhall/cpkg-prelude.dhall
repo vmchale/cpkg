@@ -559,6 +559,29 @@ let mkPyPath =
     { var = "PYTHONPATH", value = flag }
 in
 
+let mesonCfgFile =
+  λ(cfg : types.BuildVars) →
+    let prefix =
+      Optional/fold types.TargetTriple cfg.targetTriple Text
+        (λ(tgt : types.TargetTriple) → "${printTargetTriple tgt}-")
+          ""
+    in
+
+    -- slightly bad: we shouldn't default to gcc
+    "[binaries]\n" ++
+    "c = '${prefix}gcc'\n" ++
+    "cpp = '${prefix}g++'\n" ++
+    "ar = '${prefix}ar'\n" ++
+    "strip = '${prefix}strip'\n" ++
+    "pkg-config = 'pkg-config'\n" ++
+
+    "[host_machine]\n" ++
+    "system = '${printOS (osCfg cfg)}'\n" ++ -- TODO: printOSMeson function (w64 -> windows)
+    "cpu_family = '${printArch (archCfg cfg)}'\n" ++
+    "cpu = '${printArch (archCfg cfg)}'\n" ++
+    "endian = 'little'" -- FIXME
+in
+
 let mesonConfigureWithFlags =
   λ(flags : List Text) →
   λ(cfg : types.BuildVars) →
@@ -700,7 +723,7 @@ in
 let mkCCArg =
   λ(cfg : types.BuildVars) →
     Optional/fold types.TargetTriple cfg.targetTriple (List Text)
-      (λ(tgt : types.TargetTriple) → ["CC=${printTargetTriple tgt}-gcc"]) -- TODO: mkCCArg in prelude
+      (λ(tgt : types.TargetTriple) → ["CC=${printTargetTriple tgt}-gcc"])
         ([] : List Text)
 in
 
@@ -779,4 +802,5 @@ in
 , osCfg               = osCfg
 , archCfg             = archCfg
 , mkCCArg             = mkCCArg
+, mesonCfgFile        = mesonCfgFile
 }

@@ -16,10 +16,9 @@
   cross-compiling
 - [ ] definitely complain about intltool
 - [ ] complain about m4 (?)
-- [ ] `hsc2hs` takes too long when cross-compiling
-- [ ] `cabal new-build -v4` needs better error message
 - [ ] Figure out why `libX11` stalls when not watched (i.e. when `-vv` is not
   passed...)
+- [ ] figure out why `libsepol` doesn't cross-compile
 - [ ] `xextproto` doesn't like `aarch64`
 # Libraries
 - [ ] Consider splitting off library for parsing triples &c.
@@ -119,6 +118,7 @@
 - [ ] https://github.com/gildor2/fast_zlib
 - [ ] grep
 - [ ] https://github.com/chapel-lang/chapel/releases/download/1.18.0/chapel-1.18.0.tar.gz (https://chapel-lang.org/docs/usingchapel/QUICKSTART.html)
+- [ ] ed, nano
 - [ ] alarm, pread, top, htop, kill, grep
 # Documentation
 - [ ] Write a manpage
