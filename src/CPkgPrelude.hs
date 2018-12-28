@@ -18,7 +18,6 @@ module CPkgPrelude ( -- * Base reëxports
                    -- * hashable reëxports
                    , Hashable
                    -- * Exports from "Control.Composition"
-                   , (.$)
                    , (.**)
                    -- * Exports from "Data.Binary"
                    , Binary
@@ -36,7 +35,7 @@ module CPkgPrelude ( -- * Base reëxports
                    , getAppUserDataDirectory
                    ) where
 
-import           Control.Composition       ((.$), (.**))
+import           Control.Composition       ((.**))
 import           Control.Monad
 import           Control.Monad.IO.Class    (MonadIO (..))
 import           Data.Binary               (Binary)

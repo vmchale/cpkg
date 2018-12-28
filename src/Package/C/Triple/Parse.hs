@@ -22,7 +22,7 @@ parseIO p str =
 parseTriple :: Parser TargetTriple
 parseTriple = TargetTriple
     <$> parseArch
-    <*> optional (try ((between .$ char '-') parseManufacturer))
+    <*> optional (try (char '-' *> parseManufacturer))
     <*> (char '-' *> parseOS)
     <*> optional (char '-' *> parseABI)
 

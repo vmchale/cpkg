@@ -89,7 +89,7 @@ library
         hashable -any,
         binary -any,
         microlens -any,
-        composition-prelude >=2.0.2.0,
+        composition-prelude,
         recursion >=2.0.0.0,
         filemanip -any,
         network-uri -any,
