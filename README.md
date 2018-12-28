@@ -5,7 +5,7 @@
 [![Hackage](https://img.shields.io/hackage/v/cpkg.svg)](http://hackage.haskell.org/package/cpkg)
 [![Dependencies of latest version on Hackage](https://img.shields.io/hackage-deps/v/cpkg.svg)](https://hackage.haskell.org/package/cpkg)
 
-cpkg is a build tool for C.
+`cpkg` is a build tool for C with a particular emphasis on cross compilation.
 It is configured using
 [Dhall](http://github.com/dhall-lang/dhall-haskell).
 
@@ -14,7 +14,8 @@ installation directory to a series of instructions, we can effectively package
 C projects with diverse build systems and handle dependencies between them.
 
 This tool provides reasonably good support for cross-compilation of C projects
-and packages.
+and packages. It is not a substitute for already extant package managers or
+build tools.
 
 - [Installation](#installation)
   - [Shell Completions](#shell-completions)
@@ -139,19 +140,19 @@ cpkg install libXScrnSaver --target=arm-linux-gnueabihf
 You can dump flags to be passed to cabal with
 
 ```
-cpkg dump-cabal libXext libXrandr libXinerama libXScrnSaver --target=arm-linux-gnueabihf
+cpkg dump-cabal libX11 libXext libXrandr libXinerama libXScrnSaver --target=arm-linux-gnueabihf
 ```
 
 which will produce something like
 
 ```
---extra-lib-dirs=/home/vanessa/.cpkg/arm-linux-gnueabihf/libXext-1.3.3-63648c4324869741/lib --extra-lib-dirs=/home/vanessa/.cpkg/arm-linux-gnueabihf/libXrandr-1.5.1-72c136ebb1cdbee4/lib --extra-lib-dirs=/home/vanessa/.cpkg/arm-linux-gnueabihf/libXinerama-1.1.4-49761ceb8fb134d8/lib --extra-lib-dirs=/home/vanessa/.cpkg/arm-linux-gnueabihf/libXScrnSaver-1.2.3-11409d560d940784/lib
+--extra-lib-dirs=/home/vanessa/.cpkg/arm-linux-gnueabihf/libX11-1.6.7-820c8166b4caadb/lib --extra-lib-dirs=/home/vanessa/.cpkg/arm-linux-gnueabihf/libXext-1.3.3-1bad0a89c6794a53/lib --extra-lib-dirs=/home/vanessa/.cpkg/arm-linux-gnueabihf/libXrandr-1.5.1-f58f951a622e5c2/lib --extra-lib-dirs=/home/vanessa/.cpkg/arm-linux-gnueabihf/libXinerama-1.1.4-516496f7e04d34be/lib --extra-lib-dirs=/home/vanessa/.cpkg/arm-linux-gnueabihf/libXScrnSaver-1.2.3-60f6993b79a87725/lib
 ```
 
 This could be used, for example, to cross-compile `xmonad`, viz.
 
 ```
-cabal new-install xmonad --with-ghc arm-linux-gnueabihf-ghc --with-ghc-pkg arm-linux-gnueabihf-ghc-pkg $(cpkg dump-cabal libXext libXrandr libXinerama libXScrnSaver --target=arm-linux-gnueabihf)
+cabal new-install xmonad --with-ghc arm-linux-gnueabihf-ghc --with-ghc-pkg arm-linux-gnueabihf-ghc-pkg $(cpkg dump-cabal libX11 libXext libXrandr libXinerama libXScrnSaver --target=arm-linux-gnueabihf)
 ```
 
 ### Dhall Prelude
@@ -194,11 +195,11 @@ Lovingly provided by [polyglot](https://github.com/vmchale/polyglot):
  Bash                     3          35           34            0            1
  Cabal                    1         155          141            0           14
  Cabal Project            1           2            2            0            0
- Dhall                    3        3002         2673            2          327
+ Dhall                    3        3004         2675            2          327
  Haskell                 31        1665         1362           22          281
- Markdown                 5         365          316            0           49
+ Markdown                 5         367          318            0           49
  YAML                     4         155          140            0           15
 -------------------------------------------------------------------------------
- Total                   48        5379         4668           24          687
+ Total                   48        5383         4672           24          687
 -------------------------------------------------------------------------------
 ```

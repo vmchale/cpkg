@@ -26,7 +26,7 @@
 - [ ] Use a more sensible monad
 - [ ] Stop being a mess
 # Documentation
-- [ ] Document the difference between `symlinkBinary` and `symlinkLibrary`...
+- [ ] Document use of `cabal.project` files (which is simpler...)
 # Features
 - [ ] Pass verbosity to configuration/build script
 - [ ] Constraint solver
