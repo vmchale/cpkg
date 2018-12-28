@@ -1974,7 +1974,6 @@ in
 , gmp [6,1,2]
 , gobject-introspection { version = [1,59], patch = 1 }
 , gnupg [2,2,11]
-, gnutls { version = [3,6], patch = 5 }
 , gnutls { version = [3,5], patch = 19 }
 , graphviz [2,40,1]
 , gsl [2,5]

@@ -15,6 +15,7 @@ extra-source-files:
     cabal.project
     dhall/cpkg-prelude.dhall
     dhall/cpkg-types.dhall
+    pkgs/pkg-set.dhall
 extra-doc-files:
     README.md
     CHANGELOG.md

@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/vmchale/cpkg.svg?branch=master)](https://travis-ci.org/vmchale/cpkg)
 [![Windows build status](https://ci.appveyor.com/api/projects/status/github/vmchale/cpkg?svg=true)](https://ci.appveyor.com/project/vmchale/cpkg)
 
-cpkg is a package manager for C.
+cpkg is a build tool for C.
 It is configured using
 [Dhall](http://github.com/dhall-lang/dhall-haskell).
 
@@ -11,8 +11,8 @@ By considering a package to be a *function* taking a `cpkg`-supplied
 installation directory to a series of instructions, we can effectively package
 C projects with diverse build systems and handle dependencies between them.
 
-The goal is to eventually provide something like `cabal new-install` for C, but
-with better support for cross-compilation.
+This tool provides reasonably good support for cross-compilation of C projects
+and packages.
 
 - [Installation](#installation)
   - [Shell Completions](#shell-completions)
