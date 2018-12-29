@@ -1,7 +1,4 @@
 {- Dhall prelue imports -}
-let concatMap = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/Text/concatMap
-in
-
 let concatMapSep = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/Text/concatMapSep
 in
 
@@ -2012,10 +2009,7 @@ let scour =
     let versionString = prelude.showVersion v in
     prelude.python3Package { name = "scour", version = v } ⫽
       { pkgUrl = "https://github.com/scour-project/scour/archive/v${versionString}/scour-${versionString}.tar.gz"
-      , installCommand =
-          λ(cfg : types.BuildVars) →
-            prelude.python3Install cfg
-              # prelude.mkPy3Wrapper "scour" cfg
+      , installCommand = prelude.installWithPy3Wrappers [ "scour" ]
       }
 in
 

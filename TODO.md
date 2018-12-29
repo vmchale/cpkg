@@ -127,6 +127,7 @@
 - [ ] http://www.linuxfromscratch.org/blfs/view/8.3/x/libglade.html
 - [ ] http://www.linuxfromscratch.org/lfs/view/6.6/appendices/dependencies.html
 - [ ] https://github.com/scipy/scipy/releases/download/v1.2.0/scipy-1.2.0.tar.xz
+- [ ] Perl wrapper like `mkPy3Wrapper`
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in

@@ -2,7 +2,10 @@
 let concatMapSep = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/Text/concatMapSep
 in
 
-let concatMap = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/Text/concatMap
+let concatMapText = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/Text/concatMap
+in
+
+let concatMap = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/List/concatMap
 in
 
 let map = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/List/map
@@ -220,7 +223,7 @@ let mkLDFlagsGeneral =
   λ(linkLibs : List Text) →
     let flag0 = concatMapSep " " Text (λ(dir : Text) → "-L${dir}") libDirs
     in
-    let flag1 = concatMap Text (λ(dir : Text) → " -l${dir}") linkLibs
+    let flag1 = concatMapText Text (λ(dir : Text) → " -l${dir}") linkLibs
     in
 
     { var = "LDFLAGS", value = flag0 ++ flag1 }
@@ -312,7 +315,7 @@ in
 
 let mkPathVar =
   λ(binDirs : List Text) →
-    concatMap Text (λ(dir : Text) → "${dir}:") binDirs
+    concatMapSep ":" Text (λ(dir : Text) → "${dir}") binDirs
 in
 
 let defaultPath =
@@ -568,8 +571,7 @@ in
 let mkPyPath =
   λ(version : List Natural) →
   λ(libDirs : List Text) →
-    -- TODO: both python3.7 and python2.whatever
-    let flag = concatMap Text (λ(dir : Text) → "${dir}/python${showVersion version}/site-packages:") libDirs
+    let flag = concatMapSep ":" Text (λ(dir : Text) → "${dir}/python${showVersion version}/site-packages") libDirs
     in
 
     { var = "PYTHONPATH", value = flag }
@@ -773,7 +775,7 @@ let mkCCVar =
 in
 
 let squishVersion =
-  concatMap Natural Natural/show
+  concatMapText Natural Natural/show
 in
 
 let mkCCArg =
@@ -823,6 +825,18 @@ in
 
 let mkPy3Wrapper =
   mkPyWrapper [3,7]
+in
+
+let installWithPyWrappers =
+  λ(version : List Natural) →
+  λ(binNames : List Text) →
+  λ(cfg : types.BuildVars) →
+    pythonInstall version cfg
+      # concatMap Text types.Command (λ(bin : Text) → mkPyWrapper version bin cfg) binNames
+in
+
+let installWithPy3Wrappers =
+  installWithPyWrappers [3,7]
 in
 
 { showVersion         = showVersion
@@ -910,4 +924,6 @@ in
 , printEnvVar         = printEnvVar
 , mkPyWrapper         = mkPyWrapper
 , mkPy3Wrapper        = mkPy3Wrapper
+, installWithPyWrappers = installWithPyWrappers
+, installWithPy3Wrappers = installWithPy3Wrappers
 }

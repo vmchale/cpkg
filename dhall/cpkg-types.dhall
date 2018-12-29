@@ -1,4 +1,3 @@
--- TODO: Add AIX
 let OS = < FreeBSD : {}
          | OpenBSD : {}
          | NetBSD : {}
