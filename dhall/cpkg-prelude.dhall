@@ -672,38 +672,67 @@ let mesonMoves =
   map Text { src : Text, dest : Text} (λ(pcFile : Text) → { src = "build/meson-private/${pcFile}", dest = "lib/pkgconfig/${pcFile}" })
 in
 
-let python3Build =
+let pythonBuild =
+  λ(version : List Natural) →
   λ(cfg : types.BuildVars) →
-    [ createDir "${cfg.installDir}/lib/python3.7/site-packages"
-    , call (defaultCall ⫽ { program = "python3"
+    let major = Optional/fold Natural (List/head Natural version) Text (Natural/show) ""
+    in
+    let versionString = showVersion version
+    in
+    [ createDir "${cfg.installDir}/lib/python${versionString}/site-packages"
+    , call (defaultCall ⫽ { program = "python${major}"
                           , arguments = [ "setup.py", "build" ]
-                          , environment = Some [ { var = "PYTHONPATH", value = "${cfg.installDir}/lib/python3.7/site-packages" }
-                                               , { var = "PATH", value = mkPathVar cfg.binDirs }
-                                               ]
+                          , environment = Some ([ { var = "PYTHONPATH", value = "${cfg.installDir}/lib/python${versionString}/site-packages" }
+                                                , mkPkgConfigVar cfg.linkDirs
+                                                ] # defaultPath cfg)
                           })
     ]
+in
+
+let pythonInstall =
+  λ(version : List Natural) →
+  λ(cfg : types.BuildVars) →
+    let major = Optional/fold Natural (List/head Natural version) Text (Natural/show) ""
+    in
+    let versionString = showVersion version
+    in
+    [ createDir "${cfg.installDir}/lib/python${versionString}/site-packages"
+    , call (defaultCall ⫽ { program = "python${major}"
+                          , arguments = [ "setup.py", "install", "--prefix=${cfg.installDir}", "--optimize=1" ]
+                          , environment = Some ([ { var = "PYTHONPATH", value = "${cfg.installDir}/lib/python${versionString}/site-packages" }
+                                                , mkPkgConfigVar cfg.linkDirs
+                                                ] # defaultPath cfg)
+                          })
+    ]
+in
+
+let pythonPackage =
+  λ(version : List Natural) →
+  λ(x : { name : Text, version : List Natural }) →
+    let major = Optional/fold Natural (List/head Natural version) Text (Natural/show) ""
+    in
+    simplePackage x ⫽
+      { configureCommand = doNothing
+      , buildCommand = pythonBuild version
+      , installCommand = pythonInstall version
+      , pkgBuildDeps = [ unbounded "python${major}" ]
+      }
+in
+
+let python3Build =
+  pythonBuild [3,7]
 in
 
 let python3Install =
-  λ(cfg : types.BuildVars) →
-    [ createDir "${cfg.installDir}/lib/python3.7/site-packages"
-    , call (defaultCall ⫽ { program = "python3"
-                          , arguments = [ "setup.py", "install", "--prefix=${cfg.installDir}", "--optimize=1" ]
-                          , environment = Some [ { var = "PYTHONPATH", value = "${cfg.installDir}/lib/python3.7/site-packages" }
-                                               , { var = "PATH", value = mkPathVar cfg.binDirs }
-                                               ]
-                          })
-    ]
+  pythonInstall [3,7]
 in
 
 let python3Package =
-  λ(x : { name : Text, version : List Natural }) →
-    simplePackage x ⫽
-      { configureCommand = doNothing
-      , buildCommand = python3Build
-      , installCommand = python3Install
-      , pkgBuildDeps = [ unbounded "python3" ]
-      }
+  pythonPackage [3,7]
+in
+
+let python2Package =
+  pythonPackage [2,7]
 in
 
 let mkLDPreload =
@@ -795,8 +824,8 @@ in
 , copyFiles           = copyFiles
 , mkPerlLib           = mkPerlLib
 , mesonMoves          = mesonMoves
-, python3Install      = python3Install
 , python3Build        = python3Build
+, python3Install      = python3Install
 , python3Package      = python3Package
 , mkLDPreload         = mkLDPreload
 , configureLinkExtraLibs = configureLinkExtraLibs
@@ -808,4 +837,5 @@ in
 , archCfg             = archCfg
 , mkCCArg             = mkCCArg
 , mesonCfgFile        = mesonCfgFile
+, python2Package      = python2Package
 }

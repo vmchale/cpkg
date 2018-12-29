@@ -541,6 +541,15 @@ let cairo =
      }
 in
 
+let pycairo =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.python2Package { name = "pycairo", version = v } ⫽
+      { pkgUrl = "https://github.com/pygobject/pycairo/releases/download/v${versionString}/pycairo-${versionString}.tar.gz"
+      , pkgDeps = [ prelude.unbounded "cairo" ]
+      }
+in
+
 let libnettle =
   λ(v : List Natural) →
     prelude.simplePackage { name = "nettle", version = v } ⫽
@@ -786,7 +795,7 @@ in
 
 let freetype-prebuild =
   λ(v : List Natural) →
-    freetype-shared { name = "freetype-prebuild", version = v }
+    freetype-shared { name = "freetype-prebuild", version = v } -- FIXME: for some reason a zlib dep here breaks harfbuzz???
 in
 
 let freetype =
@@ -816,6 +825,7 @@ let zbar =
       , configureCommand = prelude.configureWithFlags [ "--disable-video" ]
       , pkgDeps = [ prelude.lowerBound { name = "imagemagick", lower = [6,2,6] }
                   , prelude.unbounded "gtk2"
+                  , prelude.unbounded "pygtk"
                   ]
       }
 in
@@ -824,10 +834,16 @@ let imageMagick =
   λ(v : List Natural) →
     let versionString = prelude.showVersion v
     in
+    let major = Optional/fold Natural (List/head Natural v) Text (Natural/show) ""
+    in
 
     prelude.simplePackage { name = "imagemagick", version = v } ⫽
       { pkgUrl = "https://imagemagick.org/download/ImageMagick-${versionString}-21.tar.xz"
       , pkgSubdir = "ImageMagick-${versionString}-21"
+      , installCommand =
+          λ(cfg : types.BuildVars) →
+            prelude.defaultInstall cfg
+              # [ prelude.symlink "include/ImageMagick-${major}/MagickWand" "include/wand" ]
       }
 in
 
@@ -1939,6 +1955,70 @@ let libarchive =
       { pkgUrl = "https://www.libarchive.org/downloads/libarchive-${prelude.showVersion v}.tar.gz" }
 in
 
+-- TODO: generalize/simplify this
+let preloadEnv =
+  λ(cfg : types.BuildVars) →
+    prelude.defaultPath cfg # [ prelude.mkLDFlags cfg.linkDirs
+                              , prelude.mkCFlags cfg.includeDirs
+                              , prelude.mkPkgConfigVar cfg.linkDirs
+                              , prelude.libPath cfg
+                              , prelude.mkXdgDataDirs cfg.shareDirs
+                              , prelude.mkLDPreload cfg.preloadLibs
+                              ]
+in
+
+let preloadCfg =
+  λ(cfg : types.BuildVars) →
+    [ prelude.mkExe "configure"
+    , prelude.call (prelude.defaultCall ⫽ { program = "./configure"
+                                          , arguments = [ "--prefix=${cfg.installDir}" ]
+                                          , environment = Some (preloadEnv cfg)
+                                          })
+    ]
+in
+
+let pygobject =
+  λ(x : { version : List Natural, patch : Natural }) →
+    let versionString = prelude.showVersion x.version
+    in
+    let fullVersion = versionString ++ "." ++ Natural/show x.patch
+    in
+    prelude.simplePackage { name = "pygobject", version = prelude.fullVersion x } ⫽
+      { pkgUrl = "http://ftp.gnome.org/pub/gnome/sources/pygobject/${versionString}/pygobject-${fullVersion}.tar.xz"
+      , pkgDeps = [ prelude.unbounded "glib" ]
+      , configureCommand = preloadCfg
+      }
+in
+
+let pygtk =
+  λ(x : { version : List Natural, patch : Natural }) →
+    let versionString = prelude.showVersion x.version
+    in
+    let fullVersion = versionString ++ "." ++ Natural/show x.patch
+    in
+    prelude.simplePackage { name = "pygtk", version = prelude.fullVersion x } ⫽
+      { pkgUrl = "http://ftp.gnome.org/pub/gnome/sources/pygtk/${versionString}/pygtk-${fullVersion}.tar.bz2"
+      , configureCommand = preloadCfg
+      , pkgDeps = [ prelude.lowerBound { name = "glib", lower = [2,8,0] }
+                  , prelude.lowerBound { name = "pygobject", lower = [2,21,3] }
+                  ]
+      }
+in
+
+let libglade =
+  λ(x : { version : List Natural, patch : Natural }) →
+    let versionString = prelude.showVersion x.version
+    in
+    let fullVersion = versionString ++ "." ++ Natural/show x.patch
+    in
+    prelude.simplePackage { name = "libglade", version = prelude.fullVersion x } ⫽
+      { pkgUrl = "http://ftp.gnome.org/pub/gnome/sources/libglade/${versionString}/libglade-${fullVersion}.tar.bz2"
+      , pkgDeps = [ prelude.lowerBound { name = "libxml2", lower = [2,4,10] }
+                  , prelude.lowerBound { name = "gtk2", lower = [2,5,0] }
+                  ]
+      }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
@@ -1994,6 +2074,7 @@ in
 , libdrm [2,4,96]
 , libffi [3,2,1]
 , libgcrypt [1,8,4]
+, libglade { version = [2,6], patch = 4 }
 , libgpgError [1,32]
 , libksba [1,3,5]
 , libpciaccess [0,14]
@@ -2041,6 +2122,9 @@ in
 , pixman [0,36,0]
 , pkg-config [0,29,2]
 , postgresql [11,1]
+, pycairo [1,18,0]
+, pygobject { version = [2,28], patch = 7 }
+, pygtk { version = [2,24], patch = 0 }
 , python [2,7,15]
 , python [3,7,2]
 , qrencode [4,0,2]

@@ -92,7 +92,7 @@
 - [ ] `rustc`
 - [ ] https://github.com/ZBar/ZBar
 - [ ] Doxygen
-- [ ] libexif
+- [ ] libexif, exif, libexif-gtk, gexif (https://libexif.github.io/)
 - [ ] LibTIFF
 - [ ] FFmpeg
 - [ ] intltool
@@ -100,6 +100,7 @@
 - [ ] https://ftp.gnu.org/gnu/texinfo/ ?
 - [ ] charset (?)
 - [ ] https://sourceware.org/newlib/
+- [ ] fish
 - [ ] https://pypi.org/project/scour/
 - [ ] libtizcore
 - [ ] https://cairosvg.org/
@@ -125,6 +126,8 @@
 - [ ] http://www.linuxfromscratch.org/blfs/view/8.1/pst/xmlto.html
 - [ ] https://liquidtelecom.dl.sourceforge.net/project/schilytools/schily-2018-12-21.tar.bz2
 - [ ] https://ftp.gnu.org/gnu/autogen/rel5.18.16/
+- [ ] https://github.com/pkgconf/pkgconf
+- [ ] http://www.linuxfromscratch.org/blfs/view/8.3/x/libglade.html
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in

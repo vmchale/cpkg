@@ -26,6 +26,9 @@ getAll bds =
 -- in order to prevent the "vanilla" libffi from preceding the *cross* libffi,
 -- we filter out any directory that doesn't contain the target triple. this
 -- causes further bugs and it's slow
+--
+-- Really we should allow *all* libdirs for Python/Perl here, since they won't
+-- (hopefully) pollute the pkg-config path...
 immoralFilter :: Maybe TargetTriple -> [FilePath] -> [FilePath]
 immoralFilter Nothing fps = fps
 immoralFilter (Just tgt') fps =

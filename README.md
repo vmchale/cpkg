@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/vmchale/cpkg.svg?branch=master)](https://travis-ci.org/vmchale/cpkg)
 [![Windows build status](https://ci.appveyor.com/api/projects/status/github/vmchale/cpkg?svg=true)](https://ci.appveyor.com/project/vmchale/cpkg)
+[![Hackage CI](https://matrix.hackage.haskell.org/api/v2/packages/cpkg/badge)](https://matrix.hackage.haskell.org/package/cpkg)
 [![Hackage](https://img.shields.io/hackage/v/cpkg.svg)](http://hackage.haskell.org/package/cpkg)
 [![Dependencies of latest version on Hackage](https://img.shields.io/hackage-deps/v/cpkg.svg)](https://hackage.haskell.org/package/cpkg)
 
@@ -195,11 +196,11 @@ Lovingly provided by [polyglot](https://github.com/vmchale/polyglot):
  Bash                     3          35           34            0            1
  Cabal                    1         155          141            0           14
  Cabal Project            1           8            7            0            1
- Dhall                    3        3010         2682            2          326
+ Dhall                    3        3008         2680            2          326
  Haskell                 31        1679         1371           26          282
  Markdown                 5         371          322            0           49
  YAML                     4         155          140            0           15
 -------------------------------------------------------------------------------
- Total                   48        5413         4697           28          688
+ Total                   48        5411         4695           28          688
 -------------------------------------------------------------------------------
 ```
