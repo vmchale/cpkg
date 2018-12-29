@@ -705,7 +705,9 @@ let lua =
       , configureCommand = prelude.doNothing
       , buildCommand = luaBuild
       , installCommand = luaInstall
-      , pkgDeps = [ prelude.unbounded "readline" ]
+      , pkgDeps = [ prelude.unbounded "readline"
+                  , prelude.unbounded "ncurses"
+                  ]
       }
 in
 
