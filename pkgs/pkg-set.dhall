@@ -2014,18 +2014,8 @@ let scour =
       { pkgUrl = "https://github.com/scour-project/scour/archive/v${versionString}/scour-${versionString}.tar.gz"
       , installCommand =
           λ(cfg : types.BuildVars) →
-            -- FIXME: windows support
-            let wrapperContents = "${prelude.printEnvVar (prelude.libPath cfg)} ${prelude.printEnvVar (prelude.mkPy3Path cfg.linkDirs)}:${cfg.installDir}/lib/python3.7/site-packages ${cfg.installDir}/bin/scour"
-            in
-
             prelude.python3Install cfg
-              # [ prelude.createDir "wrapper"
-                , prelude.writeFile { file = "wrapper/scour", contents = wrapperContents }
-                , prelude.mkExe "wrapper/scour"
-                , prelude.copyFile "wrapper/scour" "wrapper/scour"
-                , prelude.symlinkBinary "wrapper/scour"
-                ]
-      -- TODO: generalize wrapper approach
+              # prelude.mkPy3Wrapper "scour" cfg
       }
 in
 

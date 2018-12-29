@@ -804,6 +804,27 @@ let printEnvVar =
     "${var.var}=${var.value}"
 in
 
+let mkPyWrapper =
+  λ(version : List Natural) →
+  λ(binName : Text) →
+  λ(cfg : types.BuildVars) →
+    let wrapperContents = "${printEnvVar (libPath cfg)} ${printEnvVar (mkPyPath version cfg.linkDirs)}:${cfg.installDir}/lib/python${showVersion version}/site-packages ${cfg.installDir}/bin/${binName}"
+    in
+    let wrapped = "wrapper/${binName}"
+    in
+
+    [ createDir "wrapper"
+    , writeFile { file = wrapped, contents = wrapperContents }
+    , mkExe wrapped
+    , copyFile wrapped wrapped
+    , symlinkBinary wrapped
+    ]
+in
+
+let mkPy3Wrapper =
+  mkPyWrapper [3,7]
+in
+
 { showVersion         = showVersion
 , makeGnuLibrary      = makeGnuLibrary
 , makeGnuExe          = makeGnuExe
@@ -887,4 +908,6 @@ in
 , preloadEnv          = preloadEnv
 , preloadCfg          = preloadCfg
 , printEnvVar         = printEnvVar
+, mkPyWrapper         = mkPyWrapper
+, mkPy3Wrapper        = mkPy3Wrapper
 }
