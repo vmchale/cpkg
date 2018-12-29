@@ -686,7 +686,7 @@ let lua =
         in
 
         [ prelude.call (prelude.defaultCall ⫽ { program = "make"
-                                              , arguments = cc # [ printLuaOS os, "MYLDFLAGS=${ldflags} -lncurses", "MYCFLAGS=${cflags}" ]
+                                              , arguments = cc # [ printLuaOS os, "MYLDFLAGS=${ldflags}", "MYCFLAGS=${cflags}", "MYLIBS=-lncurses" ]
                                               })
         ]
     in
@@ -705,9 +705,7 @@ let lua =
       , configureCommand = prelude.doNothing
       , buildCommand = luaBuild
       , installCommand = luaInstall
-      , pkgDeps = [ prelude.unbounded "readline"
-                  , prelude.unbounded "ncurses"
-                  ]
+      , pkgDeps = [ prelude.unbounded "readline" ]
       }
 in
 
