@@ -11,7 +11,7 @@ It is configured using
 [Dhall](http://github.com/dhall-lang/dhall-haskell).
 
 By considering a package to be a *function* taking a `cpkg`-supplied
-installation directory to a series of instructions, we can effectively package
+installation directory to a series of steps, we can effectively package
 C projects with diverse build systems and handle dependencies between them.
 
 This tool provides reasonably good support for cross-compilation of C projects
@@ -82,10 +82,7 @@ let lua =
 
     let luaBuild =
       λ(cfg : types.BuildVars) →
-        let cc =
-          Optional/fold types.TargetTriple cfg.targetTriple (List Text)
-            (λ(tgt : types.TargetTriple) → ["CC=${prelude.printTargetTriple tgt}-gcc"])
-              ([] : List Text)
+        let cc = prelude.mkCCArg cfg
         in
 
         let ldflags =
@@ -196,11 +193,11 @@ Lovingly provided by [polyglot](https://github.com/vmchale/polyglot):
  Bash                     3          35           34            0            1
  Cabal                    1         155          141            0           14
  Cabal Project            1           8            7            0            1
- Dhall                    3        3195         2850            2          343
+ Dhall                    3        3204         2857            2          345
  Haskell                 31        1682         1371           29          282
  Markdown                 5         375          326            0           49
  YAML                     4         156          141            0           15
 -------------------------------------------------------------------------------
- Total                   48        5606         4870           31          705
+ Total                   48        5615         4877           31          707
 -------------------------------------------------------------------------------
 ```

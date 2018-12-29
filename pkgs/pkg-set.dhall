@@ -326,7 +326,7 @@ let ncurses =
   λ(v : List Natural) →
     prelude.simplePackage { name = "ncurses", version = v } ⫽
       { pkgUrl = "https://ftp.gnu.org/pub/gnu/ncurses/ncurses-${prelude.showVersion v}.tar.gz"
-      , configureCommand = prelude.configureWithFlags [ "--disable-stripping" ] -- we disable stripping because otherwise the script fails during cross-compilation
+      , configureCommand = prelude.configureWithFlags [ "--disable-stripping", "--with-shared" ] -- we disable stripping because otherwise the script fails during cross-compilation
       }
 in
 
@@ -418,7 +418,6 @@ let vim =
                                             }
       , installCommand = prelude.installWithBinaries [ "bin/vim", "bin/xxd" ]
       , pkgDeps = [ prelude.unbounded "ncurses"
-                  , prelude.unbounded "lua"
                   ]
       }
 in
@@ -687,7 +686,7 @@ let lua =
         in
 
         [ prelude.call (prelude.defaultCall ⫽ { program = "make"
-                                              , arguments = cc # [ printLuaOS os, "MYLDFLAGS=${ldflags}", "MYCFLAGS=${cflags}" ]
+                                              , arguments = cc # [ printLuaOS os, "MYLDFLAGS=${ldflags} -lncurses", "MYCFLAGS=${cflags}" ]
                                               })
         ]
     in
@@ -706,7 +705,9 @@ let lua =
       , configureCommand = prelude.doNothing
       , buildCommand = luaBuild
       , installCommand = luaInstall
-      , pkgDeps = [ prelude.unbounded "readline" ]
+      , pkgDeps = [ prelude.unbounded "readline"
+                  , prelude.unbounded "ncurses"
+                  ]
       }
 in
 
@@ -814,21 +815,6 @@ let sdl2 =
     prelude.simplePackage { name = "sdl2", version = v } ⫽
       { pkgUrl = "https://www.libsdl.org/release/SDL2-${versionString}.tar.gz"
       , pkgSubdir = "SDL2-${versionString}"
-      }
-in
-
-let zbar =
-  λ(v : List Natural) →
-    let versionString = prelude.showVersion v
-    in
-
-    prelude.simplePackage { name = "zbar", version = v } ⫽
-      { pkgUrl = "https://managedway.dl.sourceforge.net/project/zbar/zbar/${versionString}/zbar-${versionString}.tar.bz2"
-      , configureCommand = prelude.configureWithFlags [ "--disable-video" ]
-      , pkgDeps = [ prelude.lowerBound { name = "imagemagick", lower = [6,2,6] }
-                  , prelude.unbounded "gtk2"
-                  , prelude.unbounded "pygtk"
-                  ]
       }
 in
 
@@ -2150,6 +2136,5 @@ in
 , xproto [7,0,31]
 , xtrans [1,3,5]
 , xz [5,2,4]
-, zbar [0,10]
 , zlib [1,2,11]
 ]
