@@ -260,7 +260,7 @@ let harfbuzz =
       , pkgDeps = [ prelude.unbounded "freetype-prebuild"
                   , prelude.unbounded "glib"
                   ]
-      , configureCommand = prelude.configureLinkExtraLibs [ "pcre" ]
+      , configureCommand = prelude.configureLinkExtraLibs [ "pcre", "z" ]
       , installCommand =
           λ(cfg : types.BuildVars) →
             prelude.defaultInstall cfg
@@ -378,7 +378,9 @@ in
 let libpng =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libpng", version = v } ⫽
-      { pkgUrl = "https://download.sourceforge.net/libpng/libpng-${prelude.showVersion v}.tar.xz" }
+      { pkgUrl = "https://download.sourceforge.net/libpng/libpng-${prelude.showVersion v}.tar.xz"
+      , pkgDeps = [ prelude.unbounded "zlib" ]
+      }
 in
 
 let sed =
@@ -784,17 +786,13 @@ in
 
 let freetype-prebuild =
   λ(v : List Natural) →
-    freetype-shared { name = "freetype-prebuild", version = v } ⫽
-      { pkgDeps = [ prelude.unbounded "zlib" ] }
+    freetype-shared { name = "freetype-prebuild", version = v }
 in
 
 let freetype =
   λ(v : List Natural) →
     freetype-shared { name = "freetype", version = v } ⫽
-      { pkgDeps = [ prelude.unbounded "zlib"
-                  , prelude.unbounded "harfbuzz"
-                  ]
-      }
+      { pkgDeps = [ prelude.unbounded "zlib", prelude.unbounded "harfbuzz" ] }
 in
 
 let sdl2 =
@@ -1694,7 +1692,7 @@ let libselinux =
   let selinuxInstall =
     λ(cfg : types.BuildVars) →
       [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
-                                            , arguments = cc cfg # [ "PREFIX=${cfg.installDir}", "SHLIBDIR=${cfg.installDir}/lib", "EXTRA_CFLAGS=-Wno-error", "install", "-j${Natural/show cfg.cpus}" ]
+                                            , arguments = cc cfg # [ "PREFIX=${cfg.installDir}", "SHLIBDIR=${cfg.installDir}/lib", "EXTRA_CFLAGS=-Wno-error -lpcre", "install", "-j${Natural/show cfg.cpus}" ]
                                             , environment =
                                                 Some (prelude.defaultPath cfg # [ prelude.mkLDFlags cfg.linkDirs
                                                                                 , prelude.mkCFlags cfg.includeDirs
