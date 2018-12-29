@@ -95,15 +95,12 @@
 - [ ] libexif, exif, libexif-gtk, gexif (https://libexif.github.io/)
 - [ ] LibTIFF
 - [ ] FFmpeg
-- [ ] intltool
 - [ ] TCmalloc
 - [ ] https://ftp.gnu.org/gnu/texinfo/ ?
 - [ ] charset (?)
 - [ ] https://sourceware.org/newlib/
 - [ ] fish
-- [ ] https://pypi.org/project/scour/
 - [ ] libtizcore
-- [ ] https://cairosvg.org/
 - [ ] ghostscript
 - [ ] http://www.linuxfromscratch.org/blfs/view/svn/general/boost.html
 - [ ] brlcad https://jaist.dl.sourceforge.net/project/brlcad/BRL-CAD%20Source/7.28.0/brlcad-7.28.0.tar.bz2
@@ -128,6 +125,8 @@
 - [ ] https://ftp.gnu.org/gnu/autogen/rel5.18.16/
 - [ ] https://github.com/pkgconf/pkgconf
 - [ ] http://www.linuxfromscratch.org/blfs/view/8.3/x/libglade.html
+- [ ] http://www.linuxfromscratch.org/lfs/view/6.6/appendices/dependencies.html
+- [ ] https://github.com/scipy/scipy/releases/download/v1.2.0/scipy-1.2.0.tar.xz
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in

@@ -331,7 +331,19 @@ let libPath =
         mkLDPath cfg.linkDirs
 in
 
+let configEnv =
+  λ(linkLibs : List Text) →
+  λ(cfg : types.BuildVars) →
+    Some (defaultPath cfg # [ mkLDFlagsGeneral cfg.linkDirs linkLibs
+                            , mkCFlags cfg.includeDirs
+                            , mkPkgConfigVar (cfg.shareDirs # cfg.linkDirs)
+                            , libPath cfg
+                            , mkPerlLib { libDirs = cfg.linkDirs, perlVersion = [5,28,1], cfg = cfg } -- TODO: take this as a parameter
+                            ])
+in
+
 let generalConfigure =
+  λ(envVars : List Text → types.BuildVars → Optional (List types.EnvVar)) →
   λ(filename : Text) →
   λ(linkLibs : List Text) →
   λ(extraFlags : List Text) →
@@ -344,19 +356,13 @@ let generalConfigure =
     [ mkExe filename
     , call (defaultCall ⫽ { program = "./${filename}"
                           , arguments = modifyArgs [ "--prefix=${cfg.installDir}" ] # extraFlags
-                          , environment =
-                              Some (defaultPath cfg # [ mkLDFlagsGeneral cfg.linkDirs linkLibs
-                                                      , mkCFlags cfg.includeDirs
-                                                      , mkPkgConfigVar (cfg.shareDirs # cfg.linkDirs)
-                                                      , libPath cfg
-                                                      , mkPerlLib { libDirs = cfg.linkDirs, perlVersion = [5,28,1], cfg = cfg } -- TODO: take this as a parameter
-                                                      ])
+                          , environment = envVars linkLibs cfg
                           })
     ]
 in
 
 let configureWithFlags =
-  generalConfigure "configure" ([] : List Text)
+  generalConfigure configEnv "configure" ([] : List Text)
 in
 
 let defaultConfigure =
@@ -365,7 +371,7 @@ in
 
 let configureLinkExtraLibs =
   λ(linkLibs : List Text) →
-    generalConfigure "configure" linkLibs ([] : List Text)
+    generalConfigure configEnv "configure" linkLibs ([] : List Text)
 in
 
 let configureMkExesExtraFlags =
@@ -393,19 +399,28 @@ in
 
 let defaultBuild =
   λ(cfg : types.BuildVars) →
-    buildWith (defaultPath cfg # [ mkPkgConfigVar cfg.linkDirs ]) cfg
+    buildWith (defaultPath cfg # [ mkPkgConfigVar cfg.linkDirs
+                                 , libPath cfg
+                                 ]) cfg
 in
 
-let defaultInstall =
+let installWith =
+  λ(envs : List types.EnvVar) →
   λ(cfg : types.BuildVars) →
     [ call (defaultCall ⫽ { program = makeExe cfg.buildOS
                           , arguments = [ "install" ]
                           , environment =
-                              Some (defaultPath cfg # [ mkPkgConfigVar cfg.linkDirs ])
+                              Some envs
                           })
     ]
 in
 
+let defaultInstall =
+  λ(cfg : types.BuildVars) →
+    installWith (defaultPath cfg # [ mkPkgConfigVar cfg.linkDirs
+                                   , libPath cfg
+                                   ]) cfg
+in
 let installWithBinaries =
   λ(bins : List Text) →
   λ(installVars : types.BuildVars) →
@@ -551,12 +566,17 @@ in
 {- meson build helpers -}
 
 let mkPyPath =
+  λ(version : List Natural) →
   λ(libDirs : List Text) →
     -- TODO: both python3.7 and python2.whatever
-    let flag = concatMap Text (λ(dir : Text) → "${dir}/python3.7/site-packages:") libDirs
+    let flag = concatMap Text (λ(dir : Text) → "${dir}/python${showVersion version}/site-packages:") libDirs
     in
 
     { var = "PYTHONPATH", value = flag }
+in
+
+let mkPy3Path =
+  mkPyPath [3,7]
 in
 
 let mesonCfgFile =
@@ -596,7 +616,7 @@ let mesonConfigureWithFlags =
            , arguments = [ "--prefix=${cfg.installDir}", ".." ] # crossArgs # flags
            , environment = Some [ mkPkgConfigVar cfg.linkDirs
                                 , { var = "PATH", value = mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
-                                , mkPyPath cfg.linkDirs
+                                , mkPy3Path cfg.linkDirs
                                 , libPath cfg
                                 , mkLDFlags cfg.linkDirs
                                 , mkCFlags cfg.includeDirs
@@ -617,7 +637,7 @@ let ninjaBuild =
     [ call (defaultCall ⫽ { program = "ninja"
                           , environment = Some [ mkPkgConfigVar cfg.linkDirs
                                                , { var = "PATH", value = mkPathVar cfg.binDirs ++ ":/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
-                                               , mkPyPath cfg.linkDirs
+                                               , mkPy3Path cfg.linkDirs
                                                , libPath cfg
                                                , mkLDFlags cfg.linkDirs
                                                , mkCFlags cfg.includeDirs
@@ -631,7 +651,7 @@ let ninjaInstall =
     [ call (defaultCall ⫽ { program = "ninja"
                           , environment = Some [ mkPkgConfigVar cfg.linkDirs
                                                , { var = "PATH", value = mkPathVar cfg.binDirs ++ ":/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
-                                               , mkPyPath cfg.linkDirs
+                                               , mkPy3Path cfg.linkDirs
                                                , libPath cfg
                                                , mkLDFlags cfg.linkDirs
                                                , mkCFlags cfg.includeDirs
@@ -684,6 +704,7 @@ let pythonBuild =
                           , arguments = [ "setup.py", "build" ]
                           , environment = Some ([ { var = "PYTHONPATH", value = "${cfg.installDir}/lib/python${versionString}/site-packages" }
                                                 , mkPkgConfigVar cfg.linkDirs
+                                                , libPath cfg
                                                 ] # defaultPath cfg)
                           })
     ]
@@ -701,6 +722,7 @@ let pythonInstall =
                           , arguments = [ "setup.py", "install", "--prefix=${cfg.installDir}", "--optimize=1" ]
                           , environment = Some ([ { var = "PYTHONPATH", value = "${cfg.installDir}/lib/python${versionString}/site-packages" }
                                                 , mkPkgConfigVar cfg.linkDirs
+                                                , libPath cfg
                                                 ] # defaultPath cfg)
                           })
     ]
@@ -761,6 +783,27 @@ let mkCCArg =
         ([] : List Text)
 in
 
+let preloadEnv =
+  λ(_ : List Text) →
+  λ(cfg : types.BuildVars) →
+    Some (defaultPath cfg # [ mkLDFlags cfg.linkDirs
+                            , mkCFlags cfg.includeDirs
+                            , mkPkgConfigVar cfg.linkDirs
+                            , libPath cfg
+                            , mkXdgDataDirs cfg.shareDirs
+                            , mkLDPreload cfg.preloadLibs
+                            ])
+in
+
+let preloadCfg =
+  generalConfigure preloadEnv "configure" ([] : List Text) ([] : List Text)
+in
+
+let printEnvVar =
+  λ(var : types.EnvVar) →
+    "${var.var}=${var.value}"
+in
+
 { showVersion         = showVersion
 , makeGnuLibrary      = makeGnuLibrary
 , makeGnuExe          = makeGnuExe
@@ -795,6 +838,7 @@ in
 , mkStaPath           = mkStaPath
 , libPath             = libPath
 , mkPyPath            = mkPyPath
+, mkPy3Path           = mkPy3Path
 , mkIncludePath       = mkIncludePath
 , isUnix              = isUnix
 , defaultPath         = defaultPath
@@ -831,6 +875,7 @@ in
 , configureLinkExtraLibs = configureLinkExtraLibs
 , mkXdgDataDirs       = mkXdgDataDirs
 , buildWith           = buildWith
+, installWith         = installWith
 , mkCCVar             = mkCCVar
 , squishVersion       = squishVersion
 , osCfg               = osCfg
@@ -838,4 +883,8 @@ in
 , mkCCArg             = mkCCArg
 , mesonCfgFile        = mesonCfgFile
 , python2Package      = python2Package
+, configEnv           = configEnv
+, preloadEnv          = preloadEnv
+, preloadCfg          = preloadCfg
+, printEnvVar         = printEnvVar
 }

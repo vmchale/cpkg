@@ -576,7 +576,7 @@ let openssl =
     -- CC=arm-linux-gnueabihf-gcc ./Configure linux-armv4 works....
     prelude.simplePackage { name = "openssl", version = v } ⫽
       { pkgUrl = "https://www.openssl.org/source/openssl-${prelude.showVersion v}a.tar.gz"
-      , configureCommand = prelude.generalConfigure "config" ([] : List Text) ([] : List Text)
+      , configureCommand = prelude.generalConfigure prelude.configEnv "config" ([] : List Text) ([] : List Text)
       , pkgSubdir = "openssl-${prelude.showVersion v}a"
       , pkgBuildDeps = [ prelude.unbounded "perl" ]
       }
@@ -636,7 +636,12 @@ let python =
       , pkgSubdir = "Python-${versionString}"
       , configureCommand =
         λ(cfg : types.BuildVars) →
-          prelude.configureWithFlags [ "--build=${prelude.printArch cfg.buildArch}" ] cfg
+          let staticFlag =
+            if cfg.static
+              then [] : List Text
+              else [ "--enable-shared" ]
+          in
+          prelude.configureWithFlags ([ "--build=${prelude.printArch cfg.buildArch}" ] # staticFlag) cfg
           -- "--enable-optimizations" (takes forever)
       , pkgDeps = [ prelude.unbounded "libffi" ]
       , installCommand = prelude.installWithBinaries [ "bin/python${major}" ]
@@ -763,7 +768,7 @@ in
 let readline =
   λ(v : List Natural) →
     prelude.simplePackage { name = "readline", version = v } ⫽
-      { pkgUrl = "https://ftp.gnu.org/gnu/readline/readline-${prelude.showVersion v}.tar.gz" }
+      { pkgUrl = "https://ftp.gnu.org/gnu/readline/readline-${prelude.showVersion v}.tar.gz" } -- TODO: should this depend on ncurses?
 in
 
 let pixman =
@@ -1006,7 +1011,7 @@ let gdk-pixbuf =
         [ prelude.call (prelude.defaultCall ⫽ { program = "ninja"
                                               , environment = Some [ prelude.mkPkgConfigVar cfg.linkDirs
                                                                    , { var = "PATH", value = prelude.mkPathVar cfg.binDirs ++ ":${cfg.currentDir}/gdk-pixbuf-${fullVersion}/build/gdk-pixbuf:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
-                                                                   , prelude.mkPyPath cfg.linkDirs
+                                                                   , prelude.mkPy3Path cfg.linkDirs
                                                                    , prelude.libPath cfg
                                                                    , prelude.mkLDFlags cfg.linkDirs
                                                                    , prelude.mkCFlags cfg.includeDirs
@@ -1164,7 +1169,7 @@ let glib =
                        , environment = Some [ prelude.mkPkgConfigVar cfg.linkDirs
                                             , { var = "PATH", value = prelude.mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
                                             , { var = "LDFLAGS", value = (prelude.mkLDFlags cfg.linkDirs).value ++ " -lpcre" }
-                                            , prelude.mkPyPath cfg.linkDirs
+                                            , prelude.mkPy3Path cfg.linkDirs
                                             , prelude.libPath cfg
                                             , prelude.mkCFlags cfg.includeDirs
                                             , prelude.mkPkgConfigVar cfg.linkDirs
@@ -1955,28 +1960,6 @@ let libarchive =
       { pkgUrl = "https://www.libarchive.org/downloads/libarchive-${prelude.showVersion v}.tar.gz" }
 in
 
--- TODO: generalize/simplify this
-let preloadEnv =
-  λ(cfg : types.BuildVars) →
-    prelude.defaultPath cfg # [ prelude.mkLDFlags cfg.linkDirs
-                              , prelude.mkCFlags cfg.includeDirs
-                              , prelude.mkPkgConfigVar cfg.linkDirs
-                              , prelude.libPath cfg
-                              , prelude.mkXdgDataDirs cfg.shareDirs
-                              , prelude.mkLDPreload cfg.preloadLibs
-                              ]
-in
-
-let preloadCfg =
-  λ(cfg : types.BuildVars) →
-    [ prelude.mkExe "configure"
-    , prelude.call (prelude.defaultCall ⫽ { program = "./configure"
-                                          , arguments = [ "--prefix=${cfg.installDir}" ]
-                                          , environment = Some (preloadEnv cfg)
-                                          })
-    ]
-in
-
 let pygobject =
   λ(x : { version : List Natural, patch : Natural }) →
     let versionString = prelude.showVersion x.version
@@ -1986,7 +1969,7 @@ let pygobject =
     prelude.simplePackage { name = "pygobject", version = prelude.fullVersion x } ⫽
       { pkgUrl = "http://ftp.gnome.org/pub/gnome/sources/pygobject/${versionString}/pygobject-${fullVersion}.tar.xz"
       , pkgDeps = [ prelude.unbounded "glib" ]
-      , configureCommand = preloadCfg
+      , configureCommand = prelude.preloadCfg
       }
 in
 
@@ -1998,9 +1981,13 @@ let pygtk =
     in
     prelude.simplePackage { name = "pygtk", version = prelude.fullVersion x } ⫽
       { pkgUrl = "http://ftp.gnome.org/pub/gnome/sources/pygtk/${versionString}/pygtk-${fullVersion}.tar.bz2"
-      , configureCommand = preloadCfg
+      , configureCommand =
+          λ(cfg : types.BuildVars) →
+            prelude.mkExes [ "py-compile" ]
+              # prelude.preloadCfg cfg
       , pkgDeps = [ prelude.lowerBound { name = "glib", lower = [2,8,0] }
                   , prelude.lowerBound { name = "pygobject", lower = [2,21,3] }
+                  , prelude.unbounded "python2"
                   ]
       }
 in
@@ -2016,6 +2003,29 @@ let libglade =
       , pkgDeps = [ prelude.lowerBound { name = "libxml2", lower = [2,4,10] }
                   , prelude.lowerBound { name = "gtk2", lower = [2,5,0] }
                   ]
+      , configureCommand = prelude.configureLinkExtraLibs [ "fribidi" ]
+      }
+in
+
+let scour =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.python3Package { name = "scour", version = v } ⫽
+      { pkgUrl = "https://github.com/scour-project/scour/archive/v${versionString}/scour-${versionString}.tar.gz"
+      , installCommand =
+          λ(cfg : types.BuildVars) →
+            -- FIXME: windows support
+            let wrapperContents = "${prelude.printEnvVar (prelude.libPath cfg)} ${prelude.printEnvVar (prelude.mkPy3Path cfg.linkDirs)}:${cfg.installDir}/lib/python3.7/site-packages ${cfg.installDir}/bin/scour"
+            in
+
+            prelude.python3Install cfg
+              # [ prelude.createDir "wrapper"
+                , prelude.writeFile { file = "wrapper/scour", contents = wrapperContents }
+                , prelude.mkExe "wrapper/scour"
+                , prelude.copyFile "wrapper/scour" "wrapper/scour"
+                , prelude.symlinkBinary "wrapper/scour"
+                ]
+      -- TODO: generalize wrapper approach
       }
 in
 
@@ -2133,6 +2143,7 @@ in
 , re2c [1,1,1]
 , readline [7,0]
 , renderproto [0,11,1]
+, scour [0,37]
 , scrnsaverproto [1,2,2]
 , sdl2 [2,0,9]
 , sed [4,5]
