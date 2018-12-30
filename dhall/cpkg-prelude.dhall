@@ -377,18 +377,6 @@ let configureLinkExtraLibs =
     generalConfigure configEnv "configure" linkLibs ([] : List Text)
 in
 
-let configureMkExesExtraFlags =
-  λ(x : { bins : List Text, extraFlags : List Text }) →
-  λ(cfg : types.BuildVars) →
-    mkExes x.bins
-      # configureWithFlags x.extraFlags cfg
-in
-
-let configureMkExes =
-  λ(bins : List Text) →
-    configureMkExesExtraFlags { bins = bins, extraFlags = ([] : List Text) }
-in
-
 let buildWith =
   λ(envs : List types.EnvVar) →
   λ(cfg : types.BuildVars) →
@@ -886,10 +874,8 @@ in
 , symlink             = symlink
 , symlinkBinaries     = symlinkBinaries
 , installWithBinaries = installWithBinaries
-, configureMkExes     = configureMkExes
 , generalConfigure    = generalConfigure
 , configureWithFlags  = configureWithFlags
-, configureMkExesExtraFlags = configureMkExesExtraFlags
 , writeFile           = writeFile
 , cmakeInstallWithBinaries = cmakeInstallWithBinaries
 , copyFile            = copyFile

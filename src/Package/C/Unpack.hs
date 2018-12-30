@@ -3,7 +3,7 @@ module Package.C.Unpack ( unpackResponse
                         , TarCompress (..)
                         ) where
 
-import qualified Codec.Archive.Tar      as Tar
+import           Codec.Archive          as Tar
 import           Codec.Archive.Zip      (ZipOption (..), extractFilesFromArchive, toArchive)
 import qualified Codec.Compression.BZip as Bzip
 import qualified Codec.Compression.GZip as Gzip
@@ -18,7 +18,6 @@ data TarCompress = Gz
 data Compression = Tar TarCompress
                  | Zip
 
-
 getCompressor :: TarCompress -> BSL.ByteString -> BSL.ByteString
 getCompressor Gz   = Gzip.decompress
 getCompressor None = id
@@ -27,7 +26,7 @@ getCompressor Bz2  = Bzip.decompress
 
 tarResponse :: TarCompress -> FilePath -> BSL.ByteString -> IO ()
 tarResponse compressScheme dirName response =
-    let f = Tar.unpack dirName . Tar.read . getCompressor compressScheme
+    let f = Tar.unpackToDir dirName . BSL.toStrict . getCompressor compressScheme
     in f response
 
 zipResponse :: FilePath -> BSL.ByteString -> IO ()
@@ -38,4 +37,3 @@ zipResponse dirName response = do
 unpackResponse :: Compression -> FilePath -> BSL.ByteString -> IO ()
 unpackResponse (Tar tarCmp) fp response = tarResponse tarCmp fp response
 unpackResponse Zip fp response          = zipResponse fp response
--- TODO: libarchive bindings??

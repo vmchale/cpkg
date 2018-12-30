@@ -77,7 +77,7 @@ library
         zlib -any,
         bzlib -any,
         lzma -any,
-        tar -any,
+        libarchive >=0.2.0.0,
         zip-archive -any,
         prettyprinter -any,
         http-client -any,
