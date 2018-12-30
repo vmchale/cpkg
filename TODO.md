@@ -22,7 +22,6 @@
 - [ ] `xextproto` doesn't like `aarch64`
 - [ ] ImageMagick fails on ARM
 - [ ] `wget` doesn't work with latest gnutls
-- [ ] `bash` bug with vim wrapper? Linux?? Idk!!!! 
 # Libraries
 - [ ] Consider splitting off library for parsing triples &c.
 # Code Maintenance
@@ -57,7 +56,6 @@
 - [ ] pass `pi@32.32.43.00` or whatever on the command-line?
 # Performance
 - [ ] Dhall is slow
-- [ ] Space leak due to zygomorphism?
 # Bugs
 - [ ] Shouldn't be able to `cpkg dump compiler sed` since it provides no
   libraries
@@ -130,6 +128,7 @@
 - [ ] https://github.com/scipy/scipy/releases/download/v1.2.0/scipy-1.2.0.tar.xz
 - [ ] Perl wrapper like `mkPy3Wrapper`
 - [ ] http://www.linuxfromscratch.org/blfs/view/8.3/x/x7driver.html#libinput
+- [ ] http://luajit.org/index.html
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in

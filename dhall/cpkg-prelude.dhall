@@ -810,7 +810,7 @@ let mkPyWrapper =
   λ(version : List Natural) →
   λ(binName : Text) →
   λ(cfg : types.BuildVars) →
-    let wrapperContents = "${printEnvVar (libPath cfg)} ${printEnvVar (mkPyPath version cfg.linkDirs)}:${cfg.installDir}/lib/python${showVersion version}/site-packages ${cfg.installDir}/bin/${binName}"
+    let wrapperContents = "${printEnvVar (libPath cfg)} ${printEnvVar (mkPyPath version cfg.linkDirs)}:${cfg.installDir}/lib/python${showVersion version}/site-packages ${cfg.installDir}/bin/${binName} $@"
     in
     let wrapped = "wrapper/${binName}"
     in
