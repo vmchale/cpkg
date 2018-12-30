@@ -315,7 +315,7 @@ in
 
 let mkPathVar =
   λ(binDirs : List Text) →
-    concatMapSep ":" Text (λ(dir : Text) → "${dir}") binDirs
+    concatMapText Text (λ(dir : Text) → "${dir}:") binDirs
 in
 
 let defaultPath =
