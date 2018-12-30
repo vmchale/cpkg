@@ -25,6 +25,7 @@ let gnupg =
                   , prelude.lowerBound { name = "libassuan", lower = [2,5,0] }
                   , prelude.lowerBound { name = "libksba", lower = [1,3,4] }
                   ]
+      , configureCommand = prelude.configureMkExes [ "tests/inittests", "tests/runtest", "tests/pkits/inittests" ]
       , installCommand = prelude.installWithBinaries [ "bin/gpg" ]
       }
 in
@@ -63,6 +64,7 @@ let musl =
     prelude.simplePackage { name = "musl", version = v } ⫽
       { pkgUrl = "https://www.musl-libc.org/releases/musl-${prelude.showVersion v}.tar.gz"
       , installCommand = prelude.installWithBinaries [ "bin/musl-gcc" ]
+      , configureCommand = prelude.configureMkExes [ "tools/install.sh" ]
       }
 in
 
@@ -70,6 +72,7 @@ let binutils =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "binutils", version = v } ⫽
       { pkgUrl = "https://mirrors.ocf.berkeley.edu/gnu/binutils/binutils-${prelude.showVersion v}.tar.xz"
+      , configureCommand = prelude.configureMkExes [ "mkinstalldirs" ]
       , installCommand =
           prelude.installWithBinaries [ "bin/ar", "bin/as", "bin/ld", "bin/strip", "bin/strings", "bin/readelf", "bin/objdump", "bin/nm", "bin/ranlib" ]
       }
@@ -78,7 +81,8 @@ in
 let bison =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "bison", version = v } ⫽
-      { installCommand = prelude.installWithBinaries [ "bin/bison", "bin/yacc" ]
+      { configureCommand = prelude.configureMkExes [ "build-aux/move-if-change" ]
+      , installCommand = prelude.installWithBinaries [ "bin/bison", "bin/yacc" ]
       , pkgBuildDeps = [ prelude.unbounded "m4" ]
       }
 in
@@ -92,7 +96,9 @@ let cmake =
     in
     let cmakeConfigure =
       λ(cfg : types.BuildVars) →
-        prelude.configureWithFlags [ "--parallel=${Natural/show cfg.cpus}" ] cfg
+        prelude.configureMkExesExtraFlags { bins = [ "bootstrap" ]
+                                          , extraFlags = [ "--parallel=${Natural/show cfg.cpus}" ]
+                                          } cfg
     in
 
     prelude.defaultPackage ⫽
@@ -143,7 +149,9 @@ in
 let gawk =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "gawk", version = v } ⫽
-      { installCommand = prelude.installWithBinaries [ "bin/gawk", "bin/awk" ] }
+      { configureCommand = prelude.configureMkExes [ "install-sh", "extension/build-aux/install-sh" ]
+      , installCommand = prelude.installWithBinaries [ "bin/gawk", "bin/awk" ]
+      }
 in
 
 let gc =
@@ -164,6 +172,7 @@ let git =
   λ(v : List Natural) →
     prelude.simplePackage { name = "git", version = v } ⫽
       { pkgUrl = "https://mirrors.edge.kernel.org/pub/software/scm/git/git-${prelude.showVersion v}.tar.xz"
+      , configureCommand = prelude.configureMkExes [ "check_bindir" ]
       , installCommand = prelude.installWithBinaries [ "bin/git" ]
       , pkgBuildDeps = [ prelude.unbounded "gettext" ]
       }
@@ -182,13 +191,15 @@ let glibc =
       let modifyArgs = prelude.maybeAppend Text maybeHost
       in
 
-      [ prelude.createDir "build"
-      , prelude.call { program = "../configure"
-                      , arguments = modifyArgs [ "--prefix=${cfg.installDir}" ]
-                      , environment = prelude.defaultEnv
-                      , procDir = buildDir
-                      }
-      ]
+      prelude.mkExes
+        [ "configure", "scripts/mkinstalldirs", "scripts/rellns-sh" ]
+          # [ prelude.createDir "build"
+            , prelude.call { program = "../configure"
+                           , arguments = modifyArgs [ "--prefix=${cfg.installDir}" ]
+                           , environment = prelude.defaultEnv
+                           , procDir = buildDir
+                           }
+            ]
   in
 
   let glibcBuild =
@@ -228,6 +239,7 @@ let gmp =
   λ(v : List Natural) →
     prelude.simplePackage { name = "gmp", version = v } ⫽
       { pkgUrl = "https://gmplib.org/download/gmp/gmp-${prelude.showVersion v}.tar.xz"
+      , configureCommand = prelude.configureMkExes [ "mpn/m4-ccas" ]
       , pkgBuildDeps = [ prelude.unbounded "m4" ]
       -- TODO: run 'make check'?
       }
@@ -333,7 +345,8 @@ in
 let perl5 =
   let perlConfigure =
     λ(cfg : types.BuildVars) →
-      [ prelude.call (prelude.defaultCall ⫽ { program = "./Configure"
+      [ prelude.mkExe "Configure"
+      , prelude.call (prelude.defaultCall ⫽ { program = "./Configure"
                                             , arguments = [ "-des", "-Dprefix=${cfg.installDir}" ] # (if cfg.static then [] : List Text else [ "-Duseshrplib" ])
                                             })
       ]
@@ -387,6 +400,7 @@ let valgrind =
     prelude.simplePackage { name = "valgrind", version = v } ⫽
       { pkgUrl = "http://www.valgrind.org/downloads/valgrind-${prelude.showVersion v}.tar.bz2"
       , installCommand = prelude.installWithBinaries [ "bin/valgrind" ]
+      , configureCommand = prelude.configureMkExes [ "auxprogs/make_or_upd_vgversion_h" ]
       }
 in
 
@@ -398,9 +412,11 @@ let vim =
       , pkgUrl = "http://ftp.vim.org/vim/unix/vim-${prelude.showVersion v}.tar.bz2"
       , pkgSubdir = "vim${prelude.squishVersion v}"
       , configureCommand =
-          prelude.configureWithFlags [ "--enable-gui=no"
-                                     , "--enable-pythoninterp"
-                                     ]
+          prelude.configureMkExesExtraFlags { bins = [ "src/configure", "src/auto/configure", "src/which.sh" ]
+                                            , extraFlags = [ "--enable-gui=no"
+                                                           , "--enable-pythoninterp"
+                                                           ]
+                                            }
       , installCommand =
           λ(cfg : types.BuildVars) →
             let mkLibDynload =
@@ -449,7 +465,8 @@ let zlib =
           prelude.mkCCVar cfg
         in
 
-        [ prelude.call (prelude.defaultCall ⫽ { program = "./configure"
+        [ prelude.mkExe "configure"
+        , prelude.call (prelude.defaultCall ⫽ { program = "./configure"
                                               , arguments = [ "--prefix=${cfg.installDir}" ]
                                               , environment = Some (host # [ { var = "PATH", value = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" } ])
                                               })
@@ -479,6 +496,7 @@ let wget =
       { pkgUrl = "https://ftp.gnu.org/gnu/wget/wget-${prelude.showVersion v}.tar.gz"
       , pkgDeps = [ prelude.unbounded "gnutls" ]
       , pkgBuildDeps = [ prelude.unbounded "perl" ]
+      , configureCommand = prelude.configureMkExes [ "doc/texi2pod.pl" ]
       }
 in
 
@@ -600,7 +618,9 @@ in
 let emacs =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "emacs", version = v } ⫽
-      { pkgDeps = [ prelude.unbounded "giflib" ] }
+      { pkgDeps = [ prelude.unbounded "giflib" ]
+      , configureCommand = prelude.configureMkExes [ "build-aux/move-if-change", "build-aux/update-subdirs" ]
+      }
 in
 
 let which =
@@ -740,7 +760,8 @@ in
 
 let gdb =
   λ(v : List Natural) →
-    prelude.makeGnuExe { name = "gdb", version = v }
+    prelude.makeGnuExe { name = "gdb", version = v } ⫽
+      { configureCommand = prelude.configureMkExes [ "mkinstalldirs" ] }
 in
 
 let libtool =
@@ -788,6 +809,7 @@ let freetype-shared =
 
     prelude.simplePackage x ⫽
       { pkgUrl = "https://download.savannah.gnu.org/releases/freetype/freetype-${versionString}.tar.gz"
+      , configureCommand = prelude.configureMkExes [ "builds/unix/configure" ]
       , pkgSubdir = "freetype-${versionString}"
       , pkgBuildDeps = [ prelude.unbounded "sed" ]
       , installCommand =
@@ -851,7 +873,8 @@ let gtk2 =
   in
   let gtkConfig =
     λ(cfg : types.BuildVars) →
-      [ prelude.call (prelude.defaultCall ⫽ { program = "./configure"
+      [ prelude.mkExe "configure"
+      , prelude.call (prelude.defaultCall ⫽ { program = "./configure"
                                             , arguments = [ "--prefix=${cfg.installDir}" ]
                                             , environment = Some (gtkEnv cfg)
                                             })
@@ -971,7 +994,8 @@ let intltool =
       { pkgUrl = "https://launchpad.net/intltool/trunk/${versionString}/+download/intltool-${versionString}.tar.gz"
       , configureCommand =
           λ(cfg : types.BuildVars) →
-            [ prelude.call (prelude.defaultCall ⫽ { program = "./configure"
+            [ prelude.mkExe "configure"
+            , prelude.call (prelude.defaultCall ⫽ { program = "./configure"
                                                   , arguments = [ "--prefix=${cfg.installDir}" ]
                                                   , environment = Some (prelude.defaultPath cfg
                                                       # [ prelude.mkPerlLib { libDirs = cfg.linkDirs, perlVersion = [5,28,1], cfg = cfg } ])
@@ -1048,7 +1072,9 @@ in
 let ninja =
   let ninjaConfigure =
     λ(cfg : types.BuildVars) →
-      [ prelude.call (prelude.defaultCall ⫽ { program = "./configure.py"
+      [ prelude.mkExe "configure.py"
+      , prelude.mkExe "src/inline.sh"
+      , prelude.call (prelude.defaultCall ⫽ { program = "./configure.py"
                                             , arguments = [ "--bootstrap" ]
                                             })
       ]
@@ -1562,7 +1588,6 @@ let libX11 =
                       , prelude.unbounded "xextproto"
                       , prelude.unbounded "inputproto"
                       , prelude.unbounded "xtrans"
-                      -- , prelude.unbouned "util-macros" TODO?
                       ]
              }
 in
@@ -1810,7 +1835,8 @@ let gtk3 =
   in
   let gtkConfig =
     λ(cfg : types.BuildVars) →
-      [ prelude.call (prelude.defaultCall ⫽ { program = "./configure"
+      [ prelude.mkExe "configure"
+      , prelude.call (prelude.defaultCall ⫽ { program = "./configure"
                                             , arguments = [ "--prefix=${cfg.installDir}" ]
                                             , environment = Some (gtkEnv cfg)
                                             })
@@ -1842,6 +1868,7 @@ let graphviz =
   λ(v : List Natural) →
     prelude.simplePackage { name = "graphviz", version = v } ⫽
       { pkgUrl = "https://graphviz.gitlab.io/pub/graphviz/stable/SOURCES/graphviz.tar.gz"
+      , configureCommand = prelude.configureMkExes [ "iffe" ]
       , pkgDeps = [ prelude.unbounded "perl" ]
       , installCommand = prelude.installWithBinaries [ "bin/dot" ]
       }
@@ -1860,6 +1887,7 @@ let swig =
   λ(v : List Natural) →
     prelude.simplePackage { name = "swig", version = v } ⫽
       { pkgUrl = "https://downloads.sourceforge.net/swig/swig-${prelude.showVersion v}.tar.gz"
+      , configureCommand = prelude.configureMkExes [ "Tools/config/install-sh" ]
       , installCommand = prelude.installWithBinaries [ "bin/swig" ]
       }
 in
@@ -1961,7 +1989,10 @@ let pygtk =
     in
     prelude.simplePackage { name = "pygtk", version = prelude.fullVersion x } ⫽
       { pkgUrl = "http://ftp.gnome.org/pub/gnome/sources/pygtk/${versionString}/pygtk-${fullVersion}.tar.bz2"
-      , configureCommand = prelude.preloadCfg
+      , configureCommand =
+          λ(cfg : types.BuildVars) →
+            prelude.mkExes [ "py-compile" ]
+              # prelude.preloadCfg cfg
       , pkgDeps = [ prelude.lowerBound { name = "glib", lower = [2,8,0] }
                   , prelude.lowerBound { name = "pygobject", lower = [2,21,3] }
                   , prelude.unbounded "python2"

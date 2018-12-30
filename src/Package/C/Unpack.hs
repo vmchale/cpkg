@@ -3,7 +3,7 @@ module Package.C.Unpack ( unpackResponse
                         , TarCompress (..)
                         ) where
 
-import           Codec.Archive          as Tar
+import qualified Codec.Archive.Tar      as Tar
 import           Codec.Archive.Zip      (ZipOption (..), extractFilesFromArchive, toArchive)
 import qualified Codec.Compression.BZip as Bzip
 import qualified Codec.Compression.GZip as Gzip
@@ -18,6 +18,7 @@ data TarCompress = Gz
 data Compression = Tar TarCompress
                  | Zip
 
+
 getCompressor :: TarCompress -> BSL.ByteString -> BSL.ByteString
 getCompressor Gz   = Gzip.decompress
 getCompressor None = id
@@ -26,7 +27,7 @@ getCompressor Bz2  = Bzip.decompress
 
 tarResponse :: TarCompress -> FilePath -> BSL.ByteString -> IO ()
 tarResponse compressScheme dirName response =
-    let f = Tar.unpackToDir dirName . BSL.toStrict . getCompressor compressScheme
+    let f = Tar.unpack dirName . Tar.read . getCompressor compressScheme
     in f response
 
 zipResponse :: FilePath -> BSL.ByteString -> IO ()

@@ -129,6 +129,9 @@
 - [ ] Perl wrapper like `mkPy3Wrapper`
 - [ ] http://www.linuxfromscratch.org/blfs/view/8.3/x/x7driver.html#libinput
 - [ ] http://luajit.org/index.html
+- [ ] http://www.nongnu.org/m17n/
+- [ ] https://github.com/mquinson/po4a
+- [ ] texinfo/help2man
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in
