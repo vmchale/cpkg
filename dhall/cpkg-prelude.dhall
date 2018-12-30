@@ -827,6 +827,10 @@ let mkPy3Wrapper =
   mkPyWrapper [3,7]
 in
 
+let mkPy2Wrapper =
+  mkPyWrapper [2,7]
+in
+
 let installWithPyWrappers =
   λ(version : List Natural) →
   λ(binNames : List Text) →
@@ -924,6 +928,7 @@ in
 , printEnvVar         = printEnvVar
 , mkPyWrapper         = mkPyWrapper
 , mkPy3Wrapper        = mkPy3Wrapper
+, mkPy2Wrapper        = mkPy2Wrapper
 , installWithPyWrappers = installWithPyWrappers
 , installWithPy3Wrappers = installWithPy3Wrappers
 }

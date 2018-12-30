@@ -22,6 +22,7 @@
 - [ ] `xextproto` doesn't like `aarch64`
 - [ ] ImageMagick fails on ARM
 - [ ] `wget` doesn't work with latest gnutls
+- [ ] `bash` bug with vim wrapper? Linux?? Idk!!!! 
 # Libraries
 - [ ] Consider splitting off library for parsing triples &c.
 # Code Maintenance

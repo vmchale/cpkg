@@ -414,10 +414,37 @@ let vim =
       , configureCommand =
           prelude.configureMkExesExtraFlags { bins = [ "src/configure", "src/auto/configure", "src/which.sh" ]
                                             , extraFlags = [ "--enable-luainterp=yes"
+                                                           , "--enable-gui=no"
+                                                           , "--enable-pythoninterp"
                                                            ]
                                             }
-      , installCommand = prelude.installWithBinaries [ "bin/vim", "bin/xxd" ]
+      , installCommand =
+          λ(cfg : types.BuildVars) →
+            let mkLibDynload =
+              λ(libs : List Text) →
+                concatMapSep ":" Text (λ(dir : Text) → "${dir}/python2.7/lib-dynload") libs
+            in
+            let mkPython =
+              λ(libs : List Text) →
+                concatMapSep ":" Text (λ(dir : Text) → "${dir}/python2.7/:${dir}/python2.7/lib-dynload") libs
+            in
+            let wrapper = "LD_LIBRARY_PATH=${(prelude.mkLDPath cfg.linkDirs).value}:${mkLibDynload cfg.linkDirs} PYTHONPATH=${mkPython cfg.linkDirs} ${cfg.installDir}/bin/vim $@"
+            in
+            let wrapped = "wrapper/vim"
+            in
+
+            prelude.installWithBinaries [ "bin/xxd" ] cfg
+              # [ prelude.createDir "wrapper"
+                , prelude.writeFile { file = wrapped, contents = wrapper }
+                , prelude.mkExe wrapped
+                , prelude.copyFile wrapped wrapped
+                , prelude.symlinkBinary wrapped
+                ]
       , pkgDeps = [ prelude.unbounded "ncurses"
+                  , prelude.unbounded "lua"
+                  , prelude.unbounded "libXpm"
+                  , prelude.unbounded "libXt"
+                  , prelude.unbounded "python2"
                   ]
       }
 in
@@ -1515,6 +1542,13 @@ let mkXLib =
       }
 in
 
+let mkXLibDeps =
+  λ(x : { name : Text, deps : List types.Dep }) →
+  λ(v : List Natural) →
+    mkXLib x.name v ⫽
+      { pkgDeps = x.deps }
+in
+
 let mkXUtil =
   λ(name : Text) →
   λ(v : List Natural) →
@@ -1522,15 +1556,13 @@ let mkXUtil =
       { pkgUrl = "https://www.x.org/releases/individual/util/${name}-${prelude.showVersion v}.tar.bz2" }
 in
 
--- TODO: mkXLibWithDeps function
 let libXrender =
-  λ(v : List Natural) →
-    mkXLib "libXrender" v ⫽
-      { pkgDeps = [ prelude.unbounded "xproto"
-                  , prelude.unbounded "renderproto"
-                  , prelude.unbounded "libX11"
-                  ]
-      }
+  mkXLibDeps { name = "libXrender"
+             , deps = [ prelude.unbounded "xproto"
+                      , prelude.unbounded "renderproto"
+                      , prelude.unbounded "libX11"
+                      ]
+             }
 in
 
 let util-macros =
@@ -1538,14 +1570,13 @@ let util-macros =
 in
 
 let libXft =
-  λ(v : List Natural) →
-    mkXLib "libXft" v ⫽
-      { pkgDeps = [ prelude.unbounded "freetype"
-                  , prelude.unbounded "fontconfig"
-                  , prelude.unbounded "libXrender"
-                  , prelude.unbounded "libX11"
-                  ]
-      }
+  mkXLibDeps { name = "libXft"
+             , deps = [ prelude.unbounded "freetype"
+                      , prelude.unbounded "fontconfig"
+                      , prelude.unbounded "libXrender"
+                      , prelude.unbounded "libX11"
+                      ]
+             }
 in
 
 let kbproto =
@@ -1553,15 +1584,14 @@ let kbproto =
 in
 
 let libX11 =
-  λ(v : List Natural) →
-    mkXLib "libX11" v ⫽
-      { pkgDeps = [ prelude.unbounded "libxcb"
-                  , prelude.unbounded "kbproto"
-                  , prelude.unbounded "xextproto"
-                  , prelude.unbounded "inputproto"
-                  , prelude.unbounded "xtrans"
-                  ]
-      }
+  mkXLibDeps { name = "libX11"
+             , deps = [ prelude.unbounded "libxcb"
+                      , prelude.unbounded "kbproto"
+                      , prelude.unbounded "xextproto"
+                      , prelude.unbounded "inputproto"
+                      , prelude.unbounded "xtrans"
+                      ]
+             }
 in
 
 let inputproto =
@@ -1577,36 +1607,33 @@ let xtrans =
 in
 
 let libXrandr =
-  λ(v : List Natural) →
-    mkXLib "libXrandr" v ⫽
-      { pkgDeps = [ prelude.unbounded "util-macros"
-                  , prelude.unbounded "libXext"
-                  , prelude.unbounded "libXrender"
-                  , prelude.unbounded "libX11"
-                  , prelude.unbounded "randrproto"
-                  ]
-      }
+  mkXLibDeps { name = "libXrandr"
+             , deps = [ prelude.unbounded "util-macros"
+                      , prelude.unbounded "libXext"
+                      , prelude.unbounded "libXrender"
+                      , prelude.unbounded "libX11"
+                      , prelude.unbounded "randrproto"
+                      ]
+             }
 in
 
 let libXinerama =
-  λ(v : List Natural) →
-    mkXLib "libXinerama" v ⫽
-      { pkgDeps = [ prelude.unbounded "util-macros"
-                  , prelude.unbounded "libX11"
-                  , prelude.unbounded "libXext"
-                  , prelude.unbounded "xineramaproto"
-                  ]
-      }
+  mkXLibDeps { name = "libXinerama"
+             , deps = [ prelude.unbounded "util-macros"
+                      , prelude.unbounded "libX11"
+                      , prelude.unbounded "libXext"
+                      , prelude.unbounded "xineramaproto"
+                      ]
+             }
 in
 
 let libXext =
-  λ(v : List Natural) →
-    mkXLib "libXext" v ⫽
-      { pkgDeps = [ prelude.lowerBound { name = "xextproto", lower = [7,1,99] }
-                  , prelude.lowerBound { name = "xproto", lower = [7,0,13] }
-                  , prelude.lowerBound { name = "libX11", lower = [1,6] }
-                  ]
-      }
+  mkXLibDeps { name = "libXext"
+             , deps = [ prelude.lowerBound { name = "xextproto", lower = [7,1,99] }
+                      , prelude.lowerBound { name = "xproto", lower = [7,0,13] }
+                      , prelude.lowerBound { name = "libX11", lower = [1,6] }
+                      ]
+             }
 in
 
 let xextproto =
@@ -1718,15 +1745,15 @@ let libselinux =
 in
 
 let libXtst =
-  λ(v : List Natural) →
-    mkXLib "libXtst" v ⫽
-      { pkgDeps = [ prelude.unbounded "libXi" ] }
+  mkXLibDeps { name = "libXtst"
+             , deps = [ prelude.unbounded "libXi" ]
+             }
 in
 
 let libXi =
-  λ(v : List Natural) →
-    mkXLib "libXi" v ⫽
-      { pkgDeps = [ prelude.unbounded "libXext" ] }
+  mkXLibDeps { name = "libXi"
+             , deps = [ prelude.unbounded "libXext" ]
+             }
 in
 
 let at-spi-core =
@@ -1999,6 +2026,32 @@ let scour =
       }
 in
 
+let libXpm =
+  mkXLibDeps { name = "libXpm"
+             , deps = [ prelude.unbounded "libXext"
+                      , prelude.unbounded "libXt"
+                      ]
+             }
+in
+
+let libXt =
+  mkXLibDeps { name = "libXt"
+             , deps = [ prelude.unbounded "libICE"
+                      , prelude.unbounded "libSM"
+                      ]
+             }
+in
+
+let libICE =
+  mkXLib "libICE"
+in
+
+let libSM =
+  mkXLibDeps { name = "libSM"
+             , deps = [ prelude.unbounded "libICE" ]
+             }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
@@ -2056,6 +2109,7 @@ in
 , libgcrypt [1,8,4]
 , libglade { version = [2,6], patch = 4 }
 , libgpgError [1,32]
+, libICE [1,0,9]
 , libksba [1,3,5]
 , libpciaccess [0,14]
 , libpng [1,6,35]
@@ -2067,6 +2121,7 @@ in
 , libtasn1 [4,13]
 , libtool [2,4,6]
 , libuv [1,24,0]
+, libSM [1,2,3]
 , libX11 [1,6,7]
 , libxcb [1,13]
 , libXft [2,3,2]
@@ -2076,9 +2131,11 @@ in
 , libXext [1,3,3]
 , libXi [1,7]
 , libXinerama [1,1,4]
+, libXpm [3,5,12]
 , libXScrnSaver [1,2,3]
 , libXrandr [1,5,1]
 , libXrender [0,9,10]
+, libXt [1,1,5]
 , libXtst [1,2,3]
 , lmdb [0,9,23]
 , lua [5,3,5]
