@@ -413,8 +413,7 @@ let vim =
       , pkgSubdir = "vim${prelude.squishVersion v}"
       , configureCommand =
           prelude.configureMkExesExtraFlags { bins = [ "src/configure", "src/auto/configure", "src/which.sh" ]
-                                            , extraFlags = [ "--enable-luainterp=yes"
-                                                           , "--enable-gui=no"
+                                            , extraFlags = [ "--enable-gui=no"
                                                            , "--enable-pythoninterp"
                                                            ]
                                             }
@@ -441,7 +440,6 @@ let vim =
                 , prelude.symlinkBinary wrapped
                 ]
       , pkgDeps = [ prelude.unbounded "ncurses"
-                  , prelude.unbounded "lua"
                   , prelude.unbounded "libXpm"
                   , prelude.unbounded "libXt"
                   , prelude.unbounded "python2"
