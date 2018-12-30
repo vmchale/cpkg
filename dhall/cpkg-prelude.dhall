@@ -242,6 +242,14 @@ let mkLDPath =
     { var = "LD_LIBRARY_PATH", value = flag }
 in
 
+let mkLDRunPath =
+  λ(libDirs : List Text) →
+    let flag = concatMapSep ":" Text (λ(dir : Text) → dir) libDirs
+    in
+
+    { var = "LD_RUN_PATH", value = flag }
+in
+
 let mkStaPath =
   λ(libDirs : List Text) →
     let flag = concatMapSep ":" Text (λ(dir : Text) → dir) libDirs
@@ -412,6 +420,7 @@ let defaultBuild =
   λ(cfg : types.BuildVars) →
     buildWith (defaultPath cfg # [ mkPkgConfigVar cfg.linkDirs
                                  , libPath cfg
+                                 , mkLDRunPath cfg.linkDirs
                                  ]) cfg
 in
 

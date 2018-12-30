@@ -427,6 +427,8 @@ let vim =
               λ(libs : List Text) →
                 concatMapSep ":" Text (λ(dir : Text) → "${dir}/python2.7/:${dir}/python2.7/lib-dynload") libs
             in
+            -- TODO: change LD_RUN_PATH during build instead...
+            -- or alternately, symlink lib-dynload stuff when installing python2??
             let wrapper = "LD_LIBRARY_PATH=${(prelude.mkLDPath cfg.linkDirs).value}:${mkLibDynload cfg.linkDirs} PYTHONPATH=${mkPython cfg.linkDirs} ${cfg.installDir}/bin/vim $@"
             in
             let wrapped = "wrapper/vim"
@@ -623,10 +625,12 @@ let emacs =
                   , prelude.unbounded "libpng"
                   , prelude.unbounded "libjpeg-turbo"
                   , prelude.unbounded "ncurses"
+                  , prelude.unbounded "gtk2"
+                  -- TODO: gtk2, libotf, m17n-lib
                   ]
       , configureCommand = prelude.configureMkExesExtraFlags
           { bins = [ "build-aux/move-if-change", "build-aux/update-subdirs" ]
-          , extraFlags = [ "--with-tiff=no", "--with-jpeg=no" ]
+          , extraFlags = [ "--with-tiff=no" ]
           }
       }
 in
@@ -719,7 +723,7 @@ let lua =
         in
 
         [ prelude.call (prelude.defaultCall ⫽ { program = "make"
-                                              , arguments = cc # [ printLuaOS os, "MYLDFLAGS=${ldflags}", "MYCFLAGS=${cflags}", "MYLIBS=-lncurses" ]
+                                              , arguments = cc # [ printLuaOS os, "MYLDFLAGS=${ldflags}", "MYCFLAGS=${cflags}", "MYLIBS=-lncurses", "-j${Natural/show cfg.cpus}" ]
                                               })
         ]
     in
@@ -837,7 +841,11 @@ in
 let freetype =
   λ(v : List Natural) →
     freetype-shared { name = "freetype", version = v } ⫽
-      { pkgDeps = [ prelude.unbounded "zlib", prelude.unbounded "harfbuzz" ] }
+      { pkgDeps = [ prelude.unbounded "zlib", prelude.unbounded "harfbuzz" ]
+      , configureCommand = prelude.configureMkExesExtraFlags { bins = [ "builds/unix/configure" ]
+                                                             , extraFlags = [ "--enable-freetype-config" ]
+                                                             }
+      }
 in
 
 let sdl2 =
@@ -2085,8 +2093,12 @@ in
 
 let m17n =
   λ(v : List Natural) →
-    prelude.simplePackage { name = "m17n", version = v } ⫽
-      { pkgUrl = "http://download.savannah.gnu.org/releases/m17n/m17n-lib-${prelude.showVersion v}.tar.gz" }
+    prelude.simplePackage { name = "m17n-lib", version = v } ⫽
+      { pkgUrl = "http://download.savannah.gnu.org/releases/m17n/m17n-lib-${prelude.showVersion v}.tar.gz"
+      , buildCommand =
+        λ(cfg : types.BuildVars) →
+          [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS }) ]
+      }
 in
 
 [ autoconf [2,69]
