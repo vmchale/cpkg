@@ -622,10 +622,11 @@ let emacs =
                   , prelude.unbounded "libXaw"
                   , prelude.unbounded "libpng"
                   , prelude.unbounded "libjpeg-turbo"
+                  , prelude.unbounded "ncurses"
                   ]
       , configureCommand = prelude.configureMkExesExtraFlags
           { bins = [ "build-aux/move-if-change", "build-aux/update-subdirs" ]
-          , extraFlags = [ "--with-tiff=no" ]
+          , extraFlags = [ "--with-tiff=no", "--with-jpeg=no" ]
           }
       }
 in
@@ -2066,7 +2067,26 @@ let libXaw =
 in
 
 let libXmu =
-  mkXLib "libXmu"
+  mkXLibDeps { name = "libXmu"
+             , deps = [ prelude.unbounded "util-macros"
+                      , prelude.unbounded "libXt"
+                      , prelude.unbounded "libXext"
+                      ]
+             }
+in
+
+let libotf =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libotf", version = v } ⫽
+      { pkgUrl = "http://download.savannah.gnu.org/releases/m17n/libotf-${prelude.showVersion v}.tar.gz"
+      , pkgDeps = [ prelude.unbounded "freetype" ]
+      }
+in
+
+let m17n =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "m17n", version = v } ⫽
+      { pkgUrl = "http://download.savannah.gnu.org/releases/m17n/m17n-lib-${prelude.showVersion v}.tar.gz" }
 in
 
 [ autoconf [2,69]
@@ -2132,6 +2152,7 @@ in
 , libpng [1,6,35]
 , libpthread-stubs [0,4]
 , libnettle [3,4,1]
+, libotf [0,9,16]
 , libselinux [2,8]
 , libsepol [2,8]
 , libssh2 [1,8,0]
@@ -2158,6 +2179,7 @@ in
 , libXtst [1,2,3]
 , lmdb [0,9,23]
 , lua [5,3,5]
+, m17n [1,8,0]
 , m4 [1,4,18]
 , mako [1,0,7]
 , markupSafe [1,0]
