@@ -618,8 +618,15 @@ in
 let emacs =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "emacs", version = v } ⫽
-      { pkgDeps = [ prelude.unbounded "giflib" ]
-      , configureCommand = prelude.configureMkExes [ "build-aux/move-if-change", "build-aux/update-subdirs" ]
+      { pkgDeps = [ prelude.unbounded "giflib"
+                  , prelude.unbounded "libXaw"
+                  , prelude.unbounded "libpng"
+                  , prelude.unbounded "libjpeg-turbo"
+                  ]
+      , configureCommand = prelude.configureMkExesExtraFlags
+          { bins = [ "build-aux/move-if-change", "build-aux/update-subdirs" ]
+          , extraFlags = [ "--with-tiff=no" ]
+          }
       }
 in
 
@@ -2050,6 +2057,18 @@ let libSM =
              }
 in
 
+let libXaw =
+  mkXLibDeps { name = "libXaw"
+             , deps = [ prelude.unbounded "libXmu"
+                      , prelude.unbounded "libXpm"
+                      ]
+             }
+in
+
+let libXmu =
+  mkXLib "libXmu"
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
@@ -2125,10 +2144,12 @@ in
 , libXft [2,3,2]
 , libxml2 [2,9,8]
 , libXau [1,0,8]
+, libXaw [1,0,13]
 , libXdmcp [1,1,2]
 , libXext [1,3,3]
 , libXi [1,7]
 , libXinerama [1,1,4]
+, libXmu [1,1,2]
 , libXpm [3,5,12]
 , libXScrnSaver [1,2,3]
 , libXrandr [1,5,1]
