@@ -1105,7 +1105,7 @@ let meson =
       { pkgUrl = "https://github.com/mesonbuild/meson/archive/${prelude.showVersion v}.tar.gz"
       , configureCommand =
           λ(cfg : types.BuildVars) →
-            prelude.python3Install cfg # [ prelude.symlinkBinary "bin/meson" ]
+            prelude.python3Install cfg # prelude.mkPy3Wrapper "meson" cfg
       , buildCommand = prelude.doNothing
       , installCommand = prelude.doNothing
       , pkgDeps = [ prelude.unbounded "python3" ]
@@ -2085,7 +2085,11 @@ let libXt =
 in
 
 let libICE =
-  mkXLib "libICE"
+  mkXLibDeps { name = "libICE"
+             , deps = [ prelude.unbounded "xproto"
+                      , prelude.unbounded "xtrans"
+                      ]
+             }
 in
 
 let libSM =
@@ -2144,7 +2148,7 @@ in
 , curl [7,62,0]
 , dbus [1,12,10]
 , elfutils [0,175]
-, emacs [25,3]
+, emacs [26,1] -- [25,3]
 , expat [2,2,6]
 , fontconfig [2,13,1]
 , flex [2,6,3]

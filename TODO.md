@@ -123,7 +123,6 @@
 - [ ] https://liquidtelecom.dl.sourceforge.net/project/schilytools/schily-2018-12-21.tar.bz2
 - [ ] https://ftp.gnu.org/gnu/autogen/rel5.18.16/
 - [ ] https://github.com/pkgconf/pkgconf
-- [ ] http://www.linuxfromscratch.org/blfs/view/8.3/x/libglade.html
 - [ ] http://www.linuxfromscratch.org/lfs/view/6.6/appendices/dependencies.html
 - [ ] https://github.com/scipy/scipy/releases/download/v1.2.0/scipy-1.2.0.tar.xz
 - [ ] Perl wrapper like `mkPy3Wrapper`
