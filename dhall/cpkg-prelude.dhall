@@ -363,7 +363,9 @@ let buildEnv =
 in
 
 let configSome =
-  λ(envVars : List Text) →  λ(cfg : types.BuildVars) → Some (configEnv envVars cfg)
+  λ(envVars : List Text) →
+  λ(cfg : types.BuildVars) →
+    Some (configEnv envVars cfg)
 in
 
 let generalConfigure =

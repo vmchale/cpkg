@@ -131,6 +131,12 @@
 - [ ] https://github.com/mquinson/po4a
 - [ ] texinfo/help2man
 - [ ] https://www.gimp.org/source/#gimp-requirements
+- [ ] https://github.com/GNOME/cheese
+- [ ] http://trousers.sourceforge.net/
+- [ ] https://www.gnu.org/software/libidn/#libidn2
+- [ ] https://nlnetlabs.nl/projects/unbound/about/
+- [ ] https://www.gnupg.org/ftp/gcrypt/pinentry/pinentry-1.1.0.tar.bz2
+- [ ] https://www.gnupg.org/ftp/gcrypt/ntbtls/ntbtls-0.1.2.tar.bz2
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in

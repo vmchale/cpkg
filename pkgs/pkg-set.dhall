@@ -514,7 +514,10 @@ let gnutls =
                   , prelude.lowerBound { name = "libtasn1", lower = [4,9] }
                   , prelude.lowerBound { name = "p11-kit", lower = [0,23,1] }
                   ]
-      , configureCommand = prelude.configureLinkExtraLibs [ "nettle", "hogweed" ]
+      , configureCommand =
+	λ(cfg : types.BuildVars) →
+	  prelude.mkExes [ "src/gen-mech-list.sh" ]
+	    # prelude.configureLinkExtraLibs [ "nettle", "hogweed" ] cfg
       }
 in
 
@@ -701,7 +704,7 @@ let python =
           prelude.configureWithFlags ([ "--build=${prelude.printArch cfg.buildArch}" ] # staticFlag) cfg
           -- "--enable-optimizations" (takes forever)
       , pkgDeps = [ prelude.unbounded "libffi" ]
-      , installCommand = prelude.installWithBinaries [ "bin/python${major}" ]
+      , installCommand = prelude.installWithBinaries [ "bin/python${major}" ] -- TODO: make library wrapper for python3
       }
 in
 
@@ -2171,9 +2174,9 @@ in
 , glib { version = [2,58], patch = 2 } -- TODO: bump to 2.59.0 once gobject-introspection supports it
 , glibc [2,28]
 , gmp [6,1,2]
-, gobject-introspection { version = [1,58], patch = 3 }
-, gnupg [2,2,11]
-, gnutls { version = [3,5], patch = 19 }
+, gobject-introspection { version = [1,59], patch = 1 }
+, gnupg [2,2,12]
+, gnutls { version = [3,6], patch = 5 }
 , graphviz [2,40,1]
 , gsl [2,5]
 , gtk2 { version = [2,24], patch = 32 }
@@ -2187,13 +2190,13 @@ in
 , kbproto [1,0,7]
 , lapack [3,8,0]
 , libarchive [3,3,3]
-, libassuan [2,5,1]
+, libassuan [2,5,2]
 , libatomic_ops [7,6,8]
 , libdrm [2,4,96]
 , libffi [3,2,1]
 , libgcrypt [1,8,4]
 , libglade { version = [2,6], patch = 4 }
-, libgpgError [1,32]
+, libgpgError [1,33]
 , libICE [1,0,9]
 , libksba [1,3,5]
 , libpciaccess [0,14]
