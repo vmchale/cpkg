@@ -1216,7 +1216,7 @@ let glib =
         [ prelude.createDir "build"
         , prelude.writeFile { file = "build/cross.txt", contents = prelude.mesonCfgFile cfg }
         , prelude.call { program = "meson"
-                       , arguments = [ "--prefix=${cfg.installDir}", "..", "-Dselinux=disabled" ] # crossArgs
+                       , arguments = [ "--prefix=${cfg.installDir}", "..", "-Dselinux=false" ] # crossArgs
                        , environment = Some [ prelude.mkPkgConfigVar cfg.linkDirs
                                             , { var = "PATH", value = prelude.mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
                                             , { var = "LDFLAGS", value = (prelude.mkLDFlags cfg.linkDirs).value ++ " -lpcre" }
@@ -2168,10 +2168,10 @@ in
 , gperf [3,1]
 , giflib [5,1,4]
 , git [2,19,2]
-, glib { version = [2,59], patch = 0 }
+, glib { version = [2,58], patch = 2 } -- TODO: bump to 2.59.0 once gobject-introspection supports it
 , glibc [2,28]
 , gmp [6,1,2]
-, gobject-introspection { version = [1,59], patch = 1 }
+, gobject-introspection { version = [1,58], patch = 3 }
 , gnupg [2,2,11]
 , gnutls { version = [3,5], patch = 19 }
 , graphviz [2,40,1]
@@ -2179,7 +2179,7 @@ in
 , gtk2 { version = [2,24], patch = 32 }
 , gtk3 { version = [3,24], patch = 2 }
 , gzip [1,9]
-, harfbuzz [2,2,0]
+, harfbuzz [2,3,0]
 , imageMagick [7,0,8]
 , inputproto [2,3,2]
 , intltool [0,51,0]
