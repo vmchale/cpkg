@@ -354,6 +354,13 @@ let configEnv =
                       ]
 in
 
+let buildEnv =
+  λ(cfg : types.BuildVars) →
+    defaultPath cfg # [ mkPkgConfigVar (cfg.shareDirs # cfg.linkDirs)
+                      , mkPerlLib { libDirs = cfg.linkDirs, perlVersion = [5,28,1], cfg = cfg } -- TODO: take this as a parameter
+                      ]
+in
+
 let configSome =
   λ(envVars : List Text) →  λ(cfg : types.BuildVars) → Some (configEnv envVars cfg)
 in
@@ -424,7 +431,7 @@ in
 
 let defaultBuild =
   λ(cfg : types.BuildVars) →
-    buildWith (configEnv cfg.linkDirs cfg) cfg
+    buildWith (buildEnv cfg) cfg
 in
 
 let installWith =
@@ -440,7 +447,7 @@ in
 
 let defaultInstall =
   λ(cfg : types.BuildVars) →
-    installWith (configEnv cfg.linkDirs cfg) cfg
+    installWith (buildEnv cfg) cfg
 in
 
 let installWithBinaries =
