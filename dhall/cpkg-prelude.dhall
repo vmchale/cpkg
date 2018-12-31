@@ -519,7 +519,7 @@ let cmakeConfigure =
     [ createDir "build"
     , call { program = "cmake"
            , arguments = [ "../", "-DCMAKE_INSTALL_PREFIX:PATH=${cfg.installDir}" ] # host
-           , environment = configSome cfg.linkDirs cfg
+           , environment = defaultEnv
            , procDir = Some "build"
            }
     ]
@@ -550,7 +550,7 @@ let cmakeInstall =
   λ(cfg : types.BuildVars) →
     [ call { program = "cmake"
            , arguments = [ "--build", ".", "--target", "install", "--config", "Release" ]
-           , environment = configSome cfg.linkDirs cfg
+           , environment = defaultEnv
            , procDir = Some "build"
            }
     ]
