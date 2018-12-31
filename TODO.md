@@ -130,6 +130,7 @@
 - [ ] http://luajit.org/index.html
 - [ ] https://github.com/mquinson/po4a
 - [ ] texinfo/help2man
+- [ ] https://www.gimp.org/source/#gimp-requirements
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in

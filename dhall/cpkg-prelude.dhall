@@ -533,6 +533,21 @@ let cmakeConfigure =
     ]
 in
 
+let cmakeConfigureNinja =
+  λ(cfg : types.BuildVars) →
+    let host =
+      Optional/fold types.TargetTriple cfg.targetTriple (List Text) (λ(tgt : types.TargetTriple) → ["-DCMAKE_C_COMPILER=${printTargetTriple tgt}-gcc"]) ([] : List Text)
+    in
+
+    [ createDir "build"
+    , call { program = "cmake"
+           , arguments = [ "../", "-DCMAKE_INSTALL_PREFIX:PATH=${cfg.installDir}", "-G", "Ninja" ] # host
+           , environment = defaultEnv
+           , procDir = Some "build"
+           }
+    ]
+in
+
 let perlConfigure =
   λ(cfg : types.BuildVars) →
 
@@ -963,4 +978,5 @@ in
 , mkPy2Wrapper        = mkPy2Wrapper
 , installWithPyWrappers = installWithPyWrappers
 , installWithPy3Wrappers = installWithPy3Wrappers
+, cmakeConfigureNinja = cmakeConfigureNinja
 }

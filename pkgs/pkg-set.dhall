@@ -2069,11 +2069,13 @@ let scour =
 in
 
 let libXpm =
-  mkXLibDeps { name = "libXpm"
-             , deps = [ prelude.unbounded "libXext"
-                      , prelude.unbounded "libXt"
-                      ]
-             }
+  λ(v : List Natural) →
+    mkXLib "libXpm" v ⫽
+      { pkgDeps = [ prelude.unbounded "libXext"
+                  , prelude.unbounded "libXt"
+                  ]
+      , pkgBuildDeps = [ prelude.unbounded "gettext" ]
+      }
 in
 
 let libXt =
