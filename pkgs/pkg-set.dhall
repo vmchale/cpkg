@@ -429,7 +429,7 @@ let vim =
             in
             -- TODO: change LD_RUN_PATH during build instead...
             -- or alternately, symlink lib-dynload stuff when installing python2??
-            let wrapper = "LD_LIBRARY_PATH=${(prelude.mkLDPath cfg.linkDirs).value}:${mkLibDynload cfg.linkDirs} PYTHONPATH=${mkPython cfg.linkDirs} ${cfg.installDir}/bin/vim $@"
+            let wrapper = "LD_LIBRARY_PATH=${mkLibDynload cfg.linkDirs} PYTHONPATH=${mkPython cfg.linkDirs} ${cfg.installDir}/bin/vim $@"
             in
             let wrapped = "wrapper/vim"
             in
@@ -599,7 +599,7 @@ let openssl =
     -- CC=arm-linux-gnueabihf-gcc ./Configure linux-armv4 works....
     prelude.simplePackage { name = "openssl", version = v } ⫽
       { pkgUrl = "https://www.openssl.org/source/openssl-${prelude.showVersion v}a.tar.gz"
-      , configureCommand = prelude.generalConfigure prelude.configEnv "config" ([] : List Text) ([] : List Text)
+      , configureCommand = prelude.generalConfigure prelude.configSome "config" ([] : List Text) ([] : List Text)
       , pkgSubdir = "openssl-${prelude.showVersion v}a"
       , pkgBuildDeps = [ prelude.unbounded "perl" ]
       }
@@ -626,12 +626,27 @@ let emacs =
                   , prelude.unbounded "libjpeg-turbo"
                   , prelude.unbounded "ncurses"
                   , prelude.unbounded "gtk2"
-                  -- TODO: gtk2, libotf, m17n-lib
+                  -- , prelude.unbounded "libotf"
+                  -- , prelude.unbounded "m17n-lib"
                   ]
       , configureCommand = prelude.configureMkExesExtraFlags
           { bins = [ "build-aux/move-if-change", "build-aux/update-subdirs" ]
           , extraFlags = [ "--with-tiff=no" ]
           }
+      , installCommand =
+          λ(cfg : types.BuildVars) →
+            let wrapper = "${prelude.printEnvVar (prelude.mkLDPath cfg.linkDirs)} ${cfg.installDir}/bin/emacs $@"
+            in
+            let wrapped = "wrapper/emacs"
+            in
+
+            prelude.defaultInstall cfg
+              # [ prelude.createDir "wrapper"
+                , prelude.writeFile { file = wrapped, contents = wrapper }
+                , prelude.mkExe wrapped
+                , prelude.copyFile wrapped wrapped
+                , prelude.symlinkBinary wrapped
+                ]
       }
 in
 
@@ -883,6 +898,7 @@ let gtk2 =
                                 , prelude.mkCFlags cfg.includeDirs
                                 , prelude.mkPkgConfigVar cfg.linkDirs
                                 , prelude.libPath cfg
+                                , prelude.mkLDRunPath cfg.linkDirs
                                 , prelude.mkXdgDataDirs cfg.shareDirs
                                 , prelude.mkLDPreload cfg.preloadLibs
                                 ]
@@ -990,6 +1006,7 @@ let shared-mime-info =
         λ(cfg : types.BuildVars) →
           [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
                                                 , environment = Some (prelude.defaultPath cfg # [ prelude.libPath cfg
+                                                                                                , prelude.mkLDRunPath cfg.linkDirs
                                                                                                 , prelude.mkPerlLib { libDirs = cfg.linkDirs, perlVersion = [5,28,1], cfg = cfg }
                                                                                                 ])
                                                 })
@@ -1037,6 +1054,7 @@ let gdk-pixbuf =
                                                                    , { var = "PATH", value = prelude.mkPathVar cfg.binDirs ++ ":${cfg.currentDir}/gdk-pixbuf-${fullVersion}/build/gdk-pixbuf:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
                                                                    , prelude.mkPy3Path cfg.linkDirs
                                                                    , prelude.libPath cfg
+                                                                   , prelude.mkLDRunPath cfg.linkDirs
                                                                    , prelude.mkLDFlags cfg.linkDirs
                                                                    , prelude.mkCFlags cfg.includeDirs
                                                                    ]
@@ -1845,6 +1863,7 @@ let gtk3 =
                                 , prelude.mkCFlags cfg.includeDirs
                                 , prelude.mkPkgConfigVar cfg.linkDirs
                                 , prelude.libPath cfg
+                                , prelude.mkLDRunPath cfg.linkDirs
                                 , prelude.mkXdgDataDirs cfg.shareDirs
                                 , prelude.mkLDPreload cfg.preloadLibs
                                 ]

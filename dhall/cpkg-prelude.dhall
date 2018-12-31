@@ -345,12 +345,17 @@ in
 let configEnv =
   λ(linkLibs : List Text) →
   λ(cfg : types.BuildVars) →
-    Some (defaultPath cfg # [ mkLDFlagsGeneral cfg.linkDirs linkLibs
-                            , mkCFlags cfg.includeDirs
-                            , mkPkgConfigVar (cfg.shareDirs # cfg.linkDirs)
-                            , libPath cfg
-                            , mkPerlLib { libDirs = cfg.linkDirs, perlVersion = [5,28,1], cfg = cfg } -- TODO: take this as a parameter
-                            ])
+    defaultPath cfg # [ mkLDFlagsGeneral cfg.linkDirs linkLibs
+                      , mkCFlags cfg.includeDirs
+                      , mkPkgConfigVar (cfg.shareDirs # cfg.linkDirs)
+                      , libPath cfg
+                      , mkLDRunPath cfg.linkDirs
+                      , mkPerlLib { libDirs = cfg.linkDirs, perlVersion = [5,28,1], cfg = cfg } -- TODO: take this as a parameter
+                      ]
+in
+
+let configSome =
+  λ(envVars : List Text) →  λ(cfg : types.BuildVars) → Some (configEnv envVars cfg)
 in
 
 let generalConfigure =
@@ -373,7 +378,8 @@ let generalConfigure =
 in
 
 let configureWithFlags =
-  generalConfigure configEnv "configure" ([] : List Text)
+  generalConfigure configSome "configure" ([] : List Text)
+
 in
 
 let defaultConfigure =
@@ -382,7 +388,7 @@ in
 
 let configureLinkExtraLibs =
   λ(linkLibs : List Text) →
-    generalConfigure configEnv "configure" linkLibs ([] : List Text)
+    generalConfigure configSome "configure" linkLibs ([] : List Text)
 in
 
 let mkAclocalPath =
@@ -418,10 +424,7 @@ in
 
 let defaultBuild =
   λ(cfg : types.BuildVars) →
-    buildWith (defaultPath cfg # [ mkPkgConfigVar cfg.linkDirs
-                                 , libPath cfg
-                                 , mkLDRunPath cfg.linkDirs
-                                 ]) cfg
+    buildWith (configEnv cfg.linkDirs cfg) cfg
 in
 
 let installWith =
@@ -437,10 +440,9 @@ in
 
 let defaultInstall =
   λ(cfg : types.BuildVars) →
-    installWith (defaultPath cfg # [ mkPkgConfigVar cfg.linkDirs
-                                   , libPath cfg
-                                   ]) cfg
+    installWith (configEnv cfg.linkDirs cfg) cfg
 in
+
 let installWithBinaries =
   λ(bins : List Text) →
   λ(installVars : types.BuildVars) →
@@ -517,7 +519,7 @@ let cmakeConfigure =
     [ createDir "build"
     , call { program = "cmake"
            , arguments = [ "../", "-DCMAKE_INSTALL_PREFIX:PATH=${cfg.installDir}" ] # host
-           , environment = defaultEnv
+           , environment = configSome cfg.linkDirs cfg
            , procDir = Some "build"
            }
     ]
@@ -545,10 +547,10 @@ let cmakeBuild =
 in
 
 let cmakeInstall =
-  λ(_ : types.BuildVars) →
+  λ(cfg : types.BuildVars) →
     [ call { program = "cmake"
            , arguments = [ "--build", ".", "--target", "install", "--config", "Release" ]
-           , environment = defaultEnv
+           , environment = configSome cfg.linkDirs cfg
            , procDir = Some "build"
            }
     ]
@@ -637,6 +639,7 @@ let mesonConfigureWithFlags =
                                 , { var = "PATH", value = mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
                                 , mkPy3Path cfg.linkDirs
                                 , libPath cfg
+                                , mkLDRunPath cfg.linkDirs
                                 , mkLDFlags cfg.linkDirs
                                 , mkCFlags cfg.includeDirs
                                 , mkPkgConfigVar cfg.linkDirs
@@ -655,9 +658,10 @@ let ninjaBuild =
   λ(cfg : types.BuildVars) →
     [ call (defaultCall ⫽ { program = "ninja"
                           , environment = Some [ mkPkgConfigVar cfg.linkDirs
-                                               , { var = "PATH", value = mkPathVar cfg.binDirs ++ ":/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
+                                               , { var = "PATH", value = mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
                                                , mkPy3Path cfg.linkDirs
                                                , libPath cfg
+                                               , mkLDRunPath cfg.linkDirs
                                                , mkLDFlags cfg.linkDirs
                                                , mkCFlags cfg.includeDirs
                                                , mkPkgConfigVar cfg.linkDirs
@@ -669,9 +673,10 @@ let ninjaInstall =
   λ(cfg : types.BuildVars) →
     [ call (defaultCall ⫽ { program = "ninja"
                           , environment = Some [ mkPkgConfigVar cfg.linkDirs
-                                               , { var = "PATH", value = mkPathVar cfg.binDirs ++ ":/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
+                                               , { var = "PATH", value = mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
                                                , mkPy3Path cfg.linkDirs
                                                , libPath cfg
+                                               , mkLDRunPath cfg.linkDirs
                                                , mkLDFlags cfg.linkDirs
                                                , mkCFlags cfg.includeDirs
                                                ]
@@ -891,6 +896,7 @@ in
 , mkCFlags            = mkCFlags
 , mkLDFlags           = mkLDFlags
 , mkLDPath            = mkLDPath
+, mkLDRunPath         = mkLDRunPath
 , mkStaPath           = mkStaPath
 , libPath             = libPath
 , mkPyPath            = mkPyPath
@@ -940,6 +946,7 @@ in
 , mesonCfgFile        = mesonCfgFile
 , python2Package      = python2Package
 , configEnv           = configEnv
+, configSome          = configSome
 , preloadEnv          = preloadEnv
 , preloadCfg          = preloadCfg
 , printEnvVar         = printEnvVar
