@@ -2080,6 +2080,8 @@ let libXt =
   mkXLibDeps { name = "libXt"
              , deps = [ prelude.unbounded "libICE"
                       , prelude.unbounded "libSM"
+                      , prelude.unbounded "libX11"
+                      , prelude.unbounded "kbproto"
                       ]
              }
 in
@@ -2164,7 +2166,7 @@ in
 , gperf [3,1]
 , giflib [5,1,4]
 , git [2,19,2]
-, glib { version = [2,58], patch = 2 }
+, glib { version = [2,59], patch = 0 }
 , glibc [2,28]
 , gmp [6,1,2]
 , gobject-introspection { version = [1,59], patch = 1 }
@@ -2173,7 +2175,7 @@ in
 , graphviz [2,40,1]
 , gsl [2,5]
 , gtk2 { version = [2,24], patch = 32 }
-, gtk3 { version = [3,24], patch = 1 }
+, gtk3 { version = [3,24], patch = 2 }
 , gzip [1,9]
 , harfbuzz [2,2,0]
 , imageMagick [7,0,8]
