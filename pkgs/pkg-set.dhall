@@ -626,12 +626,21 @@ let emacs =
                   , prelude.unbounded "libjpeg-turbo"
                   , prelude.unbounded "ncurses"
                   , prelude.unbounded "gtk2"
-                  -- , prelude.unbounded "libotf"
-                  -- , prelude.unbounded "m17n-lib"
+                  , prelude.unbounded "libotf"
+                  , prelude.unbounded "m17n-lib"
+                  , prelude.unbounded "gnutls"
+                  , prelude.unbounded "libXft"
+                  , prelude.unbounded "dbus"
                   ]
       , configureCommand = prelude.configureMkExesExtraFlags
           { bins = [ "build-aux/move-if-change", "build-aux/update-subdirs" ]
-          , extraFlags = [ "--with-tiff=no" ]
+          , extraFlags = [ "--with-tiff=no"
+                         , "--with-libotf"
+                         , "--with-m17n-flt"
+                         , "--with-gnutls"
+                         , "--with-xft"
+                         , "--with-dbus"
+                         ]
           }
       , installCommand =
           λ(cfg : types.BuildVars) →

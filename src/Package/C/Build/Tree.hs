@@ -65,7 +65,7 @@ buildWithContext cTree host sta = zygoM' dirAlg buildAlg cTree
                 then includeDir : is
                 else is
 
-            pure (BuildDirs links shares includes bins)
+            pure (BuildDirs links shares includes bins) -- TODO: nubOrd?
 
           dirAlg :: DepTreeF CPkg BuildDirs -> PkgM BuildDirs
           dirAlg (DepNodeF c bds) = do

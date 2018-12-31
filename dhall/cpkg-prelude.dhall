@@ -358,6 +358,7 @@ let buildEnv =
   λ(cfg : types.BuildVars) →
     defaultPath cfg # [ mkPkgConfigVar (cfg.shareDirs # cfg.linkDirs)
                       , mkPerlLib { libDirs = cfg.linkDirs, perlVersion = [5,28,1], cfg = cfg } -- TODO: take this as a parameter
+                      , mkLDPath cfg.linkDirs
                       ]
 in
 
@@ -438,7 +439,7 @@ let installWith =
   λ(envs : List types.EnvVar) →
   λ(cfg : types.BuildVars) →
     [ call (defaultCall ⫽ { program = makeExe cfg.buildOS
-                          , arguments = [ "install" ]
+                          , arguments = [ "install" ] -- , "-j${Natural/show cfg.cpus}" ]
                           , environment =
                               Some envs
                           })
