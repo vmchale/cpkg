@@ -1216,7 +1216,7 @@ let glib =
         [ prelude.createDir "build"
         , prelude.writeFile { file = "build/cross.txt", contents = prelude.mesonCfgFile cfg }
         , prelude.call { program = "meson"
-                       , arguments = [ "--prefix=${cfg.installDir}", "..", "-Dselinux=false" ] # crossArgs
+                       , arguments = [ "--prefix=${cfg.installDir}", "..", "-Dselinux=disabled" ] # crossArgs
                        , environment = Some [ prelude.mkPkgConfigVar cfg.linkDirs
                                             , { var = "PATH", value = prelude.mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
                                             , { var = "LDFLAGS", value = (prelude.mkLDFlags cfg.linkDirs).value ++ " -lpcre" }
