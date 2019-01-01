@@ -499,6 +499,7 @@ let wget =
       , pkgDeps = [ prelude.unbounded "gnutls" ]
       , pkgBuildDeps = [ prelude.unbounded "perl" ]
       , configureCommand = prelude.configureMkExes [ "doc/texi2pod.pl" ]
+      -- TODO: install wrapper
       }
 in
 
@@ -2155,7 +2156,7 @@ in
 , curl [7,62,0]
 , dbus [1,12,10]
 , elfutils [0,175]
-, emacs [26,1] -- [25,3]
+, emacs [26,1]
 , expat [2,2,6]
 , fontconfig [2,13,1]
 , flex [2,6,3]
