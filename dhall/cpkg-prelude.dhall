@@ -14,6 +14,7 @@ in
 let mapOptional = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/Optional/map
 in
 
+{- Imported types -}
 let types = ../dhall/cpkg-types.dhall
 in
 
@@ -28,6 +29,7 @@ let maybeAppend =
     Optional/fold a x (List a) (λ(x : a) → (xs # [x])) xs
 in
 
+{- Print the architecture for use with GCC -}
 let printArch =
   λ(arch : types.Arch) →
     merge
@@ -87,6 +89,7 @@ let printOS =
       os
 in
 
+{- Print the ABI for use with GCC -}
 let printABI =
   λ(os : types.ABI) →
     merge
@@ -100,19 +103,18 @@ let printABI =
       os
 in
 
+{- Print target triple for use with GCC -}
 let printTargetTriple =
   λ(t : types.TargetTriple) →
     "${printArch t.arch}-${printOS t.os}" ++ Optional/fold types.ABI t.abi Text (λ(abi : types.ABI) → "-${printABI abi}") ""
 in
 
+{- Print --host flag for use with ./configure scripts -}
 let mkHost =
   mapOptional types.TargetTriple Text (λ(tgt : types.TargetTriple) → "--host=${printTargetTriple tgt}")
 in
 
-let mkHostEnv =
-  mapOptional types.TargetTriple Text (λ(tgt : types.TargetTriple) → "CHOST=${printTargetTriple tgt}")
-in
-
+{- Pick executable for 'make'. Use 'gmake' on BSDs, 'make' everywhere else. -}
 let makeExe =
   λ(os : types.OS) →
 
@@ -190,6 +192,7 @@ let symlinkBinaries =
   map Text types.Command symlinkBinary
 in
 
+{- This is to be used on the build OS -}
 let isUnix =
   λ(os : types.OS) →
 
@@ -218,6 +221,7 @@ let isUnix =
       os
 in
 
+{- Environment variable LDFLAGS for a given configuration -}
 let mkLDFlagsGeneral =
   λ(libDirs : List Text) →
   λ(linkLibs : List Text) →
@@ -258,6 +262,9 @@ let mkStaPath =
     { var = "LIBRARY_PATH", value = flag }
 in
 
+{- Get the host OS from a configuration. If we are not cross-compiling, we can
+   just use the build OS as detected by cpkg
+   -}
 let osCfg =
   λ(cfg : types.BuildVars) →
     Optional/fold types.TargetTriple cfg.targetTriple types.OS
@@ -265,6 +272,7 @@ let osCfg =
         cfg.buildOS
 in
 
+{- Get the host architecture for the build, using the method above -}
 let archCfg =
   λ(cfg : types.BuildVars) →
     Optional/fold types.TargetTriple cfg.targetTriple types.Arch
@@ -273,6 +281,9 @@ let archCfg =
 in
 
 
+{- Used to set the PERL5LIB variable to the right thing. This is necessary since
+   we install libraries to nonstandard locations.
+   -}
 let mkPerlLib =
   λ(x : { libDirs : List Text, perlVersion : List Natural, cfg : types.BuildVars }) →
     let tgt = x.cfg.targetTriple
@@ -313,6 +324,7 @@ let mkPkgConfigVar =
     { var = "PKG_CONFIG_PATH", value = flag }
 in
 
+{- This is used for GLib/GTK/some of that stuff -}
 let mkXdgDataDirs =
   λ(shareDirs : List Text) →
     let flag = concatMapSep ":" Text (λ(dir : Text) → dir) shareDirs
@@ -330,9 +342,12 @@ let defaultPath =
   λ(cfg : types.BuildVars) →
     if isUnix cfg.buildOS
       then [ { var = "PATH", value = mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" } ] : List types.EnvVar
-      else [] : List types.EnvVar
+      else [] : List types.EnvVar -- FIXME: handle non-unix case
 in
 
+{- Set either LD_LIBRARY_PATH or LIBRARY_PATH depending on whether we are doing
+   a static build or not
+   -}
 let libPath =
   λ(cfg : types.BuildVars) →
     if cfg.static
@@ -342,6 +357,7 @@ let libPath =
         mkLDPath cfg.linkDirs
 in
 
+{- Default environment variables for a given configuration -}
 let configEnv =
   λ(linkLibs : List Text) →
   λ(cfg : types.BuildVars) →
@@ -368,6 +384,9 @@ let configSome =
     Some (configEnv envVars cfg)
 in
 
+{- The most general configuration setup. You probably want to use
+   defaultConfigure
+   -}
 let generalConfigure =
   λ(envVars : List Text → types.BuildVars → Optional (List types.EnvVar)) →
   λ(filename : Text) →
@@ -529,7 +548,7 @@ let cmakeConfigure =
     [ createDir "build"
     , call { program = "cmake"
            , arguments = [ "../", "-DCMAKE_INSTALL_PREFIX:PATH=${cfg.installDir}" ] # host
-           , environment = defaultEnv
+           , environment = defaultEnv -- FIXME: set library/include dirs appropriately
            , procDir = Some "build"
            }
     ]
@@ -600,7 +619,7 @@ let autogenConfigure =
   λ(cfg : types.BuildVars) →
     [ mkExe "autogen.sh"
     , call (defaultCall ⫽ { program = "./autogen.sh"
-                          -- ACLOCAL_PATH ??
+                          -- TODO ACLOCAL_PATH ??
                           })
     ] # defaultConfigure cfg
 in
@@ -609,8 +628,6 @@ let fullVersion =
   λ(x : { version : List Natural, patch : Natural }) →
     x.version # [x.patch]
 in
-
-{- meson build helpers -}
 
 let mkPyPath =
   λ(version : List Natural) →
@@ -625,6 +642,7 @@ let mkPy3Path =
   mkPyPath [3,7]
 in
 
+{- Write a cross-compilation configuration file for use with meson -}
 let mesonCfgFile =
   λ(cfg : types.BuildVars) →
     let prefix =
@@ -634,7 +652,7 @@ let mesonCfgFile =
     in
 
     "[binaries]\n" ++
-    "c = '${prefix}gcc'\n" ++ -- FIXME: default to cc/c++ when no cfg is passed
+    "c = '${prefix}gcc'\n" ++ -- FIXME: default to cc/c++ when no cfg.targetTriple is passed
     "cpp = '${prefix}g++'\n" ++
     "ar = '${prefix}ar'\n" ++
     "strip = '${prefix}strip'\n" ++
@@ -752,9 +770,9 @@ let pythonBuild =
     , call (defaultCall ⫽ { program = "python${major}"
                           , arguments = [ "setup.py", "build" ]
                           , environment = Some ([ { var = "PYTHONPATH", value = "${cfg.installDir}/lib/python${versionString}/site-packages" }
-                                                , mkPkgConfigVar cfg.linkDirs
-                                                , libPath cfg
-                                                ] # defaultPath cfg)
+                                                  , mkPkgConfigVar cfg.linkDirs
+                                                  , libPath cfg
+                                                  ] # defaultPath cfg)
                           })
     ]
 in
@@ -806,6 +824,7 @@ let python2Package =
   pythonPackage [2,7]
 in
 
+{- This is vaguely terrible, but it's needed for GLib for some reason -}
 let mkLDPreload =
   λ(libs : List Text) →
     let flag = concatMapSep " " Text (λ(lib : Text) → lib) libs
@@ -853,6 +872,10 @@ let printEnvVar =
     "${var.var}=${var.value}"
 in
 
+{- This writes + installs a shell script that allows you to use programs
+   installed via cpkg with the appropriate environment variables set, since of
+   course we install in nonstandard locations
+   -}
 let mkPyWrapper =
   λ(version : List Natural) →
   λ(binName : Text) →
@@ -903,7 +926,7 @@ in
 , printOS             = printOS
 , printTargetTriple   = printTargetTriple
 , call                = call
-, mkExe               = mkExe -- TODO: rename this so it's not so confusing
+, mkExe               = mkExe
 , mkExes              = mkExes
 , createDir           = createDir
 , mkHost              = mkHost
