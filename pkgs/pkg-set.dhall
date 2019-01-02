@@ -499,7 +499,8 @@ let wget =
       , pkgDeps = [ prelude.unbounded "gnutls" ]
       , pkgBuildDeps = [ prelude.unbounded "perl" ]
       , configureCommand = prelude.configureMkExes [ "doc/texi2pod.pl" ]
-      -- TODO: install wrapper
+      , installCommand =
+          prelude.installWithWrappers [ "wget" ]
       }
 in
 
@@ -647,19 +648,7 @@ let emacs =
                          ]
           }
       , installCommand =
-          λ(cfg : types.BuildVars) →
-            let wrapper = "${prelude.printEnvVar (prelude.mkLDPath cfg.linkDirs)} ${cfg.installDir}/bin/emacs $@"
-            in
-            let wrapped = "wrapper/emacs"
-            in
-
-            prelude.defaultInstall cfg
-              # [ prelude.createDir "wrapper"
-                , prelude.writeFile { file = wrapped, contents = wrapper }
-                , prelude.mkExe wrapped
-                , prelude.copyFile wrapped wrapped
-                , prelude.symlinkBinary wrapped
-                ]
+          prelude.installWithWrappers [ "emacs" ]
       }
 in
 
@@ -705,7 +694,9 @@ let python =
           prelude.configureWithFlags ([ "--build=${prelude.printArch cfg.buildArch}" ] # staticFlag) cfg
           -- "--enable-optimizations" (takes forever)
       , pkgDeps = [ prelude.unbounded "libffi" ]
-      , installCommand = prelude.installWithBinaries [ "bin/python${major}" ] -- TODO: make library wrapper for python3
+      , installCommand = prelude.installWithBinaries [ "bin/python${major}" ]
+      -- , installCommand =
+          -- prelude.installWithWrappers [ "python${major}" ]
       }
 in
 
@@ -2141,11 +2132,161 @@ let m17n =
       }
 in
 
+let babl =
+  λ(x : { version : List Natural, patch : Natural }) →
+    let versionString = prelude.showVersion x.version
+    in
+    let fullVersion = versionString ++ "." ++ Natural/show x.patch
+    in
+    prelude.simplePackage { name = "babl", version = prelude.fullVersion x } ⫽
+      { pkgUrl = "https://download.gimp.org/pub/babl/${versionString}/babl-${fullVersion}.tar.bz2" }
+in
+
+let gegl =
+  λ(x : { version : List Natural, patch : Natural }) →
+    let versionString = prelude.showVersion x.version
+    in
+    let fullVersion = versionString ++ "." ++ Natural/show x.patch
+    in
+    prelude.simplePackage { name = "gegl", version = prelude.fullVersion x } ⫽
+      { pkgUrl = "https://download.gimp.org/pub/gegl/${versionString}/gegl-${fullVersion}.tar.bz2"
+      , pkgDeps = [ prelude.lowerBound { name = "babl", lower = [0,1,58] }
+                  , prelude.lowerBound { name = "glib", lower = [2,44,0] }
+                  , prelude.unbounded "glib-json"
+                  ]
+      , configureCommand = prelude.preloadCfg
+      }
+in
+
+let libexif =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "libexif", version = v } ⫽
+      { pkgUrl = "https://nchc.dl.sourceforge.net/project/libexif/libexif/${versionString}/libexif-${versionString}.tar.bz2" }
+in
+
+let glib-json =
+  λ(x : { version : List Natural, patch : Natural }) →
+    let versionString = prelude.showVersion x.version
+    in
+    let fullVersion = versionString ++ "." ++ Natural/show x.patch
+    in
+    prelude.ninjaPackage { name = "glib-json", version = prelude.fullVersion x } ⫽
+      { pkgUrl = "http://ftp.gnome.org/pub/gnome/sources/json-glib/${versionString}/json-glib-${fullVersion}.tar.xz"
+      , pkgSubdir = "json-glib-${fullVersion}"
+      , pkgDeps = [ prelude.unbounded "glib"
+                  , prelude.unbounded "libjpeg-turbo"
+                  , prelude.unbounded "libpng"
+                  ]
+      , installCommand =
+          prelude.ninjaInstallWithPkgConfig (prelude.mesonMoves [ "json-glib-1.0.pc" ])
+      }
+in
+
+let gimp =
+  λ(x : { version : List Natural, patch : Natural }) →
+    let versionString = prelude.showVersion x.version
+    in
+    let fullVersion = versionString ++ "." ++ Natural/show x.patch
+    in
+    prelude.simplePackage { name = "gimp", version = prelude.fullVersion x } ⫽
+      { pkgUrl = "http://pirbot.com/mirrors/gimp/gimp/v${versionString}/gimp-${fullVersion}.tar.bz2"
+      , pkgBuildDeps = [ prelude.lowerBound { name = "intltool", lower = [0,40,1] }
+                       , prelude.lowerBound { name = "gtk2", lower = [2,24,10] }
+                       , prelude.lowerBound { name = "gdk-pixbuf", lower = [2,30,8] }
+                       , prelude.lowerBound { name = "cairo", lower = [1,12,2] }
+                       , prelude.lowerBound { name = "fontconfig", lower = [2,12,4] }
+                       , prelude.lowerBound { name = "babl", lower = [0,1,58] }
+                       , prelude.lowerBound { name = "pygtk", lower = [2,10,4] }
+                       , prelude.lowerBound { name = "pycairo", lower = [1,0,2] }
+                       , prelude.lowerBound { name = "lcms2", lower = [2,8] }
+                       , prelude.lowerBound { name = "gegl", lower = [0,4,12] }
+                       , prelude.unbounded "libtiff"
+                       , prelude.lowerBound { name = "libmypaint", lower = [1,3,0] }
+                       ]
+      , configureCommand = prelude.preloadCfg
+      }
+in
+
+let lcms2 =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "lcms2", version = v } ⫽
+      { pkgUrl = "https://github.com/mm2/Little-CMS/archive/lcms${versionString}.tar.gz"
+      , pkgSubdir = "Little-CMS-lcms${versionString}"
+      }
+in
+
+let libtiff =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    -- TODO: use cmake + ninja build system if I ever figure out cross-compilation...
+    prelude.simplePackage { name = "libtiff", version = v } ⫽
+      { pkgUrl = "http://download.osgeo.org/libtiff/tiff-${versionString}.tar.gz"
+      , pkgSubdir = "tiff-${versionString}"
+      }
+in
+
+let libmypaint =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "libmypaint", version = v } ⫽
+      { pkgUrl = "https://github.com/mypaint/libmypaint/releases/download/v${versionString}/libmypaint-${versionString}.tar.xz"
+      , pkgDeps = [ prelude.unbounded "json-c" ]
+      , pkgBuildDeps = [ prelude.unbounded "intltool" ]
+      }
+in
+
+let json-c =
+  λ(x : { version : List Natural, dateStr : Text }) →
+    let versionString = "${prelude.showVersion x.version}-${x.dateStr}"
+    in
+    prelude.simplePackage { name = "json-c", version = x.version } ⫽
+      { pkgUrl = "https://github.com/json-c/json-c/archive/json-c-${versionString}.tar.gz"
+      , pkgSubdir = "json-c-json-c-${versionString}"
+      }
+in
+
+let poppler =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "poppler", version = v } ⫽ prelude.cmakePackage ⫽
+      { pkgUrl = "https://poppler.freedesktop.org/poppler-${prelude.showVersion v}.tar.xz"
+      , configureCommand =
+        λ(cfg : types.BuildVars) →
+          prelude.cmakeConfigureGeneral (prelude.configSome ([] : List Text))
+            [ "-DFREETYPE_INCLUDE_DIRS=${(prelude.mkIncludePath cfg.linkDirs).value}"
+            , "-DFREETYPE_LIBRARY=${(prelude.mkLDPath cfg.linkDirs).value}"
+            , "-DJPEG_INCLUDE_DIR=${(prelude.mkIncludePath cfg.linkDirs).value}"
+            , "-DJPEG_LIBRARY=${(prelude.mkLDPath cfg.linkDirs).value}"
+            ]
+            cfg
+      , pkgDeps = [ prelude.unbounded "freetype"
+                  , prelude.unbounded "fontconfig"
+                  -- , prelude.unbounded "libjpeg-turbo"
+                  , prelude.unbounded "libopenjpeg"
+                  ]
+      }
+in
+
+let libopenjpeg =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "libopenjpeg", version = v } ⫽ prelude.cmakePackage ⫽
+      { pkgUrl = "https://github.com/uclouvain/openjpeg/archive/v${versionString}.tar.gz"
+      , pkgSubdir = "openjpeg-${versionString}"
+      , installCommand =
+          λ(cfg : types.BuildVars) →
+            prelude.cmakeInstall cfg
+              # [ prelude.symlink "lib/openjpeg-2.3/OpenJPEGConfig.cmake" "lib/OpenJPEGConfig.cmake" ]
+      }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
 , at-spi-core { version = [2,30], patch = 0 }
 , atk { version = [2,30], patch = 0 }
+, babl { version = [0,1], patch = 60 }
 , binutils [2,31]
 , bison [3,2,2]
 , bzip2 [1,0,6]
@@ -2168,11 +2309,14 @@ in
 , gc [8,0,2]
 , gdb [8,2]
 , gdk-pixbuf { version = [2,38], patch = 0 }
+, gegl { version = [0,4], patch = 12 }
 , gettext [0,19,8]
 , gperf [3,1]
 , giflib [5,1,4]
+, gimp { version = [2,10], patch = 8 }
 , git [2,19,2]
 , glib { version = [2,58], patch = 2 } -- TODO: bump to 2.59.0 once gobject-introspection supports it
+, glib-json { version = [1,4], patch = 4 }
 , glibc [2,28]
 , gmp [6,1,2]
 , gobject-introspection { version = [1,59], patch = 1 }
@@ -2188,27 +2332,33 @@ in
 , inputproto [2,3,2]
 , intltool [0,51,0]
 , jpegTurbo [2,0,1]
+, json-c { version = [0,13,1], dateStr = "20180305" }
 , kbproto [1,0,7]
 , lapack [3,8,0]
+, lcms2 [2,9]
 , libarchive [3,3,3]
 , libassuan [2,5,2]
 , libatomic_ops [7,6,8]
 , libdrm [2,4,96]
+, libexif [0,6,21]
 , libffi [3,2,1]
 , libgcrypt [1,8,4]
 , libglade { version = [2,6], patch = 4 }
 , libgpgError [1,33]
 , libICE [1,0,9]
 , libksba [1,3,5]
+, libmypaint [1,3,0]
+, libnettle [3,4,1]
 , libpciaccess [0,14]
 , libpng [1,6,35]
 , libpthread-stubs [0,4]
-, libnettle [3,4,1]
+, libopenjpeg [2,3,0]
 , libotf [0,9,16]
 , libselinux [2,8]
 , libsepol [2,8]
 , libssh2 [1,8,0]
 , libtasn1 [4,13]
+, libtiff [4,0,10]
 , libtool [2,4,6]
 , libuv [1,24,0]
 , libSM [1,2,3]
@@ -2251,6 +2401,7 @@ in
 , perl5 [5,28,1]
 , pixman [0,36,0]
 , pkg-config [0,29,2]
+, poppler [0,72,0]
 , postgresql [11,1]
 , pycairo [1,18,0]
 , pygobject { version = [2,28], patch = 7 }

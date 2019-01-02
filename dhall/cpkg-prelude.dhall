@@ -286,11 +286,9 @@ in
    -}
 let mkPerlLib =
   λ(x : { libDirs : List Text, perlVersion : List Natural, cfg : types.BuildVars }) →
-    let tgt = x.cfg.targetTriple
+    let os = x.cfg.buildOS
     in
-    let os = osCfg x.cfg
-    in
-    let arch = archCfg x.cfg
+    let arch = x.cfg.buildArch
     in
     let flag = concatMapSep ":" Text (λ(dir : Text) → dir ++ "/site_perl/${showVersion x.perlVersion}/${printArch arch}-${printOS os}/") x.libDirs
     in
@@ -379,9 +377,9 @@ let buildEnv =
 in
 
 let configSome =
-  λ(envVars : List Text) →
+  λ(linkLibs : List Text) →
   λ(cfg : types.BuildVars) →
-    Some (configEnv envVars cfg)
+    Some (configEnv linkLibs cfg)
 in
 
 {- The most general configuration setup. You probably want to use
@@ -460,7 +458,7 @@ let installWith =
   λ(envs : List types.EnvVar) →
   λ(cfg : types.BuildVars) →
     [ call (defaultCall ⫽ { program = makeExe cfg.buildOS
-                          , arguments = [ "install" ] -- , "-j${Natural/show cfg.cpus}" ]
+                          , arguments = [ "install", "-j${Natural/show cfg.cpus}" ]
                           , environment =
                               Some envs
                           })
@@ -539,25 +537,39 @@ let createDir =
     types.Command.CreateDirectory { dir = x }
 in
 
-let cmakeConfigure =
+let cmakeConfigureGeneral =
+  λ(envVars : types.BuildVars → Optional (List types.EnvVar)) →
+  λ(flags : List Text) →
   λ(cfg : types.BuildVars) →
     let host =
-      Optional/fold types.TargetTriple cfg.targetTriple (List Text) (λ(tgt : types.TargetTriple) → ["-DCMAKE_C_COMPILER=${printTargetTriple tgt}-gcc"]) ([] : List Text)
+      Optional/fold types.TargetTriple cfg.targetTriple (List Text)
+        (λ(tgt : types.TargetTriple) → ["-DCMAKE_C_COMPILER=${printTargetTriple tgt}-gcc", "-DCMAKE_CXX_COMPILER=${printTargetTriple tgt}-g++"])
+          ([] : List Text)
     in
 
     [ createDir "build"
     , call { program = "cmake"
-           , arguments = [ "../", "-DCMAKE_INSTALL_PREFIX:PATH=${cfg.installDir}" ] # host
-           , environment = defaultEnv -- FIXME: set library/include dirs appropriately
+           , arguments = [ "../", "-DCMAKE_INSTALL_PREFIX:PATH=${cfg.installDir}" ] # host # flags
+           , environment = envVars cfg
            , procDir = Some "build"
            }
     ]
 in
 
+let cmakeConfigureWithFlags =
+  cmakeConfigureGeneral (λ(_ : types.BuildVars) → defaultEnv)
+in
+
+let cmakeConfigure =
+  cmakeConfigureWithFlags ([] : List Text)
+in
+
 let cmakeConfigureNinja =
   λ(cfg : types.BuildVars) →
     let host =
-      Optional/fold types.TargetTriple cfg.targetTriple (List Text) (λ(tgt : types.TargetTriple) → ["-DCMAKE_C_COMPILER=${printTargetTriple tgt}-gcc"]) ([] : List Text)
+      Optional/fold types.TargetTriple cfg.targetTriple (List Text)
+        (λ(tgt : types.TargetTriple) → ["-DCMAKE_C_COMPILER=${printTargetTriple tgt}-gcc", "-DCMAKE_CXX_COMPILER=${printTargetTriple tgt}-g++"])
+          ([] : List Text)
     in
 
     [ createDir "build"
@@ -697,7 +709,8 @@ let mesonConfigure =
   mesonConfigureWithFlags ([] : List Text)
 in
 
-let ninjaBuild =
+let ninjaBuildWith =
+  λ(linkLibs : List Text) →
   λ(cfg : types.BuildVars) →
     [ call (defaultCall ⫽ { program = "ninja"
                           , environment = Some [ mkPkgConfigVar cfg.linkDirs
@@ -705,11 +718,15 @@ let ninjaBuild =
                                                , mkPy3Path cfg.linkDirs
                                                , libPath cfg
                                                , mkLDRunPath cfg.linkDirs
-                                               , mkLDFlags cfg.linkDirs
+                                               , mkLDFlagsGeneral cfg.linkDirs linkLibs
                                                , mkCFlags cfg.includeDirs
                                                , mkPkgConfigVar cfg.linkDirs
                                                ]
                           , procDir = Some "build" }) ]
+in
+
+let ninjaBuild =
+  ninjaBuildWith ([] : List Text)
 in
 
 let ninjaInstall =
@@ -860,6 +877,7 @@ let preloadEnv =
                             , libPath cfg
                             , mkXdgDataDirs cfg.shareDirs
                             , mkLDPreload cfg.preloadLibs
+                            , mkPerlLib { libDirs = cfg.linkDirs, perlVersion = [5,28,1], cfg = cfg } -- TODO: take this as a parameter
                             ])
 in
 
@@ -913,6 +931,29 @@ let installWithPy3Wrappers =
   installWithPyWrappers [3,7]
 in
 
+let mkLDPathWrapper =
+  λ(cfg : types.BuildVars) →
+  λ(binName : Text) →
+    let wrapper = "${printEnvVar (mkLDPath cfg.linkDirs)}:${cfg.installDir}/lib ${cfg.installDir}/bin/${binName} $@"
+    in
+    let wrapped = "wrapper/${binName}"
+    in
+
+    [ createDir "wrapper"
+    , writeFile { file = wrapped, contents = wrapper }
+    , mkExe wrapped
+    , copyFile wrapped wrapped
+    , symlinkBinary wrapped
+    ]
+in
+
+let installWithWrappers =
+  λ(bins : List Text) →
+  λ(cfg : types.BuildVars) →
+    defaultInstall cfg #
+      concatMap Text types.Command (λ(bin : Text) → mkLDPathWrapper cfg bin) bins
+in
+
 { showVersion         = showVersion
 , makeGnuLibrary      = makeGnuLibrary
 , makeGnuExe          = makeGnuExe
@@ -934,6 +975,8 @@ in
 , defaultBuild        = defaultBuild
 , defaultInstall      = defaultInstall
 , cmakeConfigure      = cmakeConfigure
+, cmakeConfigureGeneral = cmakeConfigureGeneral
+, cmakeConfigureWithFlags = cmakeConfigureWithFlags
 , cmakeBuild          = cmakeBuild
 , cmakeInstall        = cmakeInstall
 , cmakePackage        = cmakePackage
@@ -1004,4 +1047,6 @@ in
 , installWithPyWrappers = installWithPyWrappers
 , installWithPy3Wrappers = installWithPy3Wrappers
 , cmakeConfigureNinja = cmakeConfigureNinja
+, mkLDPathWrapper     = mkLDPathWrapper
+, installWithWrappers = installWithWrappers
 }

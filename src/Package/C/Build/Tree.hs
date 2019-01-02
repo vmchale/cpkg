@@ -3,14 +3,15 @@ module Package.C.Build.Tree ( buildByName
 
 import           Control.Recursion
 import           CPkgPrelude
-import           Data.List            (isInfixOf)
+import           Data.Containers.ListUtils (nubOrd)
+import           Data.List                 (isInfixOf)
 import           Package.C.Build
 import           Package.C.Monad
 import           Package.C.PackageSet
 import           Package.C.Type
 import           Package.C.Type.Tree
-import           System.Directory     (doesDirectoryExist)
-import           System.FilePath      ((</>))
+import           System.Directory          (doesDirectoryExist)
+import           System.FilePath           ((</>))
 
 data BuildDirs = BuildDirs { libraries :: [FilePath]
                            , share     :: [FilePath]
@@ -33,7 +34,7 @@ immoralFilter :: Maybe TargetTriple -> [FilePath] -> [FilePath]
 immoralFilter Nothing fps = fps
 immoralFilter (Just tgt') fps =
     let infixDir = show tgt'
-    in filter (\fp -> infixDir `isInfixOf` fp || "meson" `isInfixOf` fp) fps
+    in filter (\fp -> infixDir `isInfixOf` fp || "meson" `isInfixOf` fp || "XML-Parser" `isInfixOf` fp) fps
 
 buildWithContext :: DepTree CPkg
                  -> Maybe TargetTriple
@@ -65,7 +66,7 @@ buildWithContext cTree host sta = zygoM' dirAlg buildAlg cTree
                 then includeDir : is
                 else is
 
-            pure (BuildDirs links shares includes bins) -- TODO: nubOrd?
+            pure (BuildDirs (nubOrd links) (nubOrd shares) (nubOrd includes) (nubOrd bins))
 
           dirAlg :: DepTreeF CPkg BuildDirs -> PkgM BuildDirs
           dirAlg (DepNodeF c bds) = do

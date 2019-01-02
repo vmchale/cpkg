@@ -73,6 +73,8 @@
 - [ ] Make e.g. `vim` depend on `glibc`
 - [ ] Get rid of annoying `LD_PRELOAD` hack?
 - [ ] dhall library should prefer `symlink` to `copyFile` when possible? hmm
+# Testing
+- [ ] Maintainer subcommand to build every single package
 # Packages
 - [ ] bash
 - [ ] jemalloc
@@ -136,7 +138,12 @@
 - [ ] https://www.gnu.org/software/libidn/#libidn2
 - [ ] https://nlnetlabs.nl/projects/unbound/about/
 - [ ] https://www.gnupg.org/ftp/gcrypt/pinentry/pinentry-1.1.0.tar.bz2
+- [ ] http://aa-project.sourceforge.net/aalib/
 - [ ] https://www.gnupg.org/ftp/gcrypt/ntbtls/ntbtls-0.1.2.tar.bz2
+- [ ] https://github.com/GNOME/libgudev
+- [ ] nss?
+- [ ] libXcursor
+- [ ] libjpeg proper (for cross-compiling?)
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in
