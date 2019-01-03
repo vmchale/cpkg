@@ -40,6 +40,47 @@ Add the following to your `~/.bashrc` for shell completions:
 eval "$(cpkg --bash-completion-script cpkg)"
 ```
 
+### Packages
+
+To view available packages, use `cpkg list`
+
+```
+vanessa@thinkpad ~/programming/haskell/done/cpkg 🌸 cpkg list
+
+autoconf
+    url: https://ftp.gnu.org/gnu/autoconf/autoconf-2.69.tar.xz
+    version: 2.69
+    build dependencies: m4
+
+
+automake
+    url: https://ftp.gnu.org/gnu/automake/automake-1.16.1.tar.xz
+    version: 1.16.1
+    build dependencies: autoconf
+
+
+at-spi2-atk
+    url: http://ftp.gnome.org/pub/gnome/sources/at-spi2-atk/2.30/at-spi2-atk-2.30.0.tar.xz
+    version: 2.30.0
+    dependencies: at-spi2-core, atk, libxml2
+    build dependencies: meson, ninja
+
+
+at-spi2-core
+    url: http://ftp.gnome.org/pub/gnome/sources/at-spi2-core/2.30/at-spi2-core-2.30.0.tar.xz
+    version: 2.30.0
+    dependencies: libXtst, glib
+    build dependencies: meson, ninja
+
+
+atk
+    url: https://ftp.gnome.org/pub/gnome/sources/atk/2.30/atk-2.30.0.tar.xz
+    version: 2.30.0
+    build dependencies: gobject-introspection
+⋮
+```
+
+
 ## Example
 
 To install `tar`:
