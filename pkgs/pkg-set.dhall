@@ -2183,31 +2183,6 @@ let glib-json =
       }
 in
 
-let gimp =
-  λ(x : { version : List Natural, patch : Natural }) →
-    let versionString = prelude.showVersion x.version
-    in
-    let fullVersion = versionString ++ "." ++ Natural/show x.patch
-    in
-    prelude.simplePackage { name = "gimp", version = prelude.fullVersion x } ⫽
-      { pkgUrl = "http://pirbot.com/mirrors/gimp/gimp/v${versionString}/gimp-${fullVersion}.tar.bz2"
-      , pkgBuildDeps = [ prelude.lowerBound { name = "intltool", lower = [0,40,1] }
-                       , prelude.lowerBound { name = "gtk2", lower = [2,24,10] }
-                       , prelude.lowerBound { name = "gdk-pixbuf", lower = [2,30,8] }
-                       , prelude.lowerBound { name = "cairo", lower = [1,12,2] }
-                       , prelude.lowerBound { name = "fontconfig", lower = [2,12,4] }
-                       , prelude.lowerBound { name = "babl", lower = [0,1,58] }
-                       , prelude.lowerBound { name = "pygtk", lower = [2,10,4] }
-                       , prelude.lowerBound { name = "pycairo", lower = [1,0,2] }
-                       , prelude.lowerBound { name = "lcms2", lower = [2,8] }
-                       , prelude.lowerBound { name = "gegl", lower = [0,4,12] }
-                       , prelude.unbounded "libtiff"
-                       , prelude.lowerBound { name = "libmypaint", lower = [1,3,0] }
-                       ]
-      , configureCommand = prelude.preloadCfg
-      }
-in
-
 let lcms2 =
   λ(v : List Natural) →
     let versionString = prelude.showVersion v in
@@ -2244,27 +2219,6 @@ let json-c =
     prelude.simplePackage { name = "json-c", version = x.version } ⫽
       { pkgUrl = "https://github.com/json-c/json-c/archive/json-c-${versionString}.tar.gz"
       , pkgSubdir = "json-c-json-c-${versionString}"
-      }
-in
-
-let poppler =
-  λ(v : List Natural) →
-    prelude.simplePackage { name = "poppler", version = v } ⫽ prelude.cmakePackage ⫽
-      { pkgUrl = "https://poppler.freedesktop.org/poppler-${prelude.showVersion v}.tar.xz"
-      , configureCommand =
-        λ(cfg : types.BuildVars) →
-          prelude.cmakeConfigureGeneral (prelude.configSome ([] : List Text))
-            [ "-DFREETYPE_INCLUDE_DIRS=${(prelude.mkIncludePath cfg.linkDirs).value}"
-            , "-DFREETYPE_LIBRARY=${(prelude.mkLDPath cfg.linkDirs).value}"
-            , "-DJPEG_INCLUDE_DIR=${(prelude.mkIncludePath cfg.linkDirs).value}"
-            , "-DJPEG_LIBRARY=${(prelude.mkLDPath cfg.linkDirs).value}"
-            ]
-            cfg
-      , pkgDeps = [ prelude.unbounded "freetype"
-                  , prelude.unbounded "fontconfig"
-                  -- , prelude.unbounded "libjpeg-turbo"
-                  , prelude.unbounded "libopenjpeg"
-                  ]
       }
 in
 
@@ -2313,7 +2267,6 @@ in
 , gettext [0,19,8]
 , gperf [3,1]
 , giflib [5,1,4]
-, gimp { version = [2,10], patch = 8 }
 , git [2,19,2]
 , glib { version = [2,58], patch = 2 } -- TODO: bump to 2.59.0 once gobject-introspection supports it
 , glib-json { version = [1,4], patch = 4 }
@@ -2401,7 +2354,6 @@ in
 , perl5 [5,28,1]
 , pixman [0,36,0]
 , pkg-config [0,29,2]
-, poppler [0,72,0]
 , postgresql [11,1]
 , pycairo [1,18,0]
 , pygobject { version = [2,28], patch = 7 }

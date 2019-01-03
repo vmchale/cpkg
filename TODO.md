@@ -128,6 +128,8 @@
 - [ ] http://www.linuxfromscratch.org/lfs/view/6.6/appendices/dependencies.html
 - [ ] https://github.com/scipy/scipy/releases/download/v1.2.0/scipy-1.2.0.tar.xz
 - [ ] Perl wrapper like `mkPy3Wrapper`
+- [ ] http://www.linuxfromscratch.org/blfs/view/cvs/basicnet/glib-networking.html
+- [ ] http://www.linuxfromscratch.org/blfs/view/cvs/gnome/gexiv2.html
 - [ ] http://www.linuxfromscratch.org/blfs/view/8.3/x/x7driver.html#libinput
 - [ ] http://luajit.org/index.html
 - [ ] https://github.com/mquinson/po4a
