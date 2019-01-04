@@ -47,7 +47,7 @@ wrapper = info (helper <*> versionInfo <*> userCmd)
     <> header "cpkg - a build tool for C\nsee 'man cpkg' for more detailed help")
 
 versionInfo :: Parser (a -> a)
-versionInfo = infoOption ("atspkg version: " ++ V.showVersion cpkgVersion) (short 'V' <> long "version" <> help "Show version")
+versionInfo = infoOption ("cpkg version: " ++ V.showVersion cpkgVersion) (short 'V' <> long "version" <> help "Show version")
 
 dumpTarget :: Parser DumpTarget
 dumpTarget = hsubparser
