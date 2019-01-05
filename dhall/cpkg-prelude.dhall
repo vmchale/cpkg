@@ -458,7 +458,7 @@ let installWith =
   λ(envs : List types.EnvVar) →
   λ(cfg : types.BuildVars) →
     [ call (defaultCall ⫽ { program = makeExe cfg.buildOS
-                          , arguments = [ "install" ] -- , "-j${Natural/show cfg.cpus}" ]
+                          , arguments = [ "install" ]
                           , environment =
                               Some envs
                           })
