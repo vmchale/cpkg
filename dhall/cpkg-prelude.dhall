@@ -813,14 +813,14 @@ let pythonInstall =
 in
 
 let pythonPackage =
-  λ(version : List Natural) →
+  λ(pyVersion : List Natural) →
   λ(x : { name : Text, version : List Natural }) →
-    let major = Optional/fold Natural (List/head Natural version) Text (Natural/show) ""
+    let major = Optional/fold Natural (List/head Natural pyVersion) Text (Natural/show) ""
     in
     simplePackage x ⫽
       { configureCommand = doNothing
-      , buildCommand = pythonBuild version
-      , installCommand = pythonInstall version
+      , buildCommand = pythonBuild pyVersion
+      , installCommand = pythonInstall pyVersion
       , pkgBuildDeps = [ unbounded "python${major}" ]
       }
 in
