@@ -931,6 +931,12 @@ let installWithPy3Wrappers =
   installWithPyWrappers [3,7]
 in
 
+{- This is used to make bash scripts that wrap an executable. Since executables
+   are linked against libraries installed in nonstandard places, we wrap them
+   with a shell script that sets LD_LIBRARY_PATH appropriately.
+
+   For an example use, see the emacs package.
+   -}
 let mkLDPathWrapper =
   λ(cfg : types.BuildVars) →
   λ(binName : Text) →
