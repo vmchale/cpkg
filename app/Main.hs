@@ -5,7 +5,7 @@ import           Data.Semigroup
 import qualified Data.Text           as T
 import qualified Data.Version        as V
 import           Options.Applicative hiding (auto)
-import           Package.C
+import           Package.C           hiding (Command)
 import qualified Paths_cpkg          as P
 import           System.Directory    (doesDirectoryExist, removeDirectoryRecursive)
 
@@ -146,8 +146,8 @@ run :: Command -> IO ()
 run (Install pkId v host' sta pkSet) = do
     parsedHost <- parseHostIO host'
     runPkgM v $ buildByName (T.pack pkId) parsedHost pkSet sta
-run (Check file v) = void $ getCPkg v file
-run (CheckSet file v) = void $ getPkgs v file
+run (Check file' v) = void $ getCPkg v file'
+run (CheckSet file' v) = void $ getPkgs v file'
 run (Dump (Linker name) host) = runPkgM Normal $ printLinkerFlags name host
 run (Dump (Compiler name) host) = runPkgM Normal $ printCompilerFlags name host
 run (Dump (PkgConfig name) host) = runPkgM Normal $ printPkgConfigPath name host
