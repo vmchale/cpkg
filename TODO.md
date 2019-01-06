@@ -22,6 +22,7 @@
 - [ ] `xextproto` doesn't like `aarch64`
 - [ ] ImageMagick fails on ARM
 - [ ] `wget` doesn't work with latest gnutls
+- [ ] Report bug to LFS: libevent depends on openssl as they have configured it...
 # Libraries
 - [ ] Consider splitting off library for parsing triples &c.
 # Code Maintenance
@@ -146,6 +147,7 @@
 - [ ] nss?
 - [ ] libXcursor
 - [ ] libjpeg proper (for cross-compiling?)
+- [ ] http://download.redis.io/releases/redis-5.0.3.tar.gz
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in

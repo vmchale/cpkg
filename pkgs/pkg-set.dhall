@@ -2235,6 +2235,24 @@ let libopenjpeg =
       }
 in
 
+let libevent =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "libevent", version = v } ⫽
+      { pkgUrl = "https://github.com/libevent/libevent/releases/download/release-${versionString}-stable/libevent-${versionString}-stable.tar.gz"
+      , pkgSubdir = "libevent-${versionString}-stable"
+      , configureCommand = prelude.configureWithFlags [ "--disable-openssl" ]
+      }
+in
+
+let memcached =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "memcached", version = v } ⫽
+      { pkgUrl = "https://memcached.org/files/memcached-${prelude.showVersion v}.tar.gz"
+      , pkgDeps = [ prelude.unbounded "libevent" ]
+      }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
@@ -2293,6 +2311,7 @@ in
 , libassuan [2,5,2]
 , libatomic_ops [7,6,8]
 , libdrm [2,4,96]
+, libevent [2,1,8]
 , libexif [0,6,21]
 , libffi [3,2,1]
 , libgcrypt [1,8,4]
@@ -2338,6 +2357,7 @@ in
 , m4 [1,4,18]
 , mako [1,0,7]
 , markupSafe [1,0]
+, memcached [1,5,12]
 , meson [0,49,0]
 , musl [1,1,20]
 , nano [3,2]
