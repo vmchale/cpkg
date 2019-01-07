@@ -44,7 +44,7 @@ wrapper :: ParserInfo Command
 wrapper = info (helper <*> versionInfo <*> userCmd)
     (fullDesc
     <> progDesc "The cpkg build tool and package manager."
-    <> header "cpkg - a build tool for C\nsee 'man cpkg' for more detailed help")
+    <> header "cpkg - a build tool for C")
 
 versionInfo :: Parser (a -> a)
 versionInfo = infoOption ("cpkg version: " ++ V.showVersion cpkgVersion) (short 'V' <> long "version" <> help "Show version")
