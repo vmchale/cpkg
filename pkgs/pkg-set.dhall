@@ -2290,7 +2290,7 @@ in
 , glib-json { version = [1,4], patch = 4 }
 , glibc [2,28]
 , gmp [6,1,2]
-, gobject-introspection { version = [1,59], patch = 1 }
+, gobject-introspection { version = [1,59], patch = 2 }
 , gnupg [2,2,12]
 , gnutls { version = [3,6], patch = 5 }
 , graphviz [2,40,1]
