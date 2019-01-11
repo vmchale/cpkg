@@ -1454,6 +1454,7 @@ let atk =
     prelude.ninjaPackage { name = "atk", version = prelude.fullVersion x } ⫽
       { pkgUrl = "https://ftp.gnome.org/pub/gnome/sources/atk/${versionString}/atk-${fullVersion}.tar.xz"
       , pkgBuildDeps = [ prelude.unbounded "gobject-introspection" ]
+      , pkgDeps = [ prelude.unbounded "glib" ]
       , installCommand =
           prelude.ninjaInstallWithPkgConfig [{ src = "build/atk.pc", dest = "lib/pkgconfig/atk.pc" }]
       }
@@ -2253,6 +2254,18 @@ let memcached =
       }
 in
 
+let motif =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "motif", version = v } ⫽
+      { pkgUrl = "https://iweb.dl.sourceforge.net/project/motif/Motif%20${versionString}%20Source%20Code/motif-${versionString}.tar.gz"
+      , pkgDeps = [ prelude.unbounded "libXft"
+                  , prelude.unbounded "libpng"
+                  , prelude.unbounded "freetype"
+                  ]
+      }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
@@ -2359,6 +2372,7 @@ in
 , markupSafe [1,0]
 , memcached [1,5,12]
 , meson [0,49,0]
+, motif [2,3,8]
 , musl [1,1,20]
 , nano [3,2]
 , nasm [2,14]
