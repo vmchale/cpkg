@@ -146,6 +146,7 @@
 - [ ] nss?
 - [ ] libXcursor
 - [ ] libjpeg proper (for cross-compiling?)
+- [ ] feh
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in
