@@ -146,7 +146,6 @@
 - [ ] https://github.com/GNOME/libgudev
 - [ ] nss?
 - [ ] libXcursor
-- [ ] libjpeg proper (for cross-compiling?)
 - [ ] feh
 - [ ] http://download.redis.io/releases/redis-5.0.3.tar.gz
 - [ ] https://github.com/garabik/unicode/releases

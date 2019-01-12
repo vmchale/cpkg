@@ -2266,6 +2266,27 @@ let motif =
       }
 in
 
+let feh =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "feh", version = v } ⫽
+      { pkgUrl = "https://github.com/derf/feh/archive/${prelude.showVersion v}.tar.gz"
+      , configureCommand = prelude.doNothing
+      , pkgDeps = [ prelude.unbounded "imlib2" ]
+      }
+in
+
+let imlib2 =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "imlib2", version = v } ⫽
+      { pkgUrl = "https://downloads.sourceforge.net/enlightenment/imlib2-${prelude.showVersion v}.tar.bz2"
+      , pkgDeps = [ prelude.unbounded "libXext"
+                  , prelude.unbounded "freetype"
+                  , prelude.unbounded "harfbuzz"
+                  , prelude.unbounded "libpng"
+                  ]
+      }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
@@ -2284,6 +2305,7 @@ in
 , elfutils [0,175]
 , emacs [26,1]
 , expat [2,2,6]
+, feh [3,1,1]
 , fontconfig [2,13,1]
 , flex [2,6,3]
 , fltk { version = [1,3,4], patch = 2 }
@@ -2313,6 +2335,7 @@ in
 , gzip [1,9]
 , harfbuzz [2,3,0]
 , imageMagick [7,0,8]
+, imlib2 [1,5,1]
 , inputproto [2,3,2]
 , intltool [0,51,0]
 , jpegTurbo [2,0,1]
