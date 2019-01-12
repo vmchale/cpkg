@@ -149,6 +149,7 @@
 - [ ] libjpeg proper (for cross-compiling?)
 - [ ] http://download.redis.io/releases/redis-5.0.3.tar.gz
 - [ ] https://github.com/garabik/unicode/releases
+- [ ] evince
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in
