@@ -5,10 +5,14 @@ module Package.C (
                  , Version (..)
                  , Verbosity (..)
                  , TargetTriple (..)
+                 , Command (..)
                  , OS (..)
                  , Arch (..)
                  , Manufacturer (..)
                  , ABI (..)
+                 , InstallDb (..)
+                 , BuildCfg (..)
+                 , MonadDb
                  , PkgM
                  , Platform
                  -- * Functions
@@ -37,7 +41,9 @@ module Package.C (
 
 import           Package.C.Build
 import           Package.C.Build.Tree
+import           Package.C.Db.Monad
 import           Package.C.Db.Register
+import           Package.C.Db.Type
 import           Package.C.Dhall
 import           Package.C.Monad
 import           Package.C.PackageSet

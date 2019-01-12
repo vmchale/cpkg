@@ -40,6 +40,47 @@ Add the following to your `~/.bashrc` for shell completions:
 eval "$(cpkg --bash-completion-script cpkg)"
 ```
 
+### Packages
+
+To view available packages, use `cpkg list`
+
+```
+vanessa@thinkpad ~/programming/haskell/done/cpkg 🌸 cpkg list
+
+autoconf
+    url: https://ftp.gnu.org/gnu/autoconf/autoconf-2.69.tar.xz
+    version: 2.69
+    build dependencies: m4
+
+
+automake
+    url: https://ftp.gnu.org/gnu/automake/automake-1.16.1.tar.xz
+    version: 1.16.1
+    build dependencies: autoconf
+
+
+at-spi2-atk
+    url: http://ftp.gnome.org/pub/gnome/sources/at-spi2-atk/2.30/at-spi2-atk-2.30.0.tar.xz
+    version: 2.30.0
+    dependencies: at-spi2-core, atk, libxml2
+    build dependencies: meson, ninja
+
+
+at-spi2-core
+    url: http://ftp.gnome.org/pub/gnome/sources/at-spi2-core/2.30/at-spi2-core-2.30.0.tar.xz
+    version: 2.30.0
+    dependencies: libXtst, glib
+    build dependencies: meson, ninja
+
+
+atk
+    url: https://ftp.gnome.org/pub/gnome/sources/atk/2.30/atk-2.30.0.tar.xz
+    version: 2.30.0
+    build dependencies: gobject-introspection
+⋮
+```
+
+
 ## Example
 
 To install `tar`:
@@ -192,14 +233,14 @@ Lovingly provided by [polyglot](https://github.com/vmchale/polyglot):
 -------------------------------------------------------------------------------
  Language             Files       Lines         Code     Comments       Blanks
 -------------------------------------------------------------------------------
- Bash                     3          35           34            0            1
- Cabal                    1         155          141            0           14
+ Bash                     4          38           37            0            1
+ Cabal                    1         153          139            0           14
  Cabal Project            1           2            2            0            0
- Dhall                    3        3565         3187            1          377
- Haskell                 31        1681         1371           28          282
- Markdown                 5         393          344            0           49
+ Dhall                    3        3591         3210            1          380
+ Haskell                 31        1687         1377           28          282
+ Markdown                 5         439          377            0           62
  YAML                     4         156          141            0           15
 -------------------------------------------------------------------------------
- Total                   48        5987         5220           29          738
+ Total                   49        6066         5283           29          754
 -------------------------------------------------------------------------------
 ```

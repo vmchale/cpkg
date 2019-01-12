@@ -228,9 +228,10 @@ let mkLDFlagsGeneral =
     let flag0 = concatMapSep " " Text (λ(dir : Text) → "-L${dir}") libDirs
     in
     let flag1 = concatMapText Text (λ(dir : Text) → " -l${dir}") linkLibs
+    let flag2 = concatMapText Text (λ(dir : Text) → " -Wl,-rpath-link,${dir}") libDirs
     in
 
-    { var = "LDFLAGS", value = flag0 ++ flag1 }
+    { var = "LDFLAGS", value = flag0 ++ flag1 ++ flag2 }
 in
 
 let mkLDFlags =
@@ -458,7 +459,7 @@ let installWith =
   λ(envs : List types.EnvVar) →
   λ(cfg : types.BuildVars) →
     [ call (defaultCall ⫽ { program = makeExe cfg.buildOS
-                          , arguments = [ "install" ] -- , "-j${Natural/show cfg.cpus}" ]
+                          , arguments = [ "install" ]
                           , environment =
                               Some envs
                           })
@@ -677,7 +678,21 @@ let mesonCfgFile =
     "endian = 'little'" -- FIXME parse endianness in Haskell library?
 in
 
-let mesonConfigureWithFlags =
+let mesonEnv =
+  λ(cfg : types.BuildVars) →
+    Some [ mkPkgConfigVar cfg.linkDirs
+         , { var = "PATH", value = mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
+         , mkPy3Path cfg.linkDirs
+         , libPath cfg
+         , mkLDRunPath cfg.linkDirs
+         , mkLDFlags cfg.linkDirs
+         , mkCFlags cfg.includeDirs
+         , mkPkgConfigVar cfg.linkDirs
+         ]
+in
+
+let mesonConfigureGeneral =
+  λ(envs : types.BuildVars → Optional (List types.EnvVar)) →
   λ(flags : List Text) →
   λ(cfg : types.BuildVars) →
     let crossArgs =
@@ -690,19 +705,14 @@ let mesonConfigureWithFlags =
     , writeFile { file = "build/cross.txt", contents = mesonCfgFile cfg }
     , call { program = "meson"
            , arguments = [ "--prefix=${cfg.installDir}", ".." ] # crossArgs # flags
-           , environment = Some [ mkPkgConfigVar cfg.linkDirs
-                                , { var = "PATH", value = mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
-                                , mkPy3Path cfg.linkDirs
-                                , libPath cfg
-                                , mkLDRunPath cfg.linkDirs
-                                , mkLDFlags cfg.linkDirs
-                                , mkCFlags cfg.includeDirs
-                                , mkPkgConfigVar cfg.linkDirs
-                                ]
+           , environment = envs cfg
            , procDir = Some "build"
            }
     ]
+in
 
+let mesonConfigureWithFlags =
+  mesonConfigureGeneral mesonEnv
 in
 
 let mesonConfigure =
@@ -813,14 +823,14 @@ let pythonInstall =
 in
 
 let pythonPackage =
-  λ(version : List Natural) →
+  λ(pyVersion : List Natural) →
   λ(x : { name : Text, version : List Natural }) →
-    let major = Optional/fold Natural (List/head Natural version) Text (Natural/show) ""
+    let major = Optional/fold Natural (List/head Natural pyVersion) Text (Natural/show) ""
     in
     simplePackage x ⫽
       { configureCommand = doNothing
-      , buildCommand = pythonBuild version
-      , installCommand = pythonInstall version
+      , buildCommand = pythonBuild pyVersion
+      , installCommand = pythonInstall pyVersion
       , pkgBuildDeps = [ unbounded "python${major}" ]
       }
 in
@@ -931,6 +941,12 @@ let installWithPy3Wrappers =
   installWithPyWrappers [3,7]
 in
 
+{- This is used to make bash scripts that wrap an executable. Since executables
+   are linked against libraries installed in nonstandard places, we wrap them
+   with a shell script that sets LD_LIBRARY_PATH appropriately.
+
+   For an example use, see the emacs package.
+   -}
 let mkLDPathWrapper =
   λ(cfg : types.BuildVars) →
   λ(binName : Text) →
@@ -1011,6 +1027,8 @@ in
 , mkPkgConfigVar      = mkPkgConfigVar
 , fullVersion         = fullVersion
 , mesonConfigure      = mesonConfigure
+, mesonConfigureGeneral = mesonConfigureGeneral
+, mesonEnv            = mesonEnv
 , mesonConfigureWithFlags = mesonConfigureWithFlags
 , ninjaBuild          = ninjaBuild
 , ninjaInstall        = ninjaInstall
