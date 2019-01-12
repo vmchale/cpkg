@@ -4,10 +4,10 @@ import           Test.Hspec.Megaparsec
 import           Text.Megaparsec
 
 parseHelper :: String -> TargetTriple -> SpecWith ()
-parseHelper str tgt =
+parseHelper str tgt' =
     parallel $ it "should work on arm-linux-gnueabihf" $
         parse parseTriple "(none)" str
-            `shouldParse` tgt
+            `shouldParse` tgt'
 
 main :: IO ()
 main = hspec $
