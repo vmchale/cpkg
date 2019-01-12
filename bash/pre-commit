@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -e
+cabal new-run cpkg -- check-set pkgs/pkg-set.dhall
+perl -0777 -i -pe 's/```\n----.*```/```\n'"$(poly -c)"'\n```/igs' README.md

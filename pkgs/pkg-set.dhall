@@ -854,13 +854,20 @@ in
 
 let freetype-prebuild =
   λ(v : List Natural) →
-    freetype-shared { name = "freetype-prebuild", version = v } -- FIXME: for some reason a zlib dep here breaks harfbuzz???
+    freetype-shared { name = "freetype-prebuild", version = v } ⫽ -- FIXME: for some reason a zlib dep here breaks harfbuzz???
+      { pkgDeps = [ prelude.unbounded "zlib"
+                  , prelude.unbounded "libpng"
+                  ]
+      }
 in
 
 let freetype =
   λ(v : List Natural) →
     freetype-shared { name = "freetype", version = v } ⫽
-      { pkgDeps = [ prelude.unbounded "zlib", prelude.unbounded "harfbuzz" ]
+      { pkgDeps = [ prelude.unbounded "zlib"
+                  , prelude.unbounded "harfbuzz"
+                  , prelude.unbounded "libpng"
+                  ]
       , configureCommand = prelude.configureMkExesExtraFlags { bins = [ "builds/unix/configure" ]
                                                              , extraFlags = [ "--enable-freetype-config" ]
                                                              }
@@ -999,6 +1006,9 @@ let libxml2 =
     prelude.simplePackage { name = "libxml2", version = v } ⫽
      { pkgUrl = "http://xmlsoft.org/sources/libxml2-${prelude.showVersion v}.tar.gz"
      , configureCommand = prelude.configureWithFlags [ "--without-python" ]
+     , pkgDeps = [ prelude.unbounded "zlib"
+                 , prelude.unbounded "xz"
+                 ]
      }
 in
 
@@ -1264,6 +1274,8 @@ let glib =
               # [ prelude.symlink "${libDir}/libglib-2.0.so" "lib/libglib-2.0.so"
                 , prelude.symlink "${libDir}/libgobject-2.0.so" "lib/libgobject-2.0.so"
                 , prelude.symlink "${libDir}/libgio-2.0.so" "lib/libgio-2.0.so"
+                , prelude.symlink "${libDir}/libgmodule-2.0.so" "lib/libgmodule-2.0.so"
+                , prelude.symlink "${libDir}/libgmodule-2.0.so.0" "lib/libgmodule-2.0.so.0"
                 , prelude.symlink "${libDir}/glib-2.0/include/glibconfig.h" "include/glibconfig.h"
                 , prelude.symlink "include/glib-2.0/glib" "include/glib"
                 , prelude.symlink "include/glib-2.0/gobject" "include/gobject"
@@ -2266,6 +2278,15 @@ let motif =
       }
 in
 
+let libjpeg =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "libjpeg", version = v } ⫽
+      { pkgUrl = "http://www.ijg.org/files/jpegsrc.v${versionString}c.tar.gz"
+      , pkgSubdir = "jpeg-${versionString}c"
+      }
+in
+
 let feh =
   λ(v : List Natural) →
     prelude.simplePackage { name = "feh", version = v } ⫽
@@ -2284,9 +2305,6 @@ let imlib2 =
                   , prelude.unbounded "harfbuzz"
                   , prelude.unbounded "libpng"
                   ]
-      }
-in
-
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
@@ -2354,6 +2372,7 @@ in
 , libglade { version = [2,6], patch = 4 }
 , libgpgError [1,33]
 , libICE [1,0,9]
+, libjpeg [9]
 , libksba [1,3,5]
 , libmypaint [1,3,0]
 , libnettle [3,4,1]
