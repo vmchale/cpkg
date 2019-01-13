@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+
+# This is the pre-commit hook I use, provided for sake of other users here
+# It includes one check (viz., Dhall typechecking) and a perl one-liner to
+# update the repository's linecount
+
 set -e
 cabal new-run cpkg -- check-set pkgs/pkg-set.dhall
 perl -0777 -i -pe 's/```\n----.*```/```\n'"$(poly -c)"'\n```/igs' README.md
