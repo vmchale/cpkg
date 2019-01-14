@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 cabal new-run cpkg -- install emacs -vv --pkg-set './pkgs/pkg-set.dhall'
-cabal new-run cpkg -- install glib -vv --pkg-set './pkgs/pkg-set.dhall' --target=arm-linux-gnueabihf
+cabal new-run cpkg -- install feh -vv --pkg-set './pkgs/pkg-set.dhall' --target=arm-linux-gnueabihf

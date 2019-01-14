@@ -116,6 +116,7 @@ let curl =
     prelude.simplePackage { name = "curl", version = v } ⫽
       { pkgUrl = "https://curl.haxx.se/download/curl-${prelude.showVersion v}.tar.xz"
       , installCommand = prelude.installWithBinaries [ "bin/curl" ]
+      , pkgDeps = [ prelude.unbounded "zlib" ]
       }
 in
 
@@ -299,7 +300,9 @@ let jpegTurbo =
       , pkgVersion = v
       , pkgUrl = "https://downloads.sourceforge.net/libjpeg-turbo/libjpeg-turbo-${prelude.showVersion v}.tar.gz"
       , pkgSubdir = "libjpeg-turbo-${prelude.showVersion v}"
-      , pkgBuildDeps = [ prelude.unbounded "cmake" ]
+      , pkgBuildDeps = [ prelude.unbounded "cmake"
+                       , prelude.unbounded "nasm"
+                       ]
       }
 in
 
@@ -326,7 +329,9 @@ let ncurses =
   λ(v : List Natural) →
     prelude.simplePackage { name = "ncurses", version = v } ⫽
       { pkgUrl = "https://ftp.gnu.org/pub/gnu/ncurses/ncurses-${prelude.showVersion v}.tar.gz"
-      , configureCommand = prelude.configureWithFlags [ "--disable-stripping", "--with-shared" ] -- we disable stripping because otherwise the script fails during cross-compilation
+      , configureCommand = prelude.configureWithFlags [ "--disable-stripping", "--with-shared", "--enable-widec" ]
+      -- we disable stripping because otherwise the script fails during cross-compilation
+      -- enable-widec is necessary because util-linux uses libncursesw
       }
 in
 
@@ -588,7 +593,11 @@ in
 
 let m4 =
   λ(v : List Natural) →
-    prelude.makeGnuExe { name = "m4", version = v }
+    prelude.makeGnuExe { name = "m4", version = v } ⫽
+      -- FIXME: this is in place until there's a mechanism to patch...
+      { buildCommand = prelude.doNothing
+      , installCommand = prelude.doNothing
+      }
 in
 
 let nginx =
@@ -600,11 +609,22 @@ let nginx =
 in
 
 let openssl =
+  let opensslCfgVars =
+    λ(cfg : types.BuildVars) →
+      Some (prelude.mkCCVar cfg # prelude.configEnv ([] : List Text) cfg)
+  in
+
   λ(v : List Natural) →
-    -- CC=arm-linux-gnueabihf-gcc ./Configure linux-armv4 works....
     prelude.simplePackage { name = "openssl", version = v } ⫽
       { pkgUrl = "https://www.openssl.org/source/openssl-${prelude.showVersion v}a.tar.gz"
-      , configureCommand = prelude.generalConfigure prelude.configSome "config" ([] : List Text) ([] : List Text)
+      , configureCommand =
+          λ(cfg : types.BuildVars) →
+            [ prelude.mkExe "Configure"
+            , prelude.call (prelude.defaultCall ⫽ { program = "./Configure"
+                                                  , arguments = [ "--prefix=${cfg.installDir}", "gcc" ]
+                                                  , environment = opensslCfgVars cfg
+                                                  })
+            ]
       , pkgSubdir = "openssl-${prelude.showVersion v}a"
       , pkgBuildDeps = [ prelude.unbounded "perl" ]
       }
@@ -1199,7 +1219,9 @@ let flex =
 
     prelude.simplePackage { name = "flex", version = v } ⫽
       { pkgUrl = "https://github.com/westes/flex/releases/download/v${versionString}/flex-${versionString}.tar.gz"
-      , pkgBuildDeps = [ prelude.unbounded "m4", prelude.unbounded "bison" ]
+      , pkgBuildDeps = [ prelude.unbounded "m4"
+                       , prelude.unbounded "bison"
+                       ]
       }
 in
 
@@ -1276,6 +1298,7 @@ let glib =
                 , prelude.symlink "${libDir}/libgio-2.0.so" "lib/libgio-2.0.so"
                 , prelude.symlink "${libDir}/libgmodule-2.0.so" "lib/libgmodule-2.0.so"
                 , prelude.symlink "${libDir}/libgmodule-2.0.so.0" "lib/libgmodule-2.0.so.0"
+                , prelude.symlink "${libDir}/libglib-2.0.so.0" "lib/libglib-2.0.so.0"
                 , prelude.symlink "${libDir}/glib-2.0/include/glibconfig.h" "include/glibconfig.h"
                 , prelude.symlink "include/glib-2.0/glib" "include/glib"
                 , prelude.symlink "include/glib-2.0/gobject" "include/gobject"
@@ -1772,7 +1795,13 @@ let libselinux =
   let selinuxInstall =
     λ(cfg : types.BuildVars) →
       [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
-                                            , arguments = cc cfg # [ "PREFIX=${cfg.installDir}", "SHLIBDIR=${cfg.installDir}/lib", "EXTRA_CFLAGS=-Wno-error -lpcre", "install", "-j${Natural/show cfg.cpus}" ]
+                                            , arguments = cc cfg
+                                                # [ "PREFIX=${cfg.installDir}"
+                                                  , "SHLIBDIR=${cfg.installDir}/lib"
+                                                  , "EXTRA_CFLAGS=-Wno-error -lpcre " ++ (prelude.mkCFlags cfg.includeDirs).value
+                                                  , "install"
+                                                  , "-j${Natural/show cfg.cpus}"
+                                                  ]
                                             , environment =
                                                 Some (prelude.defaultPath cfg # [ prelude.mkLDFlags cfg.linkDirs
                                                                                 , prelude.mkCFlags cfg.includeDirs
@@ -1789,7 +1818,9 @@ let libselinux =
       , configureCommand = prelude.doNothing
       , buildCommand = prelude.doNothing
       , installCommand = selinuxInstall
-      , pkgDeps = [ prelude.unbounded "pcre", prelude.unbounded "libsepol" ]
+      , pkgDeps = [ prelude.unbounded "pcre"
+                  , prelude.unbounded "libsepol"
+                  ]
       }
 in
 
@@ -2106,7 +2137,9 @@ in
 
 let libSM =
   mkXLibDeps { name = "libSM"
-             , deps = [ prelude.unbounded "libICE" ]
+             , deps = [ prelude.unbounded "libICE"
+                      , prelude.unbounded "util-linux"
+                      ]
              }
 in
 
@@ -2142,6 +2175,7 @@ let m17n =
       , buildCommand =
         λ(cfg : types.BuildVars) →
           [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS }) ]
+      , pkgDeps = [ prelude.unbounded "libXt" ]
       }
 in
 
@@ -2254,7 +2288,7 @@ let libevent =
     prelude.simplePackage { name = "libevent", version = v } ⫽
       { pkgUrl = "https://github.com/libevent/libevent/releases/download/release-${versionString}-stable/libevent-${versionString}-stable.tar.gz"
       , pkgSubdir = "libevent-${versionString}-stable"
-      , configureCommand = prelude.configureWithFlags [ "--disable-openssl" ]
+      , pkgDeps = [ prelude.unbounded "openssl" ]
       }
 in
 
@@ -2287,6 +2321,82 @@ let libjpeg =
       }
 in
 
+let feh =
+  let cc = prelude.mkCCArg
+  let fehMake =
+    λ(cfg : types.BuildVars) →
+      { program = prelude.makeExe cfg.buildOS }
+  let fehBuild =
+    λ(v : List Natural) →
+    λ(cfg : types.BuildVars) →
+      [ prelude.call (prelude.defaultCall ⫽ fehMake cfg ⫽
+                        { arguments = [ "feh.1" ]
+                        , procDir = Some "man"
+                        })
+      , prelude.call (prelude.defaultCall ⫽ fehMake cfg ⫽
+                        { arguments =
+                            cc cfg #
+                              [ "CFLAGS=${(prelude.mkCFlags cfg.includeDirs).value} -DPACKAGE=\\\"feh\\\" -DPREFIX=\\\"${cfg.installDir}\\\" -DVERSION=\\\"${prelude.showVersion v}\\\" ${(prelude.mkLDFlags cfg.linkDirs).value}"
+                              , "feh"
+                              ]
+                        , procDir = Some "src"
+                        })
+      , prelude.call (prelude.defaultCall ⫽ fehMake cfg ⫽
+                        { arguments = [ "feh.desktop" ]
+                        , procDir = Some "share/applications"
+                        })
+      ]
+  in
+  let fehInstall =
+    λ(cfg : types.BuildVars) →
+      [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
+                                            , arguments = [ "CFLAGS=${(prelude.mkCFlags cfg.includeDirs).value}"
+                                                          , "-j${Natural/show cfg.cpus}"
+                                                          , "PREFIX=${cfg.installDir}"
+                                                          , "install"
+                                                          ]
+                                            })
+      , prelude.symlinkBinary "bin/feh"
+      ]
+  in
+
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "feh", version = v } ⫽
+      { pkgUrl = "https://github.com/derf/feh/archive/${prelude.showVersion v}.tar.gz"
+      , configureCommand = prelude.doNothing
+      , buildCommand = fehBuild v
+      , installCommand = fehInstall
+      , pkgBuildDeps = [ prelude.unbounded "sed" ]
+      , pkgDeps = [ prelude.unbounded "imlib2"
+                  , prelude.unbounded "libXt"
+                  , prelude.unbounded "libXinerama"
+                  , prelude.unbounded "curl"
+                  ]
+      }
+in
+
+let imlib2 =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "imlib2", version = v } ⫽
+      { pkgUrl = "https://downloads.sourceforge.net/enlightenment/imlib2-${prelude.showVersion v}.tar.bz2"
+      , pkgDeps = [ prelude.unbounded "libXext"
+                  , prelude.unbounded "freetype"
+                  ]
+      }
+in
+
+let libicu =
+  let underscoreVersion =
+    concatMapSep "_" Natural Natural/show
+  in
+
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libicu", version = v } ⫽
+      { pkgUrl = "http://download.icu-project.org/files/icu4c/${prelude.showVersion v}/icu4c-${underscoreVersion v}-src.tgz"
+      , pkgSubdir = "icu/source"
+      }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
@@ -2305,6 +2415,7 @@ in
 , elfutils [0,175]
 , emacs [26,1]
 , expat [2,2,6]
+, feh [3,1,1]
 , fontconfig [2,13,1]
 , flex [2,6,3]
 , fltk { version = [1,3,4], patch = 2 }
@@ -2334,6 +2445,7 @@ in
 , gzip [1,9]
 , harfbuzz [2,3,0]
 , imageMagick [7,0,8]
+, imlib2 [1,5,1]
 , inputproto [2,3,2]
 , intltool [0,51,0]
 , jpegTurbo [2,0,1]
@@ -2352,6 +2464,7 @@ in
 , libglade { version = [2,6], patch = 4 }
 , libgpgError [1,33]
 , libICE [1,0,9]
+, libicu [63,1]
 , libjpeg [9]
 , libksba [1,3,5]
 , libmypaint [1,3,0]

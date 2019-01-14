@@ -31,6 +31,7 @@
 # Documentation
 - [ ] Document use of `cabal.project` files (which is simpler...)
 # Features
+- [ ] Something like cabal flags - enable exif with feh, for example...
 - [ ] Pass verbosity to configuration/build script
 - [ ] Constraint solver
 - [ ] Build/handle preprocessors
@@ -55,6 +56,8 @@
 - [ ] `pkgRuntimeDeps` field?
 - [ ] append to `cabal.project` file
 - [ ] pass `pi@32.32.43.00` or whatever on the command-line?
+- [ ] Add IA64 (itanium) support
+- [ ] Add HPUX/HPUX64 support
 # Performance
 - [ ] Dhall is slow
 # Bugs
@@ -146,8 +149,8 @@
 - [ ] https://github.com/GNOME/libgudev
 - [ ] nss?
 - [ ] libXcursor
-- [ ] libjpeg proper (for cross-compiling?)
 - [ ] feh
+- [ ] scrot (https://github.com/dreamer/scrot/releases)
 - [ ] http://download.redis.io/releases/redis-5.0.3.tar.gz
 - [ ] https://github.com/garabik/unicode/releases
 - [ ] evince
