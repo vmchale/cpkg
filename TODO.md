@@ -149,7 +149,6 @@
 - [ ] https://github.com/GNOME/libgudev
 - [ ] nss?
 - [ ] libXcursor
-- [ ] feh
 - [ ] scrot (https://github.com/dreamer/scrot/releases)
 - [ ] http://download.redis.io/releases/redis-5.0.3.tar.gz
 - [ ] https://github.com/garabik/unicode/releases
