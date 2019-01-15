@@ -2397,6 +2397,28 @@ let libicu =
       }
 in
 
+let jemalloc =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "jemalloc", version = v } ⫽
+      { pkgUrl = "https://github.com/jemalloc/jemalloc/releases/download/${versionString}/jemalloc-${versionString}.tar.bz2"
+      , configureCommand = prelude.configureMkExes [ "include/jemalloc/internal/private_symbols.sh"
+                                                   , "include/jemalloc/internal/public_namespace.sh"
+                                                   , "include/jemalloc/internal/public_unnamespace.sh"
+                                                   , "include/jemalloc/jemalloc_rename.sh"
+                                                   , "include/jemalloc/jemalloc_mangle.sh"
+                                                   , "include/jemalloc/jemalloc.sh"
+                                                   ]
+      }
+in
+
+let gperftools =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "gperftools", version = v } ⫽
+      { pkgUrl = "https://github.com/gperftools/gperftools/releases/download/gperftools-${versionString}/gperftools-${versionString}.tar.gz" }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
@@ -2429,6 +2451,7 @@ in
 , gegl { version = [0,4], patch = 12 }
 , gettext [0,19,8]
 , gperf [3,1]
+, gperftools [2,7]
 , giflib [5,1,4]
 , git [2,19,2]
 , glib { version = [2,58], patch = 2 } -- TODO: bump to 2.59.0 once gobject-introspection supports it
@@ -2448,6 +2471,7 @@ in
 , imlib2 [1,5,1]
 , inputproto [2,3,2]
 , intltool [0,51,0]
+, jemalloc [5,1,0]
 , jpegTurbo [2,0,1]
 , json-c { version = [0,13,1], dateStr = "20180305" }
 , kbproto [1,0,7]
