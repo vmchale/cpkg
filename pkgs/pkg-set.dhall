@@ -619,9 +619,14 @@ let openssl =
       { pkgUrl = "https://www.openssl.org/source/openssl-${prelude.showVersion v}a.tar.gz"
       , configureCommand =
           λ(cfg : types.BuildVars) →
+            let sharedFlag =
+              if cfg.static
+                then "no-shared"
+                else "shared"
+            in
             [ prelude.mkExe "Configure"
             , prelude.call (prelude.defaultCall ⫽ { program = "./Configure"
-                                                  , arguments = [ "--prefix=${cfg.installDir}", "gcc" ]
+                                                  , arguments = [ "--prefix=${cfg.installDir}", "gcc", sharedFlag ] -- FIXME: gcc platform doesn't support shared libraries
                                                   , environment = opensslCfgVars cfg
                                                   })
             ]
@@ -2416,8 +2421,9 @@ let openssh =
   λ(v : List Natural) →
     prelude.simplePackage { name = "openssh", version = v } ⫽
       { pkgUrl = "https://mirrors.gigenet.com/pub/OpenBSD/OpenSSH/portable/openssh-${prelude.showVersion v}p1.tar.gz"
-      , pkgSubdir = "openssh-${prelude.showVersion v}p1" -- TODO: set PRIVSEP_PATH during install?
+      , pkgSubdir = "openssh-${prelude.showVersion v}p1"
       , installCommand = opensshInstall
+      , pkgDeps = [ prelude.unbounded "openssl" ]
       }
 in
 
