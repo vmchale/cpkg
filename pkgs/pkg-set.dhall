@@ -619,9 +619,14 @@ let openssl =
       { pkgUrl = "https://www.openssl.org/source/openssl-${prelude.showVersion v}a.tar.gz"
       , configureCommand =
           λ(cfg : types.BuildVars) →
+            let sharedFlag =
+              if cfg.static
+                then "no-shared"
+                else "shared"
+            in
             [ prelude.mkExe "Configure"
             , prelude.call (prelude.defaultCall ⫽ { program = "./Configure"
-                                                  , arguments = [ "--prefix=${cfg.installDir}", "gcc" ]
+                                                  , arguments = [ "--prefix=${cfg.installDir}", "gcc", sharedFlag ] -- FIXME: gcc platform doesn't support shared libraries
                                                   , environment = opensslCfgVars cfg
                                                   })
             ]
@@ -2419,6 +2424,31 @@ let gperftools =
       { pkgUrl = "https://github.com/gperftools/gperftools/releases/download/gperftools-${versionString}/gperftools-${versionString}.tar.gz" }
 in
 
+let openssh =
+  let opensshInstall =
+    λ(cfg : types.BuildVars) →
+      [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
+                                            , arguments =
+                                                [ "PRIVSEP_PATH=${cfg.installDir}/var"
+                                                , "install"
+                                                , "-j${Natural/show cfg.cpus}"
+                                                ]
+                                            , environment =
+                                                Some (prelude.defaultPath cfg # [ prelude.mkPkgConfigVar cfg.linkDirs
+                                                                                , prelude.libPath cfg
+                                                                                ])
+                                            })
+      ]
+  in
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "openssh", version = v } ⫽
+      { pkgUrl = "https://mirrors.gigenet.com/pub/OpenBSD/OpenSSH/portable/openssh-${prelude.showVersion v}p1.tar.gz"
+      , pkgSubdir = "openssh-${prelude.showVersion v}p1"
+      , installCommand = opensshInstall
+      , pkgDeps = [ prelude.unbounded "openssl" ]
+      }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
@@ -2432,7 +2462,7 @@ in
 , chickenScheme [5,0,0]
 , cmake { version = [3,13], patch = 2 }
 , coreutils [8,30]
-, curl [7,62,0]
+, curl [7,63,0]
 , dbus [1,12,10]
 , elfutils [0,175]
 , emacs [26,1]
@@ -2539,6 +2569,7 @@ in
 , nginx [1,15,7]
 , ninja [1,8,2]
 , npth [1,6]
+, openssh [7,9]
 , openssl [1,1,1]
 , p11kit [0,23,14]
 , pango { version = [1,43], patch = 0 }

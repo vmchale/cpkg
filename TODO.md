@@ -23,6 +23,7 @@
 - [ ] ImageMagick fails on ARM
 - [ ] `wget` doesn't work with latest gnutls
 - [ ] Report bug to LFS: libevent depends on openssl as they have configured it...
+- [ ] OpenSSH fails to cross-compile
 # Libraries
 - [ ] Consider splitting off library for parsing triples &c.
 # Code Maintenance
@@ -58,6 +59,7 @@
 - [ ] pass `pi@32.32.43.00` or whatever on the command-line?
 - [ ] Add IA64 (itanium) support
 - [ ] Add HPUX/HPUX64 support
+- [ ] Store build logs - options/environment variables, etc.
 # Performance
 - [ ] Dhall is slow
 # Bugs
@@ -149,7 +151,6 @@
 - [ ] https://github.com/GNOME/libgudev
 - [ ] nss?
 - [ ] libXcursor
-- [ ] feh
 - [ ] scrot (https://github.com/dreamer/scrot/releases)
 - [ ] http://download.redis.io/releases/redis-5.0.3.tar.gz
 - [ ] https://github.com/garabik/unicode/releases
