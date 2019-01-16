@@ -225,6 +225,17 @@ This tool is insecure.
 
 This tool is not performant.
 
+### Dependency Solver
+
+Currently, there is no dependency solver. It should be relatively easy to add
+a version-based dependency solver to the code.
+
+### Garbage Collection
+
+Currently, there is no garbage collector à la `$ nix-collect-garbage`. This will
+*not* be relatively easy to add, because it will require that the global package
+index be re-implemented (ideally using a proper database).
+
 ## Contents
 
 Lovingly provided by [polyglot](https://github.com/vmchale/polyglot):
@@ -238,9 +249,9 @@ Lovingly provided by [polyglot](https://github.com/vmchale/polyglot):
  Cabal Project            1           2            2            0            0
  Dhall                    3        3807         3414            1          392
  Haskell                 31        1687         1377           28          282
- Markdown                 3         422          360            0           62
+ Markdown                 3         417          355            0           62
  YAML                     4         156          141            0           15
 -------------------------------------------------------------------------------
- Total                   45        6239         5440           32          767
+ Total                   45        6234         5435           32          767
 -------------------------------------------------------------------------------
 ```
