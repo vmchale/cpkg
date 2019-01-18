@@ -6,4 +6,5 @@
 
 set -e
 cabal new-run cpkg -- check-set pkgs/pkg-set.dhall
+cabal new-test
 perl -0777 -i -pe 's/```\n----.*```/```\n'"$(poly -c)"'\n```/igs' README.md
