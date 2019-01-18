@@ -633,6 +633,7 @@ let autogenConfigure =
     [ mkExe "autogen.sh"
     , call (defaultCall ⫽ { program = "./autogen.sh"
                           -- TODO ACLOCAL_PATH ??
+                          -- also binary paths
                           })
     ] # defaultConfigure cfg
 in

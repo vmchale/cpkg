@@ -655,7 +655,7 @@ let emacs =
                   , prelude.unbounded "libpng"
                   , prelude.unbounded "libjpeg-turbo"
                   , prelude.unbounded "ncurses"
-                  , prelude.unbounded "gtk2"
+                  , prelude.unbounded "gtk3"
                   , prelude.unbounded "libotf"
                   , prelude.unbounded "m17n-lib"
                   , prelude.unbounded "gnutls"
@@ -1609,7 +1609,6 @@ let xorgConfigure =
   prelude.configureWithFlags [ "--disable-malloc0returnsnull" ] -- necessary for cross-compilation
 in
 
--- TODO: mkXLibWithDeps
 let mkXLib =
   λ(name : Text) →
   λ(v : List Natural) →
@@ -1883,6 +1882,14 @@ let libdrm =
       , pkgDeps = [ prelude.unbounded "libpciaccess"
                   , prelude.unbounded "cairo"
                   ]
+      , installCommand =
+          prelude.ninjaInstallWithPkgConfig (prelude.mesonMoves [ "libdrm.pc"
+                                                                , "libdrm_amdgpu.pc"
+                                                                , "libdrm_intel.pc"
+                                                                , "libdrm_nouveau.pc"
+                                                                , "libdrm_radeon.pc"
+                                                                , "libkms.pc"
+                                                                ])
       }
 in
 
@@ -1948,6 +1955,7 @@ let gtk3 =
                   , prelude.lowerBound { name = "atk", lower = [2,15,1] }
                   , prelude.lowerBound { name = "gdk-pixbuf", lower = [2,30,0] }
                   , prelude.unbounded "libXft"
+                  , prelude.lowerBound { name = "libepoxy", lower = [1,4] }
                   ]
       }
 in
@@ -2449,6 +2457,56 @@ let openssh =
       }
 in
 
+let libxslt =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libxslt", version = v } ⫽
+      { pkgUrl = "http://xmlsoft.org/sources/libxslt-${prelude.showVersion v}.tar.gz"
+      , pkgDeps = [ prelude.unbounded "libxml2" ]
+      }
+in
+
+let libepoxy =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.ninjaPackage { name = "libepoxy", version = v } ⫽
+      { pkgUrl = "https://github.com/anholt/libepoxy/releases/download/${versionString}/libepoxy-${versionString}.tar.xz"
+      , pkgDeps = [ prelude.unbounded "mesa" ]
+      , installCommand =
+          prelude.ninjaInstallWithPkgConfig (prelude.mesonMoves [ "epoxy.pc" ])
+      }
+in
+
+let mesa =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "mesa", version = v } ⫽
+      { pkgUrl = "https://mesa.freedesktop.org/archive/mesa-${prelude.showVersion v}.tar.xz"
+      , pkgDeps = [ prelude.lowerBound { name = "libdrm", lower = [2,4,75] }
+                  , prelude.unbounded "libXdamage"
+                  , prelude.unbounded "libXfixes"
+                  , prelude.unbounded "libXxf86vm"
+                  , prelude.lowerBound { name = "libxshmfence", lower = [1,1] }
+                  ]
+      , configureCommand = prelude.configureWithFlags [ "--with-gallium-drivers=nouveau,swrast" ] -- disable radeon drivers so we don't need LLVM
+      }
+in
+
+let libXdamage =
+  mkXLibDeps { name = "libXdamage", deps = [ prelude.unbounded "libXfixes" ] }
+in
+
+let libXfixes =
+  mkXLib "libXfixes"
+in
+
+let libXxf86vm =
+  mkXLib "libXxf86vm"
+in
+
+let libxshmfence =
+  mkXLib "libxshmfence"
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
@@ -2494,7 +2552,7 @@ in
 , graphviz [2,40,1]
 , gsl [2,5]
 , gtk2 { version = [2,24], patch = 32 }
-, gtk3 { version = [3,24], patch = 2 }
+, gtk3 { version = [3,24], patch = 3 }
 , gzip [1,9]
 , harfbuzz [2,3,0]
 , imageMagick [7,0,8]
@@ -2511,6 +2569,7 @@ in
 , libassuan [2,5,2]
 , libatomic_ops [7,6,8]
 , libdrm [2,4,96]
+, libepoxy [1,5,3]
 , libevent [2,1,8]
 , libexif [0,6,21]
 , libffi [3,2,1]
@@ -2537,22 +2596,27 @@ in
 , libuv [1,24,0]
 , libSM [1,2,3]
 , libX11 [1,6,7]
-, libxcb [1,13]
-, libXft [2,3,2]
-, libxml2 [2,9,8]
 , libXau [1,0,8]
 , libXaw [1,0,13]
+, libxcb [1,13]
+, libXdamage [1,1,4]
 , libXdmcp [1,1,2]
 , libXext [1,3,3]
+, libXfixes [5,0,3]
+, libXft [2,3,2]
 , libXi [1,7]
 , libXinerama [1,1,4]
+, libxml2 [2,9,8]
 , libXmu [1,1,2]
 , libXpm [3,5,12]
 , libXScrnSaver [1,2,3]
+, libxshmfence [1,3]
+, libxslt [1,1,33]
 , libXrandr [1,5,1]
 , libXrender [0,9,10]
 , libXt [1,1,5]
 , libXtst [1,2,3]
+, libXxf86vm [1,1,4]
 , lmdb [0,9,23]
 , lua [5,3,5]
 , m17n [1,8,0]
@@ -2560,6 +2624,7 @@ in
 , mako [1,0,7]
 , markupSafe [1,0]
 , memcached [1,5,12]
+, mesa [18,3,1]
 , meson [0,49,0]
 , motif [2,3,8]
 , musl [1,1,20]
