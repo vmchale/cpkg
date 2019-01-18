@@ -23,8 +23,9 @@ and packages. It is not a full-fledged package manager.
   - [Configuration](#configuration)
   - [Dhall Prelude](#dhall-prelude)
   - [Cabal Integration](#cabal-integration)
-- [Security](#security)
-- [Contents](#contents)
+- [Known Deficiencies](#known-deficiences)
+  - [Security](#security)
+  - [Contents](#contents)
 
 ## Installation
 
@@ -244,14 +245,14 @@ Lovingly provided by [polyglot](https://github.com/vmchale/polyglot):
 -------------------------------------------------------------------------------
  Language             Files       Lines         Code     Comments       Blanks
 -------------------------------------------------------------------------------
- Bash                     2          12            7            3            2
+ Bash                     2          14            9            3            2
  Cabal                    1         153          139            0           14
  Cabal Project            1           2            2            0            0
  Dhall                    3        3873         3474            0          399
  Haskell                 31        1687         1377           28          282
- Markdown                 3         428          362            0           66
+ Markdown                 3         434          368            0           66
  YAML                     4         156          141            0           15
 -------------------------------------------------------------------------------
- Total                   45        6311         5502           31          778
+ Total                   45        6319         5510           31          778
 -------------------------------------------------------------------------------
 ```
