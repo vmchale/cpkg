@@ -1766,7 +1766,7 @@ in
 let coreutils =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "coreutils", version = v } ⫽
-      { installCommand = prelude.installWithBinaries [ "bin/install", "bin/chmod", "bin/rm", "bin/cp", "bin/ln", "bin/mkdir", "bin/test" ] }
+      { installCommand = prelude.installWithBinaries [ "bin/install", "bin/chmod", "bin/rm", "bin/cp", "bin/ln", "bin/mkdir", "bin/test", "bin/od" ] }
 in
 
 let libsepol =
@@ -2427,6 +2427,19 @@ let openssh =
       }
 in
 
+let gnome-doc-utils =
+  λ(x : { version : List Natural, patch : Natural }) →
+    let versionString = prelude.showVersion x.version
+    in
+    let fullVersion = versionString ++ "." ++ Natural/show x.patch
+    in
+    prelude.simplePackage { name = "gnome-doc-utils", version = prelude.fullVersion x } ⫽
+      { pkgUrl = "http://ftp.gnome.org/pub/gnome/sources/gnome-doc-utils/${versionString}/gnome-doc-utils-${fullVersion}.tar.xz"
+      , pkgDeps = [ prelude.lowerBound { name = "libxslt", lower = [1,1,8] }
+                  , prelude.lowerBound { name = "libxml2", lower = [2,6,12] }
+                  ]
+      }
+in
 
 [ autoconf [2,69]
 , automake [1,16,1]
@@ -2467,6 +2480,7 @@ in
 , glibc [2,28]
 , gmp [6,1,2]
 , gobject-introspection { version = [1,59], patch = 2 }
+, gnome-doc-utils { version = [0,20], patch = 10 }
 , gnupg [2,2,12]
 , gnutls { version = [3,6], patch = 5 }
 , graphviz [2,40,1]
