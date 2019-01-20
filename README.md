@@ -84,6 +84,12 @@ atk
 
 ## Example
 
+To install `tar`:
+
+```
+cpkg install tar
+```
+
 To install `emacs`:
 
 ```
@@ -248,11 +254,11 @@ Lovingly provided by [polyglot](https://github.com/vmchale/polyglot):
  Bash                     2          14            9            3            2
  Cabal                    1         153          139            0           14
  Cabal Project            1           2            2            0            0
- Dhall                    3        3873         3474            0          399
+ Dhall                    3        3998         3589            0          409
  Haskell                 31        1687         1377           28          282
- Markdown                 3         429          363            0           66
+ Markdown                 3         432          366            0           66
  YAML                     4         156          141            0           15
 -------------------------------------------------------------------------------
- Total                   45        6314         5505           31          778
+ Total                   45        6442         5623           31          788
 -------------------------------------------------------------------------------
 ```

@@ -538,6 +538,28 @@ let createDir =
     types.Command.CreateDirectory { dir = x }
 in
 
+let printCMakeOS =
+  λ(os : types.OS) →
+    merge
+      { FreeBSD   = λ(_ : {}) → "BSD"
+      , OpenBSD   = λ(_ : {}) → "BSD"
+      , NetBSD    = λ(_ : {}) → "BSD"
+      , Solaris   = λ(_ : {}) → "Solaris"
+      , Dragonfly = λ(_ : {}) → "BSD"
+      , Linux     = λ(_ : {}) → "Linux"
+      , Darwin    = λ(_ : {}) → "Darwin"
+      , Windows   = λ(_ : {}) → "Windows"
+      , Redox     = λ(_ : {}) → "Redox"
+      , Haiku     = λ(_ : {}) → "Haiku"
+      , IOS       = λ(_ : {}) → "Darwin"
+      , AIX       = λ(_ : {}) → "AIX"
+      , Hurd      = λ(_ : {}) → "Hurd"
+      , Android   = λ(_ : {}) → "Android"
+      , NoOs      = λ(_ : {}) → "Generic"
+      }
+      os
+in
+
 let cmakeConfigureGeneral =
   λ(envVars : types.BuildVars → Optional (List types.EnvVar)) →
   λ(flags : List Text) →
@@ -547,10 +569,15 @@ let cmakeConfigureGeneral =
         (λ(tgt : types.TargetTriple) → ["-DCMAKE_C_COMPILER=${printTargetTriple tgt}-gcc", "-DCMAKE_CXX_COMPILER=${printTargetTriple tgt}-g++"])
           (["-DCMAKE_C_COMPILER=cc", "-DCMAKE_CXX_COMPILER=c++"])
     in
+    let system =
+      Optional/fold types.TargetTriple cfg.targetTriple (List Text)
+        (λ(tgt : types.TargetTriple) → ["-DCMAKE_SYSTEM_NAME=${printCMakeOS tgt.os}"])
+          ([] : List Text)
+    in
 
     [ createDir "build"
     , call { program = "cmake"
-           , arguments = [ "../", "-DCMAKE_INSTALL_PREFIX:PATH=${cfg.installDir}", "-DCMAKE_MAKE_PROGRAM=${makeExe cfg.buildOS}" ] # host # flags
+           , arguments = [ "../", "-DCMAKE_INSTALL_PREFIX:PATH=${cfg.installDir}", "-DCMAKE_MAKE_PROGRAM=${makeExe cfg.buildOS}" ] # host # system # flags
            , environment = envVars cfg
            , procDir = Some "build"
            }
@@ -584,9 +611,15 @@ let cmakeConfigureNinja =
           ([] : List Text)
     in
 
+    let system =
+      Optional/fold types.TargetTriple cfg.targetTriple (List Text)
+        (λ(tgt : types.TargetTriple) → ["-DCMAKE_SYSTEM_NAME=${printCMakeOS tgt.os}"])
+          ([] : List Text)
+    in
+
     [ createDir "build"
     , call { program = "cmake"
-           , arguments = [ "../", "-DCMAKE_INSTALL_PREFIX:PATH=${cfg.installDir}", "-G", "Ninja" ] # host
+           , arguments = [ "../", "-DCMAKE_INSTALL_PREFIX:PATH=${cfg.installDir}", "-G", "Ninja" ] # host # system
            , environment = defaultEnv
            , procDir = Some "build"
            }

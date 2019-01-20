@@ -1017,9 +1017,33 @@ let pango =
     let fullVersion = versionString ++ "." ++ Natural/show x.patch
     in
 
+    let pangoCfgFile =
+      ''
+      option('enable_docs',
+            description: 'Build API reference for Pango using GTK-Doc',
+            type: 'boolean',
+            value: false)
+      option('gir',
+            description: 'Build the GObject introspection data for Pango',
+            type: 'boolean',
+            value: false)
+      ''
+    in
+    let no_gir =
+      λ(cfg : types.BuildVars) →
+        if cfg.isCross
+          then
+            [ prelude.writeFile { file = "meson_options.txt", contents = pangoCfgFile } ]
+          else
+            ([] : List types.Command)
+    in
+
     prelude.simplePackage { name = "pango", version = prelude.fullVersion x } ⫽
       { pkgUrl = "http://ftp.gnome.org/pub/GNOME/sources/pango/${versionString}/pango-${fullVersion}.tar.xz"
-      , configureCommand = prelude.mesonConfigure
+      , configureCommand =
+          λ(cfg : types.BuildVars) →
+            no_gir cfg
+              # prelude.mesonConfigure cfg
       , buildCommand = prelude.ninjaBuild
       , installCommand =
           λ(cfg : types.BuildVars) →
