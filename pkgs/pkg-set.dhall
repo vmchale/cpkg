@@ -107,7 +107,19 @@ let cmake =
       , pkgUrl = "https://cmake.org/files/v${versionString}/cmake-${versionString}.${patchString}.tar.gz"
       , pkgSubdir = "cmake-${versionString}.${patchString}"
       , configureCommand = cmakeConfigure
-      , installCommand = prelude.installWithBinaries [ "bin/cmake" ]
+      , installCommand =
+          λ(cfg : types.BuildVars) →
+            let wrapper = "CMAKE_ROOT=${cfg.installDir}/share/cmake-${versionString}/ ${cfg.installDir}/bin/cmake $@"
+            in
+            let wrapped = "wrapper/cmake"
+            in
+            prelude.defaultInstall cfg
+              # [ prelude.createDir "wrapper"
+                , prelude.writeFile { file = wrapped, contents = wrapper }
+                , prelude.mkExe wrapped
+                , prelude.copyFile wrapped wrapped
+                , prelude.symlinkBinary wrapped
+                ]
       }
 in
 
@@ -1030,10 +1042,11 @@ let libxml2 =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libxml2", version = v } ⫽
      { pkgUrl = "http://xmlsoft.org/sources/libxml2-${prelude.showVersion v}.tar.gz"
-     , configureCommand = prelude.configureWithFlags [ "--without-python" ]
+     -- TODO: don't depend on python via flag or something
      , pkgDeps = [ prelude.unbounded "zlib"
                  , prelude.unbounded "xz"
                  ]
+     , pkgBuildDeps = [ prelude.unbounded "python2" ]
      }
 in
 
@@ -1294,6 +1307,7 @@ let glib =
                                                                   , "gio-2.0.pc"
                                                                   , "gio-unix-2.0.pc" -- TODO: only on unix
                                                                   , "gmodule-no-export-2.0.pc"
+                                                                  , "gmodule-export-2.0.pc"
                                                                   , "gmodule-2.0.pc"
                                                                   , "gthread-2.0.pc"
                                                                   ]) cfg
@@ -1493,7 +1507,7 @@ let atk =
 
     prelude.ninjaPackage { name = "atk", version = prelude.fullVersion x } ⫽
       { pkgUrl = "https://ftp.gnome.org/pub/gnome/sources/atk/${versionString}/atk-${fullVersion}.tar.xz"
-      , pkgBuildDeps = [ prelude.unbounded "gobject-introspection" ]
+      , pkgBuildDeps = [ prelude.unbounded "gobject-introspection" ] -- TODO: disable introspection?
       , pkgDeps = [ prelude.unbounded "glib" ]
       , installCommand =
           prelude.ninjaInstallWithPkgConfig [{ src = "build/atk.pc", dest = "lib/pkgconfig/atk.pc" }]
@@ -1747,13 +1761,9 @@ let bzip2 =
 in
 
 let expat =
-  let underscoreVersion =
-    concatMapSep "_" Natural Natural/show
-  in
-
   λ(v : List Natural) →
     prelude.simplePackage { name = "expat", version = v } ⫽
-      { pkgUrl = "https://github.com/libexpat/libexpat/releases/download/R_${underscoreVersion v}/expat-${prelude.showVersion v}.tar.bz2" }
+      { pkgUrl = "https://github.com/libexpat/libexpat/releases/download/R_${prelude.underscoreVersion v}/expat-${prelude.showVersion v}.tar.bz2" }
 in
 
 let gperf =
@@ -1765,7 +1775,7 @@ in
 let coreutils =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "coreutils", version = v } ⫽
-      { installCommand = prelude.installWithBinaries [ "bin/install", "bin/chmod", "bin/rm", "bin/cp", "bin/ln", "bin/mkdir", "bin/test" ] }
+      { installCommand = prelude.installWithBinaries [ "bin/install", "bin/chmod", "bin/rm", "bin/cp", "bin/ln", "bin/mkdir", "bin/test", "bin/od" ] }
 in
 
 let libsepol =
@@ -1840,16 +1850,21 @@ let libXi =
              }
 in
 
-let at-spi-core =
+let mkGnomeNinja =
+  λ(name : Text) →
   λ(x : { version : List Natural, patch : Natural }) →
     let versionString = prelude.showVersion x.version
     in
     let fullVersion = versionString ++ "." ++ Natural/show x.patch
     in
+    prelude.ninjaPackage { name = name, version = prelude.fullVersion x } ⫽
+      { pkgUrl = "http://ftp.gnome.org/pub/gnome/sources/${name}/${versionString}/${name}-${fullVersion}.tar.xz" }
+in
 
-    prelude.ninjaPackage { name = "at-spi2-core", version = prelude.fullVersion x } ⫽
-      { pkgUrl = "http://ftp.gnome.org/pub/gnome/sources/at-spi2-core/${versionString}/at-spi2-core-${fullVersion}.tar.xz"
-      , pkgDeps = [ prelude.unbounded "libXtst"
+let at-spi-core =
+  λ(x : { version : List Natural, patch : Natural }) →
+    mkGnomeNinja "at-spi2-core" x ⫽
+      { pkgDeps = [ prelude.unbounded "libXtst"
                   , prelude.unbounded "glib"
                   ]
       , installCommand =
@@ -1859,14 +1874,8 @@ in
 
 let at-spi-atk =
   λ(x : { version : List Natural, patch : Natural }) →
-    let versionString = prelude.showVersion x.version
-    in
-    let fullVersion = versionString ++ "." ++ Natural/show x.patch
-    in
-
-    prelude.ninjaPackage { name = "at-spi2-atk", version = prelude.fullVersion x } ⫽
-      { pkgUrl = "http://ftp.gnome.org/pub/gnome/sources/at-spi2-atk/${versionString}/at-spi2-atk-${fullVersion}.tar.xz"
-      , pkgDeps = [ prelude.unbounded "at-spi2-core"
+    mkGnomeNinja "at-spi2-atk" x ⫽
+      { pkgDeps = [ prelude.unbounded "at-spi2-core"
                   , prelude.lowerBound { name = "atk", lower = [2,29,2] }
                   , prelude.unbounded "libxml2"
                   ]
@@ -1916,6 +1925,17 @@ let elfutils =
       { pkgUrl = "https://sourceware.org/ftp/elfutils/${versionString}/elfutils-${versionString}.tar.bz2" }
 in
 
+let mkGnomeSimple =
+  λ(name : Text) →
+  λ(x : { version : List Natural, patch : Natural }) →
+    let versionString = prelude.showVersion x.version
+    in
+    let fullVersion = versionString ++ "." ++ Natural/show x.patch
+    in
+    prelude.simplePackage { name = name, version = prelude.fullVersion x } ⫽
+      { pkgUrl = "http://ftp.gnome.org/pub/gnome/sources/${name}/${versionString}/${name}-${fullVersion}.tar.xz" }
+in
+
 let gtk3 =
   let gtkEnv =
     λ(cfg : types.BuildVars) →
@@ -1939,13 +1959,8 @@ let gtk3 =
   in
 
   λ(x : { version : List Natural, patch : Natural }) →
-    let versionString = prelude.showVersion x.version
-    in
-    let fullVersion = versionString ++ "." ++ Natural/show x.patch
-    in
-    prelude.simplePackage { name = "gtk3", version = prelude.fullVersion x } ⫽
-      { pkgUrl = "http://ftp.gnome.org/pub/gnome/sources/gtk+/${versionString}/gtk+-${fullVersion}.tar.xz"
-      , pkgSubdir = "gtk+-${fullVersion}"
+    mkGnomeSimple "gtk+" x ⫽
+      { pkgName = "gtk3"
       , configureCommand = gtkConfig
       , buildCommand =
           λ(cfg : types.BuildVars) →
@@ -2066,13 +2081,8 @@ in
 
 let pygobject =
   λ(x : { version : List Natural, patch : Natural }) →
-    let versionString = prelude.showVersion x.version
-    in
-    let fullVersion = versionString ++ "." ++ Natural/show x.patch
-    in
-    prelude.simplePackage { name = "pygobject", version = prelude.fullVersion x } ⫽
-      { pkgUrl = "http://ftp.gnome.org/pub/gnome/sources/pygobject/${versionString}/pygobject-${fullVersion}.tar.xz"
-      , pkgDeps = [ prelude.unbounded "glib" ]
+    mkGnomeSimple "pygobject" x ⫽
+      { pkgDeps = [ prelude.unbounded "glib" ]
       , configureCommand = prelude.preloadCfg
       }
 in
@@ -2083,7 +2093,7 @@ let pygtk =
     in
     let fullVersion = versionString ++ "." ++ Natural/show x.patch
     in
-    prelude.simplePackage { name = "pygtk", version = prelude.fullVersion x } ⫽
+    mkGnomeSimple "pygtk" x ⫽
       { pkgUrl = "http://ftp.gnome.org/pub/gnome/sources/pygtk/${versionString}/pygtk-${fullVersion}.tar.bz2"
       , configureCommand =
           λ(cfg : types.BuildVars) →
@@ -2192,27 +2202,27 @@ let m17n =
       }
 in
 
-let babl =
+let mkGimpPackage =
+  λ(name : Text) →
   λ(x : { version : List Natural, patch : Natural }) →
     let versionString = prelude.showVersion x.version
     in
     let fullVersion = versionString ++ "." ++ Natural/show x.patch
     in
-    prelude.simplePackage { name = "babl", version = prelude.fullVersion x } ⫽
-      { pkgUrl = "https://download.gimp.org/pub/babl/${versionString}/babl-${fullVersion}.tar.bz2" }
+    prelude.simplePackage { name = name, version = prelude.fullVersion x } ⫽
+      { pkgUrl = "https://download.gimp.org/pub/${name}/${versionString}/${name}-${fullVersion}.tar.bz2" }
+in
+
+let babl =
+  mkGimpPackage "babl"
 in
 
 let gegl =
   λ(x : { version : List Natural, patch : Natural }) →
-    let versionString = prelude.showVersion x.version
-    in
-    let fullVersion = versionString ++ "." ++ Natural/show x.patch
-    in
-    prelude.simplePackage { name = "gegl", version = prelude.fullVersion x } ⫽
-      { pkgUrl = "https://download.gimp.org/pub/gegl/${versionString}/gegl-${fullVersion}.tar.bz2"
-      , pkgDeps = [ prelude.lowerBound { name = "babl", lower = [0,1,58] }
+    mkGimpPackage "gegl" x ⫽
+      { pkgDeps = [ prelude.lowerBound { name = "babl", lower = [0,1,58] }
                   , prelude.lowerBound { name = "glib", lower = [2,44,0] }
-                  , prelude.unbounded "glib-json"
+                  , prelude.unbounded "json-glib"
                   ]
       , configureCommand = prelude.preloadCfg
       }
@@ -2225,16 +2235,10 @@ let libexif =
       { pkgUrl = "https://nchc.dl.sourceforge.net/project/libexif/libexif/${versionString}/libexif-${versionString}.tar.bz2" }
 in
 
-let glib-json =
+let json-glib =
   λ(x : { version : List Natural, patch : Natural }) →
-    let versionString = prelude.showVersion x.version
-    in
-    let fullVersion = versionString ++ "." ++ Natural/show x.patch
-    in
-    prelude.ninjaPackage { name = "glib-json", version = prelude.fullVersion x } ⫽
-      { pkgUrl = "http://ftp.gnome.org/pub/gnome/sources/json-glib/${versionString}/json-glib-${fullVersion}.tar.xz"
-      , pkgSubdir = "json-glib-${fullVersion}"
-      , pkgDeps = [ prelude.unbounded "glib"
+    mkGnomeNinja "json-glib" x ⫽
+      { pkgDeps = [ prelude.unbounded "glib"
                   , prelude.unbounded "libjpeg-turbo"
                   , prelude.unbounded "libpng"
                   ]
@@ -2399,13 +2403,9 @@ let imlib2 =
 in
 
 let libicu =
-  let underscoreVersion =
-    concatMapSep "_" Natural Natural/show
-  in
-
   λ(v : List Natural) →
     prelude.simplePackage { name = "libicu", version = v } ⫽
-      { pkgUrl = "http://download.icu-project.org/files/icu4c/${prelude.showVersion v}/icu4c-${underscoreVersion v}-src.tgz"
+      { pkgUrl = "http://download.icu-project.org/files/icu4c/${prelude.showVersion v}/icu4c-${prelude.underscoreVersion v}-src.tgz"
       , pkgSubdir = "icu/source"
       }
 in
@@ -2507,6 +2507,75 @@ let libxshmfence =
   mkXLib "libxshmfence"
 in
 
+let gnome-doc-utils =
+  λ(x : { version : List Natural, patch : Natural }) →
+    mkGnomeSimple "gnome-doc-utils" x ⫽
+      { pkgDeps = [ prelude.lowerBound { name = "libxslt", lower = [1,1,8] }
+                  , prelude.lowerBound { name = "libxml2", lower = [2,6,12] }
+                  ]
+      , pkgBuildDeps = [ prelude.lowerBound { name = "intltool", lower = [0,35,0] } ]
+      , configureCommand = prelude.configureMkExes [ "py-compile" ]
+      }
+in
+
+let itstool =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "itstool", version = v } ⫽
+      { pkgUrl = "http://files.itstool.org/itstool/itstool-${prelude.showVersion v}.tar.bz2"
+      , pkgDeps = [ prelude.unbounded "libxml2" ]
+      }
+in
+
+let gexiv2 =
+  λ(x : { version : List Natural, patch : Natural }) →
+    mkGnomeNinja "gexiv2" x ⫽
+      { pkgDeps = [ prelude.unbounded "exiv2"
+                  , prelude.unbounded "glib"
+                  ]
+      , installCommand =
+          prelude.ninjaInstallWithPkgConfig (prelude.mesonMoves [ "gexiv2.pc" ])
+      }
+in
+
+let exiv2 =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "exiv2", version = v } ⫽ prelude.cmakePackage ⫽
+      { pkgUrl = "http://www.exiv2.org/builds/exiv2-${versionString}-Source.tar.gz"
+      , pkgSubdir = "exiv2-${versionString}-Source"
+      }
+in
+
+let libtiff =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.ninjaPackage { name = "libtiff", version = v } ⫽
+      { pkgUrl = "https://download.osgeo.org/libtiff/tiff-${versionString}.tar.gz"
+      , pkgSubdir = "tiff-${versionString}"
+      , configureCommand = prelude.cmakeConfigureNinja
+      }
+in
+
+let nspr =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v
+    in
+    let bitFlag =
+      λ(cfg : types.BuildVars) →
+        if prelude.isX64 (prelude.archCfg cfg)
+          then [ "--enable-64bit" ]
+          else ([] : List Text)
+    in
+
+    prelude.simplePackage { name = "nspr", version = v } ⫽
+      { pkgUrl = "https://archive.mozilla.org/pub/nspr/releases/v${versionString}/src/nspr-${versionString}.tar.gz"
+      , pkgSubdir = "nspr-${versionString}/nspr"
+      , configureCommand =
+          λ(cfg : types.BuildVars) →
+            prelude.configureWithFlags (bitFlag cfg) cfg
+      }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
@@ -2524,6 +2593,7 @@ in
 , dbus [1,12,10]
 , elfutils [0,175]
 , emacs [26,1]
+, exiv2 [0,27,0]
 , expat [2,2,6]
 , feh [3,1,1]
 , fontconfig [2,13,1]
@@ -2538,15 +2608,17 @@ in
 , gdk-pixbuf { version = [2,38], patch = 0 }
 , gegl { version = [0,4], patch = 12 }
 , gettext [0,19,8]
+, gexiv2 { version = [0,11], patch = 0 }
 , gperf [3,1]
 , gperftools [2,7]
 , giflib [5,1,4]
 , git [2,19,2]
 , glib { version = [2,58], patch = 2 } -- TODO: bump to 2.59.0 once gobject-introspection supports it
-, glib-json { version = [1,4], patch = 4 }
+, json-glib { version = [1,4], patch = 4 }
 , glibc [2,28]
 , gmp [6,1,2]
 , gobject-introspection { version = [1,59], patch = 2 }
+, gnome-doc-utils { version = [0,20], patch = 10 }
 , gnupg [2,2,12]
 , gnutls { version = [3,6], patch = 5 }
 , graphviz [2,40,1]
@@ -2559,6 +2631,7 @@ in
 , imlib2 [1,5,1]
 , inputproto [2,3,2]
 , intltool [0,51,0]
+, itstool [2,0,5]
 , jemalloc [5,1,0]
 , jpegTurbo [2,0,1]
 , json-c { version = [0,13,1], dateStr = "20180305" }
@@ -2595,6 +2668,7 @@ in
 , libtool [2,4,6]
 , libuv [1,24,0]
 , libSM [1,2,3]
+, libtiff [4,0,10]
 , libX11 [1,6,7]
 , libXau [1,0,8]
 , libXaw [1,0,13]
@@ -2634,6 +2708,7 @@ in
 , nginx [1,15,7]
 , ninja [1,8,2]
 , npth [1,6]
+, nspr [4,20]
 , openssh [7,9]
 , openssl [1,1,1]
 , p11kit [0,23,14]

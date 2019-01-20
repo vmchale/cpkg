@@ -84,10 +84,10 @@ atk
 
 ## Example
 
-To install `tar`:
+To install `emacs`:
 
 ```
-cpkg install tar
+cpkg install emacs
 ```
 
 ### Configuration
@@ -250,9 +250,9 @@ Lovingly provided by [polyglot](https://github.com/vmchale/polyglot):
  Cabal Project            1           2            2            0            0
  Dhall                    3        3873         3474            0          399
  Haskell                 31        1687         1377           28          282
- Markdown                 3         434          368            0           66
+ Markdown                 3         429          363            0           66
  YAML                     4         156          141            0           15
 -------------------------------------------------------------------------------
- Total                   45        6319         5510           31          778
+ Total                   45        6314         5505           31          778
 -------------------------------------------------------------------------------
 ```

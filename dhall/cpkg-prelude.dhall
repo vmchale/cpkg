@@ -545,20 +545,31 @@ let cmakeConfigureGeneral =
     let host =
       Optional/fold types.TargetTriple cfg.targetTriple (List Text)
         (λ(tgt : types.TargetTriple) → ["-DCMAKE_C_COMPILER=${printTargetTriple tgt}-gcc", "-DCMAKE_CXX_COMPILER=${printTargetTriple tgt}-g++"])
-          ([] : List Text)
+          (["-DCMAKE_C_COMPILER=cc", "-DCMAKE_CXX_COMPILER=c++"])
     in
 
     [ createDir "build"
     , call { program = "cmake"
-           , arguments = [ "../", "-DCMAKE_INSTALL_PREFIX:PATH=${cfg.installDir}" ] # host # flags
+           , arguments = [ "../", "-DCMAKE_INSTALL_PREFIX:PATH=${cfg.installDir}", "-DCMAKE_MAKE_PROGRAM=${makeExe cfg.buildOS}" ] # host # flags
            , environment = envVars cfg
            , procDir = Some "build"
            }
     ]
 in
 
+let cmakeEnv =
+  λ(cfg : types.BuildVars) →
+    [ mkPkgConfigVar (cfg.shareDirs # cfg.linkDirs) ]
+      # defaultPath cfg
+in
+
+let cmakeSome =
+  λ(cfg : types.BuildVars) →
+    Some (cmakeEnv cfg)
+in
+
 let cmakeConfigureWithFlags =
-  cmakeConfigureGeneral (λ(_ : types.BuildVars) → defaultEnv)
+  cmakeConfigureGeneral cmakeSome
 in
 
 let cmakeConfigure =
@@ -625,6 +636,7 @@ let cmakePackage =
     { configureCommand = cmakeConfigure
     , buildCommand     = cmakeBuild
     , installCommand   = cmakeInstall
+    , pkgBuildDeps     = [ unbounded "cmake" ]
     }
 in
 
@@ -971,6 +983,40 @@ let installWithWrappers =
       concatMap Text types.Command (λ(bin : Text) → mkLDPathWrapper cfg bin) bins
 in
 
+let underscoreVersion =
+  concatMapSep "_" Natural Natural/show
+in
+
+let isX64 =
+  let true = λ(_ : {}) → True
+  in
+  let false = λ(_ : {}) → False
+  in
+  λ(arch : types.Arch) →
+    merge
+      { X64         = true
+      , AArch       = false
+      , Arm         = false
+      , RISCV64     = false
+      , PowerPC     = false
+      , PowerPC64   = false
+      , PowerPC64le = false
+      , Sparc64     = false
+      , S390x       = false
+      , Alpha       = false
+      , M68k        = false
+      , Mips        = false
+      , MipsEl      = false
+      , Mips64      = false
+      , Mips64El    = false
+      , X86         = false
+      , SH4         = false
+      , HPPA        = false
+      , HPPA64      = false
+      }
+      arch
+in
+
 { showVersion         = showVersion
 , makeGnuLibrary      = makeGnuLibrary
 , makeGnuExe          = makeGnuExe
@@ -1068,4 +1114,8 @@ in
 , cmakeConfigureNinja = cmakeConfigureNinja
 , mkLDPathWrapper     = mkLDPathWrapper
 , installWithWrappers = installWithWrappers
+, cmakeEnv            = cmakeEnv
+, cmakeSome           = cmakeSome
+, underscoreVersion   = underscoreVersion
+, isX64               = isX64
 }

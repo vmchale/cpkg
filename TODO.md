@@ -153,8 +153,11 @@
 - [ ] libXcursor
 - [ ] scrot (https://github.com/dreamer/scrot/releases)
 - [ ] http://download.redis.io/releases/redis-5.0.3.tar.gz
+- [ ] Rarian
 - [ ] https://github.com/garabik/unicode/releases
 - [ ] evince
+- [ ] https://github.com/GNOME/libgweather
+- [ ] GIMP
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in
