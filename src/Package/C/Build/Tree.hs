@@ -34,7 +34,7 @@ immoralFilter :: Maybe TargetTriple -> [FilePath] -> [FilePath]
 immoralFilter Nothing fps = fps
 immoralFilter (Just tgt') fps =
     let infixDir = show tgt'
-    in filter (\fp -> infixDir `isInfixOf` fp || "meson" `isInfixOf` fp || "XML-Parser" `isInfixOf` fp || "python3" `isInfixOf` fp) fps
+    in filter (\fp -> infixDir `isInfixOf` fp || "meson" `isInfixOf` fp || "XML-Parser" `isInfixOf` fp || "python3" `isInfixOf` fp) fps -- FIXME: more principled approach
 
 buildWithContext :: DepTree CPkg
                  -> Maybe TargetTriple

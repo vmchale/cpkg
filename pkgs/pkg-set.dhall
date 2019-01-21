@@ -1010,6 +1010,22 @@ let scrnsaverproto =
   mkXProto "scrnsaverproto"
 in
 
+let recordproto =
+  mkXProto "recordproto"
+in
+
+let xf86vidmodeproto =
+  mkXProto "xf86vidmodeproto"
+in
+
+let glproto =
+  mkXProto "glproto"
+in
+
+let dri2proto =
+  mkXProto "dri2proto"
+in
+
 let pango =
   λ(x : { version : List Natural, patch : Natural }) →
     let versionString = prelude.showVersion x.version
@@ -1152,6 +1168,7 @@ let gdk-pixbuf =
                   , prelude.unbounded "libpng"
                   , prelude.unbounded "gobject-introspection"
                   , prelude.unbounded "shared-mime-info"
+                  , prelude.unbounded "libX11"
                   ]
       }
 in
@@ -1754,6 +1771,14 @@ let xextproto =
   mkXProto "xextproto"
 in
 
+let fixesproto =
+  mkXProto "fixesproto"
+in
+
+let damageproto =
+  mkXProto "damageproto"
+in
+
 let libXScrnSaver =
   λ(v : List Natural) →
     mkXLib "libXScrnSaver" v ⫽
@@ -1864,7 +1889,9 @@ in
 
 let libXtst =
   mkXLibDeps { name = "libXtst"
-             , deps = [ prelude.unbounded "libXi" ]
+             , deps = [ prelude.unbounded "libXi"
+                      , prelude.unbounded "recordproto"
+                      ]
              }
 in
 
@@ -2510,25 +2537,45 @@ let mesa =
                   , prelude.unbounded "libXfixes"
                   , prelude.unbounded "libXxf86vm"
                   , prelude.lowerBound { name = "libxshmfence", lower = [1,1] }
+                  , prelude.lowerBound { name = "glproto", lower = [1,4,14] }
+                  , prelude.lowerBound { name = "dri2proto", lower = [2,8] }
+                  , prelude.unbounded "libXrandr"
                   ]
       , configureCommand = prelude.configureWithFlags [ "--with-gallium-drivers=nouveau,swrast" ] -- disable radeon drivers so we don't need LLVM
       }
 in
 
 let libXdamage =
-  mkXLibDeps { name = "libXdamage", deps = [ prelude.unbounded "libXfixes" ] }
+  mkXLibDeps { name = "libXdamage"
+             , deps = [ prelude.unbounded "libXfixes"
+                      , prelude.unbounded "damageproto"
+                      ]
+             }
 in
 
 let libXfixes =
-  mkXLib "libXfixes"
+  mkXLibDeps { name = "libXfixes"
+             , deps = [ prelude.unbounded "xproto"
+                      , prelude.unbounded "fixesproto"
+                      , prelude.unbounded "xextproto"
+                      , prelude.unbounded "libX11"
+                      ]
+             }
 in
 
 let libXxf86vm =
-  mkXLib "libXxf86vm"
+  mkXLibDeps { name = "libXxf86vm"
+             , deps = [ prelude.unbounded "xproto"
+                      , prelude.unbounded "libX11"
+                      , prelude.unbounded "xextproto"
+                      , prelude.unbounded "libXext"
+                      , prelude.unbounded "xf86vidmodeproto"
+                      ]
+             }
 in
 
 let libxshmfence =
-  mkXLib "libxshmfence"
+  mkXLibDeps { name = "libxshmfence", deps = [ prelude.unbounded "xproto" ] }
 in
 
 let gnome-doc-utils =
@@ -2600,6 +2647,20 @@ let nspr =
       }
 in
 
+let libthai =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libthai", version = v } ⫽
+      { pkgUrl = "https://linux.thai.net/pub/thailinux/software/libthai/libthai-${prelude.showVersion v}.tar.xz"
+      , pkgDeps = [ prelude.unbounded "libdatrie" ]
+      }
+in
+
+let libdatrie =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libdatrie", version = v } ⫽
+      { pkgUrl = "https://linux.thai.net/pub/thailinux/software/libthai/libdatrie-${prelude.showVersion v}.tar.xz" }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
@@ -2614,12 +2675,15 @@ in
 , cmake { version = [3,13], patch = 2 }
 , coreutils [8,30]
 , curl [7,63,0]
+, damageproto [1,2,1]
 , dbus [1,12,10]
+, dri2proto [2,8]
 , elfutils [0,175]
 , emacs [26,1]
 , exiv2 [0,27,0]
 , expat [2,2,6]
 , feh [3,1,1]
+, fixesproto [5,0]
 , fontconfig [2,13,1]
 , flex [2,6,3]
 , fltk { version = [1,3,4], patch = 2 }
@@ -2638,6 +2702,7 @@ in
 , giflib [5,1,4]
 , git [2,19,2]
 , glib { version = [2,58], patch = 2 } -- TODO: bump to 2.59.0 once gobject-introspection supports it
+, glproto [1,4,17]
 , json-glib { version = [1,4], patch = 4 }
 , glibc [2,28]
 , gmp [6,1,2]
@@ -2665,6 +2730,7 @@ in
 , libarchive [3,3,3]
 , libassuan [2,5,2]
 , libatomic_ops [7,6,8]
+, libdatrie [0,2,12]
 , libdrm [2,4,96]
 , libepoxy [1,5,3]
 , libevent [2,1,8]
@@ -2692,6 +2758,7 @@ in
 , libtool [2,4,6]
 , libuv [1,24,0]
 , libSM [1,2,3]
+, libthai [0,1,28]
 , libtiff [4,0,10]
 , libX11 [1,6,7]
 , libXau [1,0,8]
@@ -2753,6 +2820,7 @@ in
 , randrproto [1,5,0]
 , re2c [1,1,1]
 , readline [7,0]
+, recordproto [1,14,2]
 , renderproto [0,11,1]
 , scour [0,37]
 , scrnsaverproto [1,2,2]
@@ -2772,6 +2840,7 @@ in
 , which [2,21]
 , xcb-proto [1,13]
 , xextproto [7,3,0]
+, xf86vidmodeproto [2,3,1]
 , xineramaproto [1,2]
 , xmlParser [2,44]
 , xproto [7,0,31]
