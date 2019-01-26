@@ -2682,6 +2682,18 @@ let joe =
       }
 in
 
+let fossil =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "fossil", version = v } ⫽
+      { pkgUrl = "https://fossil-scm.org/fossil/uv/fossil-src-${prelude.showVersion v}.tar.gz"
+      , configureCommand = prelude.configureMkExes [ "autosetup/find-tclsh" ]
+      , installCommand = prelude.installWithBinaries [ "bin/fossil" ]
+      , pkgDeps = [ prelude.unbounded "zlib"
+                  , prelude.unbounded "openssl"
+                  ]
+      }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
@@ -2706,6 +2718,7 @@ in
 , feh [3,1,1]
 , fixesproto [5,0]
 , fontconfig [2,13,1]
+, fossil [2,7]
 , flex [2,6,3]
 , fltk { version = [1,3,4], patch = 2 }
 , freetype-prebuild [2,9,1] -- TODO: force both to have same version?
