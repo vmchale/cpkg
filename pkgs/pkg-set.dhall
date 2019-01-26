@@ -2689,7 +2689,7 @@ in
 , atk { version = [2,30], patch = 0 }
 , babl { version = [0,1], patch = 60 }
 , binutils [2,31]
-, bison [3,2,2]
+, bison [3,3]
 , bzip2 [1,0,6]
 , cairo [1,16,0]
 , chickenScheme [5,0,0]
