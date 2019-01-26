@@ -1108,6 +1108,7 @@ let shared-mime-info =
                  ]
      , pkgBuildDeps = [ prelude.lowerBound { name = "intltool", lower = [0,35,0] }
                       , prelude.unbounded "sed"
+                      , prelude.unbounded "gettext"
                       ]
      }
 in
@@ -1548,7 +1549,9 @@ let atk =
 
     prelude.ninjaPackage { name = "atk", version = prelude.fullVersion x } ⫽
       { pkgUrl = "https://ftp.gnome.org/pub/gnome/sources/atk/${versionString}/atk-${fullVersion}.tar.xz"
-      , pkgBuildDeps = [ prelude.unbounded "gobject-introspection" ] -- TODO: disable introspection?
+      , pkgBuildDeps = [ prelude.unbounded "gobject-introspection"
+                       , prelude.unbounded "gettext"
+                       ] -- TODO: disable introspection?
       , pkgDeps = [ prelude.unbounded "glib" ]
       , installCommand =
           prelude.ninjaInstallWithPkgConfig [{ src = "build/atk.pc", dest = "lib/pkgconfig/atk.pc" }]
@@ -2225,6 +2228,16 @@ let libXaw =
              }
 in
 
+let libXaw3d =
+  mkXLibDeps { name = "libXaw3d"
+             , deps = [ prelude.unbounded "libX11"
+                      , prelude.unbounded "libXt"
+                      , prelude.unbounded "libXmu"
+                      , prelude.unbounded "libXext"
+                      ]
+             }
+in
+
 let libXmu =
   mkXLibDeps { name = "libXmu"
              , deps = [ prelude.unbounded "util-macros"
@@ -2661,6 +2674,14 @@ let libdatrie =
       { pkgUrl = "https://linux.thai.net/pub/thailinux/software/libthai/libdatrie-${prelude.showVersion v}.tar.xz" }
 in
 
+let joe =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "joe", version = v } ⫽
+      { pkgUrl = "https://downloads.sourceforge.net/joe-editor/joe-${prelude.showVersion v}.tar.gz"
+      , installCommand = prelude.installWithBinaries [ "bin/joe" ]
+      }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
@@ -2701,19 +2722,19 @@ in
 , gperftools [2,7]
 , giflib [5,1,4]
 , git [2,19,2]
-, glib { version = [2,58], patch = 2 } -- TODO: bump to 2.59.0 once gobject-introspection supports it
+, glib { version = [2,58], patch = 3 } -- TODO: bump to 2.59.0 once gobject-introspection supports it
 , glproto [1,4,17]
 , json-glib { version = [1,4], patch = 4 }
 , glibc [2,28]
 , gmp [6,1,2]
-, gobject-introspection { version = [1,59], patch = 2 }
+, gobject-introspection { version = [1,59], patch = 3 }
 , gnome-doc-utils { version = [0,20], patch = 10 }
 , gnupg [2,2,12]
 , gnutls { version = [3,6], patch = 5 }
 , graphviz [2,40,1]
 , gsl [2,5]
 , gtk2 { version = [2,24], patch = 32 }
-, gtk3 { version = [3,24], patch = 3 }
+, gtk3 { version = [3,24], patch = 4 }
 , gzip [1,9]
 , harfbuzz [2,3,0]
 , imageMagick [7,0,8]
@@ -2723,6 +2744,7 @@ in
 , itstool [2,0,5]
 , jemalloc [5,1,0]
 , jpegTurbo [2,0,1]
+, joe [4,6]
 , json-c { version = [0,13,1], dateStr = "20180305" }
 , kbproto [1,0,7]
 , lapack [3,8,0]
@@ -2763,6 +2785,7 @@ in
 , libX11 [1,6,7]
 , libXau [1,0,8]
 , libXaw [1,0,13]
+, libXaw3d [1,6,3]
 , libxcb [1,13]
 , libXdamage [1,1,4]
 , libXdmcp [1,1,2]

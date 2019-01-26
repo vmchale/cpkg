@@ -996,7 +996,7 @@ in
 let mkLDPathWrapper =
   λ(cfg : types.BuildVars) →
   λ(binName : Text) →
-    let wrapper = "${printEnvVar (mkLDPath cfg.linkDirs)}:${cfg.installDir}/lib ${cfg.installDir}/bin/${binName} $@"
+    let wrapper = "${printEnvVar (mkLDPath cfg.linkDirs)}:${cfg.installDir}/lib LD_PRELOAD='${(mkLDPreload cfg.preloadLibs).value}' ${cfg.installDir}/bin/${binName} $@"
     in
     let wrapped = "wrapper/${binName}"
     in
