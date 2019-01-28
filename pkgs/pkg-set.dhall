@@ -501,7 +501,7 @@ in
 let gettext =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "gettext", version = v } ⫽
-      { installCommand = prelude.installWithBinaries [ "bin/gettext", "bin/msgfmt" ] }
+      { installCommand = prelude.installWithBinaries [ "bin/gettext", "bin/msgfmt", "bin/autopoint" ] }
 in
 
 let gzip =
@@ -1276,6 +1276,7 @@ let flex =
   λ(v : List Natural) →
     let versionString = prelude.showVersion v
     in
+    -- YFLAGS=-Wno-error
 
     prelude.simplePackage { name = "flex", version = v } ⫽
       { pkgUrl = "https://github.com/westes/flex/releases/download/v${versionString}/flex-${versionString}.tar.gz"
@@ -2701,7 +2702,7 @@ in
 , atk { version = [2,30], patch = 0 }
 , babl { version = [0,1], patch = 60 }
 , binutils [2,31]
-, bison [3,3]
+, bison [3,2,2] -- 3] TODO upgrade to 3.3 when we fix flex
 , bzip2 [1,0,6]
 , cairo [1,16,0]
 , chickenScheme [5,0,0]
