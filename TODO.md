@@ -83,7 +83,6 @@
 - [ ] Maintainer subcommand to build every single package
 # Packages
 - [ ] bash
-- [ ] jemalloc
 - [ ] Ruby
 - [ ] librsvg
 - [ ] https://github.com/linux-noah/noah
@@ -99,10 +98,9 @@
 - [ ] `rustc`
 - [ ] https://github.com/ZBar/ZBar
 - [ ] Doxygen
-- [ ] libexif, exif, libexif-gtk, gexif (https://libexif.github.io/)
-- [ ] LibTIFF
+- [ ] exif, libexif-gtk, gexif (https://libexif.github.io/)
+- [ ] nomacs
 - [ ] FFmpeg
-- [ ] TCmalloc
 - [ ] https://ftp.gnu.org/gnu/texinfo/ ?
 - [ ] charset (?)
 - [ ] https://sourceware.org/newlib/

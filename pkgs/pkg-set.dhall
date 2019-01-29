@@ -2695,6 +2695,15 @@ let fossil =
       }
 in
 
+let libcroco =
+  λ(x : { version : List Natural, patch : Natural }) →
+    mkGnomeSimple "libcroco" x ⫽
+      { pkgDeps = [ prelude.lowerBound { name = "glib", lower = [2,0] }
+                  , prelude.lowerBound { name = "libxml2", lower = [2,4,23] }
+                  ]
+      }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
@@ -2766,6 +2775,7 @@ in
 , libarchive [3,3,3]
 , libassuan [2,5,2]
 , libatomic_ops [7,6,8]
+, libcroco { version = [0,6], patch = 12 }
 , libdatrie [0,2,12]
 , libdrm [2,4,96]
 , libepoxy [1,5,3]
@@ -2795,7 +2805,6 @@ in
 , libuv [1,24,0]
 , libSM [1,2,3]
 , libthai [0,1,28]
-, libtiff [4,0,10]
 , libX11 [1,6,7]
 , libXau [1,0,8]
 , libXaw [1,0,13]
