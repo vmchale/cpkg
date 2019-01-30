@@ -405,6 +405,11 @@ let generalConfigure =
     ]
 in
 
+let configWithEnv =
+  λ(envVars : List Text → types.BuildVars → Optional (List types.EnvVar)) →
+    generalConfigure envVars "configure" ([] : List Text) ([] : List Text)
+in
+
 let configureWithFlags =
   generalConfigure configSome "configure" ([] : List Text)
 
@@ -1151,4 +1156,5 @@ in
 , cmakeSome           = cmakeSome
 , underscoreVersion   = underscoreVersion
 , isX64               = isX64
+, configWithEnv       = configWithEnv
 }

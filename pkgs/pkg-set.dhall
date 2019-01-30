@@ -1276,13 +1276,19 @@ let flex =
   λ(v : List Natural) →
     let versionString = prelude.showVersion v
     in
-    -- YFLAGS=-Wno-error
+    let flexEnv =
+      λ(_ : List Text) →
+      λ(cfg : types.BuildVars) →
+        Some (prelude.configEnv ([] : List Text) cfg
+          # [ { var = "YFLAGS", value = "-Wno-error=yacc" } ])
+    in
 
     prelude.simplePackage { name = "flex", version = v } ⫽
       { pkgUrl = "https://github.com/westes/flex/releases/download/v${versionString}/flex-${versionString}.tar.gz"
       , pkgBuildDeps = [ prelude.unbounded "m4"
                        , prelude.unbounded "bison"
                        ]
+      , configureCommand = prelude.configWithEnv flexEnv
       }
 in
 
@@ -2711,7 +2717,7 @@ in
 , atk { version = [2,30], patch = 0 }
 , babl { version = [0,1], patch = 60 }
 , binutils [2,31]
-, bison [3,2,2] -- 3] TODO upgrade to 3.3 when we fix flex
+, bison [3,3]
 , bzip2 [1,0,6]
 , cairo [1,16,0]
 , chickenScheme [5,0,0]
@@ -2843,7 +2849,7 @@ in
 , nasm [2,14]
 , ncurses [6,1]
 , nginx [1,15,7]
-, ninja [1,8,2]
+, ninja [1,9,0]
 , npth [1,6]
 , nspr [4,20]
 , openssh [7,9]
