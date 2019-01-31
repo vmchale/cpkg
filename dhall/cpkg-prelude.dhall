@@ -14,6 +14,9 @@ in
 let mapOptional = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/Optional/map
 in
 
+let not = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/Bool/not
+in
+
 {- Imported types -}
 let types = ../dhall/cpkg-types.dhall
 in
@@ -480,7 +483,9 @@ let installWithBinaries =
   λ(bins : List Text) →
   λ(installVars : types.BuildVars) →
     defaultInstall installVars
-      # symlinkBinaries bins
+      # (if not installVars.isCross
+            then symlinkBinaries bins
+            else [] : List types.Command)
 in
 
 let unbounded =

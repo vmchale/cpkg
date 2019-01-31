@@ -717,18 +717,33 @@ let python =
     in
     let versionString = prelude.showVersion v
     in
+    let pyEnv =
+      λ(_ : List Text) →
+      λ(cfg : types.BuildVars) →
+        Some (prelude.configEnv ([] : List Text) cfg
+          # [ { var = "CONFIG_SITE", value = "config.site" } ])
+    in
 
     prelude.simplePackage { name = "python${major}", version = v } ⫽
       { pkgUrl = "https://www.python.org/ftp/python/${versionString}/Python-${versionString}.tar.xz"
       , pkgSubdir = "Python-${versionString}"
       , configureCommand =
         λ(cfg : types.BuildVars) →
+          let config =
+            ''
+            ac_cv_file__dev_ptmx=yes
+            ac_cv_file__dev_ptc=no
+            ''
+          in
           let staticFlag =
             if cfg.static
               then [] : List Text
               else [ "--enable-shared" ]
           in
-          prelude.configureWithFlags ([ "--build=${prelude.printArch cfg.buildArch}" ] # staticFlag) cfg
+          [ prelude.writeFile { file = "config.site", contents = config } ]
+            # prelude.generalConfigure pyEnv "configure" ([] : List Text)
+                ([ "--build=${prelude.printArch cfg.buildArch}", "--disable-ipv6" ] # staticFlag) cfg
+          -- disable ipv6 for cross-compiling
           -- "--enable-optimizations" (takes forever)
       , pkgDeps = [ prelude.unbounded "libffi" ]
       , installCommand = prelude.installWithBinaries [ "bin/python${major}" ]
@@ -1082,11 +1097,10 @@ let libxml2 =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libxml2", version = v } ⫽
      { pkgUrl = "http://xmlsoft.org/sources/libxml2-${prelude.showVersion v}.tar.gz"
-     -- TODO: don't depend on python via flag or something
      , pkgDeps = [ prelude.unbounded "zlib"
                  , prelude.unbounded "xz"
+                 , prelude.unbounded "python2"
                  ]
-     , pkgBuildDeps = [ prelude.unbounded "python2" ]
      }
 in
 
@@ -2818,6 +2832,18 @@ let vala =
       }
 in
 
+let htop =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "htop", version = v } ⫽
+      { pkgUrl = "https://hisham.hm/htop/releases/${versionString}/htop-${versionString}.tar.gz"
+      , pkgDeps = [ prelude.unbounded "ncurses" ]
+      , pkgBuildDeps = [ prelude.unbounded "python3" ]
+      , configureCommand = prelude.configureMkExes [ "scripts/MakeHeader.py" ]
+      , installCommand = prelude.installWithBinaries [ "bin/htop" ]
+      }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
@@ -2874,6 +2900,7 @@ in
 , gtk3 { version = [3,24], patch = 4 }
 , gzip [1,9]
 , harfbuzz [2,3,1]
+, htop [2,2,0]
 , imageMagick [7,0,8]
 , imlib2 [1,5,1]
 , inputproto [2,3,2]
