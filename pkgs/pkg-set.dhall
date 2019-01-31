@@ -370,7 +370,7 @@ let perl5 =
   in
 
   λ(v : List Natural) →
-    let major = Optional/fold Natural (List/head Natural v) Text (Natural/show) ""
+    let major = Optional/fold Natural (List/head Natural v) Text Natural/show ""
     in
 
     prelude.simplePackage { name = "perl", version = v } ⫽
@@ -2710,6 +2710,114 @@ let libcroco =
       }
 in
 
+let libsoup =
+  λ(x : { version : List Natural, patch : Natural }) →
+    let libsoupCfgFile =
+    ''
+    option('gssapi',
+      type : 'boolean',
+      value : true,
+      description : 'Build with GSSAPI support'
+    )
+
+    option('krb5_config',
+      type : 'string',
+      description : 'Where to look for krb5-config, path points to krb5-config installation (defaultly looking in PATH)'
+    )
+
+    option('ntlm',
+      type : 'boolean',
+      value : false,
+      description : 'Build with NTLM support'
+    )
+
+    option('tls_check',
+      type : 'boolean',
+      value : true,
+      description : 'Enable TLS support through glib-networking. If you are building a package, you can disable this to allow building libsoup anyway (since glib-networking is not actually required at compile time), but you should be sure to add a runtime dependency on it.'
+    )
+
+    option('gnome',
+      type : 'boolean',
+      value : true,
+      description : 'Build libsoup with GNOME support'
+    )
+
+    option('introspection',
+      type : 'boolean',
+      value : true,
+      description : 'Build GObject Introspection data'
+    )
+
+    option('vapi',
+      type : 'boolean',
+      value : false,
+      description : 'Build Vala bindings'
+    )
+
+    option('doc',
+      type: 'boolean',
+      value: false,
+      description: 'Enable generating the API reference'
+    )
+
+    option('tests',
+      type: 'boolean',
+      value: true,
+      description: 'Enable unit tests compilation'
+    )
+    ''
+    in
+    mkGnomeNinja "libsoup" x ⫽
+      { pkgDeps = [ prelude.unbounded "glib"
+                  , prelude.unbounded "sqlite"
+                  , prelude.unbounded "libxml2"
+                  , prelude.unbounded "libpsl"
+                  , prelude.unbounded "krb5"
+                  , prelude.unbounded "gobject-introspection"
+                  ]
+      , pkgBuildDeps = [ prelude.unbounded "vala" ]
+      , configureCommand =
+          λ(cfg : types.BuildVars) →
+            [ prelude.writeFile { file = "meson_options.txt", contents = libsoupCfgFile } ]
+              # prelude.mesonConfigure cfg
+      , installCommand =
+          prelude.ninjaInstallWithPkgConfig (prelude.mesonMoves [ "libsoup-2.4.pc" ])
+      }
+in
+
+let libpsl =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "libpsl", version = v } ⫽
+      { pkgUrl = "https://github.com/rockdaboot/libpsl/releases/download/libpsl-${versionString}/libpsl-${versionString}.tar.gz"
+      , configureCommand = prelude.configureMkExes [ "src/psl-make-dafsa" ]
+      }
+in
+
+
+let krb5 =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "krb5", version = v } ⫽
+      { pkgUrl = "https://kerberos.org/dist/krb5/${versionString}/krb5-${versionString}.tar.gz"
+      , pkgSubdir = "krb5-${versionString}/src"
+      , configureCommand = prelude.configureMkExes [ "config/move-if-changed", "config/mkinstalldirs" ]
+      , pkgBuildDeps = [ prelude.unbounded "bison" ]
+      }
+in
+
+let vala =
+  λ(x : { version : List Natural, patch : Natural }) →
+    mkGnomeSimple "vala" x ⫽
+      { pkgBuildDeps = [ prelude.unbounded "flex" ]
+      , pkgDeps = [ prelude.lowerBound { name = "glib", lower = [2,40,0] }
+                  , prelude.lowerBound { name = "graphviz", lower = [2,15] }
+                  ]
+      , configureCommand = prelude.configureMkExes [ "build-aux/git-version-gen" ]
+      }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
@@ -2765,7 +2873,7 @@ in
 , gtk2 { version = [2,24], patch = 32 }
 , gtk3 { version = [3,24], patch = 4 }
 , gzip [1,9]
-, harfbuzz [2,3,0]
+, harfbuzz [2,3,1]
 , imageMagick [7,0,8]
 , imlib2 [1,5,1]
 , inputproto [2,3,2]
@@ -2776,6 +2884,7 @@ in
 , joe [4,6]
 , json-c { version = [0,13,1], dateStr = "20180305" }
 , kbproto [1,0,7]
+, krb5 [1,17]
 , lapack [3,8,0]
 , lcms2 [2,9]
 , libarchive [3,3,3]
@@ -2799,11 +2908,13 @@ in
 , libnettle [3,4,1]
 , libpciaccess [0,14]
 , libpng [1,6,35]
+, libpsl [0,20,2]
 , libpthread-stubs [0,4]
 , libopenjpeg [2,3,0]
 , libotf [0,9,16]
 , libselinux [2,8]
 , libsepol [2,8]
+, libsoup { version = [2,65], patch = 2 }
 , libssh2 [1,8,0]
 , libtasn1 [4,13]
 , libtiff [4,0,10]
@@ -2885,6 +2996,7 @@ in
 , unistring [0,9,10]
 , util-linux [2,33]
 , util-macros [1,19,2]
+, vala { version = [0,43], patch = 6 }
 , valgrind [3,14,0]
 , vim [8,1]
 , wayland [1,16,0]

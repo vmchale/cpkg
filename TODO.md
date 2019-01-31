@@ -156,6 +156,8 @@
 - [ ] evince
 - [ ] https://github.com/GNOME/libgweather
 - [ ] GIMP
+- [ ] https://github.com/mtoyoda/sl/releases
+- [ ] glib-networking
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in
