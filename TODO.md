@@ -116,6 +116,7 @@
 - [ ] http://www.ibiblio.org/pub/Linux/utils/file/symlinks-1.4.tar.gz
 - [ ] http://www.linuxfromscratch.org/blfs/view/8.2/general/tree.html
 - [ ] libsigsegv
+- [ ] pyqt5
 - [ ] weirdo levenshtein distance in ATS
 - [ ] https://github.com/jmcnamara/libxlsxwriter/archive/RELEASE_0.8.4.tar.gz
 - [ ] https://github.com/gildor2/fast_zlib

@@ -673,6 +673,7 @@ let emacs =
                   , prelude.unbounded "gnutls"
                   , prelude.unbounded "libXft"
                   , prelude.unbounded "dbus"
+                  , prelude.unbounded "cairo"
                   ]
       , configureCommand = prelude.configureMkExesExtraFlags
           { bins = [ "build-aux/move-if-change", "build-aux/update-subdirs" ]
@@ -682,10 +683,14 @@ let emacs =
                          , "--with-gnutls"
                          , "--with-xft"
                          , "--with-dbus"
+                         , "--with-cairo=yes"
                          ]
           }
       , installCommand =
-          prelude.installWithWrappers [ "emacs" ]
+          λ(cfg : types.BuildVars) →
+            if cfg.static
+              then prelude.installWithBinaries [ "bin/emacs" ] cfg
+              else prelude.installWithWrappers [ "emacs" ] cfg
       }
 in
 
@@ -786,7 +791,7 @@ let lua =
         in
 
         let cflags =
-          (prelude.mkCFlags cfg.includeDirs).value
+          (prelude.mkCFlags cfg).value
         in
 
         let os =
@@ -958,7 +963,7 @@ let gtk2 =
   let gtkEnv =
     λ(cfg : types.BuildVars) →
       prelude.defaultPath cfg # [ { var = "LDFLAGS", value = (prelude.mkLDFlags cfg.linkDirs).value ++ " -lpcre -lfribidi" }
-                                , prelude.mkCFlags cfg.includeDirs
+                                , prelude.mkCFlags cfg
                                 , prelude.mkPkgConfigVar cfg.linkDirs
                                 , prelude.libPath cfg
                                 , prelude.mkLDRunPath cfg.linkDirs
@@ -1163,7 +1168,7 @@ let gdk-pixbuf =
                                                                    , prelude.libPath cfg
                                                                    , prelude.mkLDRunPath cfg.linkDirs
                                                                    , prelude.mkLDFlags cfg.linkDirs
-                                                                   , prelude.mkCFlags cfg.includeDirs
+                                                                   , prelude.mkCFlags cfg
                                                                    ]
                                               , arguments = [ "install" ]
                                               , procDir = Some "build"
@@ -1330,7 +1335,7 @@ let glib =
                                             , { var = "LDFLAGS", value = (prelude.mkLDFlags cfg.linkDirs).value ++ " -lpcre" }
                                             , prelude.mkPy3Path cfg.linkDirs
                                             , prelude.libPath cfg
-                                            , prelude.mkCFlags cfg.includeDirs
+                                            , prelude.mkCFlags cfg
                                             , prelude.mkPkgConfigVar cfg.linkDirs
                                             ]
                        , procDir = Some "build"
@@ -1860,7 +1865,7 @@ let libsepol =
       [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
                                             , arguments = cc cfg # [ "PREFIX=${cfg.installDir}", "SHLIBDIR=${cfg.installDir}/lib", "CFLAGS=-Wno-error -O2", "install", "-j${Natural/show cfg.cpus}" ]
                                             , environment =
-                                                Some (prelude.defaultPath cfg # [ prelude.mkLDFlags cfg.linkDirs, prelude.mkCFlags cfg.includeDirs, prelude.mkPkgConfigVar cfg.linkDirs ])
+                                                Some (prelude.defaultPath cfg # [ prelude.mkLDFlags cfg.linkDirs, prelude.mkCFlags cfg, prelude.mkPkgConfigVar cfg.linkDirs ])
                                             })
       ]
   in
@@ -1885,13 +1890,13 @@ let libselinux =
                                             , arguments = cc cfg
                                                 # [ "PREFIX=${cfg.installDir}"
                                                   , "SHLIBDIR=${cfg.installDir}/lib"
-                                                  , "EXTRA_CFLAGS=-Wno-error -lpcre " ++ (prelude.mkCFlags cfg.includeDirs).value
+                                                  , "EXTRA_CFLAGS=-Wno-error -lpcre " ++ (prelude.mkCFlags cfg).value
                                                   , "install"
                                                   , "-j${Natural/show cfg.cpus}"
                                                   ]
                                             , environment =
                                                 Some (prelude.defaultPath cfg # [ prelude.mkLDFlags cfg.linkDirs
-                                                                                , prelude.mkCFlags cfg.includeDirs
+                                                                                , prelude.mkCFlags cfg
                                                                                 , prelude.mkPkgConfigVar cfg.linkDirs
                                                                                 , prelude.libPath cfg
                                                                                 ])
@@ -2015,7 +2020,7 @@ let gtk3 =
   let gtkEnv =
     λ(cfg : types.BuildVars) →
       prelude.defaultPath cfg # [ { var = "LDFLAGS", value = (prelude.mkLDFlags cfg.linkDirs).value ++ " -lpcre -lfribidi" }
-                                , prelude.mkCFlags cfg.includeDirs
+                                , prelude.mkCFlags cfg
                                 , prelude.mkPkgConfigVar cfg.linkDirs
                                 , prelude.libPath cfg
                                 , prelude.mkLDRunPath cfg.linkDirs
@@ -2438,7 +2443,7 @@ let feh =
       , prelude.call (prelude.defaultCall ⫽ fehMake cfg ⫽
                         { arguments =
                             cc cfg #
-                              [ "CFLAGS=${(prelude.mkCFlags cfg.includeDirs).value} -DPACKAGE=\\\"feh\\\" -DPREFIX=\\\"${cfg.installDir}\\\" -DVERSION=\\\"${prelude.showVersion v}\\\" ${(prelude.mkLDFlags cfg.linkDirs).value}"
+                              [ "CFLAGS=${(prelude.mkCFlags cfg).value} -DPACKAGE=\\\"feh\\\" -DPREFIX=\\\"${cfg.installDir}\\\" -DVERSION=\\\"${prelude.showVersion v}\\\" ${(prelude.mkLDFlags cfg.linkDirs).value}"
                               , "feh"
                               ]
                         , procDir = Some "src"
@@ -2452,7 +2457,7 @@ let feh =
   let fehInstall =
     λ(cfg : types.BuildVars) →
       [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
-                                            , arguments = [ "CFLAGS=${(prelude.mkCFlags cfg.includeDirs).value}"
+                                            , arguments = [ "CFLAGS=${(prelude.mkCFlags cfg).value}"
                                                           , "-j${Natural/show cfg.cpus}"
                                                           , "PREFIX=${cfg.installDir}"
                                                           , "install"
@@ -2844,6 +2849,12 @@ let htop =
       }
 in
 
+let mpfr =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "mpfr", version = v } ⫽
+      { pkgUrl = "https://www.mpfr.org/mpfr-current/mpfr-${prelude.showVersion v}.tar.xz" }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
@@ -2855,7 +2866,7 @@ in
 , bzip2 [1,0,6]
 , cairo [1,16,0]
 , chickenScheme [5,0,0]
-, cmake { version = [3,13], patch = 2 }
+, cmake { version = [3,13], patch = 4 }
 , coreutils [8,30]
 , curl [7,63,0]
 , damageproto [1,2,1]
@@ -2980,7 +2991,8 @@ in
 , markupSafe [1,0]
 , memcached [1,5,12]
 , mesa [18,3,1]
-, meson [0,49,0]
+, meson [0,49,2]
+, mpfr [4,0,2]
 , motif [2,3,8]
 , musl [1,1,20]
 , nano [3,2]

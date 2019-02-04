@@ -260,10 +260,10 @@ in
 
 let mkStaPath =
   λ(libDirs : List Text) →
-    let flag = concatMapSep ":" Text (λ(dir : Text) → dir) libDirs
+    let flag = concatMapText Text (λ(dir : Text) → "${dir}:") libDirs
     in
 
-    { var = "LIBRARY_PATH", value = flag }
+    { var = "LIBRARY_PATH", value = flag ++ "/usr/local/lib:/lib:/usr/lib" }
 in
 
 {- Get the host OS from a configuration. If we are not cross-compiling, we can
@@ -311,11 +311,16 @@ let mkIncludePath =
 in
 
 let mkCFlags =
-  λ(libDirs : List Text) →
-    let flag = concatMapSep " " Text (λ(dir : Text) → "-I${dir}") libDirs
+  λ(cfg : types.BuildVars) →
+    let flag = concatMapSep " " Text (λ(dir : Text) → "-I${dir}") cfg.includeDirs
+    in
+    let staFlag =
+      if cfg.static
+        then " -static"
+        else ""
     in
 
-    { var = "CPPFLAGS", value = flag }
+    { var = "CPPFLAGS", value = flag ++ staFlag }
 in
 
 let mkPkgConfigVar =
@@ -359,12 +364,21 @@ let libPath =
         mkLDPath cfg.linkDirs
 in
 
+{- This is vaguely terrible, but it's needed for GLib for some reason -}
+let mkLDPreload =
+  λ(libs : List Text) →
+    let flag = concatMapSep " " Text (λ(lib : Text) → lib) libs
+    in
+
+    { var = "LD_PRELOAD", value = flag }
+in
+
 {- Default environment variables for a given configuration -}
 let configEnv =
   λ(linkLibs : List Text) →
   λ(cfg : types.BuildVars) →
     defaultPath cfg # [ mkLDFlagsGeneral cfg.linkDirs linkLibs
-                      , mkCFlags cfg.includeDirs
+                      , mkCFlags cfg
                       , mkPkgConfigVar (cfg.shareDirs # cfg.linkDirs)
                       , libPath cfg
                       , mkLDRunPath cfg.linkDirs
@@ -415,7 +429,6 @@ in
 
 let configureWithFlags =
   generalConfigure configSome "configure" ([] : List Text)
-
 in
 
 let defaultConfigure =
@@ -742,7 +755,7 @@ let mesonEnv =
          , libPath cfg
          , mkLDRunPath cfg.linkDirs
          , mkLDFlags cfg.linkDirs
-         , mkCFlags cfg.includeDirs
+         , mkCFlags cfg
          , mkPkgConfigVar cfg.linkDirs
          ]
 in
@@ -785,7 +798,7 @@ let ninjaBuildWith =
                                                , libPath cfg
                                                , mkLDRunPath cfg.linkDirs
                                                , mkLDFlagsGeneral cfg.linkDirs linkLibs
-                                               , mkCFlags cfg.includeDirs
+                                               , mkCFlags cfg
                                                , mkPkgConfigVar cfg.linkDirs
                                                ]
                           , procDir = Some "build" }) ]
@@ -804,7 +817,7 @@ let ninjaInstall =
                                                , libPath cfg
                                                , mkLDRunPath cfg.linkDirs
                                                , mkLDFlags cfg.linkDirs
-                                               , mkCFlags cfg.includeDirs
+                                               , mkCFlags cfg
                                                ]
                           , arguments = [ "install" ]
                           , procDir = Some "build"
@@ -907,15 +920,6 @@ let python2Package =
   pythonPackage [2,7]
 in
 
-{- This is vaguely terrible, but it's needed for GLib for some reason -}
-let mkLDPreload =
-  λ(libs : List Text) →
-    let flag = concatMapSep " " Text (λ(lib : Text) → lib) libs
-    in
-
-    { var = "LD_PRELOAD", value = flag }
-in
-
 let mkCCVar =
   λ(cfg : types.BuildVars) →
     Optional/fold types.TargetTriple cfg.targetTriple (List types.EnvVar)
@@ -938,7 +942,7 @@ let preloadEnv =
   λ(_ : List Text) →
   λ(cfg : types.BuildVars) →
     Some (defaultPath cfg # [ mkLDFlags cfg.linkDirs
-                            , mkCFlags cfg.includeDirs
+                            , mkCFlags cfg
                             , mkPkgConfigVar cfg.linkDirs
                             , libPath cfg
                             , mkXdgDataDirs cfg.shareDirs
