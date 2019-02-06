@@ -2825,7 +2825,7 @@ in
 , nspr [4,20]
 , openssh [7,9]
 , openssl [1,1,1]
-, p11kit [0,23,14]
+, p11kit [0,23,15]
 , pango { version = [1,43], patch = 0 }
 , pcre [8,42]
 , pcre2 [10,32]
