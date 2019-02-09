@@ -2855,6 +2855,12 @@ let mpfr =
       { pkgUrl = "https://www.mpfr.org/mpfr-current/mpfr-${prelude.showVersion v}.tar.xz" }
 in
 
+let libsodium =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libsodium", version = v } ⫽
+      { pkgUrl = "https://download.libsodium.org/libsodium/releases/libsodium-${prelude.showVersion v}.tar.gz" }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
@@ -2952,6 +2958,7 @@ in
 , libotf [0,9,16]
 , libselinux [2,8]
 , libsepol [2,8]
+, libsodium [1,0,17]
 , libsoup { version = [2,65], patch = 2 }
 , libssh2 [1,8,0]
 , libtasn1 [4,13]
