@@ -1381,14 +1381,7 @@ let glib =
                                                                   , "gthread-2.0.pc"
                                                                   ]) cfg
 
-              # [ prelude.symlink "${libDir}/libglib-2.0.so" "lib/libglib-2.0.so"
-                , prelude.symlink "${libDir}/libgobject-2.0.so" "lib/libgobject-2.0.so"
-                , prelude.symlink "${libDir}/libgio-2.0.so" "lib/libgio-2.0.so"
-                , prelude.symlink "${libDir}/libgmodule-2.0.so" "lib/libgmodule-2.0.so"
-                , prelude.symlink "${libDir}/libgmodule-2.0.so.0" "lib/libgmodule-2.0.so.0"
-                , prelude.symlink "${libDir}/libglib-2.0.so.0" "lib/libglib-2.0.so.0"
-                , prelude.symlink "${libDir}/glib-2.0/include/glibconfig.h" "include/glibconfig.h"
-                , prelude.symlink "include/glib-2.0/glib" "include/glib"
+              # [ prelude.symlink "include/glib-2.0/glib" "include/glib"
                 , prelude.symlink "include/glib-2.0/gobject" "include/gobject"
                 , prelude.symlink "include/glib-2.0/glib.h" "include/glib.h"
                 , prelude.symlink "include/glib-2.0/glib-object.h" "include/glib-object.h"
@@ -1907,6 +1900,7 @@ let libselinux =
       , pkgDeps = [ prelude.unbounded "pcre"
                   , prelude.unbounded "libsepol"
                   ]
+      , pkgBuildDeps = [ prelude.unbounded "pkg-config" ]
       }
 in
 
