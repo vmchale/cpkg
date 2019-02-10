@@ -864,6 +864,7 @@ let pkg-config =
   λ(v : List Natural) →
     prelude.simplePackage { name = "pkg-config", version = v } ⫽
       { pkgUrl = "https://pkg-config.freedesktop.org/releases/pkg-config-${prelude.showVersion v}.tar.gz"
+      , configureCommand = prelude.configureWithFlags [ "--with-internal-glib" ]
       , installCommand = prelude.installWithBinaries [ "bin/pkg-config" ]
       }
 in
@@ -1673,22 +1674,6 @@ let libpthread-stubs =
       { pkgUrl = "https://www.x.org/archive/individual/xcb/libpthread-stubs-${prelude.showVersion v}.tar.bz2" }
 in
 
-let libXdmcp =
-  λ(v : List Natural) →
-    prelude.simplePackage { name = "libXdmcp", version = v } ⫽
-      { pkgUrl = "https://www.x.org/archive/individual/lib/libXdmcp-${prelude.showVersion v}.tar.bz2"
-      , pkgDeps = [ prelude.unbounded "xproto" ]
-      }
-in
-
-let libXau =
-  λ(v : List Natural) →
-    prelude.simplePackage { name = "libXau", version = v } ⫽
-      { pkgUrl = "https://www.x.org/archive/individual/lib/libXau-${prelude.showVersion v}.tar.bz2"
-      , pkgDeps = [ prelude.unbounded "xproto" ]
-      }
-in
-
 let xorgConfigure =
   prelude.configureWithFlags [ "--disable-malloc0returnsnull" ] -- necessary for cross-compilation
 in
@@ -1699,6 +1684,7 @@ let mkXLib =
     prelude.simplePackage { name = name, version = v } ⫽
       { pkgUrl = "https://www.x.org/releases/individual/lib/${name}-${prelude.showVersion v}.tar.bz2"
       , configureCommand = xorgConfigure
+      , pkgBuildDeps = [ prelude.unbounded "pkg-config" ]
       }
 in
 
@@ -1707,6 +1693,14 @@ let mkXLibDeps =
   λ(v : List Natural) →
     mkXLib x.name v ⫽
       { pkgDeps = x.deps }
+in
+
+let libXdmcp =
+  mkXLibDeps { name = "libXdmcp", deps = [ prelude.unbounded "xproto" ] }
+in
+
+let libXau =
+  mkXLibDeps { name = "libXau", deps = [ prelude.unbounded "xproto" ] }
 in
 
 let mkXUtil =
