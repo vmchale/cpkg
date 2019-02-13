@@ -25,7 +25,10 @@ and packages. It is not a full-fledged package manager.
   - [Cabal Integration](#cabal-integration)
 - [Known Deficiencies](#known-deficiences)
   - [Security](#security)
-  - [Contents](#contents)
+  - [Performance](#performance)
+  - [Dependency Solver](#dependency-solver)
+  - [Garbage Collection](#garbage-collection)
+- [Contents](#contents)
 
 ## Installation
 
