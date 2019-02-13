@@ -19,6 +19,7 @@ and packages. It is not a full-fledged package manager.
 
 - [Installation](#installation)
   - [Shell Completions](#shell-completions)
+  - [Packages](#packages)
 - [Example](#example)
   - [Configuration](#configuration)
   - [Dhall Prelude](#dhall-prelude)
@@ -257,11 +258,11 @@ Lovingly provided by [polyglot](https://github.com/vmchale/polyglot):
  Bash                     2          14            9            3            2
  Cabal                    1         153          139            0           14
  Cabal Project            1           2            2            0            0
- Dhall                    3        4342         3902            0          440
+ Dhall                    3        4336         3895            0          441
  Haskell                 31        1688         1378           28          282
- Markdown                 3         439          371            0           68
+ Markdown                 3         442          374            0           68
  YAML                     4         156          141            0           15
 -------------------------------------------------------------------------------
- Total                   45        6794         5942           31          821
+ Total                   45        6791         5938           31          822
 -------------------------------------------------------------------------------
 ```
