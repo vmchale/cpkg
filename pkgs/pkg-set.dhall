@@ -305,7 +305,7 @@ let harfbuzz =
       }
 in
 
-let jpegTurbo =
+let libjpeg-turbo =
   λ(v : List Natural) →
     prelude.cmakePackage ⫽
       { pkgName = "libjpeg-turbo"
@@ -2931,7 +2931,6 @@ in
 , intltool [0,51,0]
 , itstool [2,0,5]
 , jemalloc [5,1,0]
-, jpegTurbo [2,0,2]
 , joe [4,6]
 , json-c { version = [0,13,1], dateStr = "20180305" }
 , kbproto [1,0,7]
@@ -2955,6 +2954,7 @@ in
 , libICE [1,0,9]
 , libicu [63,1]
 , libjpeg [9]
+, libjpeg-turbo [2,0,2]
 , libksba [1,3,5]
 , libmypaint [1,3,0]
 , libnettle [3,4,1]
