@@ -169,16 +169,18 @@ in
 
 let gc =
   λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
     prelude.simplePackage { name = "gc", version = v } ⫽
-        { pkgUrl = "https://github.com/ivmai/bdwgc/releases/download/v${prelude.showVersion v}/gc-${prelude.showVersion v}.tar.gz"
+        { pkgUrl = "https://github.com/ivmai/bdwgc/releases/download/v${versionString}/gc-${versionString}.tar.gz"
         , pkgDeps = [ prelude.unbounded "libatomic_ops" ]
         }
 in
 
 let libatomic_ops =
   λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
     prelude.simplePackage { name = "libatomic_ops", version = v } ⫽
-        { pkgUrl = "https://github.com/ivmai/libatomic_ops/releases/download/v${prelude.showVersion v}/libatomic_ops-${prelude.showVersion v}.tar.gz" }
+        { pkgUrl = "https://github.com/ivmai/libatomic_ops/releases/download/v${versionString}/libatomic_ops-${versionString}.tar.gz" }
 in
 
 let git =
