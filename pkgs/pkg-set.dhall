@@ -372,7 +372,7 @@ let perl5 =
   in
 
   λ(v : List Natural) →
-    let major = Optional/fold Natural (List/head Natural v) Text (Natural/show) ""
+    let major = Optional/fold Natural (List/head Natural v) Text Natural/show ""
     in
 
     prelude.simplePackage { name = "perl", version = v } ⫽
@@ -503,7 +503,7 @@ in
 let gettext =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "gettext", version = v } ⫽
-      { installCommand = prelude.installWithBinaries [ "bin/gettext", "bin/msgfmt" ] }
+      { installCommand = prelude.installWithBinaries [ "bin/gettext", "bin/msgfmt", "bin/autopoint" ] }
 in
 
 let gzip =
@@ -675,6 +675,7 @@ let emacs =
                   , prelude.unbounded "gnutls"
                   , prelude.unbounded "libXft"
                   , prelude.unbounded "dbus"
+                  , prelude.unbounded "cairo"
                   ]
       , configureCommand = prelude.configureMkExesExtraFlags
           { bins = [ "build-aux/move-if-change", "build-aux/update-subdirs" ]
@@ -684,10 +685,14 @@ let emacs =
                          , "--with-gnutls"
                          , "--with-xft"
                          , "--with-dbus"
+                         , "--with-cairo=yes"
                          ]
           }
       , installCommand =
-          prelude.installWithWrappers [ "emacs" ]
+          λ(cfg : types.BuildVars) →
+            if cfg.static
+              then prelude.installWithBinaries [ "bin/emacs" ] cfg
+              else prelude.installWithWrappers [ "emacs" ] cfg
       }
 in
 
@@ -719,18 +724,33 @@ let python =
     in
     let versionString = prelude.showVersion v
     in
+    let pyEnv =
+      λ(_ : List Text) →
+      λ(cfg : types.BuildVars) →
+        Some (prelude.configEnv ([] : List Text) cfg
+          # [ { var = "CONFIG_SITE", value = "config.site" } ])
+    in
 
     prelude.simplePackage { name = "python${major}", version = v } ⫽
       { pkgUrl = "https://www.python.org/ftp/python/${versionString}/Python-${versionString}.tar.xz"
       , pkgSubdir = "Python-${versionString}"
       , configureCommand =
         λ(cfg : types.BuildVars) →
+          let config =
+            ''
+            ac_cv_file__dev_ptmx=yes
+            ac_cv_file__dev_ptc=no
+            ''
+          in
           let staticFlag =
             if cfg.static
               then [] : List Text
               else [ "--enable-shared" ]
           in
-          prelude.configureWithFlags ([ "--build=${prelude.printArch cfg.buildArch}" ] # staticFlag) cfg
+          [ prelude.writeFile { file = "config.site", contents = config } ]
+            # prelude.generalConfigure pyEnv "configure" ([] : List Text)
+                ([ "--build=${prelude.printArch cfg.buildArch}", "--disable-ipv6" ] # staticFlag) cfg
+          -- disable ipv6 for cross-compiling
           -- "--enable-optimizations" (takes forever)
       , pkgDeps = [ prelude.unbounded "libffi" ]
       , installCommand = prelude.installWithBinaries [ "bin/python${major}" ]
@@ -773,7 +793,7 @@ let lua =
         in
 
         let cflags =
-          (prelude.mkCFlags cfg.includeDirs).value
+          (prelude.mkCFlags cfg).value
         in
 
         let os =
@@ -846,6 +866,7 @@ let pkg-config =
   λ(v : List Natural) →
     prelude.simplePackage { name = "pkg-config", version = v } ⫽
       { pkgUrl = "https://pkg-config.freedesktop.org/releases/pkg-config-${prelude.showVersion v}.tar.gz"
+      , configureCommand = prelude.configureWithFlags [ "--with-internal-glib" ]
       , installCommand = prelude.installWithBinaries [ "bin/pkg-config" ]
       }
 in
@@ -945,7 +966,7 @@ let gtk2 =
   let gtkEnv =
     λ(cfg : types.BuildVars) →
       prelude.defaultPath cfg # [ { var = "LDFLAGS", value = (prelude.mkLDFlags cfg.linkDirs).value ++ " -lpcre -lfribidi" }
-                                , prelude.mkCFlags cfg.includeDirs
+                                , prelude.mkCFlags cfg
                                 , prelude.mkPkgConfigVar cfg.linkDirs
                                 , prelude.libPath cfg
                                 , prelude.mkLDRunPath cfg.linkDirs
@@ -1084,11 +1105,10 @@ let libxml2 =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libxml2", version = v } ⫽
      { pkgUrl = "http://xmlsoft.org/sources/libxml2-${prelude.showVersion v}.tar.gz"
-     -- TODO: don't depend on python via flag or something
      , pkgDeps = [ prelude.unbounded "zlib"
                  , prelude.unbounded "xz"
+                 , prelude.unbounded "python2"
                  ]
-     , pkgBuildDeps = [ prelude.unbounded "python2" ]
      }
 in
 
@@ -1151,7 +1171,7 @@ let gdk-pixbuf =
                                                                    , prelude.libPath cfg
                                                                    , prelude.mkLDRunPath cfg.linkDirs
                                                                    , prelude.mkLDFlags cfg.linkDirs
-                                                                   , prelude.mkCFlags cfg.includeDirs
+                                                                   , prelude.mkCFlags cfg
                                                                    ]
                                               , arguments = [ "install" ]
                                               , procDir = Some "build"
@@ -1278,12 +1298,19 @@ let flex =
   λ(v : List Natural) →
     let versionString = prelude.showVersion v
     in
+    let flexEnv =
+      λ(_ : List Text) →
+      λ(cfg : types.BuildVars) →
+        Some (prelude.configEnv ([] : List Text) cfg
+          # [ { var = "YFLAGS", value = "-Wno-error=yacc" } ])
+    in
 
     prelude.simplePackage { name = "flex", version = v } ⫽
       { pkgUrl = "https://github.com/westes/flex/releases/download/v${versionString}/flex-${versionString}.tar.gz"
       , pkgBuildDeps = [ prelude.unbounded "m4"
                        , prelude.unbounded "bison"
                        ]
+      , configureCommand = prelude.configWithEnv flexEnv
       }
 in
 
@@ -1311,7 +1338,7 @@ let glib =
                                             , { var = "LDFLAGS", value = (prelude.mkLDFlags cfg.linkDirs).value ++ " -lpcre" }
                                             , prelude.mkPy3Path cfg.linkDirs
                                             , prelude.libPath cfg
-                                            , prelude.mkCFlags cfg.includeDirs
+                                            , prelude.mkCFlags cfg
                                             , prelude.mkPkgConfigVar cfg.linkDirs
                                             ]
                        , procDir = Some "build"
@@ -1356,14 +1383,7 @@ let glib =
                                                                   , "gthread-2.0.pc"
                                                                   ]) cfg
 
-              # [ prelude.symlink "${libDir}/libglib-2.0.so" "lib/libglib-2.0.so"
-                , prelude.symlink "${libDir}/libgobject-2.0.so" "lib/libgobject-2.0.so"
-                , prelude.symlink "${libDir}/libgio-2.0.so" "lib/libgio-2.0.so"
-                , prelude.symlink "${libDir}/libgmodule-2.0.so" "lib/libgmodule-2.0.so"
-                , prelude.symlink "${libDir}/libgmodule-2.0.so.0" "lib/libgmodule-2.0.so.0"
-                , prelude.symlink "${libDir}/libglib-2.0.so.0" "lib/libglib-2.0.so.0"
-                , prelude.symlink "${libDir}/glib-2.0/include/glibconfig.h" "include/glibconfig.h"
-                , prelude.symlink "include/glib-2.0/glib" "include/glib"
+              # [ prelude.symlink "include/glib-2.0/glib" "include/glib"
                 , prelude.symlink "include/glib-2.0/gobject" "include/gobject"
                 , prelude.symlink "include/glib-2.0/glib.h" "include/glib.h"
                 , prelude.symlink "include/glib-2.0/glib-object.h" "include/glib-object.h"
@@ -1649,22 +1669,6 @@ let libpthread-stubs =
       { pkgUrl = "https://www.x.org/archive/individual/xcb/libpthread-stubs-${prelude.showVersion v}.tar.bz2" }
 in
 
-let libXdmcp =
-  λ(v : List Natural) →
-    prelude.simplePackage { name = "libXdmcp", version = v } ⫽
-      { pkgUrl = "https://www.x.org/archive/individual/lib/libXdmcp-${prelude.showVersion v}.tar.bz2"
-      , pkgDeps = [ prelude.unbounded "xproto" ]
-      }
-in
-
-let libXau =
-  λ(v : List Natural) →
-    prelude.simplePackage { name = "libXau", version = v } ⫽
-      { pkgUrl = "https://www.x.org/archive/individual/lib/libXau-${prelude.showVersion v}.tar.bz2"
-      , pkgDeps = [ prelude.unbounded "xproto" ]
-      }
-in
-
 let xorgConfigure =
   prelude.configureWithFlags [ "--disable-malloc0returnsnull" ] -- necessary for cross-compilation
 in
@@ -1675,6 +1679,7 @@ let mkXLib =
     prelude.simplePackage { name = name, version = v } ⫽
       { pkgUrl = "https://www.x.org/releases/individual/lib/${name}-${prelude.showVersion v}.tar.bz2"
       , configureCommand = xorgConfigure
+      , pkgBuildDeps = [ prelude.unbounded "pkg-config" ]
       }
 in
 
@@ -1683,6 +1688,14 @@ let mkXLibDeps =
   λ(v : List Natural) →
     mkXLib x.name v ⫽
       { pkgDeps = x.deps }
+in
+
+let libXdmcp =
+  mkXLibDeps { name = "libXdmcp", deps = [ prelude.unbounded "xproto" ] }
+in
+
+let libXau =
+  mkXLibDeps { name = "libXau", deps = [ prelude.unbounded "xproto" ] }
 in
 
 let mkXUtil =
@@ -1829,7 +1842,7 @@ in
 let coreutils =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "coreutils", version = v } ⫽
-      { installCommand = prelude.installWithBinaries [ "bin/install", "bin/chmod", "bin/rm", "bin/cp", "bin/ln", "bin/mkdir", "bin/test", "bin/od" ] }
+      { installCommand = prelude.installWithBinaries [ "bin/install", "bin/chmod", "bin/rm", "bin/cp", "bin/ln", "bin/mkdir", "bin/test", "bin/od", "bin/readlink" ] }
 in
 
 let libsepol =
@@ -1841,7 +1854,7 @@ let libsepol =
       [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
                                             , arguments = cc cfg # [ "PREFIX=${cfg.installDir}", "SHLIBDIR=${cfg.installDir}/lib", "CFLAGS=-Wno-error -O2", "install", "-j${Natural/show cfg.cpus}" ]
                                             , environment =
-                                                Some (prelude.defaultPath cfg # [ prelude.mkLDFlags cfg.linkDirs, prelude.mkCFlags cfg.includeDirs, prelude.mkPkgConfigVar cfg.linkDirs ])
+                                                Some (prelude.defaultPath cfg # [ prelude.mkLDFlags cfg.linkDirs, prelude.mkCFlags cfg, prelude.mkPkgConfigVar cfg.linkDirs ])
                                             })
       ]
   in
@@ -1866,13 +1879,13 @@ let libselinux =
                                             , arguments = cc cfg
                                                 # [ "PREFIX=${cfg.installDir}"
                                                   , "SHLIBDIR=${cfg.installDir}/lib"
-                                                  , "EXTRA_CFLAGS=-Wno-error -lpcre " ++ (prelude.mkCFlags cfg.includeDirs).value
+                                                  , "EXTRA_CFLAGS=-Wno-error -lpcre " ++ (prelude.mkCFlags cfg).value
                                                   , "install"
                                                   , "-j${Natural/show cfg.cpus}"
                                                   ]
                                             , environment =
                                                 Some (prelude.defaultPath cfg # [ prelude.mkLDFlags cfg.linkDirs
-                                                                                , prelude.mkCFlags cfg.includeDirs
+                                                                                , prelude.mkCFlags cfg
                                                                                 , prelude.mkPkgConfigVar cfg.linkDirs
                                                                                 , prelude.libPath cfg
                                                                                 ])
@@ -1889,6 +1902,7 @@ let libselinux =
       , pkgDeps = [ prelude.unbounded "pcre"
                   , prelude.unbounded "libsepol"
                   ]
+      , pkgBuildDeps = [ prelude.unbounded "pkg-config" ]
       }
 in
 
@@ -1996,7 +2010,7 @@ let gtk3 =
   let gtkEnv =
     λ(cfg : types.BuildVars) →
       prelude.defaultPath cfg # [ { var = "LDFLAGS", value = (prelude.mkLDFlags cfg.linkDirs).value ++ " -lpcre -lfribidi" }
-                                , prelude.mkCFlags cfg.includeDirs
+                                , prelude.mkCFlags cfg
                                 , prelude.mkPkgConfigVar cfg.linkDirs
                                 , prelude.libPath cfg
                                 , prelude.mkLDRunPath cfg.linkDirs
@@ -2419,7 +2433,7 @@ let feh =
       , prelude.call (prelude.defaultCall ⫽ fehMake cfg ⫽
                         { arguments =
                             cc cfg #
-                              [ "CFLAGS=${(prelude.mkCFlags cfg.includeDirs).value} -DPACKAGE=\\\"feh\\\" -DPREFIX=\\\"${cfg.installDir}\\\" -DVERSION=\\\"${prelude.showVersion v}\\\" ${(prelude.mkLDFlags cfg.linkDirs).value}"
+                              [ "CFLAGS=${(prelude.mkCFlags cfg).value} -DPACKAGE=\\\"feh\\\" -DPREFIX=\\\"${cfg.installDir}\\\" -DVERSION=\\\"${prelude.showVersion v}\\\" ${(prelude.mkLDFlags cfg.linkDirs).value}"
                               , "feh"
                               ]
                         , procDir = Some "src"
@@ -2433,7 +2447,7 @@ let feh =
   let fehInstall =
     λ(cfg : types.BuildVars) →
       [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
-                                            , arguments = [ "CFLAGS=${(prelude.mkCFlags cfg.includeDirs).value}"
+                                            , arguments = [ "CFLAGS=${(prelude.mkCFlags cfg).value}"
                                                           , "-j${Natural/show cfg.cpus}"
                                                           , "PREFIX=${cfg.installDir}"
                                                           , "install"
@@ -2684,6 +2698,159 @@ let joe =
       }
 in
 
+let fossil =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "fossil", version = v } ⫽
+      { pkgUrl = "https://fossil-scm.org/fossil/uv/fossil-src-${prelude.showVersion v}.tar.gz"
+      , configureCommand = prelude.configureMkExes [ "autosetup/find-tclsh" ]
+      , installCommand = prelude.installWithBinaries [ "bin/fossil" ]
+      , pkgDeps = [ prelude.unbounded "zlib"
+                  , prelude.unbounded "openssl"
+                  ]
+      }
+in
+
+let libcroco =
+  λ(x : { version : List Natural, patch : Natural }) →
+    mkGnomeSimple "libcroco" x ⫽
+      { pkgDeps = [ prelude.lowerBound { name = "glib", lower = [2,0] }
+                  , prelude.lowerBound { name = "libxml2", lower = [2,4,23] }
+                  ]
+      }
+in
+
+let libsoup =
+  λ(x : { version : List Natural, patch : Natural }) →
+    let libsoupCfgFile =
+    ''
+    option('gssapi',
+      type : 'boolean',
+      value : true,
+      description : 'Build with GSSAPI support'
+    )
+
+    option('krb5_config',
+      type : 'string',
+      description : 'Where to look for krb5-config, path points to krb5-config installation (defaultly looking in PATH)'
+    )
+
+    option('ntlm',
+      type : 'boolean',
+      value : false,
+      description : 'Build with NTLM support'
+    )
+
+    option('tls_check',
+      type : 'boolean',
+      value : true,
+      description : 'Enable TLS support through glib-networking. If you are building a package, you can disable this to allow building libsoup anyway (since glib-networking is not actually required at compile time), but you should be sure to add a runtime dependency on it.'
+    )
+
+    option('gnome',
+      type : 'boolean',
+      value : true,
+      description : 'Build libsoup with GNOME support'
+    )
+
+    option('introspection',
+      type : 'boolean',
+      value : true,
+      description : 'Build GObject Introspection data'
+    )
+
+    option('vapi',
+      type : 'boolean',
+      value : false,
+      description : 'Build Vala bindings'
+    )
+
+    option('doc',
+      type: 'boolean',
+      value: false,
+      description: 'Enable generating the API reference'
+    )
+
+    option('tests',
+      type: 'boolean',
+      value: true,
+      description: 'Enable unit tests compilation'
+    )
+    ''
+    in
+    mkGnomeNinja "libsoup" x ⫽
+      { pkgDeps = [ prelude.unbounded "glib"
+                  , prelude.unbounded "sqlite"
+                  , prelude.unbounded "libxml2"
+                  , prelude.unbounded "libpsl"
+                  , prelude.unbounded "krb5"
+                  , prelude.unbounded "gobject-introspection"
+                  ]
+      , pkgBuildDeps = [ prelude.unbounded "vala" ]
+      , configureCommand =
+          λ(cfg : types.BuildVars) →
+            [ prelude.writeFile { file = "meson_options.txt", contents = libsoupCfgFile } ]
+              # prelude.mesonConfigure cfg
+      , installCommand =
+          prelude.ninjaInstallWithPkgConfig (prelude.mesonMoves [ "libsoup-2.4.pc" ])
+      }
+in
+
+let libpsl =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "libpsl", version = v } ⫽
+      { pkgUrl = "https://github.com/rockdaboot/libpsl/releases/download/libpsl-${versionString}/libpsl-${versionString}.tar.gz"
+      , configureCommand = prelude.configureMkExes [ "src/psl-make-dafsa" ]
+      }
+in
+
+
+let krb5 =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "krb5", version = v } ⫽
+      { pkgUrl = "https://kerberos.org/dist/krb5/${versionString}/krb5-${versionString}.tar.gz"
+      , pkgSubdir = "krb5-${versionString}/src"
+      , configureCommand = prelude.configureMkExes [ "config/move-if-changed", "config/mkinstalldirs" ]
+      , pkgBuildDeps = [ prelude.unbounded "bison" ]
+      }
+in
+
+let vala =
+  λ(x : { version : List Natural, patch : Natural }) →
+    mkGnomeSimple "vala" x ⫽
+      { pkgBuildDeps = [ prelude.unbounded "flex" ]
+      , pkgDeps = [ prelude.lowerBound { name = "glib", lower = [2,40,0] }
+                  , prelude.lowerBound { name = "graphviz", lower = [2,15] }
+                  ]
+      , configureCommand = prelude.configureMkExes [ "build-aux/git-version-gen" ]
+      }
+in
+
+let htop =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "htop", version = v } ⫽
+      { pkgUrl = "https://hisham.hm/htop/releases/${versionString}/htop-${versionString}.tar.gz"
+      , pkgDeps = [ prelude.unbounded "ncurses" ]
+      , pkgBuildDeps = [ prelude.unbounded "python3" ]
+      , configureCommand = prelude.configureMkExes [ "scripts/MakeHeader.py" ]
+      , installCommand = prelude.installWithBinaries [ "bin/htop" ]
+      }
+in
+
+let mpfr =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "mpfr", version = v } ⫽
+      { pkgUrl = "https://www.mpfr.org/mpfr-current/mpfr-${prelude.showVersion v}.tar.xz" }
+in
+
+let libsodium =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libsodium", version = v } ⫽
+      { pkgUrl = "https://download.libsodium.org/libsodium/releases/libsodium-${prelude.showVersion v}.tar.gz" }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
@@ -2695,7 +2862,7 @@ in
 , bzip2 [1,0,6]
 , cairo [1,16,0]
 , chickenScheme [5,0,0]
-, cmake { version = [3,13], patch = 2 }
+, cmake { version = [3,13], patch = 4 }
 , coreutils [8,30]
 , curl [7,63,0]
 , damageproto [1,2,1]
@@ -2708,6 +2875,7 @@ in
 , feh [3,1,1]
 , fixesproto [5,0]
 , fontconfig [2,13,1]
+, fossil [2,7]
 , flex [2,6,3]
 , fltk { version = [1,3,4], patch = 2 }
 , freetype-prebuild [2,9,1] -- TODO: force both to have same version?
@@ -2731,14 +2899,15 @@ in
 , gmp [6,1,2]
 , gobject-introspection { version = [1,59], patch = 3 }
 , gnome-doc-utils { version = [0,20], patch = 10 }
-, gnupg [2,2,12]
-, gnutls { version = [3,6], patch = 5 }
+, gnupg [2,2,13]
+, gnutls { version = [3,6], patch = 6 }
 , graphviz [2,40,1]
 , gsl [2,5]
 , gtk2 { version = [2,24], patch = 32 }
 , gtk3 { version = [3,24], patch = 4 }
 , gzip [1,9]
-, harfbuzz [2,3,0]
+, harfbuzz [2,3,1]
+, htop [2,2,0]
 , imageMagick [7,0,8]
 , imlib2 [1,5,1]
 , inputproto [2,3,2]
@@ -2749,11 +2918,13 @@ in
 , joe [4,6]
 , json-c { version = [0,13,1], dateStr = "20180305" }
 , kbproto [1,0,7]
+, krb5 [1,17]
 , lapack [3,8,0]
 , lcms2 [2,9]
 , libarchive [3,3,3]
 , libassuan [2,5,2]
 , libatomic_ops [7,6,8]
+, libcroco { version = [0,6], patch = 12 }
 , libdatrie [0,2,12]
 , libdrm [2,4,96]
 , libepoxy [1,5,3]
@@ -2771,11 +2942,14 @@ in
 , libnettle [3,4,1]
 , libpciaccess [0,14]
 , libpng [1,6,35]
+, libpsl [0,20,2]
 , libpthread-stubs [0,4]
 , libopenjpeg [2,3,0]
 , libotf [0,9,16]
 , libselinux [2,8]
 , libsepol [2,8]
+, libsodium [1,0,17]
+, libsoup { version = [2,65], patch = 2 }
 , libssh2 [1,8,0]
 , libtasn1 [4,13]
 , libtiff [4,0,10]
@@ -2783,7 +2957,6 @@ in
 , libuv [1,24,0]
 , libSM [1,2,3]
 , libthai [0,1,28]
-, libtiff [4,0,10]
 , libX11 [1,6,7]
 , libXau [1,0,8]
 , libXaw [1,0,13]
@@ -2815,14 +2988,15 @@ in
 , markupSafe [1,0]
 , memcached [1,5,12]
 , mesa [18,3,1]
-, meson [0,49,0]
+, meson [0,49,2]
+, mpfr [4,0,2]
 , motif [2,3,8]
 , musl [1,1,20]
 , nano [3,2]
 , nasm [2,14]
 , ncurses [6,1]
 , nginx [1,15,7]
-, ninja [1,8,2]
+, ninja [1,9,0]
 , npth [1,6]
 , nspr [4,20]
 , openssh [7,9]
@@ -2858,6 +3032,7 @@ in
 , unistring [0,9,10]
 , util-linux [2,33]
 , util-macros [1,19,2]
+, vala { version = [0,43], patch = 6 }
 , valgrind [3,14,0]
 , vim [8,1]
 , wayland [1,16,0]

@@ -9,6 +9,7 @@ import qualified Codec.Compression.BZip as Bzip
 import qualified Codec.Compression.GZip as Gzip
 import qualified Codec.Compression.Lzma as Lzma
 import qualified Data.ByteString.Lazy   as BSL
+import           System.Directory
 
 data TarCompress = Gz
                  | Xz
@@ -31,7 +32,7 @@ tarResponse compressScheme dirName response =
     in f response
 
 zipResponse :: FilePath -> BSL.ByteString -> IO ()
-zipResponse dirName response = do
+zipResponse dirName response = withCurrentDirectory dirName $ do
     let options = OptDestination dirName
     extractFilesFromArchive [options] (toArchive response)
 

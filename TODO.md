@@ -84,7 +84,6 @@
 - [ ] Maintainer subcommand to build every single package
 # Packages
 - [ ] bash
-- [ ] jemalloc
 - [ ] Ruby
 - [ ] librsvg
 - [ ] https://github.com/linux-noah/noah
@@ -100,10 +99,9 @@
 - [ ] `rustc`
 - [ ] https://github.com/ZBar/ZBar
 - [ ] Doxygen
-- [ ] libexif, exif, libexif-gtk, gexif (https://libexif.github.io/)
-- [ ] LibTIFF
+- [ ] exif, libexif-gtk, gexif (https://libexif.github.io/)
+- [ ] nomacs
 - [ ] FFmpeg
-- [ ] TCmalloc
 - [ ] https://ftp.gnu.org/gnu/texinfo/ ?
 - [ ] charset (?)
 - [ ] https://sourceware.org/newlib/
@@ -119,6 +117,7 @@
 - [ ] http://www.ibiblio.org/pub/Linux/utils/file/symlinks-1.4.tar.gz
 - [ ] http://www.linuxfromscratch.org/blfs/view/8.2/general/tree.html
 - [ ] libsigsegv
+- [ ] pyqt5
 - [ ] weirdo levenshtein distance in ATS
 - [ ] https://github.com/jmcnamara/libxlsxwriter/archive/RELEASE_0.8.4.tar.gz
 - [ ] https://github.com/gildor2/fast_zlib
@@ -159,6 +158,8 @@
 - [ ] evince
 - [ ] https://github.com/GNOME/libgweather
 - [ ] GIMP
+- [ ] https://github.com/mtoyoda/sl/releases
+- [ ] glib-networking
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in
