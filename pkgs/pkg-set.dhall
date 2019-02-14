@@ -1677,7 +1677,7 @@ let mkXLib =
     prelude.simplePackage { name = name, version = v } ⫽
       { pkgUrl = "https://www.x.org/releases/individual/lib/${name}-${prelude.showVersion v}.tar.bz2"
       , configureCommand = xorgConfigure
-      , pkgBuildDeps = [ prelude.unbounded "pkg-config" ]
+      -- , pkgBuildDeps = [ prelude.unbounded "pkg-config" ]
       }
 in
 
@@ -1900,7 +1900,7 @@ let libselinux =
       , pkgDeps = [ prelude.unbounded "pcre"
                   , prelude.unbounded "libsepol"
                   ]
-      , pkgBuildDeps = [ prelude.unbounded "pkg-config" ]
+      -- , pkgBuildDeps = [ prelude.unbounded "pkg-config" ]
       }
 in
 
@@ -2115,6 +2115,7 @@ let postgresql =
     prelude.simplePackage { name = "postgresql", version = v } ⫽
       { pkgUrl = "https://ftp.postgresql.org/pub/source/v${versionString}/postgresql-${versionString}.tar.bz2"
       , configureCommand = prelude.configureWithFlags [ "--without-readline" ] -- TODO: set USE_DEV_URANDOM=1 or USE_WIN32_RANDOM=1 on windows
+      , installCommand = prelude.installWithBinaries [ "bin/pg_config" ]
       }
 in
 
@@ -2855,19 +2856,6 @@ let libev =
       { pkgUrl = "http://dist.schmorp.de/libev/Attic/libev-${prelude.showVersion v}.tar.gz" }
 in
 
-let weighttp =
-  λ(v : List Natural) →
-    let versionString = prelude.showVersion v in
-    prelude.simplePackage { name = "weighttp", version = v } ⫽
-      { pkgUrl = "https://github.com/lighttpd/weighttp/archive/weighttp-${versionString}.tar.gz"
-      , pkgSubdir = "weighttp-weighttp-${versionString}"
-      , configureCommand = prelude.autogenConfigure
-      , pkgBuildDeps = [ prelude.unbounded "autoconf"
-                       , prelude.unbounded "automake"
-                       ]
-      }
-in
-
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
@@ -3054,7 +3042,6 @@ in
 , valgrind [3,14,0]
 , vim [8,1]
 , wayland [1,16,0]
-, weighttp [0,4]
 , wget [1,20]
 , which [2,21]
 , xcb-proto [1,13]
