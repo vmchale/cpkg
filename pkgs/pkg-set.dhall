@@ -2856,6 +2856,15 @@ let libev =
       { pkgUrl = "http://dist.schmorp.de/libev/Attic/libev-${prelude.showVersion v}.tar.gz" }
 in
 
+let ctags =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "ctags", version = v } ⫽
+      { pkgUrl = "http://prdownloads.sourceforge.net/ctags/ctags-${prelude.showVersion v}.tar.gz"
+      , configureCommand = prelude.configureMkExes [ "mkinstalldirs" ]
+      , installCommand = prelude.installWithBinaries [ "bin/ctags" ]
+      }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
@@ -2869,6 +2878,7 @@ in
 , chickenScheme [5,0,0]
 , cmake { version = [3,13], patch = 4 }
 , coreutils [8,30]
+, ctags [5,8]
 , curl [7,63,0]
 , damageproto [1,2,1]
 , dbus [1,12,10]

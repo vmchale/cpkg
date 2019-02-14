@@ -92,8 +92,7 @@
 - [ ] Figlet
 - [ ] GHC (`https://downloads.haskell.org/~ghc/8.6.3/ghc-8.6.3-src.tar.xz`)
   & cross-compiler
-- [ ] `http://prdownloads.sourceforge.net/ctags/ctags-5.8.tar.gz`
-- [ ] https://www.libarchive.org/downloads/libarchive-3.3.3.tar.gz
+- [ ] weighttp
 - [ ] `patscc`
 - [ ] `rustc`
 - [ ] https://github.com/ZBar/ZBar
