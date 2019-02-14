@@ -140,6 +140,7 @@ let dbus =
                   , prelude.unbounded "libselinux"
                   ]
       , configureCommand = prelude.configureLinkExtraLibs [ "pcre" ]
+      , pkgBuildDeps = [ prelude.unbounded "pkg-config" ]
       }
 in
 
@@ -270,6 +271,7 @@ let harfbuzz =
       , pkgDeps = [ prelude.unbounded "freetype-prebuild"
                   , prelude.unbounded "glib"
                   ]
+      , pkgBuildDeps = [ prelude.unbounded "pkg-config" ]
       , configureCommand = prelude.configureLinkExtraLibs [ "pcre", "z" ]
       , installCommand =
           λ(cfg : types.BuildVars) →
@@ -916,6 +918,7 @@ let freetype-prebuild =
       { pkgDeps = [ prelude.unbounded "zlib"
                   , prelude.unbounded "libpng"
                   ]
+      , pkgBuildDeps = [ prelude.unbounded "pkg-config" ]
       }
 in
 
@@ -1381,7 +1384,12 @@ let glib =
                                                                   , "gthread-2.0.pc"
                                                                   ]) cfg
 
-              # [ prelude.symlink "include/glib-2.0/glib" "include/glib"
+              # [ prelude.symlink "${libDir}/libglib-2.0.so" "lib/libglib-2.0.so"
+                , prelude.symlink "${libDir}/libgio-2.0.so" "lib/libgio.so"
+                , prelude.symlink "${libDir}/libgthread-2.0.so" "lib/libgthread.so"
+                , prelude.symlink "${libDir}/libgobject-2.0.so" "lib/libgobject.so"
+                , prelude.symlink "${libDir}/libgmodule-2.0.so" "lib/libgmodule.so"
+                , prelude.symlink "include/glib-2.0/glib" "include/glib"
                 , prelude.symlink "include/glib-2.0/gobject" "include/gobject"
                 , prelude.symlink "include/glib-2.0/glib.h" "include/glib.h"
                 , prelude.symlink "include/glib-2.0/glib-object.h" "include/glib-object.h"
@@ -1677,7 +1685,7 @@ let mkXLib =
     prelude.simplePackage { name = name, version = v } ⫽
       { pkgUrl = "https://www.x.org/releases/individual/lib/${name}-${prelude.showVersion v}.tar.bz2"
       , configureCommand = xorgConfigure
-      -- , pkgBuildDeps = [ prelude.unbounded "pkg-config" ]
+      , pkgBuildDeps = [ prelude.unbounded "pkg-config" ]
       }
 in
 
@@ -1900,7 +1908,7 @@ let libselinux =
       , pkgDeps = [ prelude.unbounded "pcre"
                   , prelude.unbounded "libsepol"
                   ]
-      -- , pkgBuildDeps = [ prelude.unbounded "pkg-config" ]
+      , pkgBuildDeps = [ prelude.unbounded "pkg-config" ]
       }
 in
 

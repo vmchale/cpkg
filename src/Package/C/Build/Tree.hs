@@ -61,6 +61,7 @@ buildWithContext cTree host sta = zygoM' dirAlg buildAlg cTree
                 bins = binDir : bs
                 shares = dataDir : ds
 
+            -- TODO: do this for all of them?
             includeExists <- liftIO (doesDirectoryExist includeDir)
             let includes = if includeExists
                 then includeDir : is

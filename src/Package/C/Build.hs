@@ -6,6 +6,7 @@ module Package.C.Build ( buildCPkg
 import           Control.Concurrent          (getNumCapabilities)
 import           CPkgPrelude
 import           Data.Maybe                  (isJust)
+import qualified Data.Text                   as T
 import qualified Data.Text.IO                as TIO
 import           Package.C.Build.OS
 import           Package.C.Db.Register
@@ -50,8 +51,10 @@ stepToProc _ p (Symlink tgt' lnk) = do
     liftIO $ createDirectoryIfMissing True (takeDirectory linkAbs)
     -- TODO: diagnostics for symlinks
     liftIO $ createFileLink (p </> tgt') linkAbs
-stepToProc dir' _ (Write out fp) =
-    liftIO (TIO.writeFile (dir' </> fp) out)
+stepToProc dir' _ (Write out fp) = do
+    let fpAbs = dir' </> fp
+    putDiagnostic ("Writing\n" ++ T.unpack out ++ "\n in file" ++ fpAbs)
+    liftIO (TIO.writeFile fpAbs out)
 stepToProc dir' p (CopyFile src' dest') = do
     let absSrc = dir' </> src'
         absDest = p </> dest'
