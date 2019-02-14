@@ -231,10 +231,10 @@ let mkLDFlagsGeneral =
     let flag0 = concatMapSep " " Text (λ(dir : Text) → "-L${dir}") libDirs
     in
     let flag1 = concatMapText Text (λ(dir : Text) → " -l${dir}") linkLibs
-    let flag2 = concatMapText Text (λ(dir : Text) → " -Wl,-rpath-link,${dir}") libDirs
+    -- let flag2 = concatMapText Text (λ(dir : Text) → " -Wl,-rpath-link,${dir}") libDirs
     in
 
-    { var = "LDFLAGS", value = flag0 ++ flag1 ++ flag2 }
+    { var = "LDFLAGS", value = flag0 ++ flag1 }
 in
 
 let mkLDFlags =
@@ -609,7 +609,7 @@ in
 
 let cmakeEnv =
   λ(cfg : types.BuildVars) →
-    [ mkPkgConfigVar (cfg.shareDirs # cfg.linkDirs) ]
+    [ mkPkgConfigVar cfg.shareDirs ]
       # defaultPath cfg
 in
 
@@ -750,7 +750,7 @@ in
 
 let mesonEnv =
   λ(cfg : types.BuildVars) →
-    Some [ mkPkgConfigVar (cfg.linkDirs # cfg.shareDirs)
+    Some [ mkPkgConfigVar cfg.linkDirs
          , { var = "PATH", value = mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
          , mkPy3Path cfg.linkDirs
          , libPath cfg

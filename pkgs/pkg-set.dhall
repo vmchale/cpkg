@@ -1126,6 +1126,10 @@ let shared-mime-info =
                                                                                                 ])
                                                 })
           ]
+     , installCommand =
+        λ(cfg : types.BuildVars) →
+          prelude.defaultInstall cfg
+            # [ prelude.symlink "share/pkgconfig" "lib/pkgconfig" ]
      , pkgDeps = [ prelude.unbounded "glib"
                  , prelude.unbounded "libxml2"
                  ]
