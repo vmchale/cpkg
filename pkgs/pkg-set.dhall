@@ -914,7 +914,7 @@ in
 
 let freetype-prebuild =
   λ(v : List Natural) →
-    freetype-shared { name = "freetype-prebuild", version = v } ⫽ -- FIXME: for some reason a zlib dep here breaks harfbuzz???
+    freetype-shared { name = "freetype-prebuild", version = v } ⫽
       { pkgDeps = [ prelude.unbounded "zlib"
                   , prelude.unbounded "libpng"
                   ]
@@ -1385,10 +1385,11 @@ let glib =
                                                                   ]) cfg
 
               # [ prelude.symlink "${libDir}/libglib-2.0.so" "lib/libglib-2.0.so"
-                , prelude.symlink "${libDir}/libgio-2.0.so" "lib/libgio.so"
-                , prelude.symlink "${libDir}/libgthread-2.0.so" "lib/libgthread.so"
-                , prelude.symlink "${libDir}/libgobject-2.0.so" "lib/libgobject.so"
-                , prelude.symlink "${libDir}/libgmodule-2.0.so" "lib/libgmodule.so"
+                , prelude.symlink "${libDir}/libglib-2.0.so.0" "lib/libglib-2.0.so.0"
+                , prelude.symlink "${libDir}/libgio-2.0.so" "lib/libgio-2.0.so"
+                , prelude.symlink "${libDir}/libgthread-2.0.so" "lib/libgthread-2.0.so"
+                , prelude.symlink "${libDir}/libgobject-2.0.so" "lib/libgobject-2.0.so"
+                , prelude.symlink "${libDir}/libgmodule-2.0.so" "lib/libgmodule-2.0.so"
                 , prelude.symlink "include/glib-2.0/glib" "include/glib"
                 , prelude.symlink "include/glib-2.0/gobject" "include/gobject"
                 , prelude.symlink "include/glib-2.0/glib.h" "include/glib.h"
