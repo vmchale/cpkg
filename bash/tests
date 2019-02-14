@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+
+set -e
+
 cabal new-test
 cabal new-run cpkg -- install emacs -vv --pkg-set './pkgs/pkg-set.dhall'
 cabal new-run cpkg -- install feh -vv --pkg-set './pkgs/pkg-set.dhall' --target=arm-linux-gnueabihf

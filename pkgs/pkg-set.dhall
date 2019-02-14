@@ -2931,7 +2931,7 @@ in
 , intltool [0,51,0]
 , itstool [2,0,5]
 , jemalloc [5,1,0]
-, jpegTurbo [2,0,1]
+, jpegTurbo [2,0,2]
 , joe [4,6]
 , json-c { version = [0,13,1], dateStr = "20180305" }
 , kbproto [1,0,7]
