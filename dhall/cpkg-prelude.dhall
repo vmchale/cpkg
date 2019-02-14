@@ -231,10 +231,10 @@ let mkLDFlagsGeneral =
     let flag0 = concatMapSep " " Text (λ(dir : Text) → "-L${dir}") libDirs
     in
     let flag1 = concatMapText Text (λ(dir : Text) → " -l${dir}") linkLibs
-    -- let flag2 = concatMapText Text (λ(dir : Text) → " -Wl,-rpath-link,${dir}") libDirs
+    let flag2 = concatMapText Text (λ(dir : Text) → " -Wl,-rpath-link,${dir}") libDirs
     in
 
-    { var = "LDFLAGS", value = flag0 ++ flag1 }
+    { var = "LDFLAGS", value = flag0 ++ flag1 ++ flag2 }
 in
 
 let mkLDFlags =
