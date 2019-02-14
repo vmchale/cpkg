@@ -442,7 +442,7 @@ in
 
 let mkAclocalPath =
   λ(shareDirs : List Text) →
-    let flag = concatMapSep ":" Text (λ(dir : Text) → "${dir}/aclocal") shareDirs
+    let flag = concatMapSep ":" Text (λ(dir : Text) → "${dir}/aclocal:${dir}/autoconf/autoconf") shareDirs
     in
 
     { var = "ACLOCAL_PATH", value = flag }
@@ -701,7 +701,8 @@ let autogenConfigure =
     [ mkExe "autogen.sh"
     , call (defaultCall ⫽ { program = "./autogen.sh"
                           -- TODO ACLOCAL_PATH ??
-                          -- also binary paths
+                          , environment = Some ([ mkAclocalPath cfg.shareDirs ]
+                                                  # defaultPath cfg)
                           })
     ] # defaultConfigure cfg
 in

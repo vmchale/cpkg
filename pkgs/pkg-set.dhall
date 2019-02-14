@@ -2849,6 +2849,25 @@ let libsodium =
       { pkgUrl = "https://download.libsodium.org/libsodium/releases/libsodium-${prelude.showVersion v}.tar.gz" }
 in
 
+let libev =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libev", version = v } ⫽
+      { pkgUrl = "http://dist.schmorp.de/libev/Attic/libev-${prelude.showVersion v}.tar.gz" }
+in
+
+let weighttp =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "weighttp", version = v } ⫽
+      { pkgUrl = "https://github.com/lighttpd/weighttp/archive/weighttp-${versionString}.tar.gz"
+      , pkgSubdir = "weighttp-weighttp-${versionString}"
+      , configureCommand = prelude.autogenConfigure
+      , pkgBuildDeps = [ prelude.unbounded "autoconf"
+                       , prelude.unbounded "automake"
+                       ]
+      }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
@@ -2926,6 +2945,7 @@ in
 , libdatrie [0,2,12]
 , libdrm [2,4,96]
 , libepoxy [1,5,3]
+, libev [4,25]
 , libevent [2,1,8]
 , libexif [0,6,21]
 , libffi [3,2,1]
@@ -3034,6 +3054,7 @@ in
 , valgrind [3,14,0]
 , vim [8,1]
 , wayland [1,16,0]
+, weighttp [0,4]
 , wget [1,20]
 , which [2,21]
 , xcb-proto [1,13]
