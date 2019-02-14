@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -e
+
+cpkg install gc
+cpkg install gc --target=i686-linux-gnu
+cpkg install gc --target=x86_64-w64-mingw32
+cpkg install gc --target=s390x-linux-gnu
+cpkg install gc --target=arm-linux-gnueabihf
+cpkg install gc --target=powerpc64-linux-gnu
+cpkg install gc --target=powerpc64le-linux-gnu
+cpkg install gc --target=powerpc-linux-gnu
+cpkg install gc --target=powerpc-linux-gnuspe
+cpkg install gc --target=aarch64-linux-gnu
+cpkg install gc --target=alpha-linux-gnu
+cpkg install gc --target=m68k-linux-gnu
+cpkg install gc --target=mips-linux-gnu
+cpkg install gc --target=mipsel-linux-gnu
+cpkg install gc --target=mips64-linux-gnu
+cpkg install gc --target=mips64el-linux-gnu
+cpkg install gc --target=sh4-linux-gnu
+cpkg install gc --target=arm-linux-gnueabi
+cpkg install gc --target=riscv64-linux-gnu
+cpkg install gc --target=hppa-linux-gnu
+cpkg install gc --target=sparc64-linux-gnu
+cpkg install gc --target=hppa64-linux-gnu
+cpkg install gc --target=i686-w64-mingw32

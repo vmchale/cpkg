@@ -42,7 +42,8 @@
 - [ ] Caching
   - [ ] Cache global package set?
 - [ ] `unpack` subcommand for packages
-- [ ] Cabal integration?
+- [ ] Cabal integration? Make it usable as a package for `Setup.hs` files :o
+  - [ ] Better Haddock API; expose more types
 - [ ] Allow a package's function to specify a `pkg-config` dir, etc.
 - [ ] Bootstrap "fancy" tar?
 - [ ] Package "components"? Like cabal: build executables or not...
