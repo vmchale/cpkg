@@ -2131,6 +2131,7 @@ let postgresql =
       { pkgUrl = "https://ftp.postgresql.org/pub/source/v${versionString}/postgresql-${versionString}.tar.bz2"
       , configureCommand = prelude.configureWithFlags [ "--without-readline" ] -- TODO: set USE_DEV_URANDOM=1 or USE_WIN32_RANDOM=1 on windows
       , installCommand = prelude.installWithBinaries [ "bin/pg_config" ]
+      , pkgDeps = [ prelude.unbounded "zlib" ]
       }
 in
 
