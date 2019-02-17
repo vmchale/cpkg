@@ -336,7 +336,8 @@ in
 let nasm =
   λ(v : List Natural) →
     prelude.simplePackage { name = "nasm", version = v } ⫽
-      { pkgUrl = "http://www.nasm.us/pub/nasm/releasebuilds/${prelude.showVersion v}/nasm-${prelude.showVersion v}.tar.xz"
+      { pkgUrl = "http://www.nasm.us/pub/nasm/releasebuilds/${prelude.showVersion v}.02/nasm-${prelude.showVersion v}.02.tar.xz"
+      , pkgSubdir = "nasm-${prelude.showVersion v}.02"
       , installCommand = prelude.installWithBinaries [ "bin/nasm", "bin/ndisasm" ]
       }
 in
@@ -869,7 +870,6 @@ let pkg-config =
     prelude.simplePackage { name = "pkg-config", version = v } ⫽
       { pkgUrl = "https://pkg-config.freedesktop.org/releases/pkg-config-${prelude.showVersion v}.tar.gz"
       , configureCommand = prelude.configureWithFlags [ "--with-internal-glib" ]
-      , installCommand = prelude.installWithBinaries [ "bin/pkg-config" ]
       }
 in
 
@@ -2468,8 +2468,7 @@ let feh =
                                                           , "install"
                                                           ]
                                             })
-      , prelude.symlinkBinary "bin/feh"
-      ]
+      ] # prelude.mkLDPathWrapper cfg "feh"
   in
 
   λ(v : List Natural) →
@@ -2493,6 +2492,8 @@ let imlib2 =
       { pkgUrl = "https://downloads.sourceforge.net/enlightenment/imlib2-${prelude.showVersion v}.tar.bz2"
       , pkgDeps = [ prelude.unbounded "libXext"
                   , prelude.unbounded "freetype"
+                  , prelude.unbounded "libjpeg"
+                  , prelude.unbounded "libpng"
                   ]
       }
 in

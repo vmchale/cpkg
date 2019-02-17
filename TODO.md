@@ -107,8 +107,10 @@
 - [ ] fish
 - [ ] libtizcore
 - [ ] ghostscript
+- [ ] https://github.com/yaml/libyaml
 - [ ] http://www.linuxfromscratch.org/blfs/view/svn/general/boost.html
 - [ ] brlcad https://jaist.dl.sourceforge.net/project/brlcad/BRL-CAD%20Source/7.28.0/brlcad-7.28.0.tar.bz2
+- [ ] gstreamer-video
 - [ ] ragel
 - [ ] https://ftp.gnu.org/gnu/parallel/parallel-20181222.tar.bz2
 - [ ] http://savannah.gnu.org/projects/patch/
@@ -159,6 +161,8 @@
 - [ ] GIMP
 - [ ] https://github.com/mtoyoda/sl/releases
 - [ ] glib-networking
+- [ ] libsocketcap
+- [ ] https://github.com/aperezdc/signify
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in
