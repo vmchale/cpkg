@@ -2886,8 +2886,18 @@ let tcc =
   λ(v : List Natural) →
     prelude.simplePackage { name = "tcc", version = v } ⫽
       { pkgUrl = "http://download.savannah.gnu.org/releases/tinycc/tcc-${prelude.showVersion v}.tar.bz2"
+      , configureCommand = prelude.configureMkExes [ "texi2pod.pl" ]
+      , pkgBuildDeps = [ prelude.unbounded "perl"
+                       , prelude.unbounded "texinfo"
+                       ]
       , installCommand = prelude.installWithBinaries [ "bin/tcc" ]
       }
+in
+
+let texinfo =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "texinfo", version = v } ⫽
+      { pkgUrl = "https://ftp.gnu.org/gnu/texinfo/texinfo-${prelude.showVersion v}.tar.xz" }
 in
 
 [ autoconf [2,69]
@@ -3070,6 +3080,7 @@ in
 , sqlite { year = 2018, version = [3,26,0] }
 , swig [3,0,12]
 , tar [1,30]
+, texinfo [6,6]
 , tcc [0,9,27]
 , unistring [0,9,10]
 , util-linux [2,33]
