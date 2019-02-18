@@ -2906,7 +2906,10 @@ let node =
     prelude.simplePackage { name = "node", version = v } ⫽
       { pkgUrl = "https://nodejs.org/dist/v${versionString}/node-v${versionString}.tar.gz"
       , pkgSubdir = "node-v${versionString}"
-      , installCommand = prelude.installWithBinaries [ "bin/node", "bin/npm" ]
+      , installCommand =
+          λ(cfg : types.BuildVars) →
+            prelude.installWithBinaries [ "bin/node", "bin/npm" ] cfg
+              # [ prelude.mkExe "${cfg.installDir}/lib/node_modules/npm/bin/npm-cli.js" ]
       }
 in
 
