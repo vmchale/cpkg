@@ -2882,6 +2882,14 @@ let ctags =
       }
 in
 
+let tcc =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "tcc", version = v } ⫽
+      { pkgUrl = "http://download.savannah.gnu.org/releases/tinycc/tcc-${prelude.showVersion v}.tar.bz2"
+      , installCommand = prelude.installWithBinaries [ "bin/tcc" ]
+      }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
@@ -3062,6 +3070,7 @@ in
 , sqlite { year = 2018, version = [3,26,0] }
 , swig [3,0,12]
 , tar [1,30]
+, tcc [0,9,27]
 , unistring [0,9,10]
 , util-linux [2,33]
 , util-macros [1,19,2]
