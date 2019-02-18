@@ -2900,6 +2900,16 @@ let texinfo =
       { pkgUrl = "https://ftp.gnu.org/gnu/texinfo/texinfo-${prelude.showVersion v}.tar.xz" }
 in
 
+let node =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "node", version = v } ⫽
+      { pkgUrl = "https://nodejs.org/dist/v${versionString}/node-v${versionString}.tar.gz"
+      , pkgSubdir = "node-v${versionString}"
+      , installCommand = prelude.installWithBinaries [ "bin/node", "bin/npm" ]
+      }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
@@ -3048,6 +3058,7 @@ in
 , ncurses [6,1]
 , nginx [1,15,7]
 , ninja [1,9,0]
+, node [10,15,1]
 , npth [1,6]
 , nspr [4,20]
 , openssh [7,9]

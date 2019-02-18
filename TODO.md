@@ -162,6 +162,7 @@
 - [ ] https://github.com/mtoyoda/sl/releases
 - [ ] glib-networking
 - [ ] libsocketcap
+- [ ] npm/node
 - [ ] https://github.com/aperezdc/signify
 # Documentation
 - [ ] Write a manpage
