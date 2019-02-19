@@ -2943,11 +2943,8 @@ in
 , bison [3,3]
 , bzip2 [1,0,6]
 , cairo [1,16,0]
-, cheese { version = [3,30], patch = 0 }
 , chickenScheme [5,0,0]
-, clutter { version = [1,26], patch = 2 }
 , cmake { version = [3,13], patch = 4 }
-, cogl { version = [1,22], patch = 2 }
 , compositeproto [0,4]
 , coreutils [8,30]
 , ctags [5,8]
