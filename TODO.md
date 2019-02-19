@@ -24,6 +24,7 @@
 - [ ] `wget` doesn't work with latest gnutls
 - [ ] Report bug to LFS: libevent depends on openssl as they have configured it...
 - [ ] OpenSSH fails to cross-compile
+- [ ] bz2 fails to unpack glu?
 # Libraries
 - [ ] Consider splitting off library for parsing triples &c.
 # Code Maintenance

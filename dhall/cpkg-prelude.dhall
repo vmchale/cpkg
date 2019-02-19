@@ -1166,4 +1166,5 @@ in
 , underscoreVersion   = underscoreVersion
 , isX64               = isX64
 , configWithEnv       = configWithEnv
+, buildEnv            = buildEnv
 }

@@ -2913,6 +2913,26 @@ let node =
       }
 in
 
+let glu =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "glu", version = v } ⫽
+      { pkgUrl = "https://mesa.freedesktop.org/archive/glu/glu-${prelude.showVersion v}.tar.gz"
+      , pkgDeps = [ prelude.unbounded "mesa" ]
+      }
+in
+
+let compositeproto =
+  mkXProto "compositeproto"
+in
+
+let libXcomposite =
+  mkXLibDeps { name = "libXcomposite", deps = [ prelude.unbounded "libX11"
+                                              , prelude.lowerBound { name = "compositeproto", lower = [0,4] }
+                                              , prelude.unbounded "libXfixes"
+                                              ]
+             }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
@@ -2923,8 +2943,12 @@ in
 , bison [3,3]
 , bzip2 [1,0,6]
 , cairo [1,16,0]
+, cheese { version = [3,30], patch = 0 }
 , chickenScheme [5,0,0]
+, clutter { version = [1,26], patch = 2 }
 , cmake { version = [3,13], patch = 4 }
+, cogl { version = [1,22], patch = 2 }
+, compositeproto [0,4]
 , coreutils [8,30]
 , ctags [5,8]
 , curl [7,63,0]
@@ -2957,6 +2981,7 @@ in
 , git [2,19,2]
 , glib { version = [2,58], patch = 3 } -- TODO: bump to 2.59.0 once gobject-introspection supports it
 , glproto [1,4,17]
+, glu [9,0,0]
 , json-glib { version = [1,4], patch = 4 }
 , glibc [2,28]
 , gmp [6,1,2]
@@ -3026,6 +3051,7 @@ in
 , libXaw [1,0,13]
 , libXaw3d [1,6,3]
 , libxcb [1,13]
+, libXcomposite [0,4,4]
 , libXdamage [1,1,4]
 , libXdmcp [1,1,2]
 , libXext [1,3,3]
