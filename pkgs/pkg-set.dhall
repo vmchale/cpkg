@@ -2933,6 +2933,28 @@ let libXcomposite =
              }
 in
 
+let mosh =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "mosh", version = v } ⫽
+      { pkgUrl = "https://mosh.org/mosh-${prelude.showVersion v}.tar.gz"
+      , pkgBuildDeps = [ prelude.unbounded "protobuf" ]
+      , pkgDeps = [ prelude.unbounded "zlib"
+                  , prelude.unbounded "protobuf"
+                  , prelude.unbounded "openssl"
+                  ]
+      , installCommand = prelude.installWithBinaries [ "bin/mosh" ]
+      }
+in
+
+let protobuf =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "protobuf", version = v } ⫽
+      { pkgUrl = "https://github.com/protocolbuffers/protobuf/releases/download/v${versionString}/protobuf-cpp-${versionString}.tar.gz"
+      , pkgSubdir = "protobuf-${versionString}"
+      }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
@@ -3077,6 +3099,7 @@ in
 , mesa [18,3,1]
 , meson [0,49,2]
 , mpfr [4,0,2]
+, mosh [1,3,2]
 , motif [2,3,8]
 , musl [1,1,20]
 , nano [3,2]
@@ -3097,6 +3120,7 @@ in
 , pixman [0,36,0]
 , pkg-config [0,29,2]
 , postgresql [11,1]
+, protobuf [3,6,1]
 , pycairo [1,18,0]
 , pygobject { version = [2,28], patch = 7 }
 , pygtk { version = [2,24], patch = 0 }

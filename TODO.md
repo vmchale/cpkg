@@ -109,6 +109,7 @@
 - [ ] libtizcore
 - [ ] ghostscript
 - [ ] https://github.com/yaml/libyaml
+- [ ] https://mosh.org/mosh-1.3.2.tar.gz
 - [ ] http://www.linuxfromscratch.org/blfs/view/svn/general/boost.html
 - [ ] brlcad https://jaist.dl.sourceforge.net/project/brlcad/BRL-CAD%20Source/7.28.0/brlcad-7.28.0.tar.bz2
 - [ ] gstreamer-video
@@ -142,6 +143,7 @@
 - [ ] http://luajit.org/index.html
 - [ ] https://github.com/mquinson/po4a
 - [ ] texinfo/help2man
+- [ ] libutemper
 - [ ] https://www.gimp.org/source/#gimp-requirements
 - [ ] https://github.com/GNOME/cheese
 - [ ] http://trousers.sourceforge.net/

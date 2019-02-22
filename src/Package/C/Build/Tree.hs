@@ -36,6 +36,13 @@ immoralFilter (Just tgt') fps =
     let infixDir = show tgt'
     in filter (\fp -> infixDir `isInfixOf` fp || "meson" `isInfixOf` fp || "XML-Parser" `isInfixOf` fp || "python3" `isInfixOf` fp) fps -- FIXME: more principled approach
 
+-- filter out stuff from the path
+filterCross :: Maybe TargetTriple -> [FilePath] -> [FilePath]
+filterCross Nothing = id
+filterCross (Just tgt') =
+    let infixDir = show tgt'
+    in filter (\fp -> not $ infixDir `isInfixOf` fp)
+
 buildWithContext :: DepTree CPkg
                  -> Maybe TargetTriple
                  -> Bool -- ^ Should we build static libraries?
@@ -44,7 +51,7 @@ buildWithContext cTree host sta = zygoM' dirAlg buildAlg cTree
 
     where buildAlg :: DepTreeF CPkg (BuildDirs, ()) -> PkgM ()
           buildAlg (DepNodeF c preBds) =
-            buildCPkg c host sta ds (immoralFilter host ls) is bs
+            buildCPkg c host sta ds (immoralFilter host ls) is (filterCross host bs)
                 where (BuildDirs ls ds is bs) = getAll (fst <$> preBds)
           buildAlg (BldDepNodeF c preBds) =
             buildCPkg c Nothing False ds ls is bs -- don't use static libraries for build dependencies
