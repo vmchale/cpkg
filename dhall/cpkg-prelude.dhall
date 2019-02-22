@@ -700,7 +700,6 @@ let autogenConfigure =
   λ(cfg : types.BuildVars) →
     [ mkExe "autogen.sh"
     , call (defaultCall ⫽ { program = "./autogen.sh"
-                          -- TODO ACLOCAL_PATH ??
                           , environment = Some ([ mkAclocalPath cfg.shareDirs ]
                                                   # defaultPath cfg)
                           })
@@ -1028,6 +1027,7 @@ let installWithWrappers =
   λ(cfg : types.BuildVars) →
     defaultInstall cfg #
       concatMap Text types.Command (λ(bin : Text) → mkLDPathWrapper cfg bin) bins
+      -- TODO: add to PATH for e.g. PERL interpreter
 in
 
 let underscoreVersion =
