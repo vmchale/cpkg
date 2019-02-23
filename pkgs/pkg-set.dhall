@@ -346,9 +346,16 @@ let ncurses =
   λ(v : List Natural) →
     prelude.simplePackage { name = "ncurses", version = v } ⫽
       { pkgUrl = "https://ftp.gnu.org/pub/gnu/ncurses/ncurses-${prelude.showVersion v}.tar.gz"
-      , configureCommand = prelude.configureWithFlags [ "--disable-stripping", "--with-shared", "--enable-widec" ]
-      -- we disable stripping because otherwise the script fails during cross-compilation
-      -- enable-widec is necessary because util-linux uses libncursesw
+      , configureCommand =
+        λ(cfg : types.BuildVars) →
+          let crossArgs =
+            if cfg.isCross
+              then [ "--disable-stripping" ]
+              else [] : List Text
+          in
+
+          prelude.configureWithFlags ([ "--with-shared", "--enable-widec" ] # crossArgs) cfg
+          -- enable-widec is necessary because util-linux uses libncursesw
       }
 in
 
@@ -750,9 +757,14 @@ let python =
               then [] : List Text
               else [ "--enable-shared" ]
           in
+          let crossArgs =
+            if cfg.isCross
+              then ["--disable-ipv6"]
+              else [] : List Text
+          in
           [ prelude.writeFile { file = "config.site", contents = config } ]
             # prelude.generalConfigure pyEnv "configure" ([] : List Text)
-                ([ "--build=${prelude.printArch cfg.buildArch}", "--disable-ipv6" ] # staticFlag) cfg
+                ([ "--build=${prelude.printArch cfg.buildArch}" ] # crossArgs # staticFlag) cfg
           -- disable ipv6 for cross-compiling
           -- "--enable-optimizations" (takes forever)
       , pkgDeps = [ prelude.unbounded "libffi" ]
@@ -1267,17 +1279,26 @@ let fontconfig =
 in
 
 let util-linux =
-  λ(v : List Natural) →
-    let versionString = prelude.showVersion v in
-      prelude.simplePackage { name = "util-linux", version = v } ⫽
-        { pkgUrl = "https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v${versionString}/util-linux-${versionString}.tar.xz"
-        , configureCommand = prelude.configureWithFlags [ "--disable-makeinstall-chown" -- otherwise we'd need sudo permissions
-                                                        , "--disable-bash-completion"
-                                                        , "--disable-pylibmount" -- easier for cross-compiling
-                                                        , "--without-tinfo" -- can't figure out what tinfo is or how to supply it when cross compiling
-                                                        ]
-        , pkgDeps = [ prelude.unbounded "ncurses" ]
-        }
+  λ(x : { version : List Natural, patch : Natural }) →
+    let versionString = prelude.showVersion x.version
+    in
+    let fullVersion = versionString ++ "." ++ Natural/show x.patch
+    in
+
+    prelude.simplePackage { name = "util-linux", version = prelude.fullVersion x } ⫽
+      { pkgUrl = "https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v${versionString}/util-linux-${fullVersion}.tar.xz"
+      , configureCommand =
+        λ(cfg : types.BuildVars) →
+          let crossFlags =
+            if cfg.isCross
+              then [ "--disable-pylibmount"
+                   , "--without-tinfo"
+                   ]
+              else [] : List Text
+          in
+          prelude.configureWithFlags ([ "--disable-makeinstall-chown", "--disable-bash-completion"] # crossFlags) cfg
+      , pkgDeps = [ prelude.unbounded "ncurses" ]
+      }
 in
 
 let fribidi =
@@ -3144,7 +3165,7 @@ in
 , texinfo [6,6]
 , tcc [0,9,27]
 , unistring [0,9,10]
-, util-linux [2,33]
+, util-linux { version = [2,33], patch = 1 }
 , util-macros [1,19,2]
 , vala { version = [0,43], patch = 6 }
 , valgrind [3,14,0]

@@ -41,7 +41,7 @@ filterCross :: Maybe TargetTriple -> [FilePath] -> [FilePath]
 filterCross Nothing = id
 filterCross (Just tgt') =
     let infixDir = show tgt'
-    in filter (\fp -> not $ infixDir `isInfixOf` fp)
+    in filter (\fp -> not (infixDir `isInfixOf` fp) || "ncurses" `isInfixOf` fp)
 
 buildWithContext :: DepTree CPkg
                  -> Maybe TargetTriple
