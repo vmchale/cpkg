@@ -123,6 +123,7 @@
 - [ ] pyqt5
 - [ ] weirdo levenshtein distance in ATS
 - [ ] https://github.com/jmcnamara/libxlsxwriter/archive/RELEASE_0.8.4.tar.gz
+- [ ] http://www.linuxfromscratch.org/blfs/view/8.3/postlfs/cracklib.html
 - [ ] https://github.com/gildor2/fast_zlib
 - [ ] grep
 - [ ] https://github.com/chapel-lang/chapel/releases/download/1.18.0/chapel-1.18.0.tar.gz (https://chapel-lang.org/docs/usingchapel/QUICKSTART.html)
