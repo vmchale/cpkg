@@ -3141,7 +3141,7 @@ in
 , pixman [0,36,0]
 , pkg-config [0,29,2]
 , postgresql [11,1]
-, protobuf [3,6,1]
+, protobuf [3,7,0]
 , pycairo [1,18,0]
 , pygobject { version = [2,28], patch = 7 }
 , pygtk { version = [2,24], patch = 0 }
