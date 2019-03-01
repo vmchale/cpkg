@@ -3050,7 +3050,7 @@ in
 , lcms2 [2,9]
 , libarchive [3,3,3]
 , libassuan [2,5,2]
-, libatomic_ops [7,6,8]
+, libatomic_ops [7,6,10]
 , libcroco { version = [0,6], patch = 12 }
 , libdatrie [0,2,12]
 , libdrm [2,4,96]
