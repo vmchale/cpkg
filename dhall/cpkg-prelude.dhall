@@ -609,7 +609,10 @@ in
 
 let cmakeEnv =
   λ(cfg : types.BuildVars) →
-    [ mkPkgConfigVar cfg.shareDirs ]
+    [ mkPkgConfigVar cfg.shareDirs
+    , { var = "CMAKE_INCLUDE_PATH", value = (mkIncludePath cfg.includeDirs).value }
+    , { var = "CMAKE_LIBRARY_PATH", value = (libPath cfg).value }
+    ]
       # defaultPath cfg
 in
 
