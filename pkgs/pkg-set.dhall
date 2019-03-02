@@ -3009,7 +3009,7 @@ in
 , freetype [2,9,1]
 , fribidi [1,0,5]
 , gawk [4,2,1]
-, gc [8,0,2]
+, gc [8,0,4]
 , gdb [8,2]
 , gdk-pixbuf { version = [2,38], patch = 0 }
 , gegl { version = [0,4], patch = 12 }
