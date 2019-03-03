@@ -94,7 +94,7 @@ library
         filemanip -any,
         network-uri -any,
         megaparsec -any,
-        libarchive -any
+        libarchive >=0.2.1.1
 
     if (flag(development) && impl(ghc <=8.2))
         ghc-options: -Werror
