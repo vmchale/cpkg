@@ -101,7 +101,7 @@ installInDir cpkg cfg p p' =
 fetchCPkg :: CPkg
           -> FilePath -- ^ Directory for intermediate build files
           -> PkgM ()
-fetchCPkg cpkg = fetchUrl (pkgUrl cpkg) (pkgName cpkg)
+fetchCPkg cpkg = fetchUrl (pkgUrl cpkg) (pkgName cpkg) (pkgStream cpkg)
 
 buildCPkg :: CPkg
           -> Maybe TargetTriple

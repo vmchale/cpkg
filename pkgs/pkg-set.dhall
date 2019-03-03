@@ -2606,8 +2606,9 @@ let mesa =
                   , prelude.lowerBound { name = "glproto", lower = [1,4,14] }
                   , prelude.lowerBound { name = "dri2proto", lower = [2,8] }
                   , prelude.unbounded "libXrandr"
+                  , prelude.unbounded "llvm"
                   ]
-      , configureCommand = prelude.configureWithFlags [ "--with-gallium-drivers=nouveau,swrast" ] -- disable radeon drivers so we don't need LLVM
+      -- , configureCommand = prelude.configureWithFlags [ "--with-gallium-drivers=nouveau,swrast" ] -- disable radeon drivers so we don't need LLVM
       }
 in
 
@@ -2990,9 +2991,7 @@ let libboost =
   -- TODO: use bootstrap.bat on windows
   let boostConfigure =
     λ(cfg : types.BuildVars) →
-      [ prelude.mkExe "bootstrap.sh"
-      , prelude.call (prelude.defaultCall ⫽ { program = "./bootstrap.sh" })
-      ]
+      [ prelude.call (prelude.defaultCall ⫽ { program = "./bootstrap.sh" }) ]
   in
 
   let boostInstall =
@@ -3009,9 +3008,20 @@ let libboost =
       -- TODO: allow pkgUrl to depend on os
       { pkgUrl = "https://dl.bintray.com/boostorg/release/${prelude.showVersion v}/source/boost_${versionString}.tar.bz2"
       , pkgSubdir = "boost_${versionString}"
+      , pkgStream = False
       , configureCommand = boostConfigure
       , buildCommand = prelude.doNothing
       , installCommand = boostInstall
+      }
+in
+
+let llvm =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "llvm", version = v } ⫽ prelude.cmakePackage ⫽
+      { pkgUrl = "http://releases.llvm.org/${versionString}/llvm-${versionString}.src.tar.xz"
+      , pkgSubdir = "llvm-${versionString}.src"
+      , pkgStream = False
       }
 in
 
@@ -3151,6 +3161,7 @@ in
 , libXt [1,1,5]
 , libXtst [1,2,3]
 , libXxf86vm [1,1,4]
+, llvm [7,0,1]
 , lmdb [0,9,23]
 , lua [5,3,5]
 , m17n [1,8,0]

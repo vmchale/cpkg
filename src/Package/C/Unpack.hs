@@ -40,6 +40,7 @@ zipResponse dirName response = withCurrentDirectory dirName $ do
     let options = OptDestination dirName
     extractFilesFromArchive [options] (toArchive response)
 
-unpackResponse :: Compression -> FilePath -> BSL.ByteString -> IO ()
-unpackResponse (Tar tarCmp) fp response = archiveResponse tarCmp fp response
-unpackResponse Zip fp response          = zipResponse fp response
+unpackResponse :: Compression -> Bool -> FilePath -> BSL.ByteString -> IO ()
+unpackResponse (Tar tarCmp) True fp response  = tarResponse tarCmp fp response
+unpackResponse (Tar tarCmp) False fp response = archiveResponse tarCmp fp response
+unpackResponse Zip _ fp response              = zipResponse fp response

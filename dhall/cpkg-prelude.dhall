@@ -528,6 +528,7 @@ let defaultPackage =
   , installCommand   = defaultInstall
   , pkgBuildDeps     = [] : List types.Dep
   , pkgDeps          = [] : List types.Dep
+  , pkgStream        = True
   }
 in
 
