@@ -2976,6 +2976,45 @@ let protobuf =
       }
 in
 
+let libcds =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "libcds", version = v } ⫽ prelude.cmakePackage ⫽
+      { pkgUrl = "https://pilotfiber.dl.sourceforge.net/project/libcds/cds-${versionString}/cds-${versionString}.tar.gz"
+      , pkgSubdir = "cds-${versionString}"
+      , pkgDeps = [ prelude.unbounded "libboost" ]
+      }
+in
+
+let libboost =
+  -- TODO: use bootstrap.bat on windows
+  let boostConfigure =
+    λ(cfg : types.BuildVars) →
+      [ prelude.mkExe "bootstrap.sh"
+      , prelude.call (prelude.defaultCall ⫽ { program = "./bootstrap.sh" })
+      ]
+  in
+
+  let boostInstall =
+    λ(cfg : types.BuildVars) →
+      [ prelude.call (prelude.defaultCall ⫽ { program = "./b2"
+                                            , arguments = [ "install", "--prefix=${cfg.installDir}", "--without-python" ]
+                                            })
+      ]
+  in
+
+  λ(v : List Natural) →
+    let versionString = prelude.underscoreVersion v in
+    prelude.simplePackage { name = "libboost", version = v } ⫽
+      -- TODO: allow pkgUrl to depend on os
+      { pkgUrl = "https://dl.bintray.com/boostorg/release/${prelude.showVersion v}/source/boost_${versionString}.tar.bz2"
+      , pkgSubdir = "boost_${versionString}"
+      , configureCommand = boostConfigure
+      , buildCommand = prelude.doNothing
+      , installCommand = boostInstall
+      }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
@@ -3051,6 +3090,8 @@ in
 , libarchive [3,3,3]
 , libassuan [2,5,2]
 , libatomic_ops [7,6,10]
+, libboost [1,69,0]
+, libcds [2,3,2]
 , libcroco { version = [0,6], patch = 12 }
 , libdatrie [0,2,12]
 , libdrm [2,4,96]

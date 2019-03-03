@@ -93,7 +93,8 @@ library
         recursion >=2.2.3.0,
         filemanip -any,
         network-uri -any,
-        megaparsec -any
+        megaparsec -any,
+        libarchive
 
     if (flag(development) && impl(ghc <=8.2))
         ghc-options: -Werror

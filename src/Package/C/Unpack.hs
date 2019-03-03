@@ -3,6 +3,7 @@ module Package.C.Unpack ( unpackResponse
                         , TarCompress (..)
                         ) where
 
+import qualified Codec.Archive          as Archive
 import qualified Codec.Archive.Tar      as Tar
 import           Codec.Archive.Zip      (ZipOption (..), extractFilesFromArchive, toArchive)
 import qualified Codec.Compression.BZip as Bzip
@@ -26,10 +27,13 @@ getCompressor None = id
 getCompressor Xz   = Lzma.decompress
 getCompressor Bz2  = Bzip.decompress
 
+archiveResponse :: TarCompress -> FilePath -> BSL.ByteString -> IO ()
+archiveResponse compressScheme dirName =
+    Archive.unpackToDir dirName . BSL.toStrict . getCompressor compressScheme
+
 tarResponse :: TarCompress -> FilePath -> BSL.ByteString -> IO ()
-tarResponse compressScheme dirName response =
-    let f = Tar.unpack dirName . Tar.read . getCompressor compressScheme
-    in f response
+tarResponse compressScheme dirName =
+    Tar.unpack dirName . Tar.read . getCompressor compressScheme
 
 zipResponse :: FilePath -> BSL.ByteString -> IO ()
 zipResponse dirName response = withCurrentDirectory dirName $ do
@@ -37,5 +41,5 @@ zipResponse dirName response = withCurrentDirectory dirName $ do
     extractFilesFromArchive [options] (toArchive response)
 
 unpackResponse :: Compression -> FilePath -> BSL.ByteString -> IO ()
-unpackResponse (Tar tarCmp) fp response = tarResponse tarCmp fp response
+unpackResponse (Tar tarCmp) fp response = archiveResponse tarCmp fp response
 unpackResponse Zip fp response          = zipResponse fp response
