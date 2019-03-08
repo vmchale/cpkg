@@ -3016,11 +3016,22 @@ in
 
 let llvm =
   λ(v : List Natural) →
+    let llvmBuild =
+      λ(cfg : types.BuildVars) →
+        [ prelude.call { program = "cmake"
+                       , arguments = [ "--build", ".", "--config", "Release", "--", "-j", "3" ]
+                       , environment = prelude.defaultEnv
+                       , procDir = Some "build"
+                       }
+        ]
+    in
+
     let versionString = prelude.showVersion v in
     prelude.simplePackage { name = "llvm", version = v } ⫽ prelude.cmakePackage ⫽
       { pkgUrl = "http://releases.llvm.org/${versionString}/llvm-${versionString}.src.tar.xz"
       , pkgSubdir = "llvm-${versionString}.src"
       , pkgStream = False
+      , buildCommand = llvmBuild
       }
 in
 
