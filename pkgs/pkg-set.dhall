@@ -2607,7 +2607,7 @@ let mesa =
                   , prelude.lowerBound { name = "dri2proto", lower = [2,8] }
                   , prelude.unbounded "libXrandr"
                   ]
-      , configureCommand = prelude.configureWithFlags [ "--with-gallium-drivers=nouveau,swrast" ] -- disable radeon drivers so we don't need LLVM
+      , configureCommand = prelude.configureWithFlags [ "--with-gallium-drivers=nouveau,swrast" ] -- disable radeon drivers so we don't need LLVM (7.0.1 won't work?)
       }
 in
 
