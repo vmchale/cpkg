@@ -1,5 +1,5 @@
 {- Dhall prelue imports -}
-let concatMapSep = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/Text/concatMapSep
+let concatMapSep = https://raw.githubusercontent.com/dhall-lang/dhall-lang/0a7f596d03b3ea760a96a8e03935f4baa64274e1/Prelude/Text/concatMapSep
 in
 
 {- cpkg prelude imports -}
@@ -3180,7 +3180,7 @@ in
 , markupSafe [1,0]
 , memcached [1,5,12]
 , mesa [18,3,1]
-, meson [0,49,2]
+, meson [0,50,0]
 , mpfr [4,0,2]
 , mosh [1,3,2]
 , motif [2,3,8]
@@ -3207,7 +3207,7 @@ in
 , pycairo [1,18,0]
 , pygobject { version = [2,28], patch = 7 }
 , pygtk { version = [2,24], patch = 0 }
-, python [2,7,15]
+, python [2,7,16]
 , python [3,7,2]
 , qrencode [4,0,2]
 , ragel [6,10]

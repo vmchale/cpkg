@@ -166,8 +166,11 @@
 - [ ] https://github.com/mtoyoda/sl/releases
 - [ ] glib-networking
 - [ ] libsocketcap
-- [ ] npm/node
+- [ ] https://github.com/pinard/paxutils/releases
 - [ ] https://github.com/aperezdc/signify
+- [ ] zstd
+- [ ] lz4
+- [ ] oclint
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in
