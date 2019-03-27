@@ -3087,7 +3087,7 @@ in
 , gobject-introspection { version = [1,59], patch = 3 }
 , gnome-doc-utils { version = [0,20], patch = 10 }
 , gnupg [2,2,15]
-, gnutls { version = [3,6], patch = 6 }
+, gnutls { version = [3,6], patch = 7 }
 , graphviz [2,40,1]
 , gsl [2,5]
 , gtk2 { version = [2,24], patch = 32 }
@@ -3203,7 +3203,7 @@ in
 , pixman [0,36,0]
 , pkg-config [0,29,2]
 , postgresql [11,1]
-, protobuf [3,7,0]
+, protobuf [3,7,1]
 , pycairo [1,18,0]
 , pygobject { version = [2,28], patch = 7 }
 , pygtk { version = [2,24], patch = 0 }
