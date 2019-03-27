@@ -29,7 +29,7 @@ getCompressor Bz2  = Bzip.decompress
 
 archiveResponse :: TarCompress -> FilePath -> BSL.ByteString -> IO ()
 archiveResponse compressScheme dirName =
-    Archive.unpackToDir dirName . BSL.toStrict . getCompressor compressScheme
+    Archive.unpackToDirLazy dirName . getCompressor compressScheme
 
 tarResponse :: TarCompress -> FilePath -> BSL.ByteString -> IO ()
 tarResponse compressScheme dirName =

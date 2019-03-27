@@ -1,6 +1,6 @@
 cabal-version: 1.18
 name: cpkg
-version: 0.1.1.0
+version: 0.1.1.1
 license: BSD3
 license-file: LICENSE
 copyright: Copyright: (c) 2018-2019 Vanessa McHale
@@ -94,7 +94,7 @@ library
         filemanip -any,
         network-uri -any,
         megaparsec -any,
-        libarchive >=0.2.1.1
+        libarchive >=1.0.4.0
 
     if (flag(development) && impl(ghc <=8.2))
         ghc-options: -Werror

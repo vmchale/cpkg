@@ -1,5 +1,9 @@
 # cpkg
 
+## 0.1.1.1
+
+  * Stream using `libarchive` lazily
+
 ## 0.1.1.0
 
   * Export `EnvVar`
