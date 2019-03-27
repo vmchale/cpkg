@@ -3208,7 +3208,7 @@ in
 , pygobject { version = [2,28], patch = 7 }
 , pygtk { version = [2,24], patch = 0 }
 , python [2,7,16]
-, python [3,7,2]
+, python [3,7,3]
 , qrencode [4,0,2]
 , ragel [6,10]
 , randrproto [1,5,0]
