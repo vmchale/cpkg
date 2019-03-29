@@ -1,5 +1,9 @@
 # cpkg
 
+## 0.1.2.0
+
+  * Export `Dep`
+
 ## 0.1.1.1
 
   * Stream using `libarchive` lazily

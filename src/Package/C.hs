@@ -16,6 +16,7 @@ module Package.C (
                  , MonadDb
                  , PkgM
                  , Platform
+                 , Dep (..)
                  -- * Functions
                  , buildCPkg
                  , runPkgM
