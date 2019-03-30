@@ -3035,6 +3035,15 @@ let llvm =
       }
 in
 
+let pari =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "pari", version = v } ⫽
+      { pkgUrl = "http://pari.math.u-bordeaux.fr/pub/pari/unix/pari-${prelude.showVersion v}.tar.gz"
+      , configureCommand = prelude.generalConfigure prelude.configSome "Configure" ([] : List Text) ([] : List Text)
+      , pkgStream = False
+      }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
@@ -3093,7 +3102,7 @@ in
 , gtk2 { version = [2,24], patch = 32 }
 , gtk3 { version = [3,24], patch = 4 }
 , gzip [1,9]
-, harfbuzz [2,3,1]
+, harfbuzz [2,4,0]
 , htop [2,2,0]
 , imageMagick [7,0,8]
 , imlib2 [1,5,1]
@@ -3197,6 +3206,7 @@ in
 , openssl [1,1,1]
 , p11kit [0,23,15]
 , pango { version = [1,43], patch = 0 }
+, pari [2,11,1]
 , pcre [8,42]
 , pcre2 [10,32]
 , perl5 [5,28,1]
