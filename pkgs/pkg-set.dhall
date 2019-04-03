@@ -3109,7 +3109,7 @@ in
 , inputproto [2,3,2]
 , intltool [0,51,0]
 , itstool [2,0,5]
-, jemalloc [5,1,0]
+, jemalloc [5,2,0]
 , joe [4,6]
 , json-c { version = [0,13,1], dateStr = "20180305" }
 , kbproto [1,0,7]
@@ -3143,7 +3143,7 @@ in
 , libpng [1,6,35]
 , libpsl [0,20,2]
 , libpthread-stubs [0,4]
-, libopenjpeg [2,3,0]
+, libopenjpeg [2,3,1]
 , libotf [0,9,16]
 , libselinux [2,8]
 , libsepol [2,8]
