@@ -104,6 +104,7 @@
 - [ ] FFmpeg
 - [ ] https://ftp.gnu.org/gnu/texinfo/ ?
 - [ ] charset (?)
+- [ ] weighttpd https://github.com/lighttpd/weighttp
 - [ ] https://sourceware.org/newlib/
 - [ ] fish
 - [ ] libtizcore
