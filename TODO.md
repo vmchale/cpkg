@@ -24,6 +24,7 @@
 - [ ] `wget` doesn't work with latest gnutls
 - [ ] Report bug to LFS: libevent depends on openssl as they have configured it...
 - [ ] OpenSSH fails to cross-compile
+- [ ] bz2 fails to unpack glu?
 # Libraries
 - [ ] Consider splitting off library for parsing triples &c.
 # Code Maintenance
@@ -93,8 +94,7 @@
 - [ ] Figlet
 - [ ] GHC (`https://downloads.haskell.org/~ghc/8.6.3/ghc-8.6.3-src.tar.xz`)
   & cross-compiler
-- [ ] `http://prdownloads.sourceforge.net/ctags/ctags-5.8.tar.gz`
-- [ ] https://www.libarchive.org/downloads/libarchive-3.3.3.tar.gz
+- [ ] weighttp
 - [ ] `patscc`
 - [ ] `rustc`
 - [ ] https://github.com/ZBar/ZBar
@@ -109,8 +109,11 @@
 - [ ] fish
 - [ ] libtizcore
 - [ ] ghostscript
+- [ ] https://github.com/yaml/libyaml
+- [ ] https://mosh.org/mosh-1.3.2.tar.gz
 - [ ] http://www.linuxfromscratch.org/blfs/view/svn/general/boost.html
 - [ ] brlcad https://jaist.dl.sourceforge.net/project/brlcad/BRL-CAD%20Source/7.28.0/brlcad-7.28.0.tar.bz2
+- [ ] gstreamer-video
 - [ ] ragel
 - [ ] https://ftp.gnu.org/gnu/parallel/parallel-20181222.tar.bz2
 - [ ] http://savannah.gnu.org/projects/patch/
@@ -121,6 +124,7 @@
 - [ ] pyqt5
 - [ ] weirdo levenshtein distance in ATS
 - [ ] https://github.com/jmcnamara/libxlsxwriter/archive/RELEASE_0.8.4.tar.gz
+- [ ] http://www.linuxfromscratch.org/blfs/view/8.3/postlfs/cracklib.html
 - [ ] https://github.com/gildor2/fast_zlib
 - [ ] grep
 - [ ] https://github.com/chapel-lang/chapel/releases/download/1.18.0/chapel-1.18.0.tar.gz (https://chapel-lang.org/docs/usingchapel/QUICKSTART.html)
@@ -141,6 +145,7 @@
 - [ ] http://luajit.org/index.html
 - [ ] https://github.com/mquinson/po4a
 - [ ] texinfo/help2man
+- [ ] libutemper
 - [ ] https://www.gimp.org/source/#gimp-requirements
 - [ ] https://github.com/GNOME/cheese
 - [ ] http://trousers.sourceforge.net/
@@ -161,6 +166,12 @@
 - [ ] GIMP
 - [ ] https://github.com/mtoyoda/sl/releases
 - [ ] glib-networking
+- [ ] libsocketcap
+- [ ] https://github.com/pinard/paxutils/releases
+- [ ] https://github.com/aperezdc/signify
+- [ ] zstd
+- [ ] lz4
+- [ ] oclint
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in

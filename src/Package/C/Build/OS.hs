@@ -2,8 +2,7 @@ module Package.C.Build.OS ( dhallOS
                           , dhallArch
                           ) where
 
-import           Package.C.Triple.Type      hiding (arch, os)
-import           Package.C.Type.Shared
+import           Package.C.Triple.Type hiding (arch, os)
 import           System.Info           (arch, os)
 
 dhallArch :: Arch

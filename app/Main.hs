@@ -5,7 +5,7 @@ import           Data.Semigroup
 import qualified Data.Text           as T
 import qualified Data.Version        as V
 import           Options.Applicative hiding (auto)
-import           Package.C           hiding (Command)
+import           Package.C           hiding (Command, name)
 import qualified Paths_cpkg          as P
 import           System.Directory    (doesDirectoryExist, removeDirectoryRecursive)
 

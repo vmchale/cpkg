@@ -53,6 +53,7 @@ data CPkg = CPkg { pkgName          :: T.Text
                  , pkgVersion       :: [ Natural ]
                  , pkgUrl           :: T.Text
                  , pkgSubdir        :: T.Text
+                 , pkgStream        :: Bool -- ^ Use @tar@ package to stream
                  , pkgBuildDeps     :: [ Dep ] -- TODO: depend on target?
                  , pkgDeps          :: [ Dep ]
                  , configureCommand :: BuildVars -> [ Command ]
@@ -73,4 +74,4 @@ prettyBldDeps :: [ Dep ] -> Doc a
 prettyBldDeps = preDeps "build dependencies:"
 
 instance Pretty CPkg where
-    pretty (CPkg nam v url _ bds ds _ _ _) = pretty nam <##> indent 4 ("url:" <+> pretty url <##> "version:" <+> pretty (Version v) <> prettyDeps ds <> prettyBldDeps bds)
+    pretty (CPkg nam v url _ _ bds ds _ _ _) = pretty nam <##> indent 4 ("url:" <+> pretty url <##> "version:" <+> pretty (Version v) <> prettyDeps ds <> prettyBldDeps bds)

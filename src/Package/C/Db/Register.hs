@@ -151,7 +151,7 @@ pkgToBuildCfg :: CPkg
               -> Maybe TargetTriple
               -> BuildVars
               -> BuildCfg
-pkgToBuildCfg (CPkg n v _ _ _ _ cCmd bCmd iCmd) host bVar =
+pkgToBuildCfg (CPkg n v _ _ _ _ _ cCmd bCmd iCmd) host bVar =
     BuildCfg n v mempty mempty host (cCmd bVar) (bCmd bVar) (iCmd bVar) -- TODO: fix pinned build deps &c.
 
 platformString :: Maybe TargetTriple -> (FilePath -> FilePath -> FilePath)

@@ -1,5 +1,5 @@
 {- Dhall prelude imports -}
-let concatMapSep = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/Text/concatMapSep
+let concatMapSep = https://raw.githubusercontent.com/dhall-lang/dhall-lang/0a7f596d03b3ea760a96a8e03935f4baa64274e1/Prelude/Text/concatMapSep
 in
 
 let concatMapText = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/Text/concatMap
@@ -442,7 +442,7 @@ in
 
 let mkAclocalPath =
   λ(shareDirs : List Text) →
-    let flag = concatMapSep ":" Text (λ(dir : Text) → "${dir}/aclocal") shareDirs
+    let flag = concatMapSep ":" Text (λ(dir : Text) → "${dir}/aclocal:${dir}/autoconf/autoconf") shareDirs
     in
 
     { var = "ACLOCAL_PATH", value = flag }
@@ -528,6 +528,7 @@ let defaultPackage =
   , installCommand   = defaultInstall
   , pkgBuildDeps     = [] : List types.Dep
   , pkgDeps          = [] : List types.Dep
+  , pkgStream        = True
   }
 in
 
@@ -609,7 +610,10 @@ in
 
 let cmakeEnv =
   λ(cfg : types.BuildVars) →
-    [ mkPkgConfigVar (cfg.shareDirs # cfg.linkDirs) ]
+    [ mkPkgConfigVar cfg.shareDirs
+    , { var = "CMAKE_INCLUDE_PATH", value = (mkIncludePath cfg.includeDirs).value }
+    , { var = "CMAKE_LIBRARY_PATH", value = (libPath cfg).value }
+    ]
       # defaultPath cfg
 in
 
@@ -700,8 +704,8 @@ let autogenConfigure =
   λ(cfg : types.BuildVars) →
     [ mkExe "autogen.sh"
     , call (defaultCall ⫽ { program = "./autogen.sh"
-                          -- TODO ACLOCAL_PATH ??
-                          -- also binary paths
+                          , environment = Some ([ mkAclocalPath cfg.shareDirs ]
+                                                  # defaultPath cfg)
                           })
     ] # defaultConfigure cfg
 in
@@ -749,7 +753,7 @@ in
 
 let mesonEnv =
   λ(cfg : types.BuildVars) →
-    Some [ mkPkgConfigVar (cfg.linkDirs # cfg.shareDirs)
+    Some [ mkPkgConfigVar cfg.linkDirs
          , { var = "PATH", value = mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
          , mkPy3Path cfg.linkDirs
          , libPath cfg
@@ -1027,6 +1031,7 @@ let installWithWrappers =
   λ(cfg : types.BuildVars) →
     defaultInstall cfg #
       concatMap Text types.Command (λ(bin : Text) → mkLDPathWrapper cfg bin) bins
+      -- TODO: add to PATH for e.g. PERL interpreter
 in
 
 let underscoreVersion =
@@ -1165,4 +1170,5 @@ in
 , underscoreVersion   = underscoreVersion
 , isX64               = isX64
 , configWithEnv       = configWithEnv
+, buildEnv            = buildEnv
 }

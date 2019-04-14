@@ -12,9 +12,11 @@ module Package.C (
                  , ABI (..)
                  , InstallDb (..)
                  , BuildCfg (..)
+                 , EnvVar (..)
                  , MonadDb
                  , PkgM
                  , Platform
+                 , Dep (..)
                  -- * Functions
                  , buildCPkg
                  , runPkgM

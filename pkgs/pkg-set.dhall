@@ -1,5 +1,5 @@
 {- Dhall prelue imports -}
-let concatMapSep = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/Text/concatMapSep
+let concatMapSep = https://raw.githubusercontent.com/dhall-lang/dhall-lang/0a7f596d03b3ea760a96a8e03935f4baa64274e1/Prelude/Text/concatMapSep
 in
 
 {- cpkg prelude imports -}
@@ -140,6 +140,7 @@ let dbus =
                   , prelude.unbounded "libselinux"
                   ]
       , configureCommand = prelude.configureLinkExtraLibs [ "pcre" ]
+      , pkgBuildDeps = [ prelude.unbounded "pkg-config" ]
       }
 in
 
@@ -272,6 +273,7 @@ let harfbuzz =
       , pkgDeps = [ prelude.unbounded "freetype-prebuild"
                   , prelude.unbounded "glib"
                   ]
+      , pkgBuildDeps = [ prelude.unbounded "pkg-config" ]
       , configureCommand = prelude.configureLinkExtraLibs [ "pcre", "z" ]
       , installCommand =
           λ(cfg : types.BuildVars) →
@@ -307,7 +309,7 @@ let harfbuzz =
       }
 in
 
-let jpegTurbo =
+let libjpeg-turbo =
   λ(v : List Natural) →
     prelude.cmakePackage ⫽
       { pkgName = "libjpeg-turbo"
@@ -334,7 +336,8 @@ in
 let nasm =
   λ(v : List Natural) →
     prelude.simplePackage { name = "nasm", version = v } ⫽
-      { pkgUrl = "http://www.nasm.us/pub/nasm/releasebuilds/${prelude.showVersion v}/nasm-${prelude.showVersion v}.tar.xz"
+      { pkgUrl = "http://www.nasm.us/pub/nasm/releasebuilds/${prelude.showVersion v}.02/nasm-${prelude.showVersion v}.02.tar.xz"
+      , pkgSubdir = "nasm-${prelude.showVersion v}.02"
       , installCommand = prelude.installWithBinaries [ "bin/nasm", "bin/ndisasm" ]
       }
 in
@@ -343,9 +346,16 @@ let ncurses =
   λ(v : List Natural) →
     prelude.simplePackage { name = "ncurses", version = v } ⫽
       { pkgUrl = "https://ftp.gnu.org/pub/gnu/ncurses/ncurses-${prelude.showVersion v}.tar.gz"
-      , configureCommand = prelude.configureWithFlags [ "--disable-stripping", "--with-shared", "--enable-widec" ]
-      -- we disable stripping because otherwise the script fails during cross-compilation
-      -- enable-widec is necessary because util-linux uses libncursesw
+      , configureCommand =
+        λ(cfg : types.BuildVars) →
+          let crossArgs =
+            if cfg.isCross
+              then [ "--disable-stripping" ]
+              else [] : List Text
+          in
+
+          prelude.configureWithFlags ([ "--with-shared", "--enable-widec" ] # crossArgs) cfg
+          -- enable-widec is necessary because util-linux uses libncursesw
       }
 in
 
@@ -747,9 +757,14 @@ let python =
               then [] : List Text
               else [ "--enable-shared" ]
           in
+          let crossArgs =
+            if cfg.isCross
+              then ["--disable-ipv6"]
+              else [] : List Text
+          in
           [ prelude.writeFile { file = "config.site", contents = config } ]
             # prelude.generalConfigure pyEnv "configure" ([] : List Text)
-                ([ "--build=${prelude.printArch cfg.buildArch}", "--disable-ipv6" ] # staticFlag) cfg
+                ([ "--build=${prelude.printArch cfg.buildArch}" ] # crossArgs # staticFlag) cfg
           -- disable ipv6 for cross-compiling
           -- "--enable-optimizations" (takes forever)
       , pkgDeps = [ prelude.unbounded "libffi" ]
@@ -867,7 +882,6 @@ let pkg-config =
     prelude.simplePackage { name = "pkg-config", version = v } ⫽
       { pkgUrl = "https://pkg-config.freedesktop.org/releases/pkg-config-${prelude.showVersion v}.tar.gz"
       , configureCommand = prelude.configureWithFlags [ "--with-internal-glib" ]
-      , installCommand = prelude.installWithBinaries [ "bin/pkg-config" ]
       }
 in
 
@@ -914,10 +928,11 @@ in
 
 let freetype-prebuild =
   λ(v : List Natural) →
-    freetype-shared { name = "freetype-prebuild", version = v } ⫽ -- FIXME: for some reason a zlib dep here breaks harfbuzz???
+    freetype-shared { name = "freetype-prebuild", version = v } ⫽
       { pkgDeps = [ prelude.unbounded "zlib"
                   , prelude.unbounded "libpng"
                   ]
+      , pkgBuildDeps = [ prelude.unbounded "pkg-config" ]
       }
 in
 
@@ -1125,6 +1140,10 @@ let shared-mime-info =
                                                                                                 ])
                                                 })
           ]
+     , installCommand =
+        λ(cfg : types.BuildVars) →
+          prelude.defaultInstall cfg
+            # [ prelude.symlink "share/pkgconfig" "lib/pkgconfig" ]
      , pkgDeps = [ prelude.unbounded "glib"
                  , prelude.unbounded "libxml2"
                  ]
@@ -1260,17 +1279,26 @@ let fontconfig =
 in
 
 let util-linux =
-  λ(v : List Natural) →
-    let versionString = prelude.showVersion v in
-      prelude.simplePackage { name = "util-linux", version = v } ⫽
-        { pkgUrl = "https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v${versionString}/util-linux-${versionString}.tar.xz"
-        , configureCommand = prelude.configureWithFlags [ "--disable-makeinstall-chown" -- otherwise we'd need sudo permissions
-                                                        , "--disable-bash-completion"
-                                                        , "--disable-pylibmount" -- easier for cross-compiling
-                                                        , "--without-tinfo" -- can't figure out what tinfo is or how to supply it when cross compiling
-                                                        ]
-        , pkgDeps = [ prelude.unbounded "ncurses" ]
-        }
+  λ(x : { version : List Natural, patch : Natural }) →
+    let versionString = prelude.showVersion x.version
+    in
+    let fullVersion = versionString ++ "." ++ Natural/show x.patch
+    in
+
+    prelude.simplePackage { name = "util-linux", version = prelude.fullVersion x } ⫽
+      { pkgUrl = "https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v${versionString}/util-linux-${fullVersion}.tar.xz"
+      , configureCommand =
+        λ(cfg : types.BuildVars) →
+          let crossFlags =
+            if cfg.isCross
+              then [ "--disable-pylibmount"
+                   , "--without-tinfo"
+                   ]
+              else [] : List Text
+          in
+          prelude.configureWithFlags ([ "--disable-makeinstall-chown", "--disable-bash-completion"] # crossFlags) cfg
+      , pkgDeps = [ prelude.unbounded "ncurses" ]
+      }
 in
 
 let fribidi =
@@ -1383,7 +1411,13 @@ let glib =
                                                                   , "gthread-2.0.pc"
                                                                   ]) cfg
 
-              # [ prelude.symlink "include/glib-2.0/glib" "include/glib"
+              # [ prelude.symlink "${libDir}/libglib-2.0.so" "lib/libglib-2.0.so"
+                , prelude.symlink "${libDir}/libglib-2.0.so.0" "lib/libglib-2.0.so.0"
+                , prelude.symlink "${libDir}/libgio-2.0.so" "lib/libgio-2.0.so"
+                , prelude.symlink "${libDir}/libgthread-2.0.so" "lib/libgthread-2.0.so"
+                , prelude.symlink "${libDir}/libgobject-2.0.so" "lib/libgobject-2.0.so"
+                , prelude.symlink "${libDir}/libgmodule-2.0.so" "lib/libgmodule-2.0.so"
+                , prelude.symlink "include/glib-2.0/glib" "include/glib"
                 , prelude.symlink "include/glib-2.0/gobject" "include/gobject"
                 , prelude.symlink "include/glib-2.0/glib.h" "include/glib.h"
                 , prelude.symlink "include/glib-2.0/glib-object.h" "include/glib-object.h"
@@ -2117,6 +2151,8 @@ let postgresql =
     prelude.simplePackage { name = "postgresql", version = v } ⫽
       { pkgUrl = "https://ftp.postgresql.org/pub/source/v${versionString}/postgresql-${versionString}.tar.bz2"
       , configureCommand = prelude.configureWithFlags [ "--without-readline" ] -- TODO: set USE_DEV_URANDOM=1 or USE_WIN32_RANDOM=1 on windows
+      , installCommand = prelude.installWithBinaries [ "bin/pg_config" ]
+      , pkgDeps = [ prelude.unbounded "zlib" ]
       }
 in
 
@@ -2453,8 +2489,7 @@ let feh =
                                                           , "install"
                                                           ]
                                             })
-      , prelude.symlinkBinary "bin/feh"
-      ]
+      ] # prelude.mkLDPathWrapper cfg "feh"
   in
 
   λ(v : List Natural) →
@@ -2478,6 +2513,8 @@ let imlib2 =
       { pkgUrl = "https://downloads.sourceforge.net/enlightenment/imlib2-${prelude.showVersion v}.tar.bz2"
       , pkgDeps = [ prelude.unbounded "libXext"
                   , prelude.unbounded "freetype"
+                  , prelude.unbounded "libjpeg"
+                  , prelude.unbounded "libpng"
                   ]
       }
 in
@@ -2570,7 +2607,7 @@ let mesa =
                   , prelude.lowerBound { name = "dri2proto", lower = [2,8] }
                   , prelude.unbounded "libXrandr"
                   ]
-      , configureCommand = prelude.configureWithFlags [ "--with-gallium-drivers=nouveau,swrast" ] -- disable radeon drivers so we don't need LLVM
+      , configureCommand = prelude.configureWithFlags [ "--with-gallium-drivers=nouveau,swrast" ] -- disable radeon drivers so we don't need LLVM (7.0.1 won't work?)
       }
 in
 
@@ -2851,6 +2888,162 @@ let libsodium =
       { pkgUrl = "https://download.libsodium.org/libsodium/releases/libsodium-${prelude.showVersion v}.tar.gz" }
 in
 
+let libev =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libev", version = v } ⫽
+      { pkgUrl = "http://dist.schmorp.de/libev/Attic/libev-${prelude.showVersion v}.tar.gz" }
+in
+
+let ctags =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "ctags", version = v } ⫽
+      { pkgUrl = "http://prdownloads.sourceforge.net/ctags/ctags-${prelude.showVersion v}.tar.gz"
+      , configureCommand = prelude.configureMkExes [ "mkinstalldirs" ]
+      , installCommand = prelude.installWithBinaries [ "bin/ctags" ]
+      }
+in
+
+let tcc =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "tcc", version = v } ⫽
+      { pkgUrl = "http://download.savannah.gnu.org/releases/tinycc/tcc-${prelude.showVersion v}.tar.bz2"
+      , configureCommand = prelude.configureMkExes [ "texi2pod.pl" ]
+      , pkgBuildDeps = [ prelude.unbounded "perl"
+                       , prelude.unbounded "texinfo"
+                       ]
+      , installCommand = prelude.installWithBinaries [ "bin/tcc" ]
+      }
+in
+
+let texinfo =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "texinfo", version = v } ⫽
+      { pkgUrl = "https://ftp.gnu.org/gnu/texinfo/texinfo-${prelude.showVersion v}.tar.xz" }
+in
+
+let node =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "node", version = v } ⫽
+      { pkgUrl = "https://nodejs.org/dist/v${versionString}/node-v${versionString}.tar.gz"
+      , pkgSubdir = "node-v${versionString}"
+      , installCommand =
+          λ(cfg : types.BuildVars) →
+            prelude.installWithBinaries [ "bin/node", "bin/npm" ] cfg
+              # [ prelude.mkExe "${cfg.installDir}/lib/node_modules/npm/bin/npm-cli.js" ]
+      }
+in
+
+let glu =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "glu", version = v } ⫽
+      { pkgUrl = "https://mesa.freedesktop.org/archive/glu/glu-${prelude.showVersion v}.tar.gz"
+      , pkgDeps = [ prelude.unbounded "mesa" ]
+      }
+in
+
+let compositeproto =
+  mkXProto "compositeproto"
+in
+
+let libXcomposite =
+  mkXLibDeps { name = "libXcomposite", deps = [ prelude.unbounded "libX11"
+                                              , prelude.lowerBound { name = "compositeproto", lower = [0,4] }
+                                              , prelude.unbounded "libXfixes"
+                                              ]
+             }
+in
+
+let mosh =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "mosh", version = v } ⫽
+      { pkgUrl = "https://mosh.org/mosh-${prelude.showVersion v}.tar.gz"
+      , pkgBuildDeps = [ prelude.unbounded "protobuf" ]
+      , pkgDeps = [ prelude.unbounded "zlib"
+                  , prelude.unbounded "protobuf"
+                  , prelude.unbounded "openssl"
+                  ]
+      , installCommand = prelude.installWithBinaries [ "bin/mosh" ]
+      }
+in
+
+let protobuf =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "protobuf", version = v } ⫽
+      { pkgUrl = "https://github.com/protocolbuffers/protobuf/releases/download/v${versionString}/protobuf-cpp-${versionString}.tar.gz"
+      , pkgSubdir = "protobuf-${versionString}"
+      }
+in
+
+let libcds =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "libcds", version = v } ⫽ prelude.cmakePackage ⫽
+      { pkgUrl = "https://pilotfiber.dl.sourceforge.net/project/libcds/cds-${versionString}/cds-${versionString}.tar.gz"
+      , pkgSubdir = "cds-${versionString}"
+      , pkgDeps = [ prelude.unbounded "libboost" ]
+      }
+in
+
+let libboost =
+  -- TODO: use bootstrap.bat on windows
+  let boostConfigure =
+    λ(cfg : types.BuildVars) →
+      [ prelude.call (prelude.defaultCall ⫽ { program = "./bootstrap.sh" }) ]
+  in
+
+  let boostInstall =
+    λ(cfg : types.BuildVars) →
+      [ prelude.call (prelude.defaultCall ⫽ { program = "./b2"
+                                            , arguments = [ "install", "--prefix=${cfg.installDir}", "--without-python" ]
+                                            })
+      ]
+  in
+
+  λ(v : List Natural) →
+    let versionString = prelude.underscoreVersion v in
+    prelude.simplePackage { name = "libboost", version = v } ⫽
+      -- TODO: allow pkgUrl to depend on os
+      { pkgUrl = "https://dl.bintray.com/boostorg/release/${prelude.showVersion v}/source/boost_${versionString}.tar.bz2"
+      , pkgSubdir = "boost_${versionString}"
+      , pkgStream = False
+      , configureCommand = boostConfigure
+      , buildCommand = prelude.doNothing
+      , installCommand = boostInstall
+      }
+in
+
+let llvm =
+  λ(v : List Natural) →
+    let llvmBuild =
+      λ(cfg : types.BuildVars) →
+        [ prelude.call { program = "cmake"
+                       , arguments = [ "--build", ".", "--config", "Release", "--", "-j", "3" ]
+                       , environment = prelude.defaultEnv
+                       , procDir = Some "build"
+                       }
+        ]
+    in
+
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "llvm", version = v } ⫽ prelude.cmakePackage ⫽
+      { pkgUrl = "http://releases.llvm.org/${versionString}/llvm-${versionString}.src.tar.xz"
+      , pkgSubdir = "llvm-${versionString}.src"
+      , pkgStream = False
+      , buildCommand = llvmBuild
+      }
+in
+
+let pari =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "pari", version = v } ⫽
+      { pkgUrl = "http://pari.math.u-bordeaux.fr/pub/pari/unix/pari-${prelude.showVersion v}.tar.gz"
+      , configureCommand = prelude.generalConfigure prelude.configSome "Configure" ([] : List Text) ([] : List Text)
+      , pkgStream = False
+      }
+in
+
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
@@ -2863,7 +3056,9 @@ in
 , cairo [1,16,0]
 , chickenScheme [5,0,0]
 , cmake { version = [3,13], patch = 4 }
+, compositeproto [0,4]
 , coreutils [8,30]
+, ctags [5,8]
 , curl [7,63,0]
 , damageproto [1,2,1]
 , dbus [1,12,10]
@@ -2882,7 +3077,7 @@ in
 , freetype [2,9,1]
 , fribidi [1,0,5]
 , gawk [4,2,1]
-, gc [8,0,2]
+, gc [8,0,4]
 , gdb [8,2]
 , gdk-pixbuf { version = [2,38], patch = 0 }
 , gegl { version = [0,4], patch = 12 }
@@ -2894,27 +3089,27 @@ in
 , git [2,19,2]
 , glib { version = [2,58], patch = 3 } -- TODO: bump to 2.59.0 once gobject-introspection supports it
 , glproto [1,4,17]
+, glu [9,0,0]
 , json-glib { version = [1,4], patch = 4 }
 , glibc [2,28]
 , gmp [6,1,2]
 , gobject-introspection { version = [1,59], patch = 3 }
 , gnome-doc-utils { version = [0,20], patch = 10 }
-, gnupg [2,2,13]
-, gnutls { version = [3,6], patch = 6 }
+, gnupg [2,2,15]
+, gnutls { version = [3,6], patch = 7 }
 , graphviz [2,40,1]
 , gsl [2,5]
 , gtk2 { version = [2,24], patch = 32 }
 , gtk3 { version = [3,24], patch = 4 }
 , gzip [1,9]
-, harfbuzz [2,3,1]
+, harfbuzz [2,4,0]
 , htop [2,2,0]
 , imageMagick [7,0,8]
 , imlib2 [1,5,1]
 , inputproto [2,3,2]
 , intltool [0,51,0]
 , itstool [2,0,5]
-, jemalloc [5,1,0]
-, jpegTurbo [2,0,1]
+, jemalloc [5,2,0]
 , joe [4,6]
 , json-c { version = [0,13,1], dateStr = "20180305" }
 , kbproto [1,0,7]
@@ -2923,11 +3118,14 @@ in
 , lcms2 [2,9]
 , libarchive [3,3,3]
 , libassuan [2,5,2]
-, libatomic_ops [7,6,8]
+, libatomic_ops [7,6,10]
+, libboost [1,69,0]
+, libcds [2,3,2]
 , libcroco { version = [0,6], patch = 12 }
 , libdatrie [0,2,12]
 , libdrm [2,4,96]
 , libepoxy [1,5,3]
+, libev [4,25]
 , libevent [2,1,8]
 , libexif [0,6,21]
 , libffi [3,2,1]
@@ -2937,6 +3135,7 @@ in
 , libICE [1,0,9]
 , libicu [63,1]
 , libjpeg [9]
+, libjpeg-turbo [2,0,2]
 , libksba [1,3,5]
 , libmypaint [1,3,0]
 , libnettle [3,4,1]
@@ -2944,7 +3143,7 @@ in
 , libpng [1,6,35]
 , libpsl [0,20,2]
 , libpthread-stubs [0,4]
-, libopenjpeg [2,3,0]
+, libopenjpeg [2,3,1]
 , libotf [0,9,16]
 , libselinux [2,8]
 , libsepol [2,8]
@@ -2962,6 +3161,7 @@ in
 , libXaw [1,0,13]
 , libXaw3d [1,6,3]
 , libxcb [1,13]
+, libXcomposite [0,4,4]
 , libXdamage [1,1,4]
 , libXdmcp [1,1,2]
 , libXext [1,3,3]
@@ -2980,6 +3180,7 @@ in
 , libXt [1,1,5]
 , libXtst [1,2,3]
 , libXxf86vm [1,1,4]
+, llvm [7,0,1]
 , lmdb [0,9,23]
 , lua [5,3,5]
 , m17n [1,8,0]
@@ -2988,8 +3189,9 @@ in
 , markupSafe [1,0]
 , memcached [1,5,12]
 , mesa [18,3,1]
-, meson [0,49,2]
+, meson [0,50,0]
 , mpfr [4,0,2]
+, mosh [1,3,2]
 , motif [2,3,8]
 , musl [1,1,20]
 , nano [3,2]
@@ -2997,23 +3199,26 @@ in
 , ncurses [6,1]
 , nginx [1,15,7]
 , ninja [1,9,0]
+, node [10,15,1]
 , npth [1,6]
 , nspr [4,20]
 , openssh [7,9]
 , openssl [1,1,1]
 , p11kit [0,23,15]
 , pango { version = [1,43], patch = 0 }
+, pari [2,11,1]
 , pcre [8,42]
 , pcre2 [10,32]
 , perl5 [5,28,1]
 , pixman [0,36,0]
 , pkg-config [0,29,2]
 , postgresql [11,1]
+, protobuf [3,7,1]
 , pycairo [1,18,0]
 , pygobject { version = [2,28], patch = 7 }
 , pygtk { version = [2,24], patch = 0 }
-, python [2,7,15]
-, python [3,7,2]
+, python [2,7,16]
+, python [3,7,3]
 , qrencode [4,0,2]
 , ragel [6,10]
 , randrproto [1,5,0]
@@ -3029,8 +3234,10 @@ in
 , sqlite { year = 2018, version = [3,26,0] }
 , swig [3,0,12]
 , tar [1,30]
+, texinfo [6,6]
+, tcc [0,9,27]
 , unistring [0,9,10]
-, util-linux [2,33]
+, util-linux { version = [2,33], patch = 1 }
 , util-macros [1,19,2]
 , vala { version = [0,43], patch = 6 }
 , valgrind [3,14,0]
