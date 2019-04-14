@@ -1,2 +1,4 @@
 packages: ./
 constraints: cpkg +development
+
+max-backjumps: 40000
