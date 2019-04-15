@@ -3199,7 +3199,8 @@ in
 , ncurses [6,1]
 , nginx [1,15,7]
 , ninja [1,9,0]
-, node [11,14,0]
+, node [10,15,1]
+, node [8,15,1] ⫽ { pkgName = "node8" }
 , npth [1,6]
 , nspr [4,20]
 , openssh [7,9]
