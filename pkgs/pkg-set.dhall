@@ -3044,6 +3044,7 @@ let pari =
       }
 in
 
+-- https://versaweb.dl.sourceforge.net/project/schilytools/schily-2019-03-29.tar.bz2
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
@@ -3215,7 +3216,7 @@ in
 , pkg-config [0,29,2]
 , postgresql [11,1]
 , protobuf [3,7,1]
-, pycairo [1,18,0]
+, pycairo [1,18,1]
 , pygobject { version = [2,28], patch = 7 }
 , pygtk { version = [2,24], patch = 0 }
 , python [2,7,16]
