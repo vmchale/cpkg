@@ -1854,7 +1854,7 @@ let bzip2 =
 
   λ(v : List Natural) →
     prelude.simplePackage { name = "bzip2", version = v } ⫽
-      { pkgUrl = "https://cytranet.dl.sourceforge.net/project/bzip2/bzip2-${prelude.showVersion v}.tar.gz"
+      { pkgUrl = "https://www.sourceware.org/pub/bzip2/bzip2-${prelude.showVersion v}.tar.gz"
       , configureCommand = prelude.doNothing
       , buildCommand = prelude.doNothing
       , installCommand = bzipInstall
@@ -2182,7 +2182,12 @@ in
 let libarchive =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libarchive", version = v } ⫽
-      { pkgUrl = "https://www.libarchive.org/downloads/libarchive-${prelude.showVersion v}.tar.gz" }
+      { pkgUrl = "https://www.libarchive.org/downloads/libarchive-${prelude.showVersion v}.tar.gz"
+      , pkgDeps = [ prelude.unbounded "xz"
+                  , prelude.unbounded "bzip2"
+                  , prelude.unbounded "zlib"
+                  ]
+      }
 in
 
 let pygobject =
