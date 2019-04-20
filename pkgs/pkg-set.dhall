@@ -2,6 +2,9 @@
 let concatMapSep = https://raw.githubusercontent.com/dhall-lang/dhall-lang/0a7f596d03b3ea760a96a8e03935f4baa64274e1/Prelude/Text/concatMapSep
 in
 
+let not = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/Bool/not
+in
+
 {- cpkg prelude imports -}
 let types = ../dhall/cpkg-types.dhall
 in
@@ -1400,6 +1403,18 @@ let glib =
           λ(cfg : types.BuildVars) →
             let libDir = "lib/${prelude.printArch cfg.buildArch}-${prelude.printOS cfg.buildOS}-gnu"
             in
+            let noCross =
+              if not cfg.isCross
+                then
+                  [ prelude.symlink "${libDir}/libglib-2.0.so" "lib/libglib-2.0.so"
+                  , prelude.symlink "${libDir}/libglib-2.0.so.0" "lib/libglib-2.0.so.0"
+                  , prelude.symlink "${libDir}/libgio-2.0.so" "lib/libgio-2.0.so"
+                  , prelude.symlink "${libDir}/libgthread-2.0.so" "lib/libgthread-2.0.so"
+                  , prelude.symlink "${libDir}/libgobject-2.0.so" "lib/libgobject-2.0.so"
+                  , prelude.symlink "${libDir}/libgmodule-2.0.so" "lib/libgmodule-2.0.so"
+                  ]
+                else [] : List types.Command
+            in
 
             prelude.ninjaInstallWithPkgConfig (prelude.mesonMoves [ "glib-2.0.pc"
                                                                   , "gobject-2.0.pc"
@@ -1410,14 +1425,8 @@ let glib =
                                                                   , "gmodule-2.0.pc"
                                                                   , "gthread-2.0.pc"
                                                                   ]) cfg
-
-              # [ prelude.symlink "${libDir}/libglib-2.0.so" "lib/libglib-2.0.so"
-                , prelude.symlink "${libDir}/libglib-2.0.so.0" "lib/libglib-2.0.so.0"
-                , prelude.symlink "${libDir}/libgio-2.0.so" "lib/libgio-2.0.so"
-                , prelude.symlink "${libDir}/libgthread-2.0.so" "lib/libgthread-2.0.so"
-                , prelude.symlink "${libDir}/libgobject-2.0.so" "lib/libgobject-2.0.so"
-                , prelude.symlink "${libDir}/libgmodule-2.0.so" "lib/libgmodule-2.0.so"
-                , prelude.symlink "include/glib-2.0/glib" "include/glib"
+              # noCross
+              # [ prelude.symlink "include/glib-2.0/glib" "include/glib"
                 , prelude.symlink "include/glib-2.0/gobject" "include/gobject"
                 , prelude.symlink "include/glib-2.0/glib.h" "include/glib.h"
                 , prelude.symlink "include/glib-2.0/glib-object.h" "include/glib-object.h"
