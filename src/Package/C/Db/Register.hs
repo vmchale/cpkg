@@ -109,13 +109,14 @@ buildCfgToIncludePath = fmap (</> "include") . buildCfgToDir
 packageInstalled :: (MonadIO m, MonadDb m)
                  => CPkg
                  -> Maybe TargetTriple
+                 -> Bool
                  -> BuildVars
                  -> m Bool
-packageInstalled pkg host b = do
+packageInstalled pkg host glob b = do
 
     indexContents <- memIndex
 
-    pure (pkgToBuildCfg pkg host b `S.member` _installedPackages indexContents)
+    pure (pkgToBuildCfg pkg host glob b `S.member` _installedPackages indexContents)
 
 lookupPackage :: (MonadIO m, MonadDb m) => String -> Maybe TargetTriple -> m (Maybe BuildCfg)
 lookupPackage name host = do
@@ -130,16 +131,17 @@ lookupPackage name host = do
 registerPkg :: (MonadIO m, MonadDb m, MonadReader Verbosity m)
             => CPkg
             -> Maybe TargetTriple
+            -> Bool
             -> BuildVars
             -> m ()
-registerPkg cpkg host b = do
+registerPkg cpkg host glob b = do
 
     putDiagnostic ("Registering package " ++ pkgName cpkg ++ "...")
 
     indexFile <- pkgIndex
     indexContents <- memIndex
 
-    let buildCfg = pkgToBuildCfg cpkg host b
+    let buildCfg = pkgToBuildCfg cpkg host glob b
         modIndex = over installedPackages (S.insert buildCfg)
         newIndex = modIndex indexContents
 
@@ -149,10 +151,11 @@ registerPkg cpkg host b = do
 
 pkgToBuildCfg :: CPkg
               -> Maybe TargetTriple
+              -> Bool
               -> BuildVars
               -> BuildCfg
-pkgToBuildCfg (CPkg n v _ _ _ _ _ cCmd bCmd iCmd) host bVar =
-    BuildCfg n v mempty mempty host (cCmd bVar) (bCmd bVar) (iCmd bVar) -- TODO: fix pinned build deps &c.
+pkgToBuildCfg (CPkg n v _ _ _ _ _ cCmd bCmd iCmd) host glob bVar =
+    BuildCfg n v mempty mempty host glob (cCmd bVar) (bCmd bVar) (iCmd bVar) -- TODO: fix pinned build deps &c.
 
 platformString :: Maybe TargetTriple -> (FilePath -> FilePath -> FilePath)
 platformString Nothing  = (</>)
@@ -160,14 +163,20 @@ platformString (Just p) = \x y -> x </> show p </> y
 
 buildCfgToDir :: MonadIO m => BuildCfg -> m FilePath
 buildCfgToDir buildCfg = do
-    global <- globalPkgDir
+    global' <- globalPkgDir
     let hashed = showHex (abs (hash buildCfg)) mempty
         (<?>) = platformString (targetArch buildCfg)
-    pure (global <?> buildName buildCfg ++ "-" ++ showVersion (buildVersion buildCfg) ++ "-" ++ hashed)
+    pure (global' <?> buildName buildCfg ++ "-" ++ showVersion (buildVersion buildCfg) ++ "-" ++ hashed)
+
+globDir :: Maybe TargetTriple -> FilePath
+globDir Nothing      = "/usr/local"
+globDir (Just arch') = "/usr" </> show arch'
 
 cPkgToDir :: MonadIO m
           => CPkg
           -> Maybe TargetTriple
+          -> Bool
           -> BuildVars
           -> m FilePath
-cPkgToDir = buildCfgToDir .** pkgToBuildCfg
+cPkgToDir pk host False bv = buildCfgToDir (pkgToBuildCfg pk host False bv)
+cPkgToDir _ host _ _       = pure (globDir host)

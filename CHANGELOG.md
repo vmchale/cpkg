@@ -1,5 +1,9 @@
 # cpkg
 
+## 0.1.2.1
+
+  * Add `--global` flag
+
 ## 0.1.2.0
 
   * Export `Dep`
