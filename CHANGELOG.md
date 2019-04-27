@@ -1,5 +1,9 @@
 # cpkg
 
+## 0.1.3.0
+
+  * Add ability to patch libraries
+
 ## 0.1.2.1
 
   * Add `--global` flag

@@ -103,6 +103,7 @@ let Command = < CreateDirectory : { dir : Text }
               | Symlink : { tgt : Text, linkName : Text }
               | Write : { file : Text, contents : Text }
               | CopyFile : { src : Text, dest : Text }
+              | Patch : { patchContents : Text }
               >
 in
 

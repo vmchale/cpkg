@@ -47,6 +47,7 @@ data Command = CreateDirectory { dir :: T.Text }
              | Symlink { tgt :: T.Text, linkName :: T.Text }
              | Write { contents :: T.Text, file :: T.Text }
              | CopyFile { src :: T.Text, dest :: T.Text }
+             | Patch { patchContents :: T.Text }
              deriving (Generic, Interpret)
 
 data CPkg = CPkg { pkgName          :: T.Text

@@ -159,6 +159,11 @@ let writeFile =
   types.Command.Write
 in
 
+let patch =
+  λ(x : Text) →
+    types.Command.Patch { patchContents = x }
+in
+
 let defaultEnv =
   None (List types.EnvVar)
 in
@@ -1171,4 +1176,5 @@ in
 , isX64               = isX64
 , configWithEnv       = configWithEnv
 , buildEnv            = buildEnv
+, patch               = patch
 }
