@@ -1052,7 +1052,7 @@ let xproto =
 in
 
 let renderproto =
-  mkXProto "renderproto"
+  mkXProtoWithPatch "renderproto" (./patches/renderproto.patch as Text)
 in
 
 let randrproto =
