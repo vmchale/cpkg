@@ -16,6 +16,7 @@ extra-source-files:
     dhall/cpkg-prelude.dhall
     dhall/cpkg-types.dhall
     pkgs/pkg-set.dhall
+    pkgs/patches/*.patch
 extra-doc-files: README.md
                  CHANGELOG.md
 
