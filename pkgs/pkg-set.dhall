@@ -1036,7 +1036,13 @@ let mkXProto =
 in
 
 let xproto =
-  mkXProto "xproto"
+  λ(v : List Natural) →
+    mkXProto "xproto" v ⫽
+      { configureCommand =
+          λ(cfg : types.BuildVars) →
+            [ prelude.patch (./patches/xproto.patch as Text) ]
+              # prelude.defaultConfigure cfg
+      }
 in
 
 let renderproto =
