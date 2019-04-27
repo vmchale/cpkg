@@ -1035,14 +1035,20 @@ let mkXProto =
       { pkgUrl = "https://www.x.org/releases/individual/proto/${name}-${prelude.showVersion v}.tar.bz2" }
 in
 
-let xproto =
+let mkXProtoWithPatch =
+  λ(name : Text) →
+  λ(patch : Text) →
   λ(v : List Natural) →
-    mkXProto "xproto" v ⫽
+    mkXProto name v ⫽
       { configureCommand =
           λ(cfg : types.BuildVars) →
-            [ prelude.patch (./patches/xproto.patch as Text) ]
+            [ prelude.patch patch ]
               # prelude.defaultConfigure cfg
       }
+in
+
+let xproto =
+  mkXProtoWithPatch "xproto" (./patches/xproto.patch as Text)
 in
 
 let renderproto =
@@ -1835,7 +1841,7 @@ let libXext =
 in
 
 let xextproto =
-  mkXProto "xextproto"
+  mkXProtoWithPatch "xextproto" (./patches/xextproto.patch as Text)
 in
 
 let fixesproto =
