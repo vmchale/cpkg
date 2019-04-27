@@ -61,8 +61,8 @@ stepToProc dir' p (CopyFile src' dest') = do
     putDiagnostic ("Copying file " ++ absSrc ++ " to " ++ absDest ++ "...")
     liftIO $ createDirectoryIfMissing True (takeDirectory absDest)
     liftIO $ copyFileWithMetadata absSrc absDest
-stepToProc dir' _ (Patch contents) = do
-    liftIO $ TIO.writeFile (dir' </> "step.patch") contents
+stepToProc dir' _ (Patch contents') = do
+    liftIO $ TIO.writeFile (dir' </> "step.patch") contents'
     waitProcess $ (proc "patch" ["-i", "step.patch"]) { cwd = Just dir' }
 
 processSteps :: (Traversable t)
