@@ -55,7 +55,8 @@ buildWithContext cTree host sta glob = zygoM' dirAlg buildAlg cTree
             buildCPkg c host sta glob ds (immoralFilter host ls) is (filterCross host bs)
                 where (BuildDirs ls ds is bs) = getAll (fst <$> preBds)
           buildAlg (BldDepNodeF c preBds) =
-            buildCPkg c Nothing False glob ds ls is bs -- don't use static libraries for build dependencies
+            buildCPkg c Nothing False False ds ls is bs -- don't use static libraries for build dependencies
+            -- also don't install them globally for obvious reasons
                 where (BuildDirs ls ds is bs) = getAll (fst <$> preBds)
 
           mkBuildDirs :: MonadIO m => FilePath -> BuildDirs -> m BuildDirs
