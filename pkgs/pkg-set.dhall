@@ -2182,7 +2182,9 @@ in
 let libarchive =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libarchive", version = v } ⫽
-      { pkgUrl = "https://www.libarchive.org/downloads/libarchive-${prelude.showVersion v}.tar.gz" }
+      { pkgUrl = "https://www.libarchive.org/downloads/libarchive-${prelude.showVersion v}.tar.gz"
+      , pkgDeps = [ prelude.unbounded "libxml2" ]
+      }
 in
 
 let pygobject =
