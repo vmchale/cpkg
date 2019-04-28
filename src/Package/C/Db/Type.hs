@@ -28,6 +28,7 @@ data BuildCfg = BuildCfg { buildName       :: String
                          , pinnedBuildDeps :: [(T.Text, Version)]
                          , pinnedDeps      :: [(T.Text, Version)]
                          , targetArch      :: Maybe TargetTriple
+                         , global          :: Bool
                          , configureCmds   :: [ Command ]
                          , buildCmds       :: [ Command ]
                          , installCmds     :: [ Command ]

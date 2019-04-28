@@ -46,15 +46,17 @@ filterCross (Just tgt') =
 buildWithContext :: DepTree CPkg
                  -> Maybe TargetTriple
                  -> Bool -- ^ Should we build static libraries?
+                 -> Bool -- ^ Install globally
                  -> PkgM ()
-buildWithContext cTree host sta = zygoM' dirAlg buildAlg cTree
+buildWithContext cTree host sta glob = zygoM' dirAlg buildAlg cTree
 
     where buildAlg :: DepTreeF CPkg (BuildDirs, ()) -> PkgM ()
           buildAlg (DepNodeF c preBds) =
-            buildCPkg c host sta ds (immoralFilter host ls) is (filterCross host bs)
+            buildCPkg c host sta glob ds (immoralFilter host ls) is (filterCross host bs)
                 where (BuildDirs ls ds is bs) = getAll (fst <$> preBds)
           buildAlg (BldDepNodeF c preBds) =
-            buildCPkg c Nothing False ds ls is bs -- don't use static libraries for build dependencies
+            buildCPkg c Nothing False False ds ls is bs -- don't use static libraries for build dependencies
+            -- also don't install them globally for obvious reasons
                 where (BuildDirs ls ds is bs) = getAll (fst <$> preBds)
 
           mkBuildDirs :: MonadIO m => FilePath -> BuildDirs -> m BuildDirs
@@ -83,7 +85,7 @@ buildWithContext cTree host sta = zygoM' dirAlg buildAlg cTree
 
             buildVars <- getVars host sta ds (immoralFilter host ls) is (filterCross host bs)
 
-            pkgDir <- cPkgToDir c host buildVars
+            pkgDir <- cPkgToDir c host glob buildVars
 
             mkBuildDirs pkgDir bldDirs
 
@@ -93,12 +95,12 @@ buildWithContext cTree host sta = zygoM' dirAlg buildAlg cTree
 
             buildVars <- getVars Nothing False ds ls is bs
 
-            pkgDir <- cPkgToDir c Nothing buildVars
+            pkgDir <- cPkgToDir c Nothing False buildVars
 
             mkBuildDirs pkgDir bldDirs
 
 -- TODO: should this parse a string into a TargetTriple instead?
-buildByName :: PackId -> Maybe TargetTriple -> Maybe String -> Bool -> PkgM ()
-buildByName pkId host pkSet sta = do
+buildByName :: PackId -> Maybe TargetTriple -> Maybe String -> Bool -> Bool -> PkgM ()
+buildByName pkId host pkSet sta glob = do
     allPkgs <- liftIO (pkgsM pkId pkSet)
-    buildWithContext allPkgs host sta
+    buildWithContext allPkgs host sta glob

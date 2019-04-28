@@ -2,6 +2,9 @@
 let concatMapSep = https://raw.githubusercontent.com/dhall-lang/dhall-lang/0a7f596d03b3ea760a96a8e03935f4baa64274e1/Prelude/Text/concatMapSep
 in
 
+let not = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/Bool/not
+in
+
 {- cpkg prelude imports -}
 let types = ../dhall/cpkg-types.dhall
 in
@@ -1032,12 +1035,24 @@ let mkXProto =
       { pkgUrl = "https://www.x.org/releases/individual/proto/${name}-${prelude.showVersion v}.tar.bz2" }
 in
 
+let mkXProtoWithPatch =
+  λ(name : Text) →
+  λ(patch : Text) →
+  λ(v : List Natural) →
+    mkXProto name v ⫽
+      { configureCommand =
+          λ(cfg : types.BuildVars) →
+            [ prelude.patch patch ]
+              # prelude.defaultConfigure cfg
+      }
+in
+
 let xproto =
-  mkXProto "xproto"
+  mkXProtoWithPatch "xproto" (./patches/xproto.patch as Text)
 in
 
 let renderproto =
-  mkXProto "renderproto"
+  mkXProtoWithPatch "renderproto" (./patches/renderproto.patch as Text)
 in
 
 let randrproto =
@@ -1045,7 +1060,7 @@ let randrproto =
 in
 
 let scrnsaverproto =
-  mkXProto "scrnsaverproto"
+  mkXProtoWithPatch "scrnsaverproto" (./patches/scrnsaverproto.patch as Text)
 in
 
 let recordproto =
@@ -1400,6 +1415,18 @@ let glib =
           λ(cfg : types.BuildVars) →
             let libDir = "lib/${prelude.printArch cfg.buildArch}-${prelude.printOS cfg.buildOS}-gnu"
             in
+            let noCross =
+              if not cfg.isCross
+                then
+                  [ prelude.symlink "${libDir}/libglib-2.0.so" "lib/libglib-2.0.so"
+                  , prelude.symlink "${libDir}/libglib-2.0.so.0" "lib/libglib-2.0.so.0"
+                  , prelude.symlink "${libDir}/libgio-2.0.so" "lib/libgio-2.0.so"
+                  , prelude.symlink "${libDir}/libgthread-2.0.so" "lib/libgthread-2.0.so"
+                  , prelude.symlink "${libDir}/libgobject-2.0.so" "lib/libgobject-2.0.so"
+                  , prelude.symlink "${libDir}/libgmodule-2.0.so" "lib/libgmodule-2.0.so"
+                  ]
+                else [] : List types.Command
+            in
 
             prelude.ninjaInstallWithPkgConfig (prelude.mesonMoves [ "glib-2.0.pc"
                                                                   , "gobject-2.0.pc"
@@ -1410,14 +1437,8 @@ let glib =
                                                                   , "gmodule-2.0.pc"
                                                                   , "gthread-2.0.pc"
                                                                   ]) cfg
-
-              # [ prelude.symlink "${libDir}/libglib-2.0.so" "lib/libglib-2.0.so"
-                , prelude.symlink "${libDir}/libglib-2.0.so.0" "lib/libglib-2.0.so.0"
-                , prelude.symlink "${libDir}/libgio-2.0.so" "lib/libgio-2.0.so"
-                , prelude.symlink "${libDir}/libgthread-2.0.so" "lib/libgthread-2.0.so"
-                , prelude.symlink "${libDir}/libgobject-2.0.so" "lib/libgobject-2.0.so"
-                , prelude.symlink "${libDir}/libgmodule-2.0.so" "lib/libgmodule-2.0.so"
-                , prelude.symlink "include/glib-2.0/glib" "include/glib"
+              # noCross
+              # [ prelude.symlink "include/glib-2.0/glib" "include/glib"
                 , prelude.symlink "include/glib-2.0/gobject" "include/gobject"
                 , prelude.symlink "include/glib-2.0/glib.h" "include/glib.h"
                 , prelude.symlink "include/glib-2.0/glib-object.h" "include/glib-object.h"
@@ -1782,7 +1803,7 @@ let inputproto =
 in
 
 let xineramaproto =
-  mkXProto "xineramaproto"
+  mkXProtoWithPatch "xineramaproto" (./patches/xineramaproto.patch as Text)
 in
 
 let xtrans =
@@ -1820,7 +1841,7 @@ let libXext =
 in
 
 let xextproto =
-  mkXProto "xextproto"
+  mkXProtoWithPatch "xextproto" (./patches/xextproto.patch as Text)
 in
 
 let fixesproto =
@@ -1835,8 +1856,8 @@ let libXScrnSaver =
   λ(v : List Natural) →
     mkXLib "libXScrnSaver" v ⫽
       { pkgDeps = [ prelude.unbounded "util-macros"
-                  , prelude.unbounded "libXext" -- >= 1.2
-                  , prelude.unbounded "scrnsaverproto" -- >= 1.2
+                    , prelude.unbounded "libXext" -- >= 1.2
+                    , prelude.unbounded "scrnsaverproto" -- >= 1.2
                   ]
       }
 in
@@ -1854,7 +1875,7 @@ let bzip2 =
 
   λ(v : List Natural) →
     prelude.simplePackage { name = "bzip2", version = v } ⫽
-      { pkgUrl = "https://cytranet.dl.sourceforge.net/project/bzip2/bzip2-${prelude.showVersion v}.tar.gz"
+      { pkgUrl = "https://www.sourceware.org/pub/bzip2/bzip2-${prelude.showVersion v}.tar.gz"
       , configureCommand = prelude.doNothing
       , buildCommand = prelude.doNothing
       , installCommand = bzipInstall
@@ -2183,7 +2204,11 @@ let libarchive =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libarchive", version = v } ⫽
       { pkgUrl = "https://www.libarchive.org/downloads/libarchive-${prelude.showVersion v}.tar.gz"
-      , pkgDeps = [ prelude.unbounded "libxml2" ]
+      -- , pkgDeps = [ prelude.unbounded "libxml2" ]
+      , pkgDeps = [ prelude.unbounded "xz"
+                  , prelude.unbounded "bzip2"
+                  , prelude.unbounded "zlib"
+                  ]
       }
 in
 
@@ -3046,6 +3071,7 @@ let pari =
       }
 in
 
+-- https://versaweb.dl.sourceforge.net/project/schilytools/schily-2019-03-29.tar.bz2
 [ autoconf [2,69]
 , automake [1,16,1]
 , at-spi-atk { version = [2,30], patch = 0 }
@@ -3143,7 +3169,7 @@ in
 , libnettle [3,4,1]
 , libpciaccess [0,14]
 , libpng [1,6,35]
-, libpsl [0,20,2]
+, libpsl [0,21,0]
 , libpthread-stubs [0,4]
 , libopenjpeg [2,3,1]
 , libotf [0,9,16]
@@ -3191,7 +3217,7 @@ in
 , markupSafe [1,0]
 , memcached [1,5,12]
 , mesa [18,3,1]
-, meson [0,50,0]
+, meson [0,50,1]
 , mpfr [4,0,2]
 , mosh [1,3,2]
 , motif [2,3,8]
@@ -3202,6 +3228,7 @@ in
 , nginx [1,15,7]
 , ninja [1,9,0]
 , node [10,15,1]
+, node [8,15,1] ⫽ { pkgName = "node8" }
 , npth [1,6]
 , nspr [4,20]
 , openssh [7,9]
@@ -3216,7 +3243,7 @@ in
 , pkg-config [0,29,2]
 , postgresql [11,1]
 , protobuf [3,7,1]
-, pycairo [1,18,0]
+, pycairo [1,18,1]
 , pygobject { version = [2,28], patch = 7 }
 , pygtk { version = [2,24], patch = 0 }
 , python [2,7,16]

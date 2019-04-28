@@ -18,7 +18,7 @@ data DumpTarget = Linker { _pkgGet :: String }
                 | IncludePath { _pkgGet :: String }
                 | LibPath { _pkgGet :: String }
 
-data Command = Install { _pkgName :: String, _verbosity :: Verbosity, _target :: Maybe Platform, _static :: Bool, _packageSet :: Maybe String }
+data Command = Install { _pkgName :: String, _verbosity :: Verbosity, _target :: Maybe Platform, _static :: Bool, _global :: Bool, _packageSet :: Maybe String }
              | Check { _dhallFile :: String, _verbosity :: Verbosity }
              | CheckSet { _dhallFile :: String, _verbosity :: Verbosity }
              | Dump { _dumpTarget :: DumpTarget, _host :: Maybe Platform }
@@ -86,6 +86,10 @@ install = Install
     <*> verbosity
     <*> target
     <*> static'
+    <*> switch
+        (long "global"
+        <> short 'g'
+        <> help "Install globally")
     <*> packageSet
 
 packageSet :: Parser (Maybe String)
@@ -143,9 +147,9 @@ dhallFile =
     )
 
 run :: Command -> IO ()
-run (Install pkId v host' sta pkSet) = do
+run (Install pkId v host' sta glob pkSet) = do
     parsedHost <- parseHostIO host'
-    runPkgM v $ buildByName (T.pack pkId) parsedHost pkSet sta
+    runPkgM v $ buildByName (T.pack pkId) parsedHost pkSet sta glob
 run (Check file' v) = void $ getCPkg v file'
 run (CheckSet file' v) = void $ getPkgs v file'
 run (Dump (Linker name) host) = runPkgM Normal $ printLinkerFlags name host

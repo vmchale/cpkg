@@ -61,6 +61,9 @@ stepToProc dir' p (CopyFile src' dest') = do
     putDiagnostic ("Copying file " ++ absSrc ++ " to " ++ absDest ++ "...")
     liftIO $ createDirectoryIfMissing True (takeDirectory absDest)
     liftIO $ copyFileWithMetadata absSrc absDest
+stepToProc dir' _ (Patch contents') = do
+    liftIO $ TIO.writeFile (dir' </> "step.patch") contents'
+    waitProcess $ (proc "patch" ["-i", "step.patch"]) { cwd = Just dir' }
 
 processSteps :: (Traversable t)
              => FilePath -- ^ Build directory
@@ -106,23 +109,24 @@ fetchCPkg cpkg = fetchUrl (pkgUrl cpkg) (pkgName cpkg) (pkgStream cpkg)
 buildCPkg :: CPkg
           -> Maybe TargetTriple
           -> Bool -- ^ Should we build static libraries?
+          -> Bool -- ^ Should we install globally?
           -> [FilePath] -- ^ Shared data directories
           -> [FilePath] -- ^ Library directories
           -> [FilePath] -- ^ Include directories
           -> [FilePath] -- ^ Directories to add to @PATH@
           -> PkgM ()
-buildCPkg cpkg host sta shr libs incls bins = do
+buildCPkg cpkg host sta glob shr libs incls bins = do
 
     buildVars <- getVars host sta shr libs incls bins
 
     -- TODO: use a real database
-    installed <- packageInstalled cpkg host buildVars
+    installed <- packageInstalled cpkg host glob buildVars
 
     when installed $
         putDiagnostic ("Package " ++ pkgName cpkg ++ " already installed, skipping.")
 
     unless installed $
-        forceBuildCPkg cpkg host buildVars
+        forceBuildCPkg cpkg host glob buildVars
 
 getPreloads :: [ FilePath ] -> IO [ FilePath ]
 getPreloads =
@@ -151,11 +155,12 @@ getVars host sta shr links incls bins = do
 -- Basically nix-style builds for C libraries
 forceBuildCPkg :: CPkg
                -> Maybe TargetTriple
+               -> Bool
                -> BuildVars
                -> PkgM ()
-forceBuildCPkg cpkg host buildVars = do
+forceBuildCPkg cpkg host glob buildVars = do
 
-    pkgDir <- cPkgToDir cpkg host buildVars
+    pkgDir <- cPkgToDir cpkg host glob buildVars
 
     liftIO $ createDirectoryIfMissing True pkgDir
 
@@ -177,4 +182,4 @@ forceBuildCPkg cpkg host buildVars = do
 
         installInDir cpkg buildConfigured p' pkgDir
 
-        registerPkg cpkg host buildVars -- not configured
+        registerPkg cpkg host glob buildVars -- not configured

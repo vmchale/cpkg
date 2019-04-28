@@ -17,8 +17,6 @@ module CPkgPrelude ( -- * Base reëxports
                    , Interpret
                    -- * hashable reëxports
                    , Hashable
-                   -- * Exports from "Control.Composition"
-                   , (.**)
                    -- * Exports from "Data.Binary"
                    , Binary
                    -- prettyprinter reëxports
@@ -35,7 +33,6 @@ module CPkgPrelude ( -- * Base reëxports
                    , getAppUserDataDirectory
                    ) where
 
-import           Control.Composition       ((.**))
 import           Control.Monad
 import           Control.Monad.IO.Class    (MonadIO (..))
 import           Data.Binary               (Binary)

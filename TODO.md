@@ -172,6 +172,8 @@
 - [ ] zstd
 - [ ] lz4
 - [ ] oclint
+- [ ] https://pdfgrep.org/
+- [ ] pdftotext http://www.xpdfreader.com/download.html
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in
