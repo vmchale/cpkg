@@ -1,56 +1,56 @@
-let OS = < FreeBSD : {}
-         | OpenBSD : {}
-         | NetBSD : {}
-         | Solaris : {}
-         | Dragonfly : {}
-         | Linux : {}
-         | Darwin : {}
-         | Windows : {}
-         | Redox : {}
-         | Haiku : {}
-         | IOS : {}
-         | AIX : {}
-         | Hurd : {}
-         | Android : {}
-         | NoOs : {}
+let OS = < FreeBSD
+         | OpenBSD
+         | NetBSD
+         | Solaris
+         | Dragonfly
+         | Linux
+         | Darwin
+         | Windows
+         | Redox
+         | Haiku
+         | IOS
+         | AIX
+         | Hurd
+         | Android
+         | NoOs
          >
 in
 
-let Arch = < X64 : {}
-           | AArch : {}
-           | Arm : {}
-           | RISCV64 : {}
-           | PowerPC : {}
-           | PowerPC64 : {}
-           | PowerPC64le : {}
-           | Sparc64 : {}
-           | S390x : {}
-           | Alpha : {}
-           | M68k : {}
-           | Mips : {}
-           | MipsEl : {}
-           | Mips64 : {}
-           | Mips64El : {}
-           | X86 : {}
-           | SH4 : {}
-           | HPPA : {}
-           | HPPA64 : {}
+let Arch = < X64
+           | AArch
+           | Arm
+           | RISCV64
+           | PowerPC
+           | PowerPC64
+           | PowerPC64le
+           | Sparc64
+           | S390x
+           | Alpha
+           | M68k
+           | Mips
+           | MipsEl
+           | Mips64
+           | Mips64El
+           | X86
+           | SH4
+           | HPPA
+           | HPPA64
            >
 in
 
-let Manufacturer = < Unknown : {}
-                   | Apple : {}
-                   | IBM : {}
-                   | PC : {}
+let Manufacturer = < Unknown
+                   | Apple
+                   | IBM
+                   | PC
                    >
 in
 
-let ABI = < GNU : {}
-          | GNUabi64 : {}
-          | GNUeabi : {}
-          | GNUeabihf : {}
-          | GNUspe : {}
-          | MinGw : {}
+let ABI = < GNU
+          | GNUabi64
+          | GNUeabi
+          | GNUeabihf
+          | GNUspe
+          | MinGw
           >
 in
 
@@ -80,7 +80,7 @@ in
 let VersionBound = < Lower : { lower : List Natural }
                    | Upper : { upper : List Natural }
                    | LowerUpper : { lower : List Natural, upper : List Natural }
-                   | NoBound : {} >
+                   | NoBound >
 in
 
 let Dep = { name : Text, bound : VersionBound }

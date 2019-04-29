@@ -1,5 +1,5 @@
 {- Dhall prelue imports -}
-let concatMapSep = https://raw.githubusercontent.com/dhall-lang/dhall-lang/0a7f596d03b3ea760a96a8e03935f4baa64274e1/Prelude/Text/concatMapSep
+let concatMapSep = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/Text/concatMapSep
 in
 
 let not = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/Bool/not
@@ -782,21 +782,21 @@ let lua =
     let printLuaOS =
       λ(os : types.OS) →
         merge
-          { FreeBSD   = λ(_ : {}) → "freebsd"
-          , OpenBSD   = λ(_ : {}) → "bsd"
-          , NetBSD    = λ(_ : {}) → "bsd"
-          , Solaris   = λ(_ : {}) → "solaris"
-          , Dragonfly = λ(_ : {}) → "bsd"
-          , Linux     = λ(_ : {}) → "linux"
-          , Darwin    = λ(_ : {}) → "macosx"
-          , Windows   = λ(_ : {}) → "mingw"
-          , Redox     = λ(_ : {}) → "generic"
-          , Haiku     = λ(_ : {}) → "generic"
-          , IOS       = λ(_ : {}) → "generic"
-          , AIX       = λ(_ : {}) → "generic"
-          , Hurd      = λ(_ : {}) → "generic"
-          , Android   = λ(_ : {}) → "generic"
-          , NoOs      = λ(_ : {}) → "c89"
+          { FreeBSD   = "freebsd"
+          , OpenBSD   = "bsd"
+          , NetBSD    = "bsd"
+          , Solaris   = "solaris"
+          , Dragonfly = "bsd"
+          , Linux     = "linux"
+          , Darwin    = "macosx"
+          , Windows   = "mingw"
+          , Redox     = "generic"
+          , Haiku     = "generic"
+          , IOS       = "generic"
+          , AIX       = "generic"
+          , Hurd      = "generic"
+          , Android   = "generic"
+          , NoOs      = "c89"
           }
           os
     in
@@ -1652,21 +1652,21 @@ let chickenScheme =
     let printChickenOS =
       λ(os : types.OS) →
         merge
-          { FreeBSD   = λ(_ : {}) → "bsd"
-          , OpenBSD   = λ(_ : {}) → "bsd"
-          , NetBSD    = λ(_ : {}) → "bsd"
-          , Solaris   = λ(_ : {}) → "solaris"
-          , Dragonfly = λ(_ : {}) → "bsd"
-          , Linux     = λ(_ : {}) → "linux"
-          , Darwin    = λ(_ : {}) → "macosx"
-          , Windows   = λ(_ : {}) → "mingw"
-          , Haiku     = λ(_ : {}) → "haiku"
-          , IOS       = λ(_ : {}) → "ios"
-          , AIX       = λ(_ : {}) → "aix"
-          , Hurd      = λ(_ : {}) → "hurd"
-          , Android   = λ(_ : {}) → "android"
-          , Redox     = λ(_ : {}) → "error: no port for Redox OS"
-          , NoOs      = λ(_ : {}) → "error: no port for no OS"
+          { FreeBSD   = "bsd"
+          , OpenBSD   = "bsd"
+          , NetBSD    = "bsd"
+          , Solaris   = "solaris"
+          , Dragonfly = "bsd"
+          , Linux     = "linux"
+          , Darwin    = "macosx"
+          , Windows   = "mingw"
+          , Haiku     = "haiku"
+          , IOS       = "ios"
+          , AIX       = "aix"
+          , Hurd      = "hurd"
+          , Android   = "android"
+          , Redox     = "error: no port for Redox OS"
+          , NoOs      = "error: no port for no OS"
           }
           os
     in

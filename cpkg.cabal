@@ -71,7 +71,7 @@ library
     build-depends:
         base >=4.3 && <5,
         containers >=0.6.0.0,
-        dhall >=1.19.0,
+        dhall >=1.22.0,
         text -any,
         temporary -any,
         bytestring -any,
