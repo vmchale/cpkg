@@ -128,6 +128,7 @@
 - [ ] grep
 - [ ] https://github.com/chapel-lang/chapel/releases/download/1.18.0/chapel-1.18.0.tar.gz (https://chapel-lang.org/docs/usingchapel/QUICKSTART.html)
 - [ ] ed
+- [ ] cloc
 - [ ] libpeas
 - [ ] libcaca
 - [ ] alarm, pread, top, htop, kill, grep
