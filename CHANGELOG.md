@@ -1,5 +1,9 @@
 # cpkg
 
+## 0.2.0.0
+
+  * Support more MIPS architectures
+
 ## 0.1.3.1
 
   * Don't install build-tool dependencies globally
