@@ -61,28 +61,36 @@ data Arch = X64
           | SH4
           | HPPA
           | HPPA64
+          | MipsIsa32r6El
+          | MipsIsa32r6
+          | MipsIsa64r6El
+          | MipsIsa64r6
           deriving (Eq, Ord, Hashable, Binary, Generic, Inject)
 
 instance Pretty Arch where
-    pretty X64         = "x86_64"
-    pretty AArch       = "aarch64"
-    pretty Arm         = "arm"
-    pretty RISCV64     = "riscv64"
-    pretty PowerPC     = "powerpc"
-    pretty PowerPC64   = "powerpc64"
-    pretty PowerPC64le = "powerpc64le"
-    pretty Sparc64     = "sparc64"
-    pretty S390x       = "s390x"
-    pretty Alpha       = "alpha"
-    pretty M68k        = "m68k"
-    pretty Mips        = "mips"
-    pretty MipsEl      = "mipsel"
-    pretty Mips64      = "mips64"
-    pretty Mips64El    = "mips64el"
-    pretty X86         = "i686"
-    pretty SH4         = "sh4"
-    pretty HPPA        = "hppa"
-    pretty HPPA64      = "hppa64"
+    pretty X64           = "x86_64"
+    pretty AArch         = "aarch64"
+    pretty Arm           = "arm"
+    pretty RISCV64       = "riscv64"
+    pretty PowerPC       = "powerpc"
+    pretty PowerPC64     = "powerpc64"
+    pretty PowerPC64le   = "powerpc64le"
+    pretty Sparc64       = "sparc64"
+    pretty S390x         = "s390x"
+    pretty Alpha         = "alpha"
+    pretty M68k          = "m68k"
+    pretty Mips          = "mips"
+    pretty MipsEl        = "mipsel"
+    pretty Mips64        = "mips64"
+    pretty Mips64El      = "mips64el"
+    pretty X86           = "i686"
+    pretty SH4           = "sh4"
+    pretty HPPA          = "hppa"
+    pretty HPPA64        = "hppa64"
+    pretty MipsIsa32r6El = "mipsisa32r6el"
+    pretty MipsIsa32r6   = "mipsisa32r6"
+    pretty MipsIsa64r6El = "mipsisa64r6el"
+    pretty MipsIsa64r6   = "mipsisa64r6"
 
 data ABI = GNU
          | GNUabi64

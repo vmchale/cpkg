@@ -36,25 +36,29 @@ in
 let printArch =
   λ(arch : types.Arch) →
     merge
-      { X64         = "x86_64"
-      , AArch       = "aarch64"
-      , Arm         = "arm"
-      , RISCV64     = "riscv64"
-      , PowerPC     = "powerpc"
-      , PowerPC64   = "powerpc64"
-      , PowerPC64le = "powerpc64le"
-      , Sparc64     = "sparc64"
-      , S390x       = "s390x"
-      , Alpha       = "alpha"
-      , M68k        = "m68k"
-      , Mips        = "mips"
-      , MipsEl      = "mipsel"
-      , Mips64      = "mips64"
-      , Mips64El    = "mips64el"
-      , X86         = "i686"
-      , SH4         = "sh4"
-      , HPPA        = "hppa"
-      , HPPA64      = "hppa64"
+      { X64           = "x86_64"
+      , AArch         = "aarch64"
+      , Arm           = "arm"
+      , RISCV64       = "riscv64"
+      , PowerPC       = "powerpc"
+      , PowerPC64     = "powerpc64"
+      , PowerPC64le   = "powerpc64le"
+      , Sparc64       = "sparc64"
+      , S390x         = "s390x"
+      , Alpha         = "alpha"
+      , M68k          = "m68k"
+      , Mips          = "mips"
+      , MipsEl        = "mipsel"
+      , Mips64        = "mips64"
+      , Mips64El      = "mips64el"
+      , X86           = "i686"
+      , SH4           = "sh4"
+      , HPPA          = "hppa"
+      , HPPA64        = "hppa64"
+      , MipsIsa32r6El = "mipsisa32r6el"
+      , MipsIsa32r6   = "mipsisa32r6"
+      , MipsIsa64r6El = "mipsisa64r6el"
+      , MipsIsa64r6   = "mipsisa64r6"
       }
       arch
 in
@@ -1036,25 +1040,29 @@ in
 let isX64 =
   λ(arch : types.Arch) →
     merge
-      { X64         = True
-      , AArch       = False
-      , Arm         = False
-      , RISCV64     = False
-      , PowerPC     = False
-      , PowerPC64   = False
-      , PowerPC64le = False
-      , Sparc64     = False
-      , S390x       = False
-      , Alpha       = False
-      , M68k        = False
-      , Mips        = False
-      , MipsEl      = False
-      , Mips64      = False
-      , Mips64El    = False
-      , X86         = False
-      , SH4         = False
-      , HPPA        = False
-      , HPPA64      = False
+      { X64           = True
+      , AArch         = False
+      , Arm           = False
+      , RISCV64       = False
+      , PowerPC       = False
+      , PowerPC64     = False
+      , PowerPC64le   = False
+      , Sparc64       = False
+      , S390x         = False
+      , Alpha         = False
+      , M68k          = False
+      , Mips          = False
+      , MipsEl        = False
+      , Mips64        = False
+      , Mips64El      = False
+      , X86           = False
+      , SH4           = False
+      , HPPA          = False
+      , HPPA64        = False
+      , MipsIsa32r6El = False
+      , MipsIsa32r6   = False
+      , MipsIsa64r6El = False
+      , MipsIsa64r6   = False
       }
       arch
 in

@@ -35,6 +35,10 @@ let Arch = < X64
            | SH4
            | HPPA
            | HPPA64
+           | MipsIsa32r6El
+           | MipsIsa32r6
+           | MipsIsa64r6El
+           | MipsIsa64r6
            >
 in
 

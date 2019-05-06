@@ -16,3 +16,4 @@ main = hspec $
         parseHelper "mips64el-linux-gnuabi64" $ TargetTriple Mips64El Nothing Linux (Just GNUabi64)
         parseHelper "mips64-linux-gnu" $ TargetTriple Mips64 Nothing Linux (Just GNU)
         parseHelper "x86_64-unknown-redox" $ TargetTriple X64 (Just Unknown) Redox Nothing
+        parseHelper "mipsisa64r6el-linux-gnu" $ TargetTriple MipsIsa64r6El Nothing Linux (Just GNU)
