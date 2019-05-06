@@ -3221,7 +3221,7 @@ in
 , mosh [1,3,2]
 , motif [2,3,8]
 , musl [1,1,20]
-, nano [3,2]
+, nano [4,2]
 , nasm [2,14]
 , ncurses [6,1]
 , nginx [1,15,7]
