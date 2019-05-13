@@ -2205,7 +2205,7 @@ let libarchive =
     prelude.simplePackage { name = "libarchive", version = v } ⫽
       { pkgUrl = "https://www.libarchive.org/downloads/libarchive-${prelude.showVersion v}.tar.gz"
       , pkgDeps = [ prelude.unbounded "xz"
-                  , prelude.unbounded "bzip2"
+                  -- , prelude.unbounded "bzip2"
                   , prelude.unbounded "zlib"
                   ]
       }
