@@ -9,6 +9,7 @@ addons:
   apt:
     packages:
       - libgmp3-dev
+      - libarchive-dev
 matrix:
   include:
 
