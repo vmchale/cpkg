@@ -3127,7 +3127,7 @@ in
 , fribidi [1,0,5]
 , gawk [4,2,1]
 , gc [8,0,4]
-, gcc [9,1,0]
+-- , gcc [9,1,0]
 , gdb [8,2]
 , gdk-pixbuf { version = [2,38], patch = 0 }
 , gegl { version = [0,4], patch = 12 }
