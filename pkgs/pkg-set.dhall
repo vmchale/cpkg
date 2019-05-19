@@ -2905,7 +2905,7 @@ in
 let mpfr =
   λ(v : List Natural) →
     prelude.simplePackage { name = "mpfr", version = v } ⫽
-      { pkgUrl = "https://www.mpfr.org/mpfr-current/mpfr-${prelude.showVersion v}.tar.xz" }
+      { pkgUrl = "https://ftp.gnu.org/gnu/mpfr/mpfr-${prelude.showVersion v}.tar.xz" }
 in
 
 let libsodium =
@@ -3070,6 +3070,28 @@ let pari =
       }
 in
 
+let mpc =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "mpc", version = v } ⫽
+      { pkgUrl = "https://ftp.gnu.org/gnu/mpc/mpc-${prelude.showVersion v}.tar.gz"
+      , pkgDeps = [ prelude.unbounded "mpfr" ]
+      }
+in
+
+-- let gcc =
+  -- λ(v : List Natural) →
+    -- let versionString = prelude.showVersion v in
+    -- prelude.simplePackage { name = "gcc", version = v } ⫽
+      -- { pkgUrl = "http://mirror.linux-ia64.org/gnu/gcc/releases/gcc-${versionString}/gcc-${versionString}.tar.xz"
+      -- , pkgDeps = [ prelude.unbounded "mpfr"
+                  -- , prelude.unbounded "mpc"
+                  -- ]
+      -- , configureCommand = prelude.configureWithFlags [ "--disable-multilib" ]
+      -- , pkgStream = False
+      -- }
+-- in
+
+-- https://hub.darcs.net/raichoo/hikari
 -- https://versaweb.dl.sourceforge.net/project/schilytools/schily-2019-03-29.tar.bz2
 [ autoconf [2,69]
 , automake [1,16,1]
@@ -3105,6 +3127,7 @@ in
 , fribidi [1,0,5]
 , gawk [4,2,1]
 , gc [8,0,4]
+, gcc [9,1,0]
 , gdb [8,2]
 , gdk-pixbuf { version = [2,38], patch = 0 }
 , gegl { version = [0,4], patch = 12 }
@@ -3217,7 +3240,8 @@ in
 , memcached [1,5,12]
 , mesa [18,3,1]
 , meson [0,50,1]
-, mpfr [4,0,2]
+, mpc [1,0,3]
+, mpfr [3,1,6] -- [4,0,2]
 , mosh [1,3,2]
 , motif [2,3,8]
 , musl [1,1,20]
