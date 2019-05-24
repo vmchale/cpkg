@@ -108,6 +108,7 @@ let cmake =
     in
 
     prelude.defaultPackage ⫽
+    -- TODO: build dep on gcc/g++
       { pkgName = "cmake"
       , pkgVersion = prelude.fullVersion cfg
       , pkgUrl = "https://cmake.org/files/v${versionString}/cmake-${versionString}.${patchString}.tar.gz"
@@ -3097,18 +3098,26 @@ let mpc =
       }
 in
 
--- let gcc =
-  -- λ(v : List Natural) →
-    -- let versionString = prelude.showVersion v in
-    -- prelude.simplePackage { name = "gcc", version = v } ⫽
-      -- { pkgUrl = "http://mirror.linux-ia64.org/gnu/gcc/releases/gcc-${versionString}/gcc-${versionString}.tar.xz"
-      -- , pkgDeps = [ prelude.unbounded "mpfr"
-                  -- , prelude.unbounded "mpc"
-                  -- ]
-      -- , configureCommand = prelude.configureWithFlags [ "--disable-multilib" ]
-      -- , pkgStream = False
-      -- }
--- in
+-- http://www.netgull.com/gcc/releases/gcc-9.1.0/gcc-9.1.0.tar.xz
+let gcc =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "gcc", version = v } ⫽
+      { pkgUrl = "http://mirror.linux-ia64.org/gnu/gcc/releases/gcc-${versionString}/gcc-${versionString}.tar.xz"
+      , configureCommand =
+        λ(cfg : types.BuildVars) →
+          [ prelude.call { program = "contrib/download_prerequisites"
+                        , arguments = [] : List Text
+                        , environment = None (List types.EnvVar)
+                        , procDir = None Text
+                        }
+          ] #
+            prelude.configureWithFlags [ "--disable-multilib" ] cfg
+      , installCommand = prelude.installWithBinaries [ "bin/gcc", "bin/g++", "bin/gcc-ar", "bin/gcc-nm", "bin/gfortran", "bin/gcc-ranlib" ]
+      , pkgBuildDeps = [ prelude.unbounded "curl" ]
+      , pkgStream = False
+      }
+in
 
 -- https://hub.darcs.net/raichoo/hikari
 -- https://versaweb.dl.sourceforge.net/project/schilytools/schily-2019-03-29.tar.bz2
@@ -3147,7 +3156,7 @@ in
 , fribidi [1,0,5]
 , gawk [4,2,1]
 , gc [8,0,4]
--- , gcc [9,1,0]
+, gcc [9,1,0]
 , gdb [8,2]
 , gdk-pixbuf { version = [2,38], patch = 1 }
 , gegl { version = [0,4], patch = 12 }
