@@ -625,8 +625,14 @@ let diffutils =
   λ(v : List Natural) →
     prelude.simplePackage { name = "diffutils", version = v } ⫽
       { pkgUrl = "https://ftp.gnu.org/gnu/diffutils/diffutils-${prelude.showVersion v}.tar.xz"
-      , installCommand = prelude.installWithBinaries [ "bin/diff", "bin/patch" ]
+      , installCommand = prelude.installWithBinaries [ "bin/diff" ]
       }
+in
+
+let patch =
+  λ(v : List Natural) →
+    prelude.makeGnuExe { name = "patch", version = v }
+in
 
 let m4 =
   λ(v : List Natural) →
@@ -635,7 +641,7 @@ let m4 =
           λ(cfg : types.BuildVars) →
             [ prelude.patch (./patches/m4.patch as Text) ]
               # prelude.defaultConfigure cfg
-      , pkgBuildDeps = [ prelude.unbounded "diffutils" ]
+      , pkgBuildDeps = [ prelude.unbounded "patch" ]
       }
 in
 
@@ -3273,6 +3279,7 @@ in
 , p11kit [0,23,16,1]
 , pango { version = [1,43], patch = 0 }
 , pari [2,11,1]
+, patch [2,7]
 , pcre [8,42]
 , pcre2 [10,32]
 , perl5 [5,28,1]
