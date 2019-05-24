@@ -1,5 +1,9 @@
 # cpkg
 
+## 0.2.0.1
+
+  * Pass `-p0` option to `patch`
+
 ## 0.2.0.0
 
   * Support more MIPS architectures
