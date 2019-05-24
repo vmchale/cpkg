@@ -2,6 +2,9 @@
 let concatMapSep = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/Text/concatMapSep
 in
 
+let concatMapText = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/Text/concatMap
+in
+
 let not = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/Bool/not
 in
 
@@ -1375,7 +1378,7 @@ let glib =
         [ prelude.createDir "build"
         , prelude.writeFile { file = "build/cross.txt", contents = prelude.mesonCfgFile cfg }
         , prelude.call { program = "meson"
-                       , arguments = [ "--prefix=${cfg.installDir}", "..", "-Dselinux=false" ] # crossArgs
+                       , arguments = [ "--prefix=${cfg.installDir}", "..", "-Dselinux=disabled" ] # crossArgs
                        , environment = Some [ prelude.mkPkgConfigVar cfg.linkDirs
                                             , { var = "PATH", value = prelude.mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
                                             , { var = "LDFLAGS", value = (prelude.mkLDFlags cfg.linkDirs).value ++ " -lpcre" }
@@ -1993,7 +1996,7 @@ let at-spi-core =
                   , prelude.unbounded "glib"
                   ]
       , installCommand =
-          prelude.ninjaInstallWithPkgConfig [{ src = "build/atspi-2.pc", dest = "lib/pkgconfig/atspi-2.pc" }]
+          prelude.ninjaInstallWithPkgConfig [{ src = "build/meson-private/atspi-2.pc", dest = "lib/pkgconfig/atspi-2.pc" }]
       }
 in
 
@@ -2062,14 +2065,14 @@ let mkGnomeSimple =
 in
 
 let gtk3 =
+  let mkLDFlagsGtk =
+    λ(linkDirs : List Text) →
+      concatMapSep " " Text (λ(dir : Text) → "-L${dir}") linkDirs
+  in
   let gtkEnv =
     λ(cfg : types.BuildVars) →
-      prelude.defaultPath cfg # [ { var = "LDFLAGS", value = (prelude.mkLDFlags cfg.linkDirs).value ++ " -lpcre -lfribidi" }
-                                , prelude.mkCFlags cfg
+      prelude.defaultPath cfg # [ { var = "LDFLAGS", value = (mkLDFlagsGtk cfg.linkDirs) ++ " -lpcre -lfribidi" }
                                 , prelude.mkPkgConfigVar cfg.linkDirs
-                                , prelude.libPath cfg
-                                , prelude.mkLDRunPath cfg.linkDirs
-                                , prelude.mkXdgDataDirs cfg.shareDirs
                                 , prelude.mkLDPreload cfg.preloadLibs
                                 ]
   in
@@ -2633,7 +2636,7 @@ let mesa =
                   , prelude.lowerBound { name = "dri2proto", lower = [2,8] }
                   , prelude.unbounded "libXrandr"
                   ]
-      , configureCommand = prelude.configureWithFlags [ "--with-gallium-drivers=nouveau,swrast" ] -- disable radeon drivers so we don't need LLVM (7.0.1 won't work?)
+      , configureCommand = prelude.configureWithFlags [ "--enable-autotools", "--with-gallium-drivers=nouveau,swrast" ] -- disable radeon drivers so we don't need LLVM (8.0.0 won't work?)
       }
 in
 
@@ -3095,9 +3098,9 @@ in
 -- https://versaweb.dl.sourceforge.net/project/schilytools/schily-2019-03-29.tar.bz2
 [ autoconf [2,69]
 , automake [1,16,1]
-, at-spi-atk { version = [2,30], patch = 0 }
-, at-spi-core { version = [2,30], patch = 0 }
-, atk { version = [2,30], patch = 0 }
+, at-spi-atk { version = [2,33], patch = 1 }
+, at-spi-core { version = [2,33], patch = 1 }
+, atk { version = [2,33], patch = 1 }
 , babl { version = [0,1], patch = 60 }
 , binutils [2,31]
 , bison [3,3]
@@ -3129,7 +3132,7 @@ in
 , gc [8,0,4]
 -- , gcc [9,1,0]
 , gdb [8,2]
-, gdk-pixbuf { version = [2,38], patch = 0 }
+, gdk-pixbuf { version = [2,38], patch = 1 }
 , gegl { version = [0,4], patch = 12 }
 , gettext [0,19,8]
 , gexiv2 { version = [0,11], patch = 0 }
@@ -3137,20 +3140,20 @@ in
 , gperftools [2,7]
 , giflib [5,1,4]
 , git [2,19,2]
-, glib { version = [2,58], patch = 3 } -- TODO: bump to 2.59.0 once gobject-introspection supports it
+, glib { version = [2,60], patch = 3 } -- TODO: bump to 2.59.0 once gobject-introspection supports it
 , glproto [1,4,17]
 , glu [9,0,0]
 , json-glib { version = [1,4], patch = 4 }
 , glibc [2,28]
 , gmp [6,1,2]
-, gobject-introspection { version = [1,59], patch = 3 }
+, gobject-introspection { version = [1,60], patch = 1 }
 , gnome-doc-utils { version = [0,20], patch = 10 }
 , gnupg [2,2,15]
 , gnutls { version = [3,6], patch = 7 }
 , graphviz [2,40,1]
 , gsl [2,5]
 , gtk2 { version = [2,24], patch = 32 }
-, gtk3 { version = [3,24], patch = 4 }
+, gtk3 { version = [3,24], patch = 8 }
 , gzip [1,9]
 , harfbuzz [2,4,0]
 , htop [2,2,0]
@@ -3198,7 +3201,7 @@ in
 , libselinux [2,8]
 , libsepol [2,8]
 , libsodium [1,0,17]
-, libsoup { version = [2,65], patch = 2 }
+, libsoup { version = [2,67], patch = 1 }
 , libssh2 [1,8,0]
 , libtasn1 [4,13]
 , libtiff [4,0,10]
@@ -3230,7 +3233,7 @@ in
 , libXt [1,1,5]
 , libXtst [1,2,3]
 , libXxf86vm [1,1,4]
-, llvm [7,0,1]
+, llvm [8,0,0]
 , lmdb [0,9,23]
 , lua [5,3,5]
 , m17n [1,8,0]
@@ -3238,7 +3241,7 @@ in
 , mako [1,0,7]
 , markupSafe [1,0]
 , memcached [1,5,12]
-, mesa [18,3,1]
+, mesa [19,0,5]
 , meson [0,50,1]
 , mpc [1,0,3]
 , mpfr [3,1,6] -- [4,0,2]
@@ -3256,7 +3259,7 @@ in
 , nspr [4,20]
 , openssh [7,9]
 , openssl [1,1,1]
-, p11kit [0,23,15]
+, p11kit [0,23,16,1]
 , pango { version = [1,43], patch = 0 }
 , pari [2,11,1]
 , pcre [8,42]
