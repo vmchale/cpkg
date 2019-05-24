@@ -1062,7 +1062,7 @@ let mkXProtoWithPatch =
           λ(cfg : types.BuildVars) →
             [ prelude.patch patch ]
               # prelude.defaultConfigure cfg
-      , pkgBuildDeps = [ prelude.unbounded "diffutils" ]
+      , pkgBuildDeps = [ prelude.unbounded "patch" ]
       }
 in
 
