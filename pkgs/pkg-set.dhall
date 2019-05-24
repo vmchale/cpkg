@@ -621,12 +621,21 @@ let libnettle =
       }
 in
 
+let diffutils =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "diffutils", version = v } ⫽
+      { pkgUrl = "https://ftp.gnu.org/gnu/diffutils/diffutils-${prelude.showVersion v}.tar.xz"
+      , installCommand = prelude.installWithBinaries [ "bin/diff", "bin/patch" ]
+      }
+
 let m4 =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "m4", version = v } ⫽
-      -- FIXME: this is in place until there's a mechanism to patch...
-      { buildCommand = prelude.doNothing
-      , installCommand = prelude.doNothing
+      { configureCommand =
+          λ(cfg : types.BuildVars) →
+            [ prelude.patch (./patches/m4.patch as Text) ]
+              # prelude.defaultConfigure cfg
+      , pkgBuildDeps = [ prelude.unbounded "diffutils" ]
       }
 in
 
@@ -1047,6 +1056,7 @@ let mkXProtoWithPatch =
           λ(cfg : types.BuildVars) →
             [ prelude.patch patch ]
               # prelude.defaultConfigure cfg
+      , pkgBuildDeps = [ prelude.unbounded "diffutils" ]
       }
 in
 
@@ -3114,6 +3124,7 @@ in
 , curl [7,63,0]
 , damageproto [1,2,1]
 , dbus [1,12,10]
+, diffutils [3,7]
 , dri2proto [2,8]
 , elfutils [0,175]
 , emacs [26,1]
@@ -3155,7 +3166,7 @@ in
 , gtk2 { version = [2,24], patch = 32 }
 , gtk3 { version = [3,24], patch = 8 }
 , gzip [1,9]
-, harfbuzz [2,4,0]
+, harfbuzz [2,5,0]
 , htop [2,2,0]
 , imageMagick [7,0,8]
 , imlib2 [1,5,1]
