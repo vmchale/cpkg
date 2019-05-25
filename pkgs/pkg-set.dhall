@@ -3192,7 +3192,7 @@ in
 , libdrm [2,4,96]
 , libepoxy [1,5,3]
 , libev [4,25]
-, libevent [2,1,8]
+, libevent [2,1,10]
 , libexif [0,6,21]
 , libffi [3,2,1]
 , libgcrypt [1,8,4]
