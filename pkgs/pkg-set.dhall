@@ -2075,6 +2075,7 @@ let gtk3 =
       prelude.defaultPath cfg # [ { var = "LDFLAGS", value = (mkLDFlagsGtk cfg.linkDirs) ++ " -lpcre -lfribidi" }
                                 , prelude.mkPkgConfigVar cfg.linkDirs
                                 , prelude.mkLDPreload cfg.preloadLibs
+                                , prelude.mkXdgDataDirs cfg.shareDirs
                                 , prelude.mkCFlags cfg
                                 ]
   in
