@@ -276,7 +276,7 @@ let harfbuzz =
 
   λ(v : List Natural) →
     prelude.simplePackage { name = "harfbuzz", version = v } ⫽
-      { pkgUrl = "https://www.freedesktop.org/software/harfbuzz/release/harfbuzz-${prelude.showVersion v}.tar.bz2"
+      { pkgUrl = "https://www.freedesktop.org/software/harfbuzz/release/harfbuzz-${prelude.showVersion v}.tar.xz"
       , pkgDeps = [ prelude.unbounded "freetype-prebuild"
                   , prelude.unbounded "glib"
                   ]
@@ -1433,21 +1433,6 @@ let glib =
                              ]
       , installCommand =
           λ(cfg : types.BuildVars) →
-            let libDir = "lib/${prelude.printArch cfg.buildArch}-${prelude.printOS cfg.buildOS}-gnu"
-            in
-            let noCross =
-              if not cfg.isCross
-                then
-                  [ prelude.symlink "${libDir}/libglib-2.0.so" "lib/libglib-2.0.so"
-                  , prelude.symlink "${libDir}/libglib-2.0.so.0" "lib/libglib-2.0.so.0"
-                  , prelude.symlink "${libDir}/libgio-2.0.so" "lib/libgio-2.0.so"
-                  , prelude.symlink "${libDir}/libgthread-2.0.so" "lib/libgthread-2.0.so"
-                  , prelude.symlink "${libDir}/libgobject-2.0.so" "lib/libgobject-2.0.so"
-                  , prelude.symlink "${libDir}/libgmodule-2.0.so" "lib/libgmodule-2.0.so"
-                  ]
-                else [] : List types.Command
-            in
-
             prelude.ninjaInstallWithPkgConfig (prelude.mesonMoves [ "glib-2.0.pc"
                                                                   , "gobject-2.0.pc"
                                                                   , "gio-2.0.pc"
@@ -1457,7 +1442,6 @@ let glib =
                                                                   , "gmodule-2.0.pc"
                                                                   , "gthread-2.0.pc"
                                                                   ]) cfg
-              # noCross
               # [ prelude.symlink "include/glib-2.0/glib" "include/glib"
                 , prelude.symlink "include/glib-2.0/gobject" "include/gobject"
                 , prelude.symlink "include/glib-2.0/glib.h" "include/glib.h"
@@ -2116,6 +2100,7 @@ let gtk3 =
                   , prelude.lowerBound { name = "gdk-pixbuf", lower = [2,30,0] }
                   , prelude.unbounded "libXft"
                   , prelude.lowerBound { name = "libepoxy", lower = [1,4] }
+                  , prelude.unbounded "libXi"
                   ]
       }
 in
@@ -3149,7 +3134,7 @@ in
 , fixesproto [5,0]
 , fontconfig [2,13,1]
 , fossil [2,7]
-, flex [2,6,3]
+, flex [2,6,3] -- 2.6.4?
 , fltk { version = [1,3,4], patch = 2 }
 , freetype-prebuild [2,9,1] -- TODO: force both to have same version?
 , freetype [2,9,1]
