@@ -670,9 +670,15 @@ let openssl =
                 then "no-shared"
                 else "shared"
             in
+            -- TODO: actually do this sensibly
+            let targetMakefile =
+              if cfg.isCross
+                then "gcc"
+                else "linux-x86_64"
+            in
             [ prelude.mkExe "Configure"
             , prelude.call (prelude.defaultCall ⫽ { program = "./Configure"
-                                                  , arguments = [ "--prefix=${cfg.installDir}", "gcc", sharedFlag ] -- FIXME: gcc platform doesn't support shared libraries
+                                                  , arguments = [ "--prefix=${cfg.installDir}", targetMakefile, sharedFlag ] -- FIXME: gcc platform doesn't support shared libraries
                                                   , environment = opensslCfgVars cfg
                                                   })
             ]
@@ -3106,6 +3112,23 @@ let gcc =
       }
 in
 
+let ruby =
+  λ(x : { version : List Natural, patch : Natural }) →
+    let versionString = prelude.showVersion x.version
+    in
+    let fullVersion = versionString ++ "." ++ Natural/show x.patch
+    in
+
+    prelude.simplePackage { name = "ruby", version = prelude.fullVersion x } ⫽
+      { pkgUrl = "https://cache.ruby-lang.org/pub/ruby/${versionString}/ruby-${fullVersion}.tar.gz"
+      , installCommand = prelude.installWithBinaries [ "bin/ruby", "bin/gem" ]
+      , pkgStream = False
+      , pkgDeps = [ prelude.unbounded "readline"
+                  , prelude.unbounded "openssl"
+                  ]
+      }
+in
+
 -- https://hub.darcs.net/raichoo/hikari
 -- https://versaweb.dl.sourceforge.net/project/schilytools/schily-2019-03-29.tar.bz2
 [ autoconf [2,69]
@@ -3295,6 +3318,7 @@ in
 , readline [7,0]
 , recordproto [1,14,2]
 , renderproto [0,11,1]
+, ruby { version = [2,6], patch = 3 }
 , scour [0,37]
 , scrnsaverproto [1,2,2]
 , sdl2 [2,0,9]
