@@ -3184,7 +3184,7 @@ in
 , gmp [6,1,2]
 , gobject-introspection { version = [1,60], patch = 1 }
 , gnome-doc-utils { version = [0,20], patch = 10 }
-, gnupg [2,2,15]
+, gnupg [2,2,16]
 , gnutls { version = [3,6], patch = 7 }
 , graphviz [2,40,1]
 , gsl [2,5]
