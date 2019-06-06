@@ -662,7 +662,7 @@ let openssl =
 
   λ(v : List Natural) →
     prelude.simplePackage { name = "openssl", version = v } ⫽
-      { pkgUrl = "https://www.openssl.org/source/openssl-${prelude.showVersion v}a.tar.gz"
+      { pkgUrl = "https://www.openssl.org/source/openssl-${prelude.showVersion v}c.tar.gz"
       , configureCommand =
           λ(cfg : types.BuildVars) →
             let sharedFlag =
@@ -682,7 +682,7 @@ let openssl =
                                                   , environment = opensslCfgVars cfg
                                                   })
             ]
-      , pkgSubdir = "openssl-${prelude.showVersion v}a"
+      , pkgSubdir = "openssl-${prelude.showVersion v}c"
       , pkgBuildDeps = [ prelude.unbounded "perl" ]
       }
 in
@@ -3091,7 +3091,6 @@ let mpc =
       }
 in
 
--- http://www.netgull.com/gcc/releases/gcc-9.1.0/gcc-9.1.0.tar.xz
 let gcc =
   λ(v : List Natural) →
     let versionString = prelude.showVersion v in
@@ -3146,7 +3145,7 @@ in
 , compositeproto [0,4]
 , coreutils [8,30]
 , ctags [5,8]
-, curl [7,63,0]
+, curl [7,65,0]
 , damageproto [1,2,1]
 , dbus [1,12,10]
 , diffutils [3,7]
@@ -3185,13 +3184,13 @@ in
 , gobject-introspection { version = [1,60], patch = 1 }
 , gnome-doc-utils { version = [0,20], patch = 10 }
 , gnupg [2,2,16]
-, gnutls { version = [3,6], patch = 7 }
+, gnutls { version = [3,6], patch = 8 }
 , graphviz [2,40,1]
 , gsl [2,5]
 , gtk2 { version = [2,24], patch = 32 }
 , gtk3 { version = [3,24], patch = 8 }
 , gzip [1,9]
-, harfbuzz [2,5,0]
+, harfbuzz [2,5,1]
 , htop [2,2,0]
 , imageMagick [7,0,8]
 , imlib2 [1,5,1]
@@ -3279,8 +3278,8 @@ in
 , memcached [1,5,12]
 , mesa [19,0,5]
 , meson [0,50,1]
-, mpc [1,0,3]
-, mpfr [3,1,6] -- [4,0,2]
+, mpc [1,1,0]
+, mpfr [4,0,2]
 , mosh [1,3,2]
 , motif [2,3,8]
 , musl [1,1,20]
@@ -3336,7 +3335,7 @@ in
 , valgrind [3,14,0]
 , vim [8,1]
 , wayland [1,16,0]
-, wget [1,20]
+, wget [1,20,3]
 , which [2,21]
 , xcb-proto [1,13]
 , xextproto [7,3,0]
