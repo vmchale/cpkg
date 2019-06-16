@@ -3071,6 +3071,12 @@ let pari =
       }
 in
 
+let pdfgrep =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "pdfgrep", version = v } ⫽
+      { pkgUrl = "https://pdfgrep.org/download/pdfgrep-${prelude.showVersion v}.tar.gz" }
+in
+
 -- https://versaweb.dl.sourceforge.net/project/schilytools/schily-2019-03-29.tar.bz2
 [ autoconf [2,69]
 , automake [1,16,1]
@@ -3238,6 +3244,7 @@ in
 , pari [2,11,1]
 , pcre [8,42]
 , pcre2 [10,32]
+, pdfgrep [2,1,2]
 , perl5 [5,28,1]
 , pixman [0,36,0]
 , pkg-config [0,29,2]
