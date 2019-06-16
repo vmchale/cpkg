@@ -514,6 +514,8 @@ let zlib =
     prelude.simplePackage { name = "zlib", version = v } ⫽
       { pkgUrl = "http://www.zlib.net/zlib-${prelude.showVersion v}.tar.xz"
       , configureCommand = zlibConfigure
+      , installCommand =
+          prelude.installWithManpages [ { file = "share/man/man3/zlib.3", section = 3 } ]
       }
 in
 
@@ -642,6 +644,8 @@ let m4 =
           λ(cfg : types.BuildVars) →
             [ prelude.patch (./patches/m4.patch as Text) ]
               # prelude.defaultConfigure cfg
+      , installCommand =
+          prelude.installWithManpages [ { file = "share/man/man1/m4.1", section = 1 } ]
       , pkgBuildDeps = [ prelude.unbounded "patch" ]
       }
 in
@@ -796,7 +800,10 @@ let python =
           -- disable ipv6 for cross-compiling
           -- "--enable-optimizations" (takes forever)
       , pkgDeps = [ prelude.unbounded "libffi" ]
-      , installCommand = prelude.installWithBinaries [ "bin/python${major}" ]
+      , installCommand =
+          λ(cfg : types.BuildVars) →
+            prelude.installWithBinaries [ "bin/python${major}" ] cfg
+              # prelude.symlinkManpages [ { file = "share/man/man1/python${major}.1", section = 1 } ]
       -- , installCommand =
           -- prelude.installWithWrappers [ "python${major}" ]
       }

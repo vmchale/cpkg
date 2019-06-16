@@ -508,6 +508,15 @@ let installWithBinaries =
             else [] : List types.Command)
 in
 
+let installWithManpages =
+  λ(mans : List { file : Text, section : Natural }) →
+  λ(installVars : types.BuildVars) →
+    defaultInstall installVars
+      # (if not installVars.isCross
+            then symlinkManpages mans
+            else [] : List types.Command)
+in
+
 let unbounded =
   λ(x : Text) →
     { name = x
@@ -1123,6 +1132,7 @@ in
 , symlinkBinaries     = symlinkBinaries
 , symlinkManpages     = symlinkManpages
 , installWithBinaries = installWithBinaries
+, installWithManpages = installWithManpages
 , configureMkExes     = configureMkExes
 , generalConfigure    = generalConfigure
 , configureWithFlags  = configureWithFlags
