@@ -3091,7 +3091,10 @@ let pdfgrep =
       , pkgDeps = [ prelude.unbounded "poppler"
                   , prelude.unbounded "libgcrypt"
                   ]
-      , installCommand = prelude.installWithBinaries [ "bin/pdfgrep" ]
+      , installCommand =
+          λ(cfg : types.BuildVars) →
+            prelude.installWithBinaries [ "bin/pdfgrep" ] cfg
+              # prelude.symlinkManpages [ "man/man1/pdfgrep.1" ]
       }
 in
 
@@ -3109,14 +3112,14 @@ let gcc =
     prelude.simplePackage { name = "gcc", version = v } ⫽
       { pkgUrl = "http://mirror.linux-ia64.org/gnu/gcc/releases/gcc-${versionString}/gcc-${versionString}.tar.xz"
       , configureCommand =
-        λ(cfg : types.BuildVars) →
-          [ prelude.call { program = "contrib/download_prerequisites"
-                        , arguments = [] : List Text
-                        , environment = None (List types.EnvVar)
-                        , procDir = None Text
-                        }
-          ] #
-            prelude.configureWithFlags [ "--disable-multilib" ] cfg
+          λ(cfg : types.BuildVars) →
+            [ prelude.call { program = "contrib/download_prerequisites"
+                          , arguments = [] : List Text
+                          , environment = None (List types.EnvVar)
+                          , procDir = None Text
+                          }
+            ] #
+              prelude.configureWithFlags [ "--disable-multilib" ] cfg
       , installCommand = prelude.installWithBinaries [ "bin/gcc", "bin/g++", "bin/gcc-ar", "bin/gcc-nm", "bin/gfortran", "bin/gcc-ranlib" ]
       , pkgBuildDeps = [ prelude.unbounded "curl" ]
       , pkgStream = False

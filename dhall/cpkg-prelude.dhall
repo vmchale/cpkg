@@ -204,6 +204,10 @@ let symlinkBinaries =
   map Text types.Command symlinkBinary
 in
 
+let symlinkManpages =
+  map Text types.Command symlinkManpage
+in
+
 {- This is to be used on the build OS -}
 let isUnix =
   λ(os : types.OS) →
@@ -1118,6 +1122,7 @@ in
 , symlinkManpage      = symlinkManpage
 , symlink             = symlink
 , symlinkBinaries     = symlinkBinaries
+, symlinkManpages     = symlinkManpages
 , installWithBinaries = installWithBinaries
 , configureMkExes     = configureMkExes
 , generalConfigure    = generalConfigure
