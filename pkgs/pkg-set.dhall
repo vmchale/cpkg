@@ -3088,7 +3088,10 @@ let pdfgrep =
   λ(v : List Natural) →
     prelude.simplePackage { name = "pdfgrep", version = v } ⫽
       { pkgUrl = "https://pdfgrep.org/download/pdfgrep-${prelude.showVersion v}.tar.gz"
-      , pkgDeps = [ prelude.unbounded "poppler" ]
+      , pkgDeps = [ prelude.unbounded "poppler"
+                  , prelude.unbounded "libgcrypt"
+                  ]
+      , installCommand = prelude.installWithBinaries [ "bin/pdfgrep" ]
       }
 in
 
@@ -3141,9 +3144,18 @@ in
 let poppler =
   λ(v : List Natural) →
     prelude.simplePackage { name = "poppler", version = v } ⫽ prelude.cmakePackage ⫽
-      { pkgUrl = "https://poppler.freedesktop.org/poppler-0.77.0.tar.xz" }
+      { pkgUrl = "https://poppler.freedesktop.org/poppler-${prelude.showVersion v}.tar.xz"
+      , pkgDeps = [ prelude.unbounded "fontconfig"
+                  , prelude.unbounded "libopenjpeg"
+                  , prelude.unbounded "libjpeg-turbo"
+                  , prelude.unbounded "freetype"
+                  , prelude.unbounded "zlib"
+                  , prelude.unbounded "libpng"
+                  ]
+      }
 in
 
+-- https://download.qt.io/archive/qt/5.12/5.12.4/single/qt-everywhere-src-5.12.4.tar.xz
 -- https://hub.darcs.net/raichoo/hikari
 -- https://versaweb.dl.sourceforge.net/project/schilytools/schily-2019-03-29.tar.bz2
 [ autoconf [2,69]
