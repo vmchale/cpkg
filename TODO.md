@@ -173,8 +173,8 @@
 - [ ] zstd
 - [ ] lz4
 - [ ] oclint
-- [ ] https://pdfgrep.org/
 - [ ] pdftotext http://www.xpdfreader.com/download.html
+- [ ] http://www.linuxfromscratch.org/blfs/view/8.3/kde/okular5.html
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in
