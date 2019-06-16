@@ -1,5 +1,13 @@
 # cpkg
 
+## 0.2.0.1
+
+  * Pass `-p0` option to `patch`
+
+## 0.2.0.0
+
+  * Support more MIPS architectures
+
 ## 0.1.3.1
 
   * Don't install build-tool dependencies globally

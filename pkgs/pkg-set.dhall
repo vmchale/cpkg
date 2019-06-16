@@ -1,5 +1,8 @@
 {- Dhall prelue imports -}
-let concatMapSep = https://raw.githubusercontent.com/dhall-lang/dhall-lang/0a7f596d03b3ea760a96a8e03935f4baa64274e1/Prelude/Text/concatMapSep
+let concatMapSep = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/Text/concatMapSep
+in
+
+let concatMapText = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/Text/concatMap
 in
 
 let not = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/Bool/not
@@ -105,6 +108,7 @@ let cmake =
     in
 
     prelude.defaultPackage ⫽
+    -- TODO: build dep on gcc/g++
       { pkgName = "cmake"
       , pkgVersion = prelude.fullVersion cfg
       , pkgUrl = "https://cmake.org/files/v${versionString}/cmake-${versionString}.${patchString}.tar.gz"
@@ -272,7 +276,7 @@ let harfbuzz =
 
   λ(v : List Natural) →
     prelude.simplePackage { name = "harfbuzz", version = v } ⫽
-      { pkgUrl = "https://www.freedesktop.org/software/harfbuzz/release/harfbuzz-${prelude.showVersion v}.tar.bz2"
+      { pkgUrl = "https://www.freedesktop.org/software/harfbuzz/release/harfbuzz-${prelude.showVersion v}.tar.xz"
       , pkgDeps = [ prelude.unbounded "freetype-prebuild"
                   , prelude.unbounded "glib"
                   ]
@@ -618,12 +622,27 @@ let libnettle =
       }
 in
 
+let diffutils =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "diffutils", version = v } ⫽
+      { pkgUrl = "https://ftp.gnu.org/gnu/diffutils/diffutils-${prelude.showVersion v}.tar.xz"
+      , installCommand = prelude.installWithBinaries [ "bin/diff" ]
+      }
+in
+
+let patch =
+  λ(v : List Natural) →
+    prelude.makeGnuExe { name = "patch", version = v }
+in
+
 let m4 =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "m4", version = v } ⫽
-      -- FIXME: this is in place until there's a mechanism to patch...
-      { buildCommand = prelude.doNothing
-      , installCommand = prelude.doNothing
+      { configureCommand =
+          λ(cfg : types.BuildVars) →
+            [ prelude.patch (./patches/m4.patch as Text) ]
+              # prelude.defaultConfigure cfg
+      , pkgBuildDeps = [ prelude.unbounded "patch" ]
       }
 in
 
@@ -651,9 +670,15 @@ let openssl =
                 then "no-shared"
                 else "shared"
             in
+            -- TODO: actually do this sensibly
+            let targetMakefile =
+              if cfg.isCross
+                then "gcc"
+                else "linux-x86_64"
+            in
             [ prelude.mkExe "Configure"
             , prelude.call (prelude.defaultCall ⫽ { program = "./Configure"
-                                                  , arguments = [ "--prefix=${cfg.installDir}", "gcc", sharedFlag ] -- FIXME: gcc platform doesn't support shared libraries
+                                                  , arguments = [ "--prefix=${cfg.installDir}", targetMakefile, sharedFlag ] -- FIXME: gcc platform doesn't support shared libraries
                                                   , environment = opensslCfgVars cfg
                                                   })
             ]
@@ -782,21 +807,21 @@ let lua =
     let printLuaOS =
       λ(os : types.OS) →
         merge
-          { FreeBSD   = λ(_ : {}) → "freebsd"
-          , OpenBSD   = λ(_ : {}) → "bsd"
-          , NetBSD    = λ(_ : {}) → "bsd"
-          , Solaris   = λ(_ : {}) → "solaris"
-          , Dragonfly = λ(_ : {}) → "bsd"
-          , Linux     = λ(_ : {}) → "linux"
-          , Darwin    = λ(_ : {}) → "macosx"
-          , Windows   = λ(_ : {}) → "mingw"
-          , Redox     = λ(_ : {}) → "generic"
-          , Haiku     = λ(_ : {}) → "generic"
-          , IOS       = λ(_ : {}) → "generic"
-          , AIX       = λ(_ : {}) → "generic"
-          , Hurd      = λ(_ : {}) → "generic"
-          , Android   = λ(_ : {}) → "generic"
-          , NoOs      = λ(_ : {}) → "c89"
+          { FreeBSD   = "freebsd"
+          , OpenBSD   = "bsd"
+          , NetBSD    = "bsd"
+          , Solaris   = "solaris"
+          , Dragonfly = "bsd"
+          , Linux     = "linux"
+          , Darwin    = "macosx"
+          , Windows   = "mingw"
+          , Redox     = "generic"
+          , Haiku     = "generic"
+          , IOS       = "generic"
+          , AIX       = "generic"
+          , Hurd      = "generic"
+          , Android   = "generic"
+          , NoOs      = "c89"
           }
           os
     in
@@ -1044,6 +1069,7 @@ let mkXProtoWithPatch =
           λ(cfg : types.BuildVars) →
             [ prelude.patch patch ]
               # prelude.defaultConfigure cfg
+      , pkgBuildDeps = [ prelude.unbounded "patch" ]
       }
 in
 
@@ -1375,7 +1401,7 @@ let glib =
         [ prelude.createDir "build"
         , prelude.writeFile { file = "build/cross.txt", contents = prelude.mesonCfgFile cfg }
         , prelude.call { program = "meson"
-                       , arguments = [ "--prefix=${cfg.installDir}", "..", "-Dselinux=false" ] # crossArgs
+                       , arguments = [ "--prefix=${cfg.installDir}", "..", "-Dselinux=disabled" ] # crossArgs
                        , environment = Some [ prelude.mkPkgConfigVar cfg.linkDirs
                                             , { var = "PATH", value = prelude.mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
                                             , { var = "LDFLAGS", value = (prelude.mkLDFlags cfg.linkDirs).value ++ " -lpcre" }
@@ -1413,21 +1439,6 @@ let glib =
                              ]
       , installCommand =
           λ(cfg : types.BuildVars) →
-            let libDir = "lib/${prelude.printArch cfg.buildArch}-${prelude.printOS cfg.buildOS}-gnu"
-            in
-            let noCross =
-              if not cfg.isCross
-                then
-                  [ prelude.symlink "${libDir}/libglib-2.0.so" "lib/libglib-2.0.so"
-                  , prelude.symlink "${libDir}/libglib-2.0.so.0" "lib/libglib-2.0.so.0"
-                  , prelude.symlink "${libDir}/libgio-2.0.so" "lib/libgio-2.0.so"
-                  , prelude.symlink "${libDir}/libgthread-2.0.so" "lib/libgthread-2.0.so"
-                  , prelude.symlink "${libDir}/libgobject-2.0.so" "lib/libgobject-2.0.so"
-                  , prelude.symlink "${libDir}/libgmodule-2.0.so" "lib/libgmodule-2.0.so"
-                  ]
-                else [] : List types.Command
-            in
-
             prelude.ninjaInstallWithPkgConfig (prelude.mesonMoves [ "glib-2.0.pc"
                                                                   , "gobject-2.0.pc"
                                                                   , "gio-2.0.pc"
@@ -1437,7 +1448,6 @@ let glib =
                                                                   , "gmodule-2.0.pc"
                                                                   , "gthread-2.0.pc"
                                                                   ]) cfg
-              # noCross
               # [ prelude.symlink "include/glib-2.0/glib" "include/glib"
                 , prelude.symlink "include/glib-2.0/gobject" "include/gobject"
                 , prelude.symlink "include/glib-2.0/glib.h" "include/glib.h"
@@ -1652,21 +1662,21 @@ let chickenScheme =
     let printChickenOS =
       λ(os : types.OS) →
         merge
-          { FreeBSD   = λ(_ : {}) → "bsd"
-          , OpenBSD   = λ(_ : {}) → "bsd"
-          , NetBSD    = λ(_ : {}) → "bsd"
-          , Solaris   = λ(_ : {}) → "solaris"
-          , Dragonfly = λ(_ : {}) → "bsd"
-          , Linux     = λ(_ : {}) → "linux"
-          , Darwin    = λ(_ : {}) → "macosx"
-          , Windows   = λ(_ : {}) → "mingw"
-          , Haiku     = λ(_ : {}) → "haiku"
-          , IOS       = λ(_ : {}) → "ios"
-          , AIX       = λ(_ : {}) → "aix"
-          , Hurd      = λ(_ : {}) → "hurd"
-          , Android   = λ(_ : {}) → "android"
-          , Redox     = λ(_ : {}) → "error: no port for Redox OS"
-          , NoOs      = λ(_ : {}) → "error: no port for no OS"
+          { FreeBSD   = "bsd"
+          , OpenBSD   = "bsd"
+          , NetBSD    = "bsd"
+          , Solaris   = "solaris"
+          , Dragonfly = "bsd"
+          , Linux     = "linux"
+          , Darwin    = "macosx"
+          , Windows   = "mingw"
+          , Haiku     = "haiku"
+          , IOS       = "ios"
+          , AIX       = "aix"
+          , Hurd      = "hurd"
+          , Android   = "android"
+          , Redox     = "error: no port for Redox OS"
+          , NoOs      = "error: no port for no OS"
           }
           os
     in
@@ -1993,7 +2003,7 @@ let at-spi-core =
                   , prelude.unbounded "glib"
                   ]
       , installCommand =
-          prelude.ninjaInstallWithPkgConfig [{ src = "build/atspi-2.pc", dest = "lib/pkgconfig/atspi-2.pc" }]
+          prelude.ninjaInstallWithPkgConfig [{ src = "build/meson-private/atspi-2.pc", dest = "lib/pkgconfig/atspi-2.pc" }]
       }
 in
 
@@ -2062,15 +2072,17 @@ let mkGnomeSimple =
 in
 
 let gtk3 =
+  let mkLDFlagsGtk =
+    λ(linkDirs : List Text) →
+      concatMapSep " " Text (λ(dir : Text) → "-L${dir}") linkDirs
+  in
   let gtkEnv =
     λ(cfg : types.BuildVars) →
-      prelude.defaultPath cfg # [ { var = "LDFLAGS", value = (prelude.mkLDFlags cfg.linkDirs).value ++ " -lpcre -lfribidi" }
-                                , prelude.mkCFlags cfg
+      prelude.defaultPath cfg # [ { var = "LDFLAGS", value = (mkLDFlagsGtk cfg.linkDirs) ++ " -lpcre -lfribidi" }
                                 , prelude.mkPkgConfigVar cfg.linkDirs
-                                , prelude.libPath cfg
-                                , prelude.mkLDRunPath cfg.linkDirs
-                                , prelude.mkXdgDataDirs cfg.shareDirs
                                 , prelude.mkLDPreload cfg.preloadLibs
+                                , prelude.mkXdgDataDirs cfg.shareDirs
+                                , prelude.mkCFlags cfg
                                 ]
   in
   let gtkConfig =
@@ -2096,6 +2108,7 @@ let gtk3 =
                   , prelude.lowerBound { name = "gdk-pixbuf", lower = [2,30,0] }
                   , prelude.unbounded "libXft"
                   , prelude.lowerBound { name = "libepoxy", lower = [1,4] }
+                  , prelude.unbounded "libXi"
                   ]
       }
 in
@@ -2206,7 +2219,7 @@ let libarchive =
       { pkgUrl = "https://www.libarchive.org/downloads/libarchive-${prelude.showVersion v}.tar.gz"
       -- , pkgDeps = [ prelude.unbounded "libxml2" ]
       , pkgDeps = [ prelude.unbounded "xz"
-                  , prelude.unbounded "bzip2"
+                  -- , prelude.unbounded "bzip2"
                   , prelude.unbounded "zlib"
                   ]
       }
@@ -2634,7 +2647,7 @@ let mesa =
                   , prelude.lowerBound { name = "dri2proto", lower = [2,8] }
                   , prelude.unbounded "libXrandr"
                   ]
-      , configureCommand = prelude.configureWithFlags [ "--with-gallium-drivers=nouveau,swrast" ] -- disable radeon drivers so we don't need LLVM (7.0.1 won't work?)
+      , configureCommand = prelude.configureWithFlags [ "--enable-autotools", "--with-gallium-drivers=nouveau,swrast" ] -- disable radeon drivers so we don't need LLVM (8.0.0 won't work?)
       }
 in
 
@@ -2906,7 +2919,7 @@ in
 let mpfr =
   λ(v : List Natural) →
     prelude.simplePackage { name = "mpfr", version = v } ⫽
-      { pkgUrl = "https://www.mpfr.org/mpfr-current/mpfr-${prelude.showVersion v}.tar.xz" }
+      { pkgUrl = "https://ftp.gnu.org/gnu/mpfr/mpfr-${prelude.showVersion v}.tar.xz" }
 in
 
 let libsodium =
@@ -3074,15 +3087,70 @@ in
 let pdfgrep =
   λ(v : List Natural) →
     prelude.simplePackage { name = "pdfgrep", version = v } ⫽
-      { pkgUrl = "https://pdfgrep.org/download/pdfgrep-${prelude.showVersion v}.tar.gz" }
+      { pkgUrl = "https://pdfgrep.org/download/pdfgrep-${prelude.showVersion v}.tar.gz"
+      , pkgDeps = [ prelude.unbounded "poppler" ]
+      }
 in
 
+let mpc =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "mpc", version = v } ⫽
+      { pkgUrl = "https://ftp.gnu.org/gnu/mpc/mpc-${prelude.showVersion v}.tar.gz"
+      , pkgDeps = [ prelude.unbounded "mpfr" ]
+      }
+in
+
+-- http://www.netgull.com/gcc/releases/gcc-9.1.0/gcc-9.1.0.tar.xz
+let gcc =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "gcc", version = v } ⫽
+      { pkgUrl = "http://mirror.linux-ia64.org/gnu/gcc/releases/gcc-${versionString}/gcc-${versionString}.tar.xz"
+      , configureCommand =
+        λ(cfg : types.BuildVars) →
+          [ prelude.call { program = "contrib/download_prerequisites"
+                        , arguments = [] : List Text
+                        , environment = None (List types.EnvVar)
+                        , procDir = None Text
+                        }
+          ] #
+            prelude.configureWithFlags [ "--disable-multilib" ] cfg
+      , installCommand = prelude.installWithBinaries [ "bin/gcc", "bin/g++", "bin/gcc-ar", "bin/gcc-nm", "bin/gfortran", "bin/gcc-ranlib" ]
+      , pkgBuildDeps = [ prelude.unbounded "curl" ]
+      , pkgStream = False
+      }
+in
+
+let ruby =
+  λ(x : { version : List Natural, patch : Natural }) →
+    let versionString = prelude.showVersion x.version
+    in
+    let fullVersion = versionString ++ "." ++ Natural/show x.patch
+    in
+
+    prelude.simplePackage { name = "ruby", version = prelude.fullVersion x } ⫽
+      { pkgUrl = "https://cache.ruby-lang.org/pub/ruby/${versionString}/ruby-${fullVersion}.tar.gz"
+      , installCommand = prelude.installWithBinaries [ "bin/ruby", "bin/gem" ]
+      , pkgStream = False
+      , pkgDeps = [ prelude.unbounded "readline"
+                  , prelude.unbounded "openssl"
+                  ]
+      }
+in
+
+let poppler =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "poppler", version = v } ⫽ prelude.cmakePackage ⫽
+      { pkgUrl = "https://poppler.freedesktop.org/poppler-0.77.0.tar.xz" }
+in
+
+-- https://hub.darcs.net/raichoo/hikari
 -- https://versaweb.dl.sourceforge.net/project/schilytools/schily-2019-03-29.tar.bz2
 [ autoconf [2,69]
 , automake [1,16,1]
-, at-spi-atk { version = [2,30], patch = 0 }
-, at-spi-core { version = [2,30], patch = 0 }
-, atk { version = [2,30], patch = 0 }
+, at-spi-atk { version = [2,33], patch = 1 }
+, at-spi-core { version = [2,33], patch = 1 }
+, atk { version = [2,33], patch = 1 }
 , babl { version = [0,1], patch = 60 }
 , binutils [2,31]
 , bison [3,3]
@@ -3096,6 +3164,7 @@ in
 , curl [7,63,0]
 , damageproto [1,2,1]
 , dbus [1,12,10]
+, diffutils [3,7]
 , dri2proto [2,8]
 , elfutils [0,175]
 , emacs [26,1]
@@ -3105,15 +3174,16 @@ in
 , fixesproto [5,0]
 , fontconfig [2,13,1]
 , fossil [2,7]
-, flex [2,6,3]
+, flex [2,6,3] -- 2.6.4?
 , fltk { version = [1,3,4], patch = 2 }
 , freetype-prebuild [2,9,1] -- TODO: force both to have same version?
 , freetype [2,9,1]
 , fribidi [1,0,5]
 , gawk [4,2,1]
 , gc [8,0,4]
+, gcc [9,1,0]
 , gdb [8,2]
-, gdk-pixbuf { version = [2,38], patch = 0 }
+, gdk-pixbuf { version = [2,38], patch = 1 }
 , gegl { version = [0,4], patch = 12 }
 , gettext [0,19,8]
 , gexiv2 { version = [0,11], patch = 0 }
@@ -3121,22 +3191,22 @@ in
 , gperftools [2,7]
 , giflib [5,1,4]
 , git [2,19,2]
-, glib { version = [2,58], patch = 3 } -- TODO: bump to 2.59.0 once gobject-introspection supports it
+, glib { version = [2,60], patch = 3 } -- TODO: bump to 2.59.0 once gobject-introspection supports it
 , glproto [1,4,17]
 , glu [9,0,0]
 , json-glib { version = [1,4], patch = 4 }
 , glibc [2,28]
 , gmp [6,1,2]
-, gobject-introspection { version = [1,59], patch = 3 }
+, gobject-introspection { version = [1,60], patch = 1 }
 , gnome-doc-utils { version = [0,20], patch = 10 }
-, gnupg [2,2,15]
+, gnupg [2,2,16]
 , gnutls { version = [3,6], patch = 7 }
 , graphviz [2,40,1]
 , gsl [2,5]
 , gtk2 { version = [2,24], patch = 32 }
-, gtk3 { version = [3,24], patch = 4 }
+, gtk3 { version = [3,24], patch = 8 }
 , gzip [1,9]
-, harfbuzz [2,4,0]
+, harfbuzz [2,5,0]
 , htop [2,2,0]
 , imageMagick [7,0,8]
 , imlib2 [1,5,1]
@@ -3160,7 +3230,7 @@ in
 , libdrm [2,4,96]
 , libepoxy [1,5,3]
 , libev [4,25]
-, libevent [2,1,8]
+, libevent [2,1,10]
 , libexif [0,6,21]
 , libffi [3,2,1]
 , libgcrypt [1,8,4]
@@ -3182,7 +3252,7 @@ in
 , libselinux [2,8]
 , libsepol [2,8]
 , libsodium [1,0,17]
-, libsoup { version = [2,65], patch = 2 }
+, libsoup { version = [2,67], patch = 1 }
 , libssh2 [1,8,0]
 , libtasn1 [4,13]
 , libtiff [4,0,10]
@@ -3214,7 +3284,7 @@ in
 , libXt [1,1,5]
 , libXtst [1,2,3]
 , libXxf86vm [1,1,4]
-, llvm [7,0,1]
+, llvm [8,0,0]
 , lmdb [0,9,23]
 , lua [5,3,5]
 , m17n [1,8,0]
@@ -3222,13 +3292,14 @@ in
 , mako [1,0,7]
 , markupSafe [1,0]
 , memcached [1,5,12]
-, mesa [18,3,1]
+, mesa [19,0,5]
 , meson [0,50,1]
-, mpfr [4,0,2]
+, mpc [1,0,3]
+, mpfr [3,1,6] -- [4,0,2]
 , mosh [1,3,2]
 , motif [2,3,8]
 , musl [1,1,20]
-, nano [3,2]
+, nano [4,2]
 , nasm [2,14]
 , ncurses [6,1]
 , nginx [1,15,7]
@@ -3239,9 +3310,10 @@ in
 , nspr [4,20]
 , openssh [7,9]
 , openssl [1,1,1]
-, p11kit [0,23,15]
+, p11kit [0,23,16,1]
 , pango { version = [1,43], patch = 0 }
 , pari [2,11,1]
+, patch [2,7]
 , pcre [8,42]
 , pcre2 [10,32]
 , pdfgrep [2,1,2]
@@ -3249,7 +3321,8 @@ in
 , pixman [0,36,0]
 , pkg-config [0,29,2]
 , postgresql [11,1]
-, protobuf [3,7,1]
+, poppler [0,77,0]
+, protobuf [3,8,0]
 , pycairo [1,18,1]
 , pygobject { version = [2,28], patch = 7 }
 , pygtk { version = [2,24], patch = 0 }
@@ -3262,6 +3335,7 @@ in
 , readline [7,0]
 , recordproto [1,14,2]
 , renderproto [0,11,1]
+, ruby { version = [2,6], patch = 3 }
 , scour [0,37]
 , scrnsaverproto [1,2,2]
 , sdl2 [2,0,9]

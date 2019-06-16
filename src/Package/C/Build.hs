@@ -63,7 +63,7 @@ stepToProc dir' p (CopyFile src' dest') = do
     liftIO $ copyFileWithMetadata absSrc absDest
 stepToProc dir' _ (Patch contents') = do
     liftIO $ TIO.writeFile (dir' </> "step.patch") contents'
-    waitProcess $ (proc "patch" ["-i", "step.patch"]) { cwd = Just dir' }
+    waitProcess $ (proc "patch" ["-p0", "-i", "step.patch"]) { cwd = Just dir' }
 
 processSteps :: (Traversable t)
              => FilePath -- ^ Build directory

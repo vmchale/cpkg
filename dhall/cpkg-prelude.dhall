@@ -1,5 +1,5 @@
 {- Dhall prelude imports -}
-let concatMapSep = https://raw.githubusercontent.com/dhall-lang/dhall-lang/0a7f596d03b3ea760a96a8e03935f4baa64274e1/Prelude/Text/concatMapSep
+let concatMapSep = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/Text/concatMapSep
 in
 
 let concatMapText = https://raw.githubusercontent.com/dhall-lang/dhall-lang/master/Prelude/Text/concatMap
@@ -36,25 +36,29 @@ in
 let printArch =
   λ(arch : types.Arch) →
     merge
-      { X64         = λ(_ : {}) → "x86_64"
-      , AArch       = λ(_ : {}) → "aarch64"
-      , Arm         = λ(_ : {}) → "arm"
-      , RISCV64     = λ(_ : {}) → "riscv64"
-      , PowerPC     = λ(_ : {}) → "powerpc"
-      , PowerPC64   = λ(_ : {}) → "powerpc64"
-      , PowerPC64le = λ(_ : {}) → "powerpc64le"
-      , Sparc64     = λ(_ : {}) → "sparc64"
-      , S390x       = λ(_ : {}) → "s390x"
-      , Alpha       = λ(_ : {}) → "alpha"
-      , M68k        = λ(_ : {}) → "m68k"
-      , Mips        = λ(_ : {}) → "mips"
-      , MipsEl      = λ(_ : {}) → "mipsel"
-      , Mips64      = λ(_ : {}) → "mips64"
-      , Mips64El    = λ(_ : {}) → "mips64el"
-      , X86         = λ(_ : {}) → "i686"
-      , SH4         = λ(_ : {}) → "sh4"
-      , HPPA        = λ(_ : {}) → "hppa"
-      , HPPA64      = λ(_ : {}) → "hppa64"
+      { X64           = "x86_64"
+      , AArch         = "aarch64"
+      , Arm           = "arm"
+      , RISCV64       = "riscv64"
+      , PowerPC       = "powerpc"
+      , PowerPC64     = "powerpc64"
+      , PowerPC64le   = "powerpc64le"
+      , Sparc64       = "sparc64"
+      , S390x         = "s390x"
+      , Alpha         = "alpha"
+      , M68k          = "m68k"
+      , Mips          = "mips"
+      , MipsEl        = "mipsel"
+      , Mips64        = "mips64"
+      , Mips64El      = "mips64el"
+      , X86           = "i686"
+      , SH4           = "sh4"
+      , HPPA          = "hppa"
+      , HPPA64        = "hppa64"
+      , MipsIsa32r6El = "mipsisa32r6el"
+      , MipsIsa32r6   = "mipsisa32r6"
+      , MipsIsa64r6El = "mipsisa64r6el"
+      , MipsIsa64r6   = "mipsisa64r6"
       }
       arch
 in
@@ -62,10 +66,10 @@ in
 let printManufacturer =
   λ(x : types.Manufacturer) →
     merge
-      { Unknown = λ(_ : {}) → "unknown"
-      , Apple   = λ(_ : {}) → "apple"
-      , IBM     = λ(_ : {}) → "ibm"
-      , PC      = λ(_ : {}) → "pc"
+      { Unknown = "unknown"
+      , Apple   = "apple"
+      , IBM     = "ibm"
+      , PC      = "pc"
       }
       x
 in
@@ -73,21 +77,21 @@ in
 let printOS =
   λ(os : types.OS) →
     merge
-      { FreeBSD   = λ(_ : {}) → "freebsd"
-      , OpenBSD   = λ(_ : {}) → "openbsd"
-      , NetBSD    = λ(_ : {}) → "netbsd"
-      , Solaris   = λ(_ : {}) → "solaris"
-      , Dragonfly = λ(_ : {}) → "dragonfly"
-      , Linux     = λ(_ : {}) → "linux"
-      , Darwin    = λ(_ : {}) → "darwin"
-      , Windows   = λ(_ : {}) → "w64"
-      , Redox     = λ(_ : {}) → "redox"
-      , Haiku     = λ(_ : {}) → "haiku"
-      , IOS       = λ(_ : {}) → "darwin"
-      , AIX       = λ(_ : {}) → "aix"
-      , Hurd      = λ(_ : {}) → "hurd"
-      , Android   = λ(_ : {}) → "android"
-      , NoOs      = λ(_ : {}) → "none"
+      { FreeBSD   = "freebsd"
+      , OpenBSD   = "openbsd"
+      , NetBSD    = "netbsd"
+      , Solaris   = "solaris"
+      , Dragonfly = "dragonfly"
+      , Linux     = "linux"
+      , Darwin    = "darwin"
+      , Windows   = "w64"
+      , Redox     = "redox"
+      , Haiku     = "haiku"
+      , IOS       = "darwin"
+      , AIX       = "aix"
+      , Hurd      = "hurd"
+      , Android   = "android"
+      , NoOs      = "none"
       }
       os
 in
@@ -96,12 +100,12 @@ in
 let printABI =
   λ(os : types.ABI) →
     merge
-      { GNU       = λ(_ : {}) → "gnu"
-      , GNUabi64  = λ(_ : {}) → "gnuabi64"
-      , GNUeabi   = λ(_ : {}) → "gnueabi"
-      , GNUeabihf = λ(_ : {}) → "gnueabihf"
-      , GNUspe    = λ(_ : {}) → "gnuspe"
-      , MinGw     = λ(_ : {}) → "mingw32"
+      { GNU       = "gnu"
+      , GNUabi64  = "gnuabi64"
+      , GNUeabi   = "gnueabi"
+      , GNUeabihf = "gnueabihf"
+      , GNUspe    = "gnuspe"
+      , MinGw     = "mingw32"
       }
       os
 in
@@ -121,27 +125,22 @@ in
 let makeExe =
   λ(os : types.OS) →
 
-    let gmake = λ(_ : {}) → "gmake"
-    in
-    let make  = λ(_ : {}) → "make"
-    in
-
     merge
-      { FreeBSD   = gmake
-      , OpenBSD   = gmake
-      , NetBSD    = gmake
-      , Solaris   = gmake
-      , Dragonfly = gmake
-      , Linux     = make
-      , Darwin    = make
-      , Windows   = make
-      , Redox     = make
-      , Haiku     = make
-      , IOS       = make
-      , AIX       = make
-      , Hurd      = make
-      , Android   = make
-      , NoOs      = make -- this is bad but it's meaningless in this context
+      { FreeBSD   = "gmake"
+      , OpenBSD   = "gmake"
+      , NetBSD    = "gmake"
+      , Solaris   = "gmake"
+      , Dragonfly = "gmake"
+      , Linux     = "make"
+      , Darwin    = "make"
+      , Windows   = "make"
+      , Redox     = "make"
+      , Haiku     = "make"
+      , IOS       = "make"
+      , AIX       = "make"
+      , Hurd      = "make"
+      , Android   = "make"
+      , NoOs      = "make" -- this is bad but it's meaningless in this context
       }
       os
 in
@@ -204,27 +203,22 @@ in
 let isUnix =
   λ(os : types.OS) →
 
-    let true = λ(_ : {}) → True
-    in
-    let false = λ(_ : {}) → False
-    in
-
     merge
-      { FreeBSD   = true
-      , OpenBSD   = true
-      , NetBSD    = true
-      , Solaris   = true
-      , Dragonfly = true
-      , Linux     = true
-      , Darwin    = true
-      , Windows   = false
-      , Redox     = false
-      , Haiku     = false
-      , IOS       = true
-      , AIX       = true
-      , Hurd      = true
-      , Android   = true
-      , NoOs      = false -- bad but this should never happen
+      { FreeBSD   = True
+      , OpenBSD   = True
+      , NetBSD    = True
+      , Solaris   = True
+      , Dragonfly = True
+      , Linux     = True
+      , Darwin    = True
+      , Windows   = False
+      , Redox     = False
+      , Haiku     = False
+      , IOS       = True
+      , AIX       = True
+      , Hurd      = True
+      , Android   = True
+      , NoOs      = False -- bad but this should never happen
       }
       os
 in
@@ -509,7 +503,7 @@ in
 let unbounded =
   λ(x : Text) →
     { name = x
-    , bound = types.VersionBound.NoBound {=}
+    , bound = types.VersionBound.NoBound
     }
 in
 
@@ -570,21 +564,21 @@ in
 let printCMakeOS =
   λ(os : types.OS) →
     merge
-      { FreeBSD   = λ(_ : {}) → "BSD"
-      , OpenBSD   = λ(_ : {}) → "BSD"
-      , NetBSD    = λ(_ : {}) → "BSD"
-      , Solaris   = λ(_ : {}) → "Solaris"
-      , Dragonfly = λ(_ : {}) → "BSD"
-      , Linux     = λ(_ : {}) → "Linux"
-      , Darwin    = λ(_ : {}) → "Darwin"
-      , Windows   = λ(_ : {}) → "Windows"
-      , Redox     = λ(_ : {}) → "Redox"
-      , Haiku     = λ(_ : {}) → "Haiku"
-      , IOS       = λ(_ : {}) → "Darwin"
-      , AIX       = λ(_ : {}) → "AIX"
-      , Hurd      = λ(_ : {}) → "Hurd"
-      , Android   = λ(_ : {}) → "Android"
-      , NoOs      = λ(_ : {}) → "Generic"
+      { FreeBSD   = "BSD"
+      , OpenBSD   = "BSD"
+      , NetBSD    = "BSD"
+      , Solaris   = "Solaris"
+      , Dragonfly = "BSD"
+      , Linux     = "Linux"
+      , Darwin    = "Darwin"
+      , Windows   = "Windows"
+      , Redox     = "Redox"
+      , Haiku     = "Haiku"
+      , IOS       = "Darwin"
+      , AIX       = "AIX"
+      , Hurd      = "Hurd"
+      , Android   = "Android"
+      , NoOs      = "Generic"
       }
       os
 in
@@ -1044,31 +1038,31 @@ let underscoreVersion =
 in
 
 let isX64 =
-  let true = λ(_ : {}) → True
-  in
-  let false = λ(_ : {}) → False
-  in
   λ(arch : types.Arch) →
     merge
-      { X64         = true
-      , AArch       = false
-      , Arm         = false
-      , RISCV64     = false
-      , PowerPC     = false
-      , PowerPC64   = false
-      , PowerPC64le = false
-      , Sparc64     = false
-      , S390x       = false
-      , Alpha       = false
-      , M68k        = false
-      , Mips        = false
-      , MipsEl      = false
-      , Mips64      = false
-      , Mips64El    = false
-      , X86         = false
-      , SH4         = false
-      , HPPA        = false
-      , HPPA64      = false
+      { X64           = True
+      , AArch         = False
+      , Arm           = False
+      , RISCV64       = False
+      , PowerPC       = False
+      , PowerPC64     = False
+      , PowerPC64le   = False
+      , Sparc64       = False
+      , S390x         = False
+      , Alpha         = False
+      , M68k          = False
+      , Mips          = False
+      , MipsEl        = False
+      , Mips64        = False
+      , Mips64El      = False
+      , X86           = False
+      , SH4           = False
+      , HPPA          = False
+      , HPPA64        = False
+      , MipsIsa32r6El = False
+      , MipsIsa32r6   = False
+      , MipsIsa64r6El = False
+      , MipsIsa64r6   = False
       }
       arch
 in
