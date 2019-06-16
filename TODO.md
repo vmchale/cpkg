@@ -103,6 +103,7 @@
 - [ ] FFmpeg
 - [ ] https://ftp.gnu.org/gnu/texinfo/ ?
 - [ ] charset (?)
+- [ ] weighttpd https://github.com/lighttpd/weighttp
 - [ ] https://sourceware.org/newlib/
 - [ ] fish
 - [ ] libtizcore
@@ -171,10 +172,10 @@
 - [ ] zstd
 - [ ] lz4
 - [ ] oclint
-- [ ] https://pdfgrep.org/
 - [ ] pdftotext http://www.xpdfreader.com/download.html
 - [ ] Firefox
 - [ ] github-linguist (??)
+- [ ] http://www.linuxfromscratch.org/blfs/view/8.3/kde/okular5.html
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in

@@ -2217,6 +2217,7 @@ let libarchive =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libarchive", version = v } ⫽
       { pkgUrl = "https://www.libarchive.org/downloads/libarchive-${prelude.showVersion v}.tar.gz"
+      -- , pkgDeps = [ prelude.unbounded "libxml2" ]
       , pkgDeps = [ prelude.unbounded "xz"
                   -- , prelude.unbounded "bzip2"
                   , prelude.unbounded "zlib"
@@ -3083,6 +3084,17 @@ let pari =
       }
 in
 
+let pdfgrep =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "pdfgrep", version = v } ⫽
+      { pkgUrl = "https://pdfgrep.org/download/pdfgrep-${prelude.showVersion v}.tar.gz"
+      , pkgDeps = [ prelude.unbounded "poppler"
+                  , prelude.unbounded "libgcrypt"
+                  ]
+      , installCommand = prelude.installWithBinaries [ "bin/pdfgrep" ]
+      }
+in
+
 let mpc =
   λ(v : List Natural) →
     prelude.simplePackage { name = "mpc", version = v } ⫽
@@ -3128,6 +3140,21 @@ let ruby =
       }
 in
 
+let poppler =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "poppler", version = v } ⫽ prelude.cmakePackage ⫽
+      { pkgUrl = "https://poppler.freedesktop.org/poppler-${prelude.showVersion v}.tar.xz"
+      , pkgDeps = [ prelude.unbounded "fontconfig"
+                  , prelude.unbounded "libopenjpeg"
+                  , prelude.unbounded "libjpeg-turbo"
+                  , prelude.unbounded "freetype"
+                  , prelude.unbounded "zlib"
+                  , prelude.unbounded "libpng"
+                  ]
+      }
+in
+
+-- https://download.qt.io/archive/qt/5.12/5.12.4/single/qt-everywhere-src-5.12.4.tar.xz
 -- https://hub.darcs.net/raichoo/hikari
 -- https://versaweb.dl.sourceforge.net/project/schilytools/schily-2019-03-29.tar.bz2
 [ autoconf [2,69]
@@ -3300,10 +3327,12 @@ in
 , patch [2,7]
 , pcre [8,42]
 , pcre2 [10,32]
+, pdfgrep [2,1,2]
 , perl5 [5,28,1]
 , pixman [0,36,0]
 , pkg-config [0,29,2]
 , postgresql [11,1]
+, poppler [0,77,0]
 , protobuf [3,8,0]
 , pycairo [1,18,1]
 , pygobject { version = [2,28], patch = 7 }
