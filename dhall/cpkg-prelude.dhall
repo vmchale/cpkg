@@ -184,8 +184,7 @@ let symlinkBinary =
 in
 
 let symlinkManpage =
-  λ(file : Text) →
-    types.Command.SymlinkManpage { file = file }
+    types.Command.SymlinkManpage
 in
 
 let symlink =
@@ -205,7 +204,7 @@ let symlinkBinaries =
 in
 
 let symlinkManpages =
-  map Text types.Command symlinkManpage
+  map { file : Text, section : Natural } types.Command symlinkManpage
 in
 
 {- This is to be used on the build OS -}

@@ -3094,7 +3094,7 @@ let pdfgrep =
       , installCommand =
           λ(cfg : types.BuildVars) →
             prelude.installWithBinaries [ "bin/pdfgrep" ] cfg
-              # prelude.symlinkManpages [ "man/man1/pdfgrep.1" ]
+              # prelude.symlinkManpages [ { file = "share/man/man1/pdfgrep.1", section = 1 } ]
       }
 in
 

@@ -45,8 +45,8 @@ stepToProc _ p (SymlinkBinary file') = do
     let actualBin = p </> file'
     liftIO $ createDirectoryIfMissing True binDir
     liftIO $ createFileLink actualBin (binDir </> takeFileName file')
-stepToProc _ p (SymlinkManpage file') = do
-    manDir <- (</> "man") <$> globalPkgDir
+stepToProc _ p (SymlinkManpage file' sec) = do
+    manDir <- (</> ("share" </> "man" </> "man" ++ show sec)) <$> globalPkgDir
     let actualMan = p </> file'
     liftIO $ createDirectoryIfMissing True manDir
     liftIO $ createFileLink actualMan (manDir </> takeFileName file')
