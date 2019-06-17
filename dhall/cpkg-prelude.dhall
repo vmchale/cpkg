@@ -1042,12 +1042,18 @@ let mkLDPathWrapper =
     ]
 in
 
+let mkLDPathWrappers =
+  λ(cfg : types.BuildVars) →
+  λ(bins : List Text) →
+    concatMap Text types.Command (λ(bin : Text) → mkLDPathWrapper cfg bin) bins
+    -- TODO: add to PATH for e.g. PERL interpreter
+in
+
 let installWithWrappers =
   λ(bins : List Text) →
   λ(cfg : types.BuildVars) →
     defaultInstall cfg #
-      concatMap Text types.Command (λ(bin : Text) → mkLDPathWrapper cfg bin) bins
-      -- TODO: add to PATH for e.g. PERL interpreter
+      mkLDPathWrappers cfg bins
 in
 
 let underscoreVersion =
@@ -1183,6 +1189,7 @@ in
 , installWithPy3Wrappers = installWithPy3Wrappers
 , cmakeConfigureNinja = cmakeConfigureNinja
 , mkLDPathWrapper     = mkLDPathWrapper
+, mkLDPathWrappers    = mkLDPathWrappers
 , installWithWrappers = installWithWrappers
 , cmakeEnv            = cmakeEnv
 , cmakeSome           = cmakeSome
