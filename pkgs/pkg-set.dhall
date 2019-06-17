@@ -3161,6 +3161,22 @@ let poppler =
                   , prelude.unbounded "zlib"
                   , prelude.unbounded "libpng"
                   ]
+      , installCommand =
+          λ(cfg : types.BuildVars) →
+            prelude.cmakeInstall cfg
+              # prelude.mkLDPathWrappers cfg [ "pdfdetach"
+                                             , "pdffonts"
+                                             , "pdfimages"
+                                             , "pdfinfo"
+                                             , "pdfseparate"
+                                             , "pdfsig"
+                                             , "pdftocairo"
+                                             , "pdftohtml"
+                                             , "pdftoppm"
+                                             , "pdftops"
+                                             , "pdftotext"
+                                             , "pdfunite"
+                                             ]
       }
 in
 
