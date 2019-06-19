@@ -3182,19 +3182,21 @@ in
 
 let tesseract =
   λ(v : List Natural) →
-    prelude.simplePackage { name = "tesseract", version = v } ⫽ prelude.cmakePackage ⫽
+    prelude.simplePackage { name = "tesseract", version = v } ⫽
       { pkgUrl = "https://github.com/tesseract-ocr/tesseract/archive/${prelude.showVersion v}.tar.gz"
       , pkgDeps = [ prelude.lowerBound { name = "leptonica", lower = [1,74] } ]
-      , pkgBuildDeps = [ prelude.unbounded "cmake"
-                       , prelude.unbounded "pkg-config"
-                       ]
+      , pkgBuildDeps = [ prelude.unbounded "pkg-config" ]
+      , configureCommand = prelude.autogenConfigure
+      , installCommand = prelude.installWithBinaries [ "bin/tesseract" ]
       }
 in
 
 let leptonica =
   λ(v : List Natural) →
     prelude.simplePackage { name = "leptonica", version = v } ⫽
-      { pkgUrl = "http://leptonica.org/source/leptonica-${prelude.showVersion v}.tar.gz" }
+      { pkgUrl = "http://leptonica.org/source/leptonica-${prelude.showVersion v}.tar.gz"
+      , pkgDeps = [ prelude.unbounded "zlib" ]
+      }
 in
 
 -- https://download.qt.io/archive/qt/5.12/5.12.4/single/qt-everywhere-src-5.12.4.tar.xz
