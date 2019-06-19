@@ -3180,6 +3180,23 @@ let poppler =
       }
 in
 
+let tesseract =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "tesseract", version = v } ⫽ prelude.cmakePackage ⫽
+      { pkgUrl = "https://github.com/tesseract-ocr/tesseract/archive/${prelude.showVersion v}.tar.gz"
+      , pkgDeps = [ prelude.lowerBound { name = "leptonica", lower = [1,74] } ]
+      , pkgBuildDeps = [ prelude.unbounded "cmake"
+                       , prelude.unbounded "pkg-config"
+                       ]
+      }
+in
+
+let leptonica =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "leptonica", version = v } ⫽
+      { pkgUrl = "http://leptonica.org/source/leptonica-${prelude.showVersion v}.tar.gz" }
+in
+
 -- https://download.qt.io/archive/qt/5.12/5.12.4/single/qt-everywhere-src-5.12.4.tar.xz
 -- https://hub.darcs.net/raichoo/hikari
 -- https://versaweb.dl.sourceforge.net/project/schilytools/schily-2019-03-29.tar.bz2
@@ -3203,7 +3220,7 @@ in
 , dbus [1,12,10]
 , diffutils [3,7]
 , dri2proto [2,8]
-, elfutils [0,175]
+, elfutils [0,176]
 , emacs [26,1]
 , exiv2 [0,27,0]
 , expat [2,2,6]
@@ -3257,6 +3274,7 @@ in
 , krb5 [1,17]
 , lapack [3,8,0]
 , lcms2 [2,9]
+, leptonica [1,78,0]
 , libarchive [3,3,3]
 , libassuan [2,5,2]
 , libatomic_ops [7,6,10]
@@ -3381,8 +3399,9 @@ in
 , sqlite { year = 2018, version = [3,26,0] }
 , swig [3,0,12]
 , tar [1,30]
-, texinfo [6,6]
 , tcc [0,9,27]
+, texinfo [6,6]
+, tesseract [4,0,0]
 , unistring [0,9,10]
 , util-linux { version = [2,33], patch = 1 }
 , util-macros [1,19,2]
