@@ -447,6 +447,14 @@ let configureLinkExtraLibs =
     generalConfigure configSome "configure" linkLibs ([] : List Text)
 in
 
+let mkM4Path =
+  λ(shareDirs : List Text) →
+    let flag = concatMapSep ":" Text (λ(dir : Text) → "${dir}/autoconf") shareDirs
+    in
+
+  { var = "M4PATH", value = flag }
+in
+
 let mkAclocalPath =
   λ(shareDirs : List Text) →
     let flag = concatMapSep ":" Text (λ(dir : Text) → "${dir}/aclocal:${dir}/autoconf/autoconf") shareDirs
@@ -720,8 +728,7 @@ let autogenConfigure =
   λ(cfg : types.BuildVars) →
     [ mkExe "autogen.sh"
     , call (defaultCall ⫽ { program = "./autogen.sh"
-                          , environment = Some ([ mkAclocalPath cfg.shareDirs ]
-                                                  # defaultPath cfg)
+                          , environment = Some (defaultPath cfg)
                           })
     ] # defaultConfigure cfg
 in
