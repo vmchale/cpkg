@@ -337,6 +337,10 @@ let libuv =
       , pkgUrl = "https://dist.libuv.org/dist/v${prelude.showVersion v}/libuv-v${prelude.showVersion v}.tar.gz"
       , pkgSubdir = "libuv-v${prelude.showVersion v}"
       , configureCommand = prelude.autogenConfigure
+      , pkgBuildDeps = [ prelude.unbounded "m4"
+                       , prelude.unbounded "automake"
+                       , prelude.unbounded "libtool"
+                       ]
       }
 in
 
@@ -904,6 +908,7 @@ let gdb =
       { configureCommand = prelude.configureMkExes [ "mkinstalldirs" ] }
 in
 
+-- lol the libtoolize binary is empty for some reason
 let libtool =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "libtool", version = v } ⫽
@@ -3185,7 +3190,9 @@ let tesseract =
     prelude.simplePackage { name = "tesseract", version = v } ⫽
       { pkgUrl = "https://github.com/tesseract-ocr/tesseract/archive/${prelude.showVersion v}.tar.gz"
       , pkgDeps = [ prelude.lowerBound { name = "leptonica", lower = [1,74] } ]
-      , pkgBuildDeps = [ prelude.unbounded "pkg-config" ]
+      , pkgBuildDeps = [ prelude.unbounded "libtool"
+                       , prelude.unbounded "automake"
+                       ]
       , configureCommand = prelude.autogenConfigure
       , installCommand = prelude.installWithBinaries [ "bin/tesseract" ]
       }
@@ -3374,7 +3381,7 @@ in
 , pcre [8,42]
 , pcre2 [10,32]
 , pdfgrep [2,1,2]
-, perl5 [5,28,1]
+, perl5 [5,30,0]
 , pixman [0,36,0]
 , pkg-config [0,29,2]
 , postgresql [11,1]
