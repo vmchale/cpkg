@@ -389,14 +389,14 @@ let configEnv =
                       , mkPkgConfigVar (cfg.shareDirs # cfg.linkDirs)
                       , libPath cfg
                       , mkLDRunPath cfg.linkDirs
-                      , mkPerlLib { libDirs = cfg.linkDirs, perlVersion = [5,28,1], cfg = cfg } -- TODO: take this as a parameter
+                      , mkPerlLib { libDirs = cfg.linkDirs, perlVersion = [5,30,0], cfg = cfg } -- TODO: take this as a parameter
                       ]
 in
 
 let buildEnv =
   λ(cfg : types.BuildVars) →
     defaultPath cfg # [ mkPkgConfigVar (cfg.shareDirs # cfg.linkDirs)
-                      , mkPerlLib { libDirs = cfg.linkDirs, perlVersion = [5,28,1], cfg = cfg } -- TODO: take this as a parameter
+                      , mkPerlLib { libDirs = cfg.linkDirs, perlVersion = [5,30,0], cfg = cfg } -- TODO: take this as a parameter
                       , mkLDPath cfg.linkDirs
                       ]
 in
@@ -447,17 +447,9 @@ let configureLinkExtraLibs =
     generalConfigure configSome "configure" linkLibs ([] : List Text)
 in
 
-let mkM4Path =
-  λ(shareDirs : List Text) →
-    let flag = concatMapSep ":" Text (λ(dir : Text) → "${dir}/autoconf") shareDirs
-    in
-
-  { var = "M4PATH", value = flag }
-in
-
 let mkAclocalPath =
   λ(shareDirs : List Text) →
-    let flag = concatMapSep ":" Text (λ(dir : Text) → "${dir}/aclocal:${dir}/autoconf/autoconf") shareDirs
+    let flag = concatMapSep ":" Text (λ(dir : Text) → "${dir}/aclocal:${dir}/autoconf") shareDirs
     in
 
     { var = "ACLOCAL_PATH", value = flag }
@@ -728,7 +720,8 @@ let autogenConfigure =
   λ(cfg : types.BuildVars) →
     [ mkExe "autogen.sh"
     , call (defaultCall ⫽ { program = "./autogen.sh"
-                          , environment = Some (defaultPath cfg)
+                          , environment = Some ( [ mkAclocalPath cfg.shareDirs ]
+                                                  # defaultPath cfg)
                           })
     ] # defaultConfigure cfg
 in
@@ -973,7 +966,7 @@ let preloadEnv =
                             , libPath cfg
                             , mkXdgDataDirs cfg.shareDirs
                             , mkLDPreload cfg.preloadLibs
-                            , mkPerlLib { libDirs = cfg.linkDirs, perlVersion = [5,28,1], cfg = cfg } -- TODO: take this as a parameter
+                            , mkPerlLib { libDirs = cfg.linkDirs, perlVersion = [5,30,0], cfg = cfg } -- TODO: take this as a parameter
                             ])
 in
 
