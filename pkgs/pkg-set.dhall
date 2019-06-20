@@ -914,6 +914,7 @@ let libtool =
     prelude.makeGnuExe { name = "libtool", version = v } ⫽
       { pkgUrl = "http://ftpmirror.gnu.org/libtool/libtool-${prelude.showVersion v}.tar.gz"
       , pkgBuildDeps = [ prelude.lowerBound { name =  "m4", lower = [1,4,16] } ]
+      , pkgStream = False
       }
 in
 
