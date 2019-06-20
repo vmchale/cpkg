@@ -1190,7 +1190,7 @@ let shared-mime-info =
           [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
                                                 , environment = Some (prelude.defaultPath cfg # [ prelude.libPath cfg
                                                                                                 , prelude.mkLDRunPath cfg.linkDirs
-                                                                                                , prelude.mkPerlLib { libDirs = cfg.linkDirs, perlVersion = [5,28,1], cfg = cfg }
+                                                                                                , prelude.mkPerlLib { libDirs = cfg.linkDirs, perlVersion = [5,30,0], cfg = cfg }
                                                                                                 ])
                                                 })
           ]
@@ -1215,15 +1215,16 @@ let intltool =
       { pkgUrl = "https://launchpad.net/intltool/trunk/${versionString}/+download/intltool-${versionString}.tar.gz"
       , configureCommand =
           λ(cfg : types.BuildVars) →
-            [ prelude.mkExe "configure"
+            [ prelude.patch (./patches/intltool.patch as Text)
+            , prelude.mkExe "configure"
             , prelude.call (prelude.defaultCall ⫽ { program = "./configure"
                                                   , arguments = [ "--prefix=${cfg.installDir}" ]
                                                   , environment = Some (prelude.defaultPath cfg
-                                                      # [ prelude.mkPerlLib { libDirs = cfg.linkDirs, perlVersion = [5,28,1], cfg = cfg } ])
+                                                      # [ prelude.mkPerlLib { libDirs = cfg.linkDirs, perlVersion = [5,30,0], cfg = cfg } ])
                                                   })
             ]
     , pkgDeps = [ prelude.unbounded "XML-Parser" ]
-    , pkgBuildDeps = [ prelude.upperBound { name = "perl", upper = [5,30] } ] -- lower bound: 5.8.1
+    , pkgBuildDeps = [ prelude.lowerBound { name = "perl", lower = [5,8,1] } ]
     }
 in
 
@@ -3383,7 +3384,7 @@ in
 , pcre [8,42]
 , pcre2 [10,32]
 , pdfgrep [2,1,2]
-, perl5 [5,28,1]
+, perl5 [5,30,0]
 , pixman [0,36,0]
 , pkg-config [0,29,2]
 , postgresql [11,1]
