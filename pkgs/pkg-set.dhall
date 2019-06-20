@@ -3193,6 +3193,7 @@ let tesseract =
       , pkgDeps = [ prelude.lowerBound { name = "leptonica", lower = [1,74] } ]
       , pkgBuildDeps = [ prelude.unbounded "libtool"
                        , prelude.unbounded "automake"
+                       , prelude.unbounded "pkg-config"
                        ]
       , configureCommand = prelude.autogenConfigure
       , installCommand = prelude.installWithBinaries [ "bin/tesseract" ]
