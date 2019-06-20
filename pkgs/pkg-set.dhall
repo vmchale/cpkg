@@ -3256,13 +3256,13 @@ in
 , gperftools [2,7]
 , giflib [5,1,4]
 , git [2,19,2]
-, glib { version = [2,60], patch = 3 } -- TODO: bump to 2.59.0 once gobject-introspection supports it
+, glib { version = [2,60], patch = 3 }
 , glproto [1,4,17]
 , glu [9,0,0]
 , json-glib { version = [1,4], patch = 4 }
 , glibc [2,28]
 , gmp [6,1,2]
-, gobject-introspection { version = [1,60], patch = 1 }
+, gobject-introspection { version = [1,60], patch = 2 }
 , gnome-doc-utils { version = [0,20], patch = 10 }
 , gnupg [2,2,16]
 , gnutls { version = [3,6], patch = 8 }
@@ -3383,7 +3383,7 @@ in
 , pcre [8,42]
 , pcre2 [10,32]
 , pdfgrep [2,1,2]
-, perl5 [5,30,0]
+, perl5 [5,28,1]
 , pixman [0,36,0]
 , pkg-config [0,29,2]
 , postgresql [11,1]
