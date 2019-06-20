@@ -800,9 +800,8 @@ let python =
           in
           [ prelude.writeFile { file = "config.site", contents = config } ]
             # prelude.generalConfigure pyEnv "configure" ([] : List Text)
-                ([ "--build=${prelude.printArch cfg.buildArch}" ] # crossArgs # staticFlag) cfg
+                ([ "--build=${prelude.printArch cfg.buildArch}", "--enable-optimizations" ] # crossArgs # staticFlag) cfg
           -- disable ipv6 for cross-compiling
-          -- "--enable-optimizations" (takes forever)
       , pkgDeps = [ prelude.unbounded "libffi" ]
       , installCommand =
           λ(cfg : types.BuildVars) →
@@ -2442,7 +2441,9 @@ let libmypaint =
     prelude.simplePackage { name = "libmypaint", version = v } ⫽
       { pkgUrl = "https://github.com/mypaint/libmypaint/releases/download/v${versionString}/libmypaint-${versionString}.tar.xz"
       , pkgDeps = [ prelude.unbounded "json-c" ]
-      , pkgBuildDeps = [ prelude.unbounded "intltool" ]
+      , pkgBuildDeps = [ prelude.unbounded "intltool"
+                       , prelude.unbounded "gettext"
+                       ]
       }
 in
 
@@ -2704,7 +2705,10 @@ let gnome-doc-utils =
       { pkgDeps = [ prelude.lowerBound { name = "libxslt", lower = [1,1,8] }
                   , prelude.lowerBound { name = "libxml2", lower = [2,6,12] }
                   ]
-      , pkgBuildDeps = [ prelude.lowerBound { name = "intltool", lower = [0,35,0] } ]
+      , pkgBuildDeps = [ prelude.lowerBound { name = "intltool", lower = [0,35,0] }
+                       , prelude.unbounded "gettext"
+                       , prelude.unbounded "python2"
+                       ]
       , configureCommand = prelude.configureMkExes [ "py-compile" ]
       }
 in
