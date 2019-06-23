@@ -15,7 +15,6 @@
 - error: {lhs: "hylo f project", rhs: "cata f", name: "Use catamorphism"}
 - error: {lhs: "hyloM (pure . embed)", rhs: "anaM", name: "Use monadic anamorphism"}
 - error: {lhs: "hyloM f (pure . project)", rhs: "cataM f", name: "Use monadic catamorphism"}
-- error: {lhs: "concat", rhs: "join", name: "Generalize concat"}
 - error: {lhs: "concatMap", rhs: "(=<<)", name: "Generalize concatMap"}
 - error: {lhs: "f *> pure ()", rhs: "void f", name: "Use void"}
 - error: {lhs: "over _1 f x", rhs: "first f x", name: "Use arrows"}
