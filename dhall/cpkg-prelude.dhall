@@ -1197,4 +1197,5 @@ in
 , configWithEnv       = configWithEnv
 , buildEnv            = buildEnv
 , patch               = patch
+, mkAclocalPath       = mkAclocalPath
 }
