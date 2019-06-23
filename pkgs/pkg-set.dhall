@@ -1888,19 +1888,31 @@ in
 let bzip2 =
   let cc = prelude.mkCCArg
   in
-  let bzipInstall =
+  -- TODO: use if... to switch only on static
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v
+    in
+    let bzipInstall =
+      λ(cfg : types.BuildVars) →
+        [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
+                                              , arguments = cc cfg # [ "PREFIX=${cfg.installDir}", "install", "-j${Natural/show cfg.cpus}" ]
+                                              })
+        , prelude.copyFile "libbz2.so.${versionString}" "lib/libbz2.so.${versionString}"
+        , prelude.symlink "lib/libbz2.so.${versionString}" "lib/libbz2.so.1.0"
+        ]
+    in
+  let bzipShared =
     λ(cfg : types.BuildVars) →
       [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
-                                            , arguments = cc cfg # [ "PREFIX=${cfg.installDir}", "install", "-j${Natural/show cfg.cpus}" ]
+                                            , arguments = [ "-f", "Makefile-libbz2_so" ]
                                             })
       ]
   in
 
-  λ(v : List Natural) →
     prelude.simplePackage { name = "bzip2", version = v } ⫽
-      { pkgUrl = "https://www.sourceware.org/pub/bzip2/bzip2-${prelude.showVersion v}.tar.gz"
+      { pkgUrl = "https://www.sourceware.org/pub/bzip2/bzip2-${versionString}.tar.gz"
       , configureCommand = prelude.doNothing
-      , buildCommand = prelude.doNothing
+      , buildCommand = bzipShared
       , installCommand = bzipInstall
       }
 in
@@ -2096,6 +2108,9 @@ let gtk3 =
                                 , prelude.mkLDPreload cfg.preloadLibs
                                 , prelude.mkXdgDataDirs cfg.shareDirs
                                 , prelude.mkCFlags cfg
+                                -- , prelude.mkLDFlags cfg.linkDirs
+                                -- , prelude.libPath cfg
+                                -- , prelude.mkLDRunPath cfg.linkDirs
                                 ]
   in
   let gtkConfig =
@@ -3132,14 +3147,16 @@ let gcc =
       , configureCommand =
           λ(cfg : types.BuildVars) →
             [ prelude.call { program = "contrib/download_prerequisites"
-                          , arguments = [] : List Text
-                          , environment = None (List types.EnvVar)
-                          , procDir = None Text
-                          }
+                           , arguments = [] : List Text
+                           , environment = None (List types.EnvVar)
+                           , procDir = None Text
+                           }
             ] #
               prelude.configureWithFlags [ "--disable-multilib" ] cfg
       , installCommand = prelude.installWithBinaries [ "bin/gcc", "bin/g++", "bin/gcc-ar", "bin/gcc-nm", "bin/gfortran", "bin/gcc-ranlib" ]
-      , pkgBuildDeps = [ prelude.unbounded "curl" ]
+      , pkgBuildDeps = [ prelude.unbounded "curl"
+                       , prelude.unbounded "sed"
+                       ]
       , pkgStream = False
       }
 in
@@ -3213,6 +3230,88 @@ let leptonica =
       }
 in
 
+let grep =
+  λ(v : List Natural) →
+    prelude.makeGnuExe { name = "grep", version = v }
+in
+
+let phash =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "pHash", version = v } ⫽
+      { pkgUrl = "http://phash.org/releases/pHash-${prelude.showVersion v}.tar.gz"
+      , pkgDeps = [ prelude.unbounded "CImg"
+                  , prelude.unbounded "ffmpeg"
+                  , prelude.unbounded "libsndfile"
+                  , prelude.unbounded "libsamplerate"
+                  , prelude.unbounded "mpg123"
+                  ]
+      , pkgBuildDeps = [ prelude.unbounded "autoconf"
+                       , prelude.unbounded "automake"
+                       , prelude.unbounded "grep"
+                       , prelude.unbounded "coreutils"
+                       , prelude.unbounded "sed"
+                       , prelude.unbounded "libtool"
+                       ]
+      , configureCommand =
+          λ(cfg : types.BuildVars) →
+            [ prelude.patch (./patches/pHash.patch as Text)
+            , prelude.call { program = "autoreconf"
+                           , arguments = [ "-i" ]
+                           , environment = Some [ { var = "PATH", value = prelude.mkPathVar cfg.binDirs }
+                                                , prelude.mkAclocalPath cfg.shareDirs
+                                                ]
+                           , procDir = None Text
+                           }
+            ]
+              # prelude.defaultConfigure cfg
+      , pkgStream = False
+      }
+in
+
+let cimg =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "CImg", version = v } ⫽
+      { pkgUrl = "http://cimg.eu/files/CImg_${versionString}.zip"
+      , configureCommand = prelude.doNothing
+      , buildCommand = prelude.doNothing
+      , installCommand =
+          λ(_ : types.BuildVars) →
+            [ prelude.copyFile "CImg.h" "include/CImg.h" ]
+      }
+in
+
+let ffmpeg =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "ffmpeg", version = v } ⫽
+      { pkgUrl = "https://ffmpeg.org/releases/ffmpeg-${prelude.showVersion v}.tar.bz2"
+      , pkgBuildDeps = [ prelude.unbounded "nasm" ]
+      , configureCommand = prelude.configureWithFlags [ "--enable-shared" ]
+      , pkgDeps = [ prelude.unbounded "bzip2" ]
+      , pkgStream = False
+      }
+in
+
+let libsndfile =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libsndfile", version = v } ⫽
+      { pkgUrl = "http://www.mega-nerd.com/libsndfile/files/libsndfile-${prelude.showVersion v}.tar.gz" }
+in
+
+let libsamplerate =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libsamplerate", version = v } ⫽
+      { pkgUrl = "http://www.mega-nerd.com/SRC/libsamplerate-${prelude.showVersion v}.tar.gz" }
+in
+
+let mpg123 =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "mpg123", version = v } ⫽
+      { pkgUrl = "http://www.mpg123.de/download/mpg123-${prelude.showVersion v}.tar.bz2" }
+in
+
+-- TODO: musl-ghc?
+
 -- https://download.qt.io/archive/qt/5.12/5.12.4/single/qt-everywhere-src-5.12.4.tar.xz
 -- https://hub.darcs.net/raichoo/hikari
 -- https://versaweb.dl.sourceforge.net/project/schilytools/schily-2019-03-29.tar.bz2
@@ -3227,9 +3326,10 @@ in
 , bzip2 [1,0,6]
 , cairo [1,16,0]
 , chickenScheme [5,0,0]
+, cimg [2,6,6]
 , cmake { version = [3,13], patch = 4 }
 , compositeproto [0,4]
-, coreutils [8,30]
+, coreutils [8,31]
 , ctags [5,8]
 , curl [7,65,0]
 , damageproto [1,2,1]
@@ -3241,6 +3341,7 @@ in
 , exiv2 [0,27,0]
 , expat [2,2,6]
 , feh [3,1,1]
+, ffmpeg [4,1,3]
 , fixesproto [5,0]
 , fontconfig [2,13,1]
 , fossil [2,7]
@@ -3272,6 +3373,7 @@ in
 , gnupg [2,2,16]
 , gnutls { version = [3,6], patch = 8 }
 , graphviz [2,40,1]
+, grep [3,3]
 , gsl [2,5]
 , gtk2 { version = [2,24], patch = 32 }
 , gtk3 { version = [3,24], patch = 8 }
@@ -3320,7 +3422,9 @@ in
 , libpthread-stubs [0,4]
 , libopenjpeg [2,3,1]
 , libotf [0,9,16]
+, libsamplerate [0,1,9]
 , libselinux [2,8]
+, libsndfile [1,0,28]
 , libsepol [2,8]
 , libsodium [1,0,17]
 , libsoup { version = [2,67], patch = 1 }
@@ -3367,6 +3471,7 @@ in
 , meson [0,50,1]
 , mpc [1,1,0]
 , mpfr [4,0,2]
+, mpg123 [1,25,10]
 , mosh [1,3,2]
 , motif [2,3,8]
 , musl [1,1,20]
@@ -3389,6 +3494,7 @@ in
 , pcre2 [10,32]
 , pdfgrep [2,1,2]
 , perl5 [5,30,0]
+, phash [0,9,6]
 , pixman [0,36,0]
 , pkg-config [0,29,2]
 , postgresql [11,1]
