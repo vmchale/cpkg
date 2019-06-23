@@ -41,7 +41,7 @@
  You need FFmpeg. Get it at <http://ffmpeg.org/>])])
 --- src/pHash.h	2019-06-23 11:31:15.678771295 -0500
 +++ src/pHash.h	2019-06-23 11:31:31.754816275 -0500
-@@ -47,6 +47,7 @@
+@@ -47,6 +47,8 @@
  #if defined(HAVE_IMAGE_HASH) || defined(HAVE_VIDEO_HASH)
  #define cimg_debug 0
  #define cimg_display 0
@@ -102,7 +102,7 @@
                  avpkt.data = packet.data;
 --- src/cimgffmpeg.h	2019-06-23 11:47:59.046307628 -0500
 +++ src/cimgffmpeg.h	2019-06-23 11:32:14.754956444 -0500
-@@ -30,6 +30,7 @@
+@@ -30,6 +30,8 @@
  #define cimg_display 0
  #define cimg_debug 0
  
