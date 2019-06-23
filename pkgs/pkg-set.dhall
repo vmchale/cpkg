@@ -3244,6 +3244,8 @@ let phash =
                   , prelude.unbounded "libsndfile"
                   , prelude.unbounded "libsamplerate"
                   , prelude.unbounded "mpg123"
+                  , prelude.unbounded "libjpeg"
+                  , prelude.unbounded "libpng"
                   ]
       , pkgBuildDeps = [ prelude.unbounded "autoconf"
                        , prelude.unbounded "automake"
@@ -3286,6 +3288,7 @@ let ffmpeg =
     prelude.simplePackage { name = "ffmpeg", version = v } ⫽
       { pkgUrl = "https://ffmpeg.org/releases/ffmpeg-${prelude.showVersion v}.tar.bz2"
       , pkgBuildDeps = [ prelude.unbounded "nasm" ]
+      -- TODO: cross-compile
       , configureCommand = prelude.configureWithFlags [ "--enable-shared" ]
       , pkgDeps = [ prelude.unbounded "bzip2" ]
       , pkgStream = False
