@@ -818,7 +818,6 @@ let ninjaBuildWith =
                                                , mkLDRunPath cfg.linkDirs
                                                , mkLDFlagsGeneral cfg.linkDirs linkLibs
                                                , mkCFlags cfg
-                                               , mkPkgConfigVar cfg.linkDirs
                                                ]
                           , procDir = Some "build" }) ]
 in
