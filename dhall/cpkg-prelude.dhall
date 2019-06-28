@@ -1089,6 +1089,18 @@ let isX64 =
       arch
 in
 
+let configureWithPatches =
+  λ(patches : List Text) →
+  λ(cfg : types.BuildVars) →
+    map Text types.Command (λ(p : Text) → patch p) patches
+      # defaultConfigure cfg
+in
+
+let configureWithPatch =
+  λ(p : Text) →
+    configureWithPatches [p]
+in
+
 { showVersion         = showVersion
 , makeGnuLibrary      = makeGnuLibrary
 , makeGnuExe          = makeGnuExe
@@ -1198,4 +1210,6 @@ in
 , buildEnv            = buildEnv
 , patch               = patch
 , mkAclocalPath       = mkAclocalPath
+, configureWithPatches = configureWithPatches
+, configureWithPatch  = configureWithPatch
 }
