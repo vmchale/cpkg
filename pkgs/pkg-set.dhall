@@ -142,7 +142,7 @@ in
 let dbus =
   λ(v : List Natural) →
     prelude.simplePackage { name = "dbus", version = v } ⫽
-      { pkgUrl = "https://dbus.freedesktop.org/releases/dbus/dbus-${prelude.showVersion v}.tar.gz"
+      { pkgUrl = "https://dbus.freedesktop.org/releases/dbus/dbus-${prelude.showVersion v}.tar.xz"
       , pkgDeps = [ prelude.unbounded "expat"
                   , prelude.unbounded "libselinux"
                   ]
@@ -800,7 +800,8 @@ let python =
           in
           [ prelude.writeFile { file = "config.site", contents = config } ]
             # prelude.generalConfigure pyEnv "configure" ([] : List Text)
-                ([ "--build=${prelude.printArch cfg.buildArch}", "--enable-optimizations" ] # crossArgs # staticFlag) cfg
+                ([ "--build=${prelude.printArch cfg.buildArch}" ] # crossArgs # staticFlag) cfg
+          -- enable-optimizations takes too long
           -- disable ipv6 for cross-compiling
       , pkgDeps = [ prelude.unbounded "libffi" ]
       , installCommand =
@@ -1077,10 +1078,7 @@ let mkXProtoWithPatch =
   λ(patch : Text) →
   λ(v : List Natural) →
     mkXProto name v ⫽
-      { configureCommand =
-          λ(cfg : types.BuildVars) →
-            [ prelude.patch patch ]
-              # prelude.defaultConfigure cfg
+      { configureCommand = prelude.configureWithPatch patch
       , pkgBuildDeps = [ prelude.unbounded "patch" ]
       }
 in
@@ -1393,6 +1391,7 @@ let flex =
                        , prelude.unbounded "bison"
                        ]
       , configureCommand = prelude.configWithEnv flexEnv
+      , installCommand = prelude.installWithBinaries [ "bin/flex" ]
       }
 in
 
@@ -1654,7 +1653,7 @@ let atk =
                        ] -- TODO: disable introspection?
       , pkgDeps = [ prelude.unbounded "glib" ]
       , installCommand =
-          prelude.ninjaInstallWithPkgConfig [{ src = "build/atk.pc", dest = "lib/pkgconfig/atk.pc" }]
+          prelude.ninjaInstallWithPkgConfig [{ src = "build/meson-private/atk.pc", dest = "lib/pkgconfig/atk.pc" }]
       }
 in
 
@@ -2035,7 +2034,7 @@ in
 let at-spi-atk =
   λ(x : { version : List Natural, patch : Natural }) →
     mkGnomeNinja "at-spi2-atk" x ⫽
-      { pkgDeps = [ prelude.unbounded "at-spi2-core"
+      { pkgDeps = [ prelude.lowerBound { name = "at-spi2-core", lower = [2,32,2] }
                   , prelude.lowerBound { name = "atk", lower = [2,29,2] }
                   , prelude.unbounded "libxml2"
                   ]
@@ -3313,19 +3312,51 @@ let mpg123 =
       { pkgUrl = "http://www.mpg123.de/download/mpg123-${prelude.showVersion v}.tar.bz2" }
 in
 
--- TODO: musl-ghc?
+let make =
+  λ(v : List Natural) →
+    prelude.makeGnuExe { name = "make", version = v } ⫽
+      { pkgUrl = "https://ftp.gnu.org/gnu/make/make-${prelude.showVersion v}.tar.bz2"
+      , configureCommand = prelude.configureWithPatch (./patches/make.patch as Text)
+      , pkgBuildDeps = [ prelude.unbounded "patch" ]
+      }
+in
 
+let mercury =
+  let mercuryBuild =
+    λ(cfg : types.BuildVars) →
+      [ prelude.call (prelude.defaultCall ⫽ { program = "make"
+                                            , arguments = [ "PARALLEL=-j${Natural/show cfg.cpus}" ]
+                                            , environment = Some (prelude.buildEnv cfg)
+                                            })
+      ]
+  in
+  let mercuryCommon =
+      { pkgUrl = "http://dl.mercurylang.org/release/mercury-srcdist-14.01.1.tar.gz"
+      , pkgSubdir = "mercury-srcdist-14.01.1"
+      , configureCommand = mercuryCfg
+      , buildCommand = mercuryBuild
+      }
+  in
+
+  prelude.simplePackage { name = "mercury", version = [14,1,1] } ⫽ mercuryCommon ⫽
+    { pkgBuildDeps = [ prelude.unbounded "flex" ]
+    , pkgStream = False
+    }
+in
+
+-- TODO: musl-ghc?
 -- https://download.qt.io/archive/qt/5.12/5.12.4/single/qt-everywhere-src-5.12.4.tar.xz
 -- https://hub.darcs.net/raichoo/hikari
 -- https://versaweb.dl.sourceforge.net/project/schilytools/schily-2019-03-29.tar.bz2
+
 [ autoconf [2,69]
 , automake [1,16,1]
-, at-spi-atk { version = [2,33], patch = 1 }
-, at-spi-core { version = [2,33], patch = 1 }
-, atk { version = [2,33], patch = 1 }
+, at-spi-atk { version = [2,33], patch = 2 }
+, at-spi-core { version = [2,33], patch = 2 }
+, atk { version = [2,33], patch = 3 }
 , babl { version = [0,1], patch = 60 }
 , binutils [2,31]
-, bison [3,3]
+, bison [3,3,1]
 , bzip2 [1,0,6]
 , cairo [1,16,0]
 , chickenScheme [5,0,0]
@@ -3336,11 +3367,11 @@ in
 , ctags [5,8]
 , curl [7,65,0]
 , damageproto [1,2,1]
-, dbus [1,12,10]
+, dbus [1,13,12]
 , diffutils [3,7]
 , dri2proto [2,8]
 , elfutils [0,176]
-, emacs [26,1]
+, emacs [26,2]
 , exiv2 [0,27,0]
 , expat [2,2,6]
 , feh [3,1,1]
@@ -3353,7 +3384,7 @@ in
 , freetype-prebuild [2,9,1] -- TODO: force both to have same version?
 , freetype [2,9,1]
 , fribidi [1,0,5]
-, gawk [4,2,1]
+, gawk [5,0,1]
 , gc [8,0,4]
 , gcc [9,1,0]
 , gdb [8,2]
@@ -3365,11 +3396,11 @@ in
 , gperftools [2,7]
 , giflib [5,1,4]
 , git [2,19,2]
-, glib { version = [2,60], patch = 3 }
+, glib { version = [2,60], patch = 4 }
 , glproto [1,4,17]
 , glu [9,0,0]
 , json-glib { version = [1,4], patch = 4 }
-, glibc [2,28]
+, glibc [2,29]
 , gmp [6,1,2]
 , gobject-introspection { version = [1,60], patch = 2 }
 , gnome-doc-utils { version = [0,20], patch = 10 }
@@ -3379,7 +3410,7 @@ in
 , grep [3,3]
 , gsl [2,5]
 , gtk2 { version = [2,24], patch = 32 }
-, gtk3 { version = [3,24], patch = 8 }
+, gtk3 { version = [3,24], patch = 9 }
 , gzip [1,9]
 , harfbuzz [2,5,1]
 , htop [2,2,0]
@@ -3467,6 +3498,7 @@ in
 , lua [5,3,5]
 , m17n [1,8,0]
 , m4 [1,4,18]
+, make [4,2,1]
 , mako [1,0,7]
 , markupSafe [1,0]
 , memcached [1,5,12]
@@ -3502,6 +3534,7 @@ in
 , pkg-config [0,29,2]
 , postgresql [11,1]
 , poppler [0,77,0]
+, mercury
 , protobuf [3,8,0]
 , pycairo [1,18,1]
 , pygobject { version = [2,28], patch = 7 }
@@ -3519,7 +3552,7 @@ in
 , scour [0,37]
 , scrnsaverproto [1,2,2]
 , sdl2 [2,0,9]
-, sed [4,5]
+, sed [4,7]
 , shared-mime-info [1,10]
 , sqlite { year = 2018, version = [3,26,0] }
 , swig [3,0,12]
