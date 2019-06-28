@@ -3333,7 +3333,6 @@ let mercury =
   let mercuryCommon =
       { pkgUrl = "http://dl.mercurylang.org/release/mercury-srcdist-14.01.1.tar.gz"
       , pkgSubdir = "mercury-srcdist-14.01.1"
-      , configureCommand = mercuryCfg
       , buildCommand = mercuryBuild
       }
   in
