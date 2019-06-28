@@ -127,6 +127,7 @@ let cmake =
                 , prelude.copyFile wrapped wrapped
                 , prelude.symlinkBinary wrapped
                 ]
+      , pkgBuildDeps = [ prelude.unbounded "make" ]
       }
 in
 
@@ -350,6 +351,7 @@ let nasm =
       { pkgUrl = "http://www.nasm.us/pub/nasm/releasebuilds/${prelude.showVersion v}.02/nasm-${prelude.showVersion v}.02.tar.xz"
       , pkgSubdir = "nasm-${prelude.showVersion v}.02"
       , installCommand = prelude.installWithBinaries [ "bin/nasm", "bin/ndisasm" ]
+      , pkgBuildDeps = [ prelude.unbounded "make" ]
       }
 in
 
@@ -367,6 +369,7 @@ let ncurses =
 
           prelude.configureWithFlags ([ "--with-shared", "--enable-widec" ] # crossArgs) cfg
           -- enable-widec is necessary because util-linux uses libncursesw
+      , pkgBuildDeps = [ prelude.unbounded "make" ]
       }
 in
 
@@ -379,7 +382,9 @@ in
 let pcre =
   λ(v : List Natural) →
     prelude.simplePackage { name = "pcre", version = v } ⫽
-      { pkgUrl = "https://ftp.pcre.org/pub/pcre/pcre-${prelude.showVersion v}.tar.bz2" }
+      { pkgUrl = "https://ftp.pcre.org/pub/pcre/pcre-${prelude.showVersion v}.tar.bz2"
+      , pkgBuildDeps = [ prelude.unbounded "make" ]
+      }
 in
 
 let perl5 =
@@ -417,6 +422,7 @@ let libpng =
     prelude.simplePackage { name = "libpng", version = v } ⫽
       { pkgUrl = "https://download.sourceforge.net/libpng/libpng-${prelude.showVersion v}.tar.xz"
       , pkgDeps = [ prelude.unbounded "zlib" ]
+      , pkgBuildDeps = [ prelude.unbounded "make" ]
       }
 in
 
@@ -526,7 +532,9 @@ in
 let gettext =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "gettext", version = v } ⫽
-      { installCommand = prelude.installWithBinaries [ "bin/gettext", "bin/msgfmt", "bin/autopoint" ] }
+      { installCommand = prelude.installWithBinaries [ "bin/gettext", "bin/msgfmt", "bin/autopoint" ]
+      , pkgBuildDeps = [ prelude.unbounded "make" ]
+      }
 in
 
 let gzip =
@@ -638,7 +646,8 @@ in
 
 let patch =
   λ(v : List Natural) →
-    prelude.makeGnuExe { name = "patch", version = v }
+    prelude.makeGnuExe { name = "patch", version = v } ⫽
+      { pkgBuildDeps = [] : List types.Dep }
 in
 
 let m4 =
@@ -650,7 +659,9 @@ let m4 =
               # prelude.defaultConfigure cfg
       , installCommand =
           prelude.installWithManpages [ { file = "share/man/man1/m4.1", section = 1 } ]
-      , pkgBuildDeps = [ prelude.unbounded "patch" ]
+      , pkgBuildDeps = [ prelude.unbounded "patch"
+                       , prelude.unbounded "make"
+                       ]
       }
 in
 
@@ -704,7 +715,9 @@ in
 let giflib =
   λ(v : List Natural) →
     prelude.simplePackage { name = "giflib", version = v } ⫽
-      { pkgUrl = "https://downloads.sourceforge.net/giflib/giflib-${prelude.showVersion v}.tar.bz2" }
+      { pkgUrl = "https://downloads.sourceforge.net/giflib/giflib-${prelude.showVersion v}.tar.bz2"
+      , pkgBuildDeps = [ prelude.unbounded "make" ]
+      }
 in
 
 let emacs =
@@ -893,13 +906,16 @@ let p11kit =
       , pkgDeps = [ prelude.lowerBound { name = "libffi", lower = [3,0,0] }
                   , prelude.unbounded "libtasn1"
                   ]
+      , pkgBuildDeps = [ prelude.unbounded "pkg-config" ]
       }
 in
 
 let libffi =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libffi", version = v } ⫽
-      { pkgUrl = "https://sourceware.org/ftp/libffi/libffi-${prelude.showVersion v}.tar.gz" }
+      { pkgUrl = "https://sourceware.org/ftp/libffi/libffi-${prelude.showVersion v}.tar.gz"
+      , pkgBuildDeps = [ prelude.unbounded "make" ]
+      }
 in
 
 let gdb =
@@ -923,6 +939,7 @@ let pkg-config =
     prelude.simplePackage { name = "pkg-config", version = v } ⫽
       { pkgUrl = "https://pkg-config.freedesktop.org/releases/pkg-config-${prelude.showVersion v}.tar.gz"
       , configureCommand = prelude.configureWithFlags [ "--with-internal-glib" ]
+      , pkgBuildDeps = [ prelude.unbounded "make" ]
       }
 in
 
@@ -1070,7 +1087,9 @@ let mkXProto =
   λ(name : Text) →
   λ(v : List Natural) →
     prelude.simplePackage { name = name, version = v } ⫽
-      { pkgUrl = "https://www.x.org/releases/individual/proto/${name}-${prelude.showVersion v}.tar.bz2" }
+      { pkgUrl = "https://www.x.org/releases/individual/proto/${name}-${prelude.showVersion v}.tar.bz2"
+      , pkgBuildDeps = [ prelude.unbounded "make" ]
+      }
 in
 
 let mkXProtoWithPatch =
@@ -1079,7 +1098,9 @@ let mkXProtoWithPatch =
   λ(v : List Natural) →
     mkXProto name v ⫽
       { configureCommand = prelude.configureWithPatch patch
-      , pkgBuildDeps = [ prelude.unbounded "patch" ]
+      , pkgBuildDeps = [ prelude.unbounded "patch"
+                       , prelude.unbounded "make"
+                       ]
       }
 in
 
@@ -1725,7 +1746,9 @@ in
 let xcb-proto =
   λ(v : List Natural) →
     prelude.simplePackage { name = "xcb-proto", version = v } ⫽
-      { pkgUrl = "https://xorg.freedesktop.org/archive/individual/xcb/xcb-proto-${prelude.showVersion v}.tar.bz2" }
+      { pkgUrl = "https://xorg.freedesktop.org/archive/individual/xcb/xcb-proto-${prelude.showVersion v}.tar.bz2"
+      , pkgBuildDeps = [ prelude.unbounded "make" ]
+      }
 in
 
 let libxcb =
@@ -1743,7 +1766,9 @@ in
 let libpthread-stubs =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libpthread-stubs", version = v } ⫽
-      { pkgUrl = "https://www.x.org/archive/individual/xcb/libpthread-stubs-${prelude.showVersion v}.tar.bz2" }
+      { pkgUrl = "https://www.x.org/archive/individual/xcb/libpthread-stubs-${prelude.showVersion v}.tar.bz2"
+      , pkgBuildDeps = [ prelude.unbounded "make" ]
+      }
 in
 
 let xorgConfigure =
@@ -1779,7 +1804,9 @@ let mkXUtil =
   λ(name : Text) →
   λ(v : List Natural) →
     prelude.simplePackage { name = name, version = v } ⫽
-      { pkgUrl = "https://www.x.org/releases/individual/util/${name}-${prelude.showVersion v}.tar.bz2" }
+      { pkgUrl = "https://www.x.org/releases/individual/util/${name}-${prelude.showVersion v}.tar.bz2"
+      , pkgBuildDeps = [ prelude.unbounded "make" ]
+      }
 in
 
 let libXrender =
@@ -1919,7 +1946,9 @@ in
 let expat =
   λ(v : List Natural) →
     prelude.simplePackage { name = "expat", version = v } ⫽
-      { pkgUrl = "https://github.com/libexpat/libexpat/releases/download/R_${prelude.underscoreVersion v}/expat-${prelude.showVersion v}.tar.bz2" }
+      { pkgUrl = "https://github.com/libexpat/libexpat/releases/download/R_${prelude.underscoreVersion v}/expat-${prelude.showVersion v}.tar.bz2"
+      , pkgBuildDeps = [ prelude.unbounded "make" ]
+      }
 in
 
 let gperf =
@@ -2005,7 +2034,9 @@ in
 
 let libXi =
   mkXLibDeps { name = "libXi"
-             , deps = [ prelude.unbounded "libXext" ]
+             , deps = [ prelude.unbounded "libXext"
+                      , prelude.unbounded "libXfixes"
+                      ]
              }
 in
 
@@ -3274,6 +3305,7 @@ let cimg =
     let versionString = prelude.showVersion v in
     prelude.simplePackage { name = "CImg", version = v } ⫽
       { pkgUrl = "http://cimg.eu/files/CImg_${versionString}.zip"
+      , pkgBuildDeps = [] : List types.Dep
       , configureCommand = prelude.doNothing
       , buildCommand = prelude.doNothing
       , installCommand =
@@ -3312,11 +3344,28 @@ let mpg123 =
       { pkgUrl = "http://www.mpg123.de/download/mpg123-${prelude.showVersion v}.tar.bz2" }
 in
 
+let time =
+  λ(v : List Natural) →
+    prelude.makeGnuExe { name = "time", version = v } ⫽
+        { pkgUrl = "https://ftp.gnu.org/gnu/time/time-${prelude.showVersion v}.tar.gz" }
+in
+
 let make =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "make", version = v } ⫽
       { pkgUrl = "https://ftp.gnu.org/gnu/make/make-${prelude.showVersion v}.tar.bz2"
       , configureCommand = prelude.configureWithPatch (./patches/make.patch as Text)
+      , buildCommand =
+          λ(cfg : types.BuildVars) →
+            [ prelude.call (prelude.defaultCall ⫽ { program = "./build.sh"
+                                                  , environment = Some (prelude.buildEnv cfg)
+                                                  })
+            ]
+      , installCommand =
+          λ(_ : types.BuildVars) →
+            [ prelude.copyFile "make" "bin/make"
+            , prelude.symlinkBinary "bin/make"
+            ]
       , pkgBuildDeps = [ prelude.unbounded "patch" ]
       }
 in
@@ -3347,6 +3396,8 @@ in
 -- https://download.qt.io/archive/qt/5.12/5.12.4/single/qt-everywhere-src-5.12.4.tar.xz
 -- https://hub.darcs.net/raichoo/hikari
 -- https://versaweb.dl.sourceforge.net/project/schilytools/schily-2019-03-29.tar.bz2
+-- https://github.com/Debian/apt/archive/1.9.1.tar.gz
+-- https://busybox.net/downloads/busybox-1.31.0.tar.bz2
 
 [ autoconf [2,69]
 , automake [1,16,1]
@@ -3389,7 +3440,7 @@ in
 , gdb [8,2]
 , gdk-pixbuf { version = [2,38], patch = 1 }
 , gegl { version = [0,4], patch = 12 }
-, gettext [0,19,8]
+, gettext [0,20,1]
 , gexiv2 { version = [0,11], patch = 0 }
 , gperf [3,1]
 , gperftools [2,7]
@@ -3468,28 +3519,28 @@ in
 , libuv [1,24,0]
 , libSM [1,2,3]
 , libthai [0,1,28]
-, libX11 [1,6,7]
-, libXau [1,0,8]
+, libX11 [1,6,8]
+, libXau [1,0,9]
 , libXaw [1,0,13]
 , libXaw3d [1,6,3]
 , libxcb [1,13]
-, libXcomposite [0,4,4]
-, libXdamage [1,1,4]
-, libXdmcp [1,1,2]
-, libXext [1,3,3]
+, libXcomposite [0,4,5]
+, libXdamage [1,1,5]
+, libXdmcp [1,1,3]
+, libXext [1,3,4]
 , libXfixes [5,0,3]
-, libXft [2,3,2]
-, libXi [1,7]
+, libXft [2,3,3]
+, libXi [1,7,10]
 , libXinerama [1,1,4]
 , libxml2 [2,9,8]
-, libXmu [1,1,2]
+, libXmu [1,1,3]
 , libXpm [3,5,12]
 , libXScrnSaver [1,2,3]
 , libxshmfence [1,3]
 , libxslt [1,1,33]
-, libXrandr [1,5,1]
+, libXrandr [1,5,2]
 , libXrender [0,9,10]
-, libXt [1,1,5]
+, libXt [1,2,0]
 , libXtst [1,2,3]
 , libXxf86vm [1,1,4]
 , llvm [8,0,0]
@@ -3529,7 +3580,7 @@ in
 , pdfgrep [2,1,2]
 , perl5 [5,30,0]
 , phash [0,9,6]
-, pixman [0,36,0]
+, pixman [0,38,4]
 , pkg-config [0,29,2]
 , postgresql [11,1]
 , poppler [0,77,0]
@@ -3559,6 +3610,7 @@ in
 , tcc [0,9,27]
 , texinfo [6,6]
 , tesseract [4,0,0]
+, time [1,9]
 , unistring [0,9,10]
 , util-linux { version = [2,33], patch = 1 }
 , util-macros [1,19,2]
@@ -3574,7 +3626,7 @@ in
 , xineramaproto [1,2]
 , xmlParser [2,44]
 , xproto [7,0,31]
-, xtrans [1,3,5]
+, xtrans [1,4,0]
 , xz [5,2,4]
 , zlib [1,2,11]
 ]
