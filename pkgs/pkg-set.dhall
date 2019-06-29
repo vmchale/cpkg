@@ -3392,12 +3392,61 @@ let mercury =
     }
 in
 
+let qt =
+  λ(x : { version : List Natural, patch : Natural }) →
+    let versionString = prelude.showVersion x.version
+    in
+    let fullVersion = versionString ++ "." ++ Natural/show x.patch
+    in
+
+    prelude.simplePackage { name = "qt", version = prelude.fullVersion x } ⫽
+      { pkgUrl = "https://download.qt.io/archive/qt/${versionString}/${fullVersion}/single/qt-everywhere-src-${fullVersion}.tar.xz"
+      , pkgSubdir = "qt-everywhere-src-${fullVersion}"
+      , pkgBuildDeps = [ prelude.unbounded "flex"
+                       , prelude.unbounded "bison"
+                       , prelude.unbounded "pkg-config"
+                       , prelude.unbounded "gperf"
+                       , prelude.unbounded "perl"
+                       , prelude.unbounded "python2"
+                       , prelude.unbounded "git"
+                       -- , prelude.unbounded "gcc"
+                       ]
+      , pkgDeps = [ prelude.unbounded "mesa"
+                  , prelude.unbounded "fontconfig"
+                  , prelude.unbounded "dbus"
+                  , prelude.unbounded "freetype"
+                  , prelude.unbounded "harfbuzz"
+                  , prelude.unbounded "libjpeg-turbo"
+                  , prelude.unbounded "libpng"
+                  , prelude.unbounded "giflib"
+                  , prelude.unbounded "glib"
+                  ]
+      -- see: https://doc.qt.io/qt-5/linux-requirements.html#
+      -- TODO: -no-opengl in cross
+      , pkgStream = False
+      }
+in
+
+let lz4 =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "lz4", version = v } ⫽
+      { pkgUrl = "https://github.com/lz4/lz4/archive/v${prelude.showVersion v}.tar.gz"
+      , configureCommand = prelude.doNothing
+      , installCommand =
+        λ(cfg : types.BuildVars) →
+            [ prelude.call (prelude.defaultCall ⫽ { program = "make"
+                                                  , arguments = [ "PREFIX=${cfg.installDir}", "install" ]
+                                                  , environment = Some (prelude.buildEnv cfg)
+                                                  })
+            ]
+      }
+in
+
 -- TODO: musl-ghc?
--- https://download.qt.io/archive/qt/5.12/5.12.4/single/qt-everywhere-src-5.12.4.tar.xz
 -- https://hub.darcs.net/raichoo/hikari
 -- https://versaweb.dl.sourceforge.net/project/schilytools/schily-2019-03-29.tar.bz2
--- https://github.com/Debian/apt/archive/1.9.1.tar.gz
 -- https://busybox.net/downloads/busybox-1.31.0.tar.bz2
+-- https://github.com/jsoftware/jsource/archive/j807-release.tar.gz
 
 [ autoconf [2,69]
 , automake [1,16,1]
@@ -3546,6 +3595,7 @@ in
 , llvm [8,0,0]
 , lmdb [0,9,23]
 , lua [5,3,5]
+, lz4 [1,9,1]
 , m17n [1,8,0]
 , m4 [1,4,18]
 , make [4,2,1]
@@ -3592,6 +3642,7 @@ in
 , python [2,7,16]
 , python [3,7,3]
 , qrencode [4,0,2]
+, qt { version = [5,13], patch = 0 }
 , ragel [6,10]
 , randrproto [1,5,0]
 , re2c [1,1,1]
