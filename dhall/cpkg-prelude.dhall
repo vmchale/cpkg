@@ -554,6 +554,7 @@ let simplePackage =
       { pkgName = pkg.name
       , pkgVersion = pkg.version
       , pkgSubdir = "${pkg.name}-${showVersion pkg.version}"
+      , pkgBuildDeps = [ unbounded "make" ]
       }
 in
 
