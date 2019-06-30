@@ -3276,6 +3276,7 @@ let phash =
                   , prelude.unbounded "mpg123"
                   , prelude.unbounded "libjpeg"
                   , prelude.unbounded "libpng"
+                  , prelude.unbounded "fftw"
                   ]
       , pkgBuildDeps = [ prelude.unbounded "autoconf"
                        , prelude.unbounded "automake"
@@ -3409,10 +3410,9 @@ let qt =
                        , prelude.unbounded "perl"
                        , prelude.unbounded "python2"
                        , prelude.unbounded "git"
-                       -- , prelude.unbounded "gcc"
                        ]
-      , pkgDeps = [ prelude.unbounded "mesa"
-                  , prelude.unbounded "fontconfig"
+      , pkgDeps = [ prelude.unbounded "fontconfig"
+                  , prelude.unbounded "mesa"
                   , prelude.unbounded "dbus"
                   , prelude.unbounded "freetype"
                   , prelude.unbounded "harfbuzz"
@@ -3439,6 +3439,14 @@ let lz4 =
                                                   , environment = Some (prelude.buildEnv cfg)
                                                   })
             ]
+      }
+in
+
+let fftw =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "fftw", version = v } ⫽
+      { pkgUrl = "http://www.fftw.org/fftw-${prelude.showVersion v}.tar.gz"
+      , configureCommand = prelude.configureWithFlags [ "--enable-shared", "--enable-threads", "--with-combined-threads" ]
       }
 in
 
@@ -3475,6 +3483,7 @@ in
 , expat [2,2,6]
 , feh [3,1,1]
 , ffmpeg [4,1,3]
+, fftw [3,3,8]
 , fixesproto [5,0]
 , fontconfig [2,13,1]
 , fossil [2,7]
@@ -3610,7 +3619,7 @@ in
 , mosh [1,3,2]
 , motif [2,3,8]
 , musl [1,1,20]
-, nano [4,2]
+, nano [4,3]
 , nasm [2,14]
 , ncurses [6,1]
 , nginx [1,15,7]
