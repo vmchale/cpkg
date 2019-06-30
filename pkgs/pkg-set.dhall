@@ -280,6 +280,7 @@ let harfbuzz =
       { pkgUrl = "https://www.freedesktop.org/software/harfbuzz/release/harfbuzz-${prelude.showVersion v}.tar.xz"
       , pkgDeps = [ prelude.unbounded "freetype-prebuild"
                   , prelude.unbounded "glib"
+                  , prelude.unbounded "icu"
                   ]
       , pkgBuildDeps = [ prelude.unbounded "pkg-config" ]
       , configureCommand = prelude.configureLinkExtraLibs [ "pcre", "z" ]
@@ -3450,6 +3451,14 @@ let fftw =
       }
 in
 
+let icu =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "icu", version = v } ⫽
+      { pkgUrl = "http://download.icu-project.org/files/icu4c/${prelude.showVersion v}/icu4c-${prelude.underscoreVersion v}-src.tgz"
+      , pkgSubdir = "icu/source"
+      }
+in
+
 -- TODO: musl-ghc?
 -- https://hub.darcs.net/raichoo/hikari
 -- https://versaweb.dl.sourceforge.net/project/schilytools/schily-2019-03-29.tar.bz2
@@ -3522,6 +3531,7 @@ in
 , gzip [1,9]
 , harfbuzz [2,5,1]
 , htop [2,2,0]
+, icu [64,2]
 , imageMagick [7,0,8]
 , imlib2 [1,5,1]
 , inputproto [2,3,2]
