@@ -777,6 +777,7 @@ let mesonEnv =
          , mkLDRunPath cfg.linkDirs
          , mkLDFlags cfg.linkDirs
          , mkCFlags cfg
+         , mkLDPreload cfg.preloadLibs
          ]
 in
 
@@ -819,6 +820,7 @@ let ninjaBuildWith =
                                                , mkLDRunPath cfg.linkDirs
                                                , mkLDFlagsGeneral cfg.linkDirs linkLibs
                                                , mkCFlags cfg
+                                               , mkLDPreload cfg.preloadLibs
                                                ]
                           , procDir = Some "build" }) ]
 in
@@ -1134,6 +1136,7 @@ in
 , maybeAppend         = maybeAppend
 , mkCFlags            = mkCFlags
 , mkLDFlags           = mkLDFlags
+, mkLDFlagsGeneral    = mkLDFlagsGeneral
 , mkLDPath            = mkLDPath
 , mkLDRunPath         = mkLDRunPath
 , mkStaPath           = mkStaPath

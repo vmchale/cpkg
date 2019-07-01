@@ -817,7 +817,9 @@ let python =
                 ([ "--build=${prelude.printArch cfg.buildArch}" ] # crossArgs # staticFlag) cfg
           -- enable-optimizations takes too long
           -- disable ipv6 for cross-compiling
-      , pkgDeps = [ prelude.unbounded "libffi" ]
+      , pkgDeps = [ prelude.unbounded "libffi"
+                  , prelude.unbounded "ncurses"
+                  ]
       , installCommand =
           λ(cfg : types.BuildVars) →
             prelude.installWithBinaries [ "bin/python${major}" ] cfg
@@ -1388,11 +1390,14 @@ let gobject-introspection =
     let fullVersion = versionString ++ "." ++ Natural/show x.patch
     in
 
-    prelude.simplePackage { name = "gobject-introspection", version = prelude.fullVersion x } ⫽
+    prelude.ninjaPackage { name = "gobject-introspection", version = prelude.fullVersion x } ⫽
       { pkgUrl = "https://download.gnome.org/sources/gobject-introspection/${versionString}/gobject-introspection-${fullVersion}.tar.xz"
-      , pkgBuildDeps = [ prelude.unbounded "flex" ]
-      , configureCommand = prelude.configureLinkExtraLibs [ "pcre", "gobject-2.0", "gio-2.0" ]
+      , pkgBuildDeps = [ prelude.unbounded "meson" ] -- prelude.unbounded "flex" "bison" ]
       , pkgDeps = [ prelude.lowerBound { name = "glib", lower = [2,58,0] } ]
+      , installCommand =
+          λ(cfg : types.BuildVars) →
+            [ prelude.mkExe "build/tools/g-ir-scanner" ]
+              # prelude.ninjaInstall cfg
       }
 in
 
