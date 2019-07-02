@@ -3455,7 +3455,7 @@ let icu =
     prelude.simplePackage { name = "icu", version = v } ⫽
       { pkgUrl = "http://download.icu-project.org/files/icu4c/${prelude.showVersion v}/icu4c-${prelude.underscoreVersion v}-src.tgz"
       , pkgSubdir = "icu/source"
-      , pkgBuildDeps = [ prelude.lowerBound { name = "make", version = [3,80] }
+      , pkgBuildDeps = [ prelude.lowerBound { name = "make", lower = [3,80] }
                        , prelude.unbounded "python3"
                        ]
       }
