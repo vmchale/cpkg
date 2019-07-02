@@ -2621,15 +2621,8 @@ let imlib2 =
                   , prelude.unbounded "freetype"
                   , prelude.unbounded "libjpeg"
                   , prelude.unbounded "libpng"
+                  , prelude.unbounded "giflib"
                   ]
-      }
-in
-
-let libicu =
-  λ(v : List Natural) →
-    prelude.simplePackage { name = "libicu", version = v } ⫽
-      { pkgUrl = "http://download.icu-project.org/files/icu4c/${prelude.showVersion v}/icu4c-${prelude.underscoreVersion v}-src.tgz"
-      , pkgSubdir = "icu/source"
       }
 in
 
@@ -2799,6 +2792,7 @@ let libtiff =
       { pkgUrl = "https://download.osgeo.org/libtiff/tiff-${versionString}.tar.gz"
       , pkgSubdir = "tiff-${versionString}"
       , configureCommand = prelude.cmakeConfigureNinja
+      , pkgBuildDeps = [ prelude.unbounded "cmake" ]
       }
 in
 
@@ -3461,6 +3455,9 @@ let icu =
     prelude.simplePackage { name = "icu", version = v } ⫽
       { pkgUrl = "http://download.icu-project.org/files/icu4c/${prelude.showVersion v}/icu4c-${prelude.underscoreVersion v}-src.tgz"
       , pkgSubdir = "icu/source"
+      , pkgBuildDeps = [ prelude.lowerBound { name = "make", version = [3,80] }
+                       , prelude.unbounded "python3"
+                       ]
       }
 in
 
@@ -3567,7 +3564,6 @@ in
 , libglade { version = [2,6], patch = 4 }
 , libgpgError [1,33]
 , libICE [1,0,9]
-, libicu [63,1]
 , libjpeg [9]
 , libjpeg-turbo [2,0,2]
 , libksba [1,3,5]
