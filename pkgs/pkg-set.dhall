@@ -581,7 +581,9 @@ let lapack =
       , pkgVersion = v
       , pkgUrl = "http://www.netlib.org/lapack/lapack-${prelude.showVersion v}.tar.gz"
       , pkgSubdir = "lapack-${prelude.showVersion v}"
-      , pkgBuildDeps = [ prelude.unbounded "cmake" ]
+      , pkgBuildDeps = [ prelude.unbounded "cmake"
+                       , prelude.unbounded "gcc"
+                       ]
       }
 in
 
@@ -3498,13 +3500,55 @@ let quazip =
       }
 in
 
+let eigen =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "eigen", version = v } ⫽ prelude.cmakePackage ⫽
+      { pkgUrl = "http://bitbucket.org/eigen/eigen/get/${prelude.showVersion v}.tar.bz2"
+      , pkgSubdir = "eigen-eigen-323c052e1731"
+      }
+in
+
+let blas =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "blas", version = v } ⫽
+      { pkgUrl = "http://www.netlib.org/blas/blas-${prelude.showVersion v}.tgz"
+      , pkgSubdir = "BLAS-${prelude.showVersion v}"
+      , pkgBuildDeps = [ prelude.unbounded "make"
+                       , prelude.unbounded "gcc"
+                       ]
+      , configureCommand = prelude.doNothing
+      , installCommand =
+        λ(_ : types.BuildVars) →
+          [ prelude.copyFile "blas_LINUX.a" "lib/blas.a" ]
+      }
+in
+
+let openblas =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "openblas", version = v } ⫽
+      { pkgUrl = "https://github.com/xianyi/OpenBLAS/archive/v${prelude.showVersion v}.tar.gz"
+      , pkgSubdir = "OpenBLAS-${prelude.showVersion v}"
+      , pkgBuildDeps = [ prelude.unbounded "make"
+                       , prelude.unbounded "gcc"
+                       ]
+      , pkgDeps = [ prelude.unbounded "gcc" ]
+      , configureCommand = prelude.doNothing
+      , installCommand =
+        λ(cfg : types.BuildVars) →
+            [ prelude.call (prelude.defaultCall ⫽ { program = "make"
+                                                  , arguments = [ "PREFIX=${cfg.installDir}", "install" ]
+                                                  , environment = Some (prelude.buildEnv cfg)
+                                                  })
+            ]
+      }
+in
+
 -- TODO: musl-ghc?
 -- https://hub.darcs.net/raichoo/hikari
 -- https://versaweb.dl.sourceforge.net/project/schilytools/schily-2019-03-29.tar.bz2
 -- https://busybox.net/downloads/busybox-1.31.0.tar.bz2
 -- http://www.linuxfromscratch.org/blfs/view/svn/general/unzip.html
 -- https://github.com/jsoftware/jsource/archive/j807-release.tar.gz
--- http://bitbucket.org/eigen/eigen/get/3.3.7.tar.bz2
 
 [ autoconf [2,69]
 , automake [1,16,1]
@@ -3514,6 +3558,7 @@ in
 , babl { version = [0,1], patch = 60 }
 , binutils [2,31]
 , bison [3,3,1]
+, blas [3,8,0]
 , bzip2 [1,0,6]
 , cairo [1,16,0]
 , chickenScheme [5,0,0]
@@ -3527,6 +3572,7 @@ in
 , dbus [1,13,12]
 , diffutils [3,7]
 , dri2proto [2,8]
+, eigen [3,3,7]
 , elfutils [0,176]
 , emacs [26,2]
 , exiv2 [0,27,1]
@@ -3679,6 +3725,7 @@ in
 , node [8,15,1] ⫽ { pkgName = "node8" }
 , npth [1,6]
 , nspr [4,20]
+, openblas [0,3,2]
 , opencv [4,1,0]
 , openssh [7,9]
 , openssl [1,1,1]
