@@ -3461,11 +3461,50 @@ let icu =
       }
 in
 
+let opencv =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "opencv", version = v } ⫽ prelude.cmakePackage ⫽
+      { pkgUrl = "https://github.com/opencv/opencv/archive/${prelude.showVersion v}.zip"
+      , pkgBuildDeps = [ prelude.lowerBound { name = "cmake", lower = [2,8,7] }
+                       -- , prelude.lowerBound { name = "gcc", lower = [4,4] }
+                       -- , prelude.unbounded "git"
+                       , prelude.unbounded "pkg-config"
+                       , prelude.unbounded "python2"
+                       ]
+     , pkgDeps = [ prelude.unbounded "zlib"
+                 , prelude.unbounded "libjpeg-turbo"
+                 , prelude.unbounded "libpng"
+                 , prelude.unbounded "gtk3"
+                 , prelude.unbounded "ffmpeg"
+                 ]
+     }
+in
+
+let libraw =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libraw", version = v } ⫽
+      { pkgUrl = "https://www.libraw.org/data/LibRaw-${prelude.showVersion v}.tar.gz"
+      , pkgSubdir = "LibRaw-${prelude.showVersion v}"
+      }
+in
+
+let quazip =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "quazip", version = v } ⫽ prelude.cmakePackage ⫽
+      { pkgUrl = "https://github.com/stachenov/quazip/archive/v${prelude.showVersion v}.tar.gz"
+      , pkgDeps = [ prelude.unbounded "zlib"
+                  , prelude.unbounded "qt"
+                  ]
+      }
+in
+
 -- TODO: musl-ghc?
 -- https://hub.darcs.net/raichoo/hikari
 -- https://versaweb.dl.sourceforge.net/project/schilytools/schily-2019-03-29.tar.bz2
 -- https://busybox.net/downloads/busybox-1.31.0.tar.bz2
+-- http://www.linuxfromscratch.org/blfs/view/svn/general/unzip.html
 -- https://github.com/jsoftware/jsource/archive/j807-release.tar.gz
+-- http://bitbucket.org/eigen/eigen/get/3.3.7.tar.bz2
 
 [ autoconf [2,69]
 , automake [1,16,1]
@@ -3490,7 +3529,7 @@ in
 , dri2proto [2,8]
 , elfutils [0,176]
 , emacs [26,2]
-, exiv2 [0,27,0]
+, exiv2 [0,27,1]
 , expat [2,2,6]
 , feh [3,1,1]
 , ffmpeg [4,1,3]
@@ -3510,7 +3549,7 @@ in
 , gdk-pixbuf { version = [2,38], patch = 1 }
 , gegl { version = [0,4], patch = 12 }
 , gettext [0,20,1]
-, gexiv2 { version = [0,11], patch = 0 }
+, gexiv2 { version = [0,12], patch = 0 }
 , gperf [3,1]
 , gperftools [2,7]
 , giflib [5,1,4]
@@ -3575,6 +3614,7 @@ in
 , libpthread-stubs [0,4]
 , libopenjpeg [2,3,1]
 , libotf [0,9,16]
+, libraw [0,19,2]
 , libsamplerate [0,1,9]
 , libselinux [2,8]
 , libsndfile [1,0,28]
@@ -3639,6 +3679,7 @@ in
 , node [8,15,1] ⫽ { pkgName = "node8" }
 , npth [1,6]
 , nspr [4,20]
+, opencv [4,1,0]
 , openssh [7,9]
 , openssl [1,1,1]
 , p11kit [0,23,16,1]
@@ -3663,6 +3704,7 @@ in
 , python [3,7,3]
 , qrencode [4,0,2]
 , qt { version = [5,13], patch = 0 }
+, quazip [0,8,1]
 , ragel [6,10]
 , randrproto [1,5,0]
 , re2c [1,1,1]
