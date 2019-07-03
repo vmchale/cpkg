@@ -1025,65 +1025,6 @@ let installWithPyWrappers =
       # concatMap Text types.Command (λ(bin : Text) → mkPyWrapper version bin cfg) binNames
 in
 
-let preloadEnv =
-  λ(_ : List Text) →
-  λ(cfg : types.BuildVars) →
-    Some (defaultPath cfg # [ mkLDFlags cfg.linkDirs
-                            , mkCFlags cfg
-                            , mkPkgConfigVar cfg.linkDirs
-                            , libPath cfg
-                            , mkXdgDataDirs cfg.shareDirs
-                            , mkLDPreload cfg.preloadLibs
-                            , mkPerlLib { libDirs = cfg.linkDirs, perlVersion = [5,30,0], cfg = cfg } -- TODO: take this as a parameter
-                            ])
-in
-
-let preloadCfg =
-  generalConfigure preloadEnv "configure" ([] : List Text) ([] : List Text)
-in
-
-let printEnvVar =
-  λ(var : types.EnvVar) →
-    "${var.var}=${var.value}"
-in
-
-{- This writes + installs a shell script that allows you to use programs
-   installed via cpkg with the appropriate environment variables set, since of
-   course we install in nonstandard locations
-   -}
-let mkPyWrapper =
-  λ(version : List Natural) →
-  λ(binName : Text) →
-  λ(cfg : types.BuildVars) →
-    let wrapperContents = "${printEnvVar (libPath cfg)} ${printEnvVar (mkPyPath version cfg.linkDirs)}:${cfg.installDir}/lib/python${showVersion version}/site-packages ${cfg.installDir}/bin/${binName} $@"
-    in
-    let wrapped = "wrapper/${binName}"
-    in
-
-    [ createDir "wrapper"
-    , writeFile { file = wrapped, contents = wrapperContents }
-    , mkExe wrapped
-    , copyFile wrapped wrapped
-    , symlinkBinary wrapped
-    ]
-in
-
-let mkPy3Wrapper =
-  mkPyWrapper [3,7]
-in
-
-let mkPy2Wrapper =
-  mkPyWrapper [2,7]
-in
-
-let installWithPyWrappers =
-  λ(version : List Natural) →
-  λ(binNames : List Text) →
-  λ(cfg : types.BuildVars) →
-    pythonInstall version cfg
-      # concatMap Text types.Command (λ(bin : Text) → mkPyWrapper version bin cfg) binNames
-in
-
 let installWithPy3Wrappers =
   installWithPyWrappers [3,7]
 in
