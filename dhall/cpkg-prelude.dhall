@@ -398,6 +398,7 @@ let buildEnv =
     defaultPath cfg # [ mkPkgConfigVar (cfg.shareDirs # cfg.linkDirs)
                       , mkPerlLib { libDirs = cfg.linkDirs, perlVersion = [5,30,0], cfg = cfg } -- TODO: take this as a parameter
                       , mkLDPath cfg.linkDirs
+                      , mkLDFlagsGeneral cfg.linkDirs ([] : List Text)
                       ]
 in
 
@@ -1111,6 +1112,15 @@ let configureWithPatch =
     configureWithPatches [p]
 in
 
+let installPrefix =
+  λ(cfg : types.BuildVars) →
+      [ call (defaultCall ⫽ { program = "make"
+                             , arguments = [ "prefix=${cfg.installDir}", "PREFIX=${cfg.installDir}", "install" ]
+                             , environment = Some (buildEnv cfg)
+                             })
+      ]
+in
+
 { showVersion         = showVersion
 , makeGnuLibrary      = makeGnuLibrary
 , makeGnuExe          = makeGnuExe
@@ -1224,4 +1234,5 @@ in
 , mkAclocalPath       = mkAclocalPath
 , configureWithPatches = configureWithPatches
 , configureWithPatch  = configureWithPatch
+, installPrefix       = installPrefix
 }
