@@ -3533,13 +3533,24 @@ let openblas =
                        ]
       , pkgDeps = [ prelude.unbounded "gcc" ]
       , configureCommand = prelude.doNothing
-      , installCommand =
-        λ(cfg : types.BuildVars) →
-            [ prelude.call (prelude.defaultCall ⫽ { program = "make"
-                                                  , arguments = [ "PREFIX=${cfg.installDir}", "install" ]
-                                                  , environment = Some (prelude.buildEnv cfg)
-                                                  })
-            ]
+      , installCommand = prelude.installPrefix
+      }
+in
+
+let r =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "r", version = v } ⫽
+      { pkgUrl = "https://cran.r-project.org/src/base/R-3/R-${versionString}.tar.gz"
+      , pkgSubdir = "R-${versionString}"
+      , pkgStream = False
+      , pkgDeps = [ prelude.unbounded "readline"
+                  , prelude.unbounded "libXt"
+                  ]
+      , pkgBuildDeps = [ prelude.unbounded "make"
+                       , prelude.unbounded "gcc"
+                       ]
+      , installCommand = prelude.installWithBinaries [ "bin/R", "bin/Rscript" ]
       }
 in
 
@@ -3699,6 +3710,7 @@ in
 , libXtst [1,2,3]
 , libXxf86vm [1,1,4]
 , llvm [8,0,0]
+, llvm [7,1,0] ⫽{ pkgName = "llvm-7.1" }
 , lmdb [0,9,23]
 , lua [5,3,5]
 , lz4 [1,9,1]
@@ -3708,6 +3720,7 @@ in
 , mako [1,0,7]
 , markupSafe [1,0]
 , memcached [1,5,12]
+, mercury
 , mesa [19,0,5]
 , meson [0,50,1]
 , mpc [1,1,0]
@@ -3740,9 +3753,8 @@ in
 , phash [0,9,6]
 , pixman [0,38,4]
 , pkg-config [0,29,2]
-, postgresql [11,1]
 , poppler [0,77,0]
-, mercury
+, postgresql [11,1]
 , protobuf [3,8,0]
 , pycairo [1,18,1]
 , pygobject { version = [2,28], patch = 7 }
@@ -3752,6 +3764,7 @@ in
 , qrencode [4,0,2]
 , qt { version = [5,13], patch = 0 }
 , quazip [0,8,1]
+, r [3,6,1]
 , ragel [6,10]
 , randrproto [1,5,0]
 , re2c [1,1,1]
