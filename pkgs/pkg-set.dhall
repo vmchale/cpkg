@@ -220,7 +220,7 @@ let glibc =
           # [ prelude.createDir "build"
             , prelude.call { program = "../configure"
                            , arguments = modifyArgs [ "--prefix=${cfg.installDir}" ]
-                           , environment = prelude.defaultEnv
+                           , environment = prelude.configSome ([] : List Text) cfg
                            , procDir = buildDir
                            }
             ]
@@ -230,7 +230,7 @@ let glibc =
     λ(cfg : types.BuildVars) →
       [ prelude.call { program = prelude.makeExe cfg.buildOS
                      , arguments = [ "-j${Natural/show cfg.cpus}" ]
-                     , environment = prelude.defaultEnv
+                     , environment = prelude.configSome ([] : List Text) cfg
                      , procDir = buildDir
                      }
       ]
@@ -240,7 +240,7 @@ let glibc =
     λ(cfg : types.BuildVars) →
       [ prelude.call { program = prelude.makeExe cfg.buildOS
                      , arguments = [ "install" ]
-                     , environment = prelude.defaultEnv
+                     , environment = prelude.configSome ([] : List Text) cfg
                      , procDir = buildDir
                      }
       ]
@@ -255,7 +255,11 @@ let glibc =
       , configureCommand = glibcConfigure
       , buildCommand = glibcBuild
       , installCommand = glibcInstall
-      , pkgBuildDeps = [ prelude.unbounded "bison", prelude.unbounded "gawk" ]
+      , pkgBuildDeps = [ prelude.unbounded "bison"
+                       , prelude.unbounded "gawk"
+                       , prelude.unbounded "python3"
+                       , prelude.unbounded "make"
+                       ]
       }
 in
 
@@ -3525,9 +3529,10 @@ in
 
 let openblas =
   λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
     prelude.simplePackage { name = "openblas", version = v } ⫽
-      { pkgUrl = "https://github.com/xianyi/OpenBLAS/archive/v${prelude.showVersion v}.tar.gz"
-      , pkgSubdir = "OpenBLAS-${prelude.showVersion v}"
+      { pkgUrl = "https://github.com/xianyi/OpenBLAS/archive/v${versionString}.tar.gz"
+      , pkgSubdir = "OpenBLAS-${versionString}"
       , pkgBuildDeps = [ prelude.unbounded "make"
                        , prelude.unbounded "gcc"
                        ]
