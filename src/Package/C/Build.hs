@@ -184,7 +184,9 @@ forceBuildCPkg cpkg host glob buildVars = do
 
         fetchCPkg cpkg p
 
-        let p' = p </> pkgSubdir cpkg
+        pAbs <- liftIO (makeAbsolute p)
+
+        let p' = pAbs </> pkgSubdir cpkg
 
         lds <- liftIO $ do
             linkSubdirs <- concat <$> traverse getSubdirsWrap (linkDirs buildVars)
@@ -192,7 +194,7 @@ forceBuildCPkg cpkg host glob buildVars = do
             let curses = not . ("curses" `isInfixOf`)
             getPreloads $ filter curses linkSubdirs
 
-        let buildConfigured = buildVars { installDir = pkgDir, currentDir = p, preloadLibs = lds }
+        let buildConfigured = buildVars { installDir = pkgDir, currentDir = pAbs, preloadLibs = lds }
 
         configureInDir cpkg buildConfigured p'
 

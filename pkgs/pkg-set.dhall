@@ -284,7 +284,6 @@ let harfbuzz =
       { pkgUrl = "https://www.freedesktop.org/software/harfbuzz/release/harfbuzz-${prelude.showVersion v}.tar.xz"
       , pkgDeps = [ prelude.unbounded "freetype-prebuild"
                   , prelude.unbounded "glib"
-                  , prelude.unbounded "icu"
                   ]
       , pkgBuildDeps = [ prelude.unbounded "pkg-config" ]
       , configureCommand = prelude.configureLinkExtraLibs [ "pcre", "z" ]
@@ -3280,7 +3279,8 @@ let phash =
                   , prelude.unbounded "libsndfile"
                   , prelude.unbounded "libsamplerate"
                   , prelude.unbounded "mpg123"
-                  , prelude.unbounded "libjpeg"
+                  , prelude.unbounded "libjpeg-turbo"
+                  -- , prelude.unbounded "libjpeg"
                   , prelude.unbounded "libpng"
                   , prelude.unbounded "fftw"
                   ]
@@ -3456,6 +3456,18 @@ let fftw =
       }
 in
 
+let icu-le-hb =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "icu-le-hb", version = v } ⫽
+      { pkgUrl = "https://github.com/harfbuzz/icu-le-hb/archive/${prelude.showVersion v}.tar.gz"
+      , configureCommand = prelude.autogenConfigure
+      , pkgDeps = [ prelude.unbounded "harfbuzz"
+                  , prelude.unbounded "icu"
+                  ]
+      , pkgBuildDeps = [ prelude.unbounded "pkg-config" ]
+      }
+in
+
 let icu =
   λ(v : List Natural) →
     prelude.simplePackage { name = "icu", version = v } ⫽
@@ -3463,6 +3475,7 @@ let icu =
       , pkgSubdir = "icu/source"
       , pkgBuildDeps = [ prelude.lowerBound { name = "make", lower = [3,80] }
                        , prelude.unbounded "python3"
+                       -- sed, coreutils, pkg-config?
                        ]
       }
 in
@@ -3635,11 +3648,12 @@ in
 , harfbuzz [2,5,1]
 , htop [2,2,0]
 , icu [64,2]
+, icu-le-hb [1,0,3]
 , imageMagick [7,0,8]
 , imlib2 [1,5,1]
 , inputproto [2,3,2]
 , intltool [0,51,0]
-, itstool [2,0,5]
+, itstool [2,0,6]
 , jemalloc [5,2,0]
 , joe [4,6]
 , json-c { version = [0,13,1], dateStr = "20180305" }

@@ -722,7 +722,8 @@ let autogenConfigure =
   λ(cfg : types.BuildVars) →
     [ mkExe "autogen.sh"
     , call (defaultCall ⫽ { program = "./autogen.sh"
-                          , environment = Some ( [ mkAclocalPath cfg.shareDirs ]
+                          , environment = Some ( [ mkAclocalPath cfg.shareDirs
+                                                 , mkPkgConfigVar (cfg.shareDirs # cfg.linkDirs) ]
                                                   # defaultPath cfg)
                           })
     ] # defaultConfigure cfg
