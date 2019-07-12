@@ -85,7 +85,6 @@
 - [ ] Maintainer subcommand to build every single package
 # Packages
 - [ ] bash
-- [ ] Ruby
 - [ ] librsvg
 - [ ] https://github.com/linux-noah/noah
 - [ ] GHC cross-compiler?
@@ -174,6 +173,8 @@
 - [ ] lz4
 - [ ] oclint
 - [ ] pdftotext http://www.xpdfreader.com/download.html
+- [ ] Firefox
+- [ ] github-linguist (??)
 - [ ] http://www.linuxfromscratch.org/blfs/view/8.3/kde/okular5.html
 # Documentation
 - [ ] Write a manpage

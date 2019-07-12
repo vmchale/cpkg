@@ -183,6 +183,10 @@ let symlinkBinary =
     types.Command.SymlinkBinary { file = file }
 in
 
+let symlinkManpage =
+    types.Command.SymlinkManpage
+in
+
 let symlink =
   λ(tgt : Text) →
   λ(lnk : Text) →
@@ -197,6 +201,10 @@ in
 
 let symlinkBinaries =
   map Text types.Command symlinkBinary
+in
+
+let symlinkManpages =
+  map { file : Text, section : Natural } types.Command symlinkManpage
 in
 
 {- This is to be used on the build OS -}
@@ -381,15 +389,16 @@ let configEnv =
                       , mkPkgConfigVar (cfg.shareDirs # cfg.linkDirs)
                       , libPath cfg
                       , mkLDRunPath cfg.linkDirs
-                      , mkPerlLib { libDirs = cfg.linkDirs, perlVersion = [5,28,1], cfg = cfg } -- TODO: take this as a parameter
+                      , mkPerlLib { libDirs = cfg.linkDirs, perlVersion = [5,30,0], cfg = cfg } -- TODO: take this as a parameter
                       ]
 in
 
 let buildEnv =
   λ(cfg : types.BuildVars) →
     defaultPath cfg # [ mkPkgConfigVar (cfg.shareDirs # cfg.linkDirs)
-                      , mkPerlLib { libDirs = cfg.linkDirs, perlVersion = [5,28,1], cfg = cfg } -- TODO: take this as a parameter
+                      , mkPerlLib { libDirs = cfg.linkDirs, perlVersion = [5,30,0], cfg = cfg } -- TODO: take this as a parameter
                       , mkLDPath cfg.linkDirs
+                      , mkLDFlagsGeneral cfg.linkDirs ([] : List Text)
                       ]
 in
 
@@ -441,7 +450,7 @@ in
 
 let mkAclocalPath =
   λ(shareDirs : List Text) →
-    let flag = concatMapSep ":" Text (λ(dir : Text) → "${dir}/aclocal:${dir}/autoconf/autoconf") shareDirs
+    let flag = concatMapSep ":" Text (λ(dir : Text) → "${dir}/aclocal:${dir}/autoconf") shareDirs
     in
 
     { var = "ACLOCAL_PATH", value = flag }
@@ -500,6 +509,15 @@ let installWithBinaries =
             else [] : List types.Command)
 in
 
+let installWithManpages =
+  λ(mans : List { file : Text, section : Natural }) →
+  λ(installVars : types.BuildVars) →
+    defaultInstall installVars
+      # (if not installVars.isCross
+            then symlinkManpages mans
+            else [] : List types.Command)
+in
+
 let unbounded =
   λ(x : Text) →
     { name = x
@@ -537,6 +555,7 @@ let simplePackage =
       { pkgName = pkg.name
       , pkgVersion = pkg.version
       , pkgSubdir = "${pkg.name}-${showVersion pkg.version}"
+      , pkgBuildDeps = [ unbounded "make" ]
       }
 in
 
@@ -609,7 +628,7 @@ in
 
 let cmakeEnv =
   λ(cfg : types.BuildVars) →
-    [ mkPkgConfigVar cfg.shareDirs
+    [ mkPkgConfigVar (cfg.shareDirs # cfg.linkDirs)
     , { var = "CMAKE_INCLUDE_PATH", value = (mkIncludePath cfg.includeDirs).value }
     , { var = "CMAKE_LIBRARY_PATH", value = (libPath cfg).value }
     ]
@@ -703,7 +722,8 @@ let autogenConfigure =
   λ(cfg : types.BuildVars) →
     [ mkExe "autogen.sh"
     , call (defaultCall ⫽ { program = "./autogen.sh"
-                          , environment = Some ([ mkAclocalPath cfg.shareDirs ]
+                          , environment = Some ( [ mkAclocalPath cfg.shareDirs
+                                                 , mkPkgConfigVar (cfg.shareDirs # cfg.linkDirs) ]
                                                   # defaultPath cfg)
                           })
     ] # defaultConfigure cfg
@@ -759,6 +779,7 @@ let mesonEnv =
          , mkLDRunPath cfg.linkDirs
          , mkLDFlags cfg.linkDirs
          , mkCFlags cfg
+         , mkLDPreload cfg.preloadLibs
          ]
 in
 
@@ -801,7 +822,7 @@ let ninjaBuildWith =
                                                , mkLDRunPath cfg.linkDirs
                                                , mkLDFlagsGeneral cfg.linkDirs linkLibs
                                                , mkCFlags cfg
-                                               , mkPkgConfigVar cfg.linkDirs
+                                               , mkLDPreload cfg.preloadLibs
                                                ]
                           , procDir = Some "build" }) ]
 in
@@ -940,6 +961,13 @@ let mkCCArg =
         ([] : List Text)
 in
 
+let mkFRCArg =
+  λ(cfg : types.BuildVars) →
+    Optional/fold types.TargetTriple cfg.targetTriple (List Text)
+      (λ(tgt : types.TargetTriple) → ["CC=${printTargetTriple tgt}-gcc"])
+        ([] : List Text)
+in
+
 let preloadEnv =
   λ(_ : List Text) →
   λ(cfg : types.BuildVars) →
@@ -949,7 +977,7 @@ let preloadEnv =
                             , libPath cfg
                             , mkXdgDataDirs cfg.shareDirs
                             , mkLDPreload cfg.preloadLibs
-                            , mkPerlLib { libDirs = cfg.linkDirs, perlVersion = [5,28,1], cfg = cfg } -- TODO: take this as a parameter
+                            , mkPerlLib { libDirs = cfg.linkDirs, perlVersion = [5,30,0], cfg = cfg } -- TODO: take this as a parameter
                             ])
 in
 
@@ -1025,12 +1053,18 @@ let mkLDPathWrapper =
     ]
 in
 
+let mkLDPathWrappers =
+  λ(cfg : types.BuildVars) →
+  λ(bins : List Text) →
+    concatMap Text types.Command (λ(bin : Text) → mkLDPathWrapper cfg bin) bins
+    -- TODO: add to PATH for e.g. PERL interpreter
+in
+
 let installWithWrappers =
   λ(bins : List Text) →
   λ(cfg : types.BuildVars) →
     defaultInstall cfg #
-      concatMap Text types.Command (λ(bin : Text) → mkLDPathWrapper cfg bin) bins
-      -- TODO: add to PATH for e.g. PERL interpreter
+      mkLDPathWrappers cfg bins
 in
 
 let underscoreVersion =
@@ -1067,6 +1101,27 @@ let isX64 =
       arch
 in
 
+let configureWithPatches =
+  λ(patches : List Text) →
+  λ(cfg : types.BuildVars) →
+    map Text types.Command (λ(p : Text) → patch p) patches
+      # defaultConfigure cfg
+in
+
+let configureWithPatch =
+  λ(p : Text) →
+    configureWithPatches [p]
+in
+
+let installPrefix =
+  λ(cfg : types.BuildVars) →
+      [ call (defaultCall ⫽ { program = "make"
+                             , arguments = [ "prefix=${cfg.installDir}", "PREFIX=${cfg.installDir}", "install" ]
+                             , environment = Some (buildEnv cfg)
+                             })
+      ]
+in
+
 { showVersion         = showVersion
 , makeGnuLibrary      = makeGnuLibrary
 , makeGnuExe          = makeGnuExe
@@ -1099,6 +1154,7 @@ in
 , maybeAppend         = maybeAppend
 , mkCFlags            = mkCFlags
 , mkLDFlags           = mkLDFlags
+, mkLDFlagsGeneral    = mkLDFlagsGeneral
 , mkLDPath            = mkLDPath
 , mkLDRunPath         = mkLDRunPath
 , mkStaPath           = mkStaPath
@@ -1110,9 +1166,12 @@ in
 , defaultPath         = defaultPath
 , simplePackage       = simplePackage
 , symlinkBinary       = symlinkBinary
+, symlinkManpage      = symlinkManpage
 , symlink             = symlink
 , symlinkBinaries     = symlinkBinaries
+, symlinkManpages     = symlinkManpages
 , installWithBinaries = installWithBinaries
+, installWithManpages = installWithManpages
 , configureMkExes     = configureMkExes
 , generalConfigure    = generalConfigure
 , configureWithFlags  = configureWithFlags
@@ -1149,6 +1208,7 @@ in
 , osCfg               = osCfg
 , archCfg             = archCfg
 , mkCCArg             = mkCCArg
+, mkFRCArg            = mkFRCArg
 , mesonCfgFile        = mesonCfgFile
 , python2Package      = python2Package
 , configEnv           = configEnv
@@ -1163,6 +1223,7 @@ in
 , installWithPy3Wrappers = installWithPy3Wrappers
 , cmakeConfigureNinja = cmakeConfigureNinja
 , mkLDPathWrapper     = mkLDPathWrapper
+, mkLDPathWrappers    = mkLDPathWrappers
 , installWithWrappers = installWithWrappers
 , cmakeEnv            = cmakeEnv
 , cmakeSome           = cmakeSome
@@ -1171,4 +1232,8 @@ in
 , configWithEnv       = configWithEnv
 , buildEnv            = buildEnv
 , patch               = patch
+, mkAclocalPath       = mkAclocalPath
+, configureWithPatches = configureWithPatches
+, configureWithPatch  = configureWithPatch
+, installPrefix       = installPrefix
 }

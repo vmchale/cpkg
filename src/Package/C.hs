@@ -26,6 +26,7 @@ module Package.C (
                  , printPkgConfigPath
                  , printIncludePath
                  , printLibPath
+                 , printLdLibPath
                  , printCabalFlags
                  , buildByName
                  -- * Dhall functionality

@@ -5,6 +5,7 @@ module Package.C.Build ( buildCPkg
 
 import           Control.Concurrent          (getNumCapabilities)
 import           CPkgPrelude
+import           Data.List                   (isInfixOf)
 import           Data.Maybe                  (isJust)
 import qualified Data.Text                   as T
 import qualified Data.Text.IO                as TIO
@@ -16,6 +17,7 @@ import           Package.C.Monad
 import           Package.C.Type
 import           System.Directory
 import           System.Directory.Executable (mkExecutable)
+import           System.Directory.Recursive  (getSubdirsRecursive)
 import           System.FilePath             (takeDirectory, takeFileName, (</>))
 import           System.FilePath.Glob
 import           System.IO.Temp              (withSystemTempDirectory)
@@ -45,6 +47,11 @@ stepToProc _ p (SymlinkBinary file') = do
     let actualBin = p </> file'
     liftIO $ createDirectoryIfMissing True binDir
     liftIO $ createFileLink actualBin (binDir </> takeFileName file')
+stepToProc _ p (SymlinkManpage file' sec) = do
+    manDir <- (</> ("share" </> "man" </> "man" ++ show sec)) <$> globalPkgDir
+    let actualMan = p </> file'
+    liftIO $ createDirectoryIfMissing True manDir
+    liftIO $ createFileLink actualMan (manDir </> takeFileName file')
 stepToProc _ p (Symlink tgt' lnk) = do
     let linkAbs = p </> lnk
     putDiagnostic ("Creating directory" ++ takeDirectory linkAbs ++ "...")
@@ -151,6 +158,13 @@ getVars host sta shr links incls bins = do
 -- diagnosticDirectory :: String -> (FilePath -> m a) -> m a
 -- diagnosticDirectory s f = f (s ++ "-diagnostic")
 
+getSubdirsWrap :: FilePath -> IO [FilePath]
+getSubdirsWrap fp = do
+    b <- doesDirectoryExist fp
+    if b
+        then (fp:) <$> getSubdirsRecursive fp
+        else pure []
+
 -- TODO: more complicated solver, garbage collector, and all that.
 -- Basically nix-style builds for C libraries
 forceBuildCPkg :: CPkg
@@ -170,11 +184,17 @@ forceBuildCPkg cpkg host glob buildVars = do
 
         fetchCPkg cpkg p
 
-        let p' = p </> pkgSubdir cpkg
+        pAbs <- liftIO (makeAbsolute p)
 
-        lds <- liftIO $ getPreloads $ linkDirs buildVars
+        let p' = pAbs </> pkgSubdir cpkg
 
-        let buildConfigured = buildVars { installDir = pkgDir, currentDir = p, preloadLibs = lds }
+        lds <- liftIO $ do
+            linkSubdirs <- concat <$> traverse getSubdirsWrap (linkDirs buildVars)
+            -- FIXME: this seems stupid
+            let curses = not . ("curses" `isInfixOf`)
+            getPreloads $ filter curses linkSubdirs
+
+        let buildConfigured = buildVars { installDir = pkgDir, currentDir = pAbs, preloadLibs = lds }
 
         configureInDir cpkg buildConfigured p'
 

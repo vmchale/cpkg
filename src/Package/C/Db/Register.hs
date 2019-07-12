@@ -12,6 +12,7 @@ module Package.C.Db.Register ( registerPkg
                              , printIncludePath
                              , printLibPath
                              , printCabalFlags
+                             , printLdLibPath
                              , packageInstalled
                              , allPackages
                              , parseHostIO
@@ -24,6 +25,7 @@ import           CPkgPrelude
 import           Data.Binary          (encode)
 import qualified Data.ByteString.Lazy as BSL
 import           Data.Hashable        (Hashable (..))
+import           Data.List            (intercalate)
 import qualified Data.Set             as S
 import           Numeric              (showHex)
 import           Package.C.Db.Memory
@@ -82,6 +84,9 @@ printMany f names host = do
     case maybePackages of
         Nothing -> indexError (head names)
         Just ps -> f ps
+
+printLdLibPath :: (MonadIO m, MonadDb m) => [String] -> Maybe Platform -> m ()
+printLdLibPath = printMany (liftIO . putStrLn <=< (fmap (intercalate ":") . traverse buildCfgToLibPath))
 
 printCabalFlags :: (MonadIO m, MonadDb m) => [String] -> Maybe Platform -> m ()
 printCabalFlags = printMany (liftIO . putStrLn <=< (fmap unwords . traverse buildCfgToCabalFlag))

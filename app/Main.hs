@@ -17,12 +17,13 @@ data DumpTarget = Linker { _pkgGet :: String }
                 | PkgConfig { _pkgGet :: String }
                 | IncludePath { _pkgGet :: String }
                 | LibPath { _pkgGet :: String }
+                | LdLibPath { _pkgGets :: [String] }
 
 data Command = Install { _pkgName :: String, _verbosity :: Verbosity, _target :: Maybe Platform, _static :: Bool, _global :: Bool, _packageSet :: Maybe String }
              | Check { _dhallFile :: String, _verbosity :: Verbosity }
              | CheckSet { _dhallFile :: String, _verbosity :: Verbosity }
              | Dump { _dumpTarget :: DumpTarget, _host :: Maybe Platform }
-             | DumpCabal { _pkgGets :: [String], _host :: Maybe Platform }
+             | DumpCabal { _pkgGetsCabal :: [String], _host :: Maybe Platform }
              | List { _packageSet :: Maybe String }
              | Nuke
 
@@ -55,7 +56,8 @@ dumpTarget = hsubparser
     <> command "compiler" (info (Compiler <$> package) (progDesc "Dump compiler flags for a package"))
     <> command "pkg-config" (info (PkgConfig <$> package) (progDesc "Dump pkg-config path for a package")) -- TODO: make pkg-config recursive or something?
     <> command "include" (info (IncludePath <$> package) (progDesc "Dump C_INCLUDE_PATH for a package"))
-    <> command "library" (info (LibPath <$> package) (progDesc "Dump LD_LIBRARY_PATH or LIBRARY_PATH for a package"))
+    <> command "library" (info (LibPath <$> package) (progDesc "Dump LD_LIBRARY_PATH or LIBRARY_PATH info for a package"))
+    <> command "ld-path" (info (LdLibPath <$> some package) (progDesc "Dump LD_LIBRARY_PATH or LIBRARY_PATH for a package"))
     )
 
 userCmd :: Parser Command
@@ -157,6 +159,7 @@ run (Dump (Compiler name) host) = runPkgM Normal $ printCompilerFlags name host
 run (Dump (PkgConfig name) host) = runPkgM Normal $ printPkgConfigPath name host
 run (Dump (IncludePath name) host) = runPkgM Normal $ printIncludePath name host
 run (Dump (LibPath name) host) = runPkgM Normal $ printLibPath name host
+run (Dump (LdLibPath names) host) = runPkgM Normal $ printLdLibPath names host
 run (DumpCabal names host) = runPkgM Normal $ printCabalFlags names host
 run Nuke = do
     pkgDir <- globalPkgDir
