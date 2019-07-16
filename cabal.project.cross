@@ -5,12 +5,6 @@ constraints: dhall +cross
            , libarchive +cross
            , libarchive >= 1.0.5.1
 
-source-repository-package   
-  type: git
-  location: https://github.com/quchen/prettyprinter.git
-  tag: 3684534591c87f06e400a1e55c50d0d469ac2552
-  subdir: prettyprinter
-
 source-repository-package
   type: git
   tag: 2cb1e838620dbcedaa5e1d461c6c67dd56d6343d
