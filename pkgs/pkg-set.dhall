@@ -3274,7 +3274,7 @@ let phash =
   λ(v : List Natural) →
     prelude.simplePackage { name = "pHash", version = v } ⫽
       { pkgUrl = "http://phash.org/releases/pHash-${prelude.showVersion v}.tar.gz"
-      , pkgDeps = [ prelude.unbounded "CImg"
+      , pkgDeps = [ prelude.lowerBound { name = "CImg", lower = [1,3] }
                   , prelude.unbounded "ffmpeg"
                   , prelude.unbounded "libsndfile"
                   , prelude.unbounded "libsamplerate"
