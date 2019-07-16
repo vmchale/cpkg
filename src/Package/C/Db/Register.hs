@@ -50,8 +50,8 @@ printCompilerFlags = printFlagsWith buildCfgToCFlags
 printLinkerFlags :: (MonadIO m, MonadDb m) => String -> Maybe Platform -> m ()
 printLinkerFlags = printFlagsWith buildCfgToLinkerFlags
 
-printPkgConfigPath :: (MonadIO m, MonadDb m) => String -> Maybe Platform -> m ()
-printPkgConfigPath = printFlagsWith buildCfgToPkgConfigPath
+printPkgConfigPath :: (MonadIO m, MonadDb m) => [String] -> Maybe Platform -> m ()
+printPkgConfigPath = printMany (liftIO . putStrLn <=< (fmap (intercalate ":") . traverse buildCfgToPkgConfigPath))
 
 printIncludePath :: (MonadIO m, MonadDb m) => String -> Maybe Platform -> m ()
 printIncludePath = printFlagsWith buildCfgToIncludePath

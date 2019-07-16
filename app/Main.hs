@@ -14,7 +14,7 @@ cpkgVersion = P.version
 
 data DumpTarget = Linker { _pkgGet :: String }
                 | Compiler { _pkgGet :: String }
-                | PkgConfig { _pkgGet :: String }
+                | PkgConfig { _pkgGets :: [String] }
                 | IncludePath { _pkgGet :: String }
                 | LibPath { _pkgGet :: String }
                 | LdLibPath { _pkgGets :: [String] }
@@ -54,7 +54,7 @@ dumpTarget :: Parser DumpTarget
 dumpTarget = hsubparser
     (command "linker" (info (Linker <$> package) (progDesc "Dump linker flags for a package"))
     <> command "compiler" (info (Compiler <$> package) (progDesc "Dump compiler flags for a package"))
-    <> command "pkg-config" (info (PkgConfig <$> package) (progDesc "Dump pkg-config path for a package")) -- TODO: make pkg-config recursive or something?
+    <> command "pkg-config" (info (PkgConfig <$> some package) (progDesc "Dump pkg-config path for a package")) -- TODO: make pkg-config recursive or something?
     <> command "include" (info (IncludePath <$> package) (progDesc "Dump C_INCLUDE_PATH for a package"))
     <> command "library" (info (LibPath <$> package) (progDesc "Dump LD_LIBRARY_PATH or LIBRARY_PATH info for a package"))
     <> command "ld-path" (info (LdLibPath <$> some package) (progDesc "Dump LD_LIBRARY_PATH or LIBRARY_PATH for a package"))
@@ -156,7 +156,7 @@ run (Check file' v) = void $ getCPkg v file'
 run (CheckSet file' v) = void $ getPkgs v file'
 run (Dump (Linker name) host) = runPkgM Normal $ printLinkerFlags name host
 run (Dump (Compiler name) host) = runPkgM Normal $ printCompilerFlags name host
-run (Dump (PkgConfig name) host) = runPkgM Normal $ printPkgConfigPath name host
+run (Dump (PkgConfig names) host) = runPkgM Normal $ printPkgConfigPath names host
 run (Dump (IncludePath name) host) = runPkgM Normal $ printIncludePath name host
 run (Dump (LibPath name) host) = runPkgM Normal $ printLibPath name host
 run (Dump (LdLibPath names) host) = runPkgM Normal $ printLdLibPath names host
