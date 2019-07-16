@@ -2179,6 +2179,7 @@ let gtk3 =
                   , prelude.lowerBound { name = "libepoxy", lower = [1,4] }
                   , prelude.unbounded "libXi"
                   ]
+      , pkgBuildDeps = [ prelude.unbounded "binutils" ]
       }
 in
 
