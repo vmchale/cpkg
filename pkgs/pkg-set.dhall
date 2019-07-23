@@ -3573,6 +3573,7 @@ let r =
       }
 in
 
+-- http://www.linuxfromscratch.org/lfs/view/development/chapter06/findutils.html
 -- TODO: musl-ghc?
 -- https://hub.darcs.net/raichoo/hikari
 -- https://versaweb.dl.sourceforge.net/project/schilytools/schily-2019-03-29.tar.bz2
@@ -3586,7 +3587,7 @@ in
 , at-spi-core { version = [2,33], patch = 2 }
 , atk { version = [2,33], patch = 3 }
 , babl { version = [0,1], patch = 60 }
-, binutils [2,31]
+, binutils [2,32]
 , bison [3,3,1]
 , blas [3,8,0]
 , bzip2 [1,0,6]
