@@ -1,7 +1,7 @@
 ---
 - functions:
   - {name: unsafePerformIO, within: []}
-  - {name: undefined, within: []}
+  - {name: undefined, within: [Package.C.Db.Register]}
   - {name: fromJust, within: []}
   - {name: foldl, within: []}
   - {name: traceShowId, within: []}
@@ -11,22 +11,12 @@
 - ignore: {name: "Avoid lambda using `infix`"}
 - ignore: {name: "Use section"}
 
-- error: {lhs: "hylo embed", rhs: "ana", name: "Use anamorphism"}
-- error: {lhs: "hylo f project", rhs: "cata f", name: "Use catamorphism"}
-- error: {lhs: "hyloM (pure . embed)", rhs: "anaM", name: "Use monadic anamorphism"}
-- error: {lhs: "hyloM f (pure . project)", rhs: "cataM f", name: "Use monadic catamorphism"}
-- error: {lhs: "concatMap", rhs: "(=<<)", name: "Generalize concatMap"}
 - error: {lhs: "f *> pure ()", rhs: "void f", name: "Use void"}
 - error: {lhs: "over _1 f x", rhs: "first f x", name: "Use arrows"}
 - error: {lhs: "over _2 f x", rhs: "second f x", name: "Use arrows"}
 - error: {lhs: "bool x x p", rhs: "x", name: "Redundant bool"}
-- error: {lhs: "const f", rhs: "pure f", name: "Generalize const"}
 - error: {lhs: "maybe mempty", rhs: "foldMap", name: "Use foldMap"}
-- error: {lhs: "mconcat", rhs: "fold", name: "Generalize mconcat"}
-- error: {lhs: "sequence", rhs: "sequenceA", name: "Generalize sequence"}
-- error: {lhs: "sequence_", rhs: "sequenceA_", name: "Generalize sequence_"}
 - error: {lhs: "if p then x else pure ()", rhs: "when p x"}
-- error: {lhs: "(>>)", rhs: "(*>)", name: "Generalize >>"}
 - error: {lhs: "fmap (pure ())", rhs: "void", name: "Use void"}
 
 - fixity: infixr 3 ***
