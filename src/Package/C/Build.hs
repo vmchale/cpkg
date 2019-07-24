@@ -117,12 +117,13 @@ buildCPkg :: CPkg
           -> Maybe TargetTriple
           -> Bool -- ^ Should we build static libraries?
           -> Bool -- ^ Should we install globally?
+          -> Bool -- ^ Was this package installed manually?
           -> [FilePath] -- ^ Shared data directories
           -> [FilePath] -- ^ Library directories
           -> [FilePath] -- ^ Include directories
           -> [FilePath] -- ^ Directories to add to @PATH@
           -> PkgM ()
-buildCPkg cpkg host sta glob shr libs incls bins = do
+buildCPkg cpkg host sta glob usr shr libs incls bins = do
 
     buildVars <- getVars host sta shr libs incls bins
 
@@ -133,7 +134,7 @@ buildCPkg cpkg host sta glob shr libs incls bins = do
         putDiagnostic ("Package " ++ pkgName cpkg ++ " already installed, skipping.")
 
     unless installed $
-        forceBuildCPkg cpkg host glob buildVars
+        forceBuildCPkg cpkg host glob usr buildVars
 
 getPreloads :: [ FilePath ] -> IO [ FilePath ]
 getPreloads =
@@ -170,9 +171,10 @@ getSubdirsWrap fp = do
 forceBuildCPkg :: CPkg
                -> Maybe TargetTriple
                -> Bool
+               -> Bool -- ^ Manually installed?
                -> BuildVars
                -> PkgM ()
-forceBuildCPkg cpkg host glob buildVars = do
+forceBuildCPkg cpkg host glob usr buildVars = do
 
     pkgDir <- cPkgToDir cpkg host glob buildVars
 
@@ -202,4 +204,4 @@ forceBuildCPkg cpkg host glob buildVars = do
 
         installInDir cpkg buildConfigured p' pkgDir
 
-        registerPkg cpkg host glob buildVars -- not configured
+        registerPkg cpkg host glob usr buildVars -- not configured

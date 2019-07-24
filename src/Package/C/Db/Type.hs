@@ -32,4 +32,5 @@ data BuildCfg = BuildCfg { buildName       :: String
                          , configureCmds   :: [ Command ]
                          , buildCmds       :: [ Command ]
                          , installCmds     :: [ Command ]
+                         , manual          :: Bool -- ^ Was this package manually installed?
                          } deriving (Eq, Ord, Generic, Binary, Hashable)

@@ -45,20 +45,20 @@ packageSetDhallToPackageSet (PackageSetDhall pkgs'') =
 
         in PackageSet $ M.fromList (zip names pkgs')
 
-getDeps :: PackId -> PackageSet -> Maybe (DepTree PackId)
-getDeps pkgName' set@(PackageSet ps) = do
+getDeps :: PackId -> Bool -> PackageSet -> Maybe (DepTree PackId)
+getDeps pkgName' usr set@(PackageSet ps) = do
     cpkg <- M.lookup pkgName' ps
     let depNames = name <$> pkgDeps cpkg
         bldDepNames = name <$> pkgBuildDeps cpkg
         ds = nubOrd depNames
         bds = nubOrd bldDepNames
-    nextDeps <- traverse (\p -> getDeps p set) ds
-    nextBldDeps <- traverse (\p -> asBldDep <$> getDeps p set) bds
-    pure $ DepNode pkgName' (nextDeps ++ nextBldDeps)
+    nextDeps <- traverse (\p -> getDeps p False set) ds
+    nextBldDeps <- traverse (\p -> asBldDep <$> getDeps p False set) bds
+    pure $ DepNode pkgName' usr (nextDeps ++ nextBldDeps)
 
 -- TODO: use dfsForest but check for cycles
 pkgPlan :: PackId -> PackageSet -> Maybe (DepTree PackId)
-pkgPlan = getDeps
+pkgPlan pkId = getDeps pkId False
 
 pkgs :: PackId -> PackageSet -> Maybe (DepTree CPkg)
 pkgs pkId set@(PackageSet pset) = do

@@ -30,6 +30,7 @@ module CPkgPrelude ( -- * Base reëxports
                    , (</>)
                    -- * Exports from "System.Directory"
                    , doesFileExist
+                   , removeDirectoryRecursive
                    , getAppUserDataDirectory
                    ) where
 
