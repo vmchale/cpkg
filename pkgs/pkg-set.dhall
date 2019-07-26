@@ -644,7 +644,11 @@ in
 let patch =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "patch", version = v } ⫽
-      { pkgBuildDeps = [] : List types.Dep }
+      { installCommand =
+          λ(cfg : types.BuildVars) →
+            prelude.installWithBinaries [ "bin/patch" ] cfg
+              # prelude.symlinkManpages [ { file = "share/man/man1/patch.1", section = 1 } ]
+      }
 in
 
 let m4 =
