@@ -58,7 +58,7 @@ getDeps pkgName' usr set@(PackageSet ps) = do
 
 -- TODO: use dfsForest but check for cycles
 pkgPlan :: PackId -> PackageSet -> Maybe (DepTree PackId)
-pkgPlan pkId = getDeps pkId False
+pkgPlan pkId = getDeps pkId True -- manually installed
 
 pkgs :: PackId -> PackageSet -> Maybe (DepTree CPkg)
 pkgs pkId set@(PackageSet pset) = do

@@ -101,6 +101,7 @@ buildWithContext cTree host sta glob = zygoM' dirAlg buildAlg cTree
             mkBuildDirs pkgDir bldDirs
 
 -- TODO: should this parse a string into a TargetTriple instead?
+-- | Manually install a package
 buildByName :: PackId -> Maybe TargetTriple -> Maybe String -> Bool -> Bool -> PkgM ()
 buildByName pkId host pkSet sta glob = do
     allPkgs <- liftIO (pkgsM pkId pkSet)

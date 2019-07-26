@@ -34,8 +34,10 @@ garbageCollectPkgs :: (MonadIO m, MonadDb m, MonadReader Verbosity m)
 garbageCollectPkgs = do
     allPkgs <- installedDb
     let manuals = (toList . S.filter manual) allPkgs
+    putDiagnostic ("Manually installed packages: " ++ show (buildName <$> manuals))
     allDeps <- S.unions <$> traverse getTransitiveDeps manuals
     let redundant = allPkgs S.\\ allDeps
+    putDiagnostic ("Redundant packages: " ++ show (buildName <$> toList redundant))
     traverse_ uninstallPkg redundant
 
 getTransitiveDeps :: (MonadIO m, MonadDb m) => BuildCfg -> m (S.Set BuildCfg)
@@ -57,13 +59,15 @@ cleanSymlinks :: (MonadReader Verbosity m, MonadIO m) => m ()
 cleanSymlinks = do
     pkDir <- liftIO globalPkgDir
     let binDir = pkDir </> "bin"
-    bins <- liftIO $ listDirectory binDir
-    forM_ bins $ \bin -> do
-        let binAbs = binDir </> bin
-        brk <- liftIO $ isBroken binAbs
-        when brk $
-            putDiagnostic ("Removing link " ++ binAbs ++ "...") *>
-            liftIO (removeFile binAbs)
+    exists <- liftIO $ doesDirectoryExist binDir
+    when exists $ do
+        bins <- liftIO $ listDirectory binDir
+        forM_ bins $ \bin -> do
+            let binAbs = binDir </> bin
+            brk <- liftIO $ isBroken binAbs
+            when brk $
+                putDiagnostic ("Removing link " ++ binAbs ++ "...") *>
+                liftIO (removeFile binAbs)
 
 isBroken :: FilePath -> IO Bool
 isBroken = doesFileExist <=< getSymbolicLinkTarget
