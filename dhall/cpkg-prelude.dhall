@@ -555,7 +555,6 @@ let simplePackage =
       { pkgName = pkg.name
       , pkgVersion = pkg.version
       , pkgSubdir = "${pkg.name}-${showVersion pkg.version}"
-      , pkgBuildDeps = [ unbounded "make" ]
       }
 in
 
@@ -1116,9 +1115,9 @@ in
 let installPrefix =
   λ(cfg : types.BuildVars) →
       [ call (defaultCall ⫽ { program = "make"
-                             , arguments = [ "prefix=${cfg.installDir}", "PREFIX=${cfg.installDir}", "install" ]
-                             , environment = Some (buildEnv cfg)
-                             })
+                            , arguments = [ "prefix=${cfg.installDir}", "PREFIX=${cfg.installDir}", "install" ]
+                            , environment = Some (buildEnv cfg)
+                            })
       ]
 in
 
