@@ -10,6 +10,8 @@
 
 - ignore: {name: "Avoid lambda using `infix`"}
 - ignore: {name: "Use section"}
+- ignore: {name: "Redundant lambda"}
+- ignore: {name: "Replace case with fromMaybe"}
 
 - error: {lhs: "f *> pure ()", rhs: "void f", name: "Use void"}
 - error: {lhs: "over _1 f x", rhs: "first f x", name: "Use arrows"}
