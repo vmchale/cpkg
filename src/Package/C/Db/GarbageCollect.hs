@@ -59,7 +59,7 @@ cleanSymlinks :: (MonadReader Verbosity m, MonadIO m) => m ()
 cleanSymlinks = do
     pkDir <- liftIO globalPkgDir
     let binDir = pkDir </> "bin"
-        manDir = pkgDir </> "share" </> "man"
+        manDir = pkDir </> "share" </> "man"
         man1Dir = manDir </> "man1"
         man3Dir = manDir </> "man3"
     traverse_ cleanDir
