@@ -15,7 +15,7 @@ import           Package.C.Db.Register
 import           Package.C.Db.Type
 import           Package.C.Logging     (putDiagnostic)
 import           Package.C.Type        (TargetTriple, Verbosity)
-import           System.Directory      (doesFileExist, getSymbolicLinkTarget, listDirectory, removeDirectoryRecursive, removeFile)
+import           System.Directory      (doesDirectoryExist, doesFileExist, getSymbolicLinkTarget, listDirectory, removeDirectoryRecursive, removeFile)
 import           System.FilePath       ((</>))
 
 getTransitiveDepsByName :: (MonadIO m, MonadDb m) => String -> Maybe TargetTriple -> m (S.Set BuildCfg)
@@ -46,10 +46,12 @@ getTransitiveDeps cfg = do
     pure $ S.insert cfg (S.unions next)
 
 -- | @since 0.2.3.0
-cleanCache :: (MonadReader Verbosity m, MonadIO m) => m ()
-cleanCache = do
+cleanCache :: MonadIO m => m ()
+cleanCache = liftIO $ do
     ccDir <- (</> "cache") <$> globalPkgDir
-    liftIO $ removeDirectoryRecursive ccDir
+    exists <- doesDirectoryExist ccDir
+    when exists $
+        removeDirectoryRecursive ccDir
 
 cleanSymlinks :: (MonadReader Verbosity m, MonadIO m) => m ()
 cleanSymlinks = do

@@ -27,6 +27,7 @@ data Command = Install { _pkgName :: String, _verbosity :: Verbosity, _target ::
              | DumpCabal { _pkgGetsCabal :: [String], _host :: Maybe Platform }
              | List { _packageSet :: Maybe String }
              | Nuke
+             | NukeCache
              | GarbageCollect { _verbosity :: Verbosity }
 
 verbosityInt :: Parser Int
@@ -72,6 +73,7 @@ userCmd = hsubparser
     <> command "dump-cabal" (info dumpCabal (progDesc "Display flags to use with cabal new-build"))
     <> command "list" (info list (progDesc "List all available packages"))
     <> command "nuke" (info (pure Nuke) (progDesc "Remove all globally installed libraries"))
+    <> command "nuke-cache" (info (pure NukeCache) (progDesc "Remove cached soure tarballs"))
     <> command "garbage-collect" (info garbageCollect' (progDesc "Garbage collect redundant packages"))
     )
 
@@ -184,6 +186,7 @@ run Nuke = do
     exists <- doesDirectoryExist pkgDir
     when exists $
         removeDirectoryRecursive pkgDir
+run NukeCache = cleanCache
 run (List pkSet) = displayPackageSet pkSet
 run (GarbageCollect v) = runPkgM v garbageCollect
 
