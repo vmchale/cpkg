@@ -21,7 +21,7 @@ data BuildDirs = BuildDirs { libraries :: [FilePath]
 
 getAll :: [BuildDirs] -> BuildDirs
 getAll bds =
-    let go f = fold (f <$> bds)
+    let go f = concat (f <$> bds)
     in BuildDirs (go libraries) (go share) (go include) (go binaries)
 
 -- in order to prevent the "vanilla" libffi from preceding the *cross* libffi,

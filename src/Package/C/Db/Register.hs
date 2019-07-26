@@ -213,8 +213,10 @@ pkgToBuildCfg :: CPkg
               -> Bool -- ^ Was this package manually installed?
               -> BuildVars
               -> BuildCfg
-pkgToBuildCfg (CPkg n v _ _ _ _ _ cCmd bCmd iCmd) host glob usr bVar =
-    BuildCfg n v mempty mempty host glob (cCmd bVar) (bCmd bVar) (iCmd bVar) usr -- TODO: fix pinned build deps &c.
+pkgToBuildCfg (CPkg n v _ _ _ bds ds cCmd bCmd iCmd) host glob usr bVar =
+    BuildCfg n v (go <$> bds) (go <$> ds) host glob (cCmd bVar) (bCmd bVar) (iCmd bVar) usr -- TODO: fix pinned build deps &c.
+    where placeholderVersion = Version [0,1,0,0]
+          go (Dep n' _) = (n', placeholderVersion)
 
 platformString :: Maybe TargetTriple -> (FilePath -> FilePath -> FilePath)
 platformString Nothing  = (</>)
