@@ -6,6 +6,9 @@
 module Package.C.Db.Register ( registerPkg
                              , unregisterPkg
                              , uninstallPkg
+                             , uninstallPkgByName
+                             , getTransitiveDepsByName
+                             , garbageCollect
                              , cPkgToDir
                              , globalPkgDir
                              , printCompilerFlags
@@ -29,6 +32,7 @@ import qualified Data.ByteString.Lazy as BSL
 import           Data.Hashable        (Hashable (..))
 import           Data.List            (intercalate)
 import qualified Data.Set             as S
+import qualified Data.Text            as T
 import           Numeric              (showHex)
 import           Package.C.Db.Memory
 import           Package.C.Db.Monad
@@ -113,6 +117,16 @@ buildCfgToLibPath = fmap (</> "lib") . buildCfgToDir
 buildCfgToIncludePath :: MonadIO m => BuildCfg -> m String
 buildCfgToIncludePath = fmap (</> "include") . buildCfgToDir
 
+installedDb :: (MonadIO m, MonadDb m)
+                  => m (S.Set BuildCfg)
+installedDb =
+    _installedPackages <$> memIndex
+
+-- garbageCollect :: (MonadIO m, MonadDb m)
+               -- => m (S.Set BuildCfg)
+-- garbageCollect = do
+    -- userPackages <- (S.filter manual) <$> installedDb
+
 packageInstalled :: (MonadIO m, MonadDb m)
                  => CPkg
                  -> Maybe TargetTriple
@@ -121,8 +135,7 @@ packageInstalled :: (MonadIO m, MonadDb m)
                  -> m Bool
 packageInstalled pkg host glob b = do
 
-    indexContents <- memIndex
-    let packs = _installedPackages indexContents
+    packs <- installedDb
 
     pure $
            (pkgToBuildCfg pkg host glob True b `S.member` packs)
@@ -131,38 +144,66 @@ packageInstalled pkg host glob b = do
 lookupPackage :: (MonadIO m, MonadDb m) => String -> Maybe TargetTriple -> m (Maybe BuildCfg)
 lookupPackage name host = do
 
-    indexContents <- memIndex
+    packs <- installedDb
 
-    let matches = S.filter (\pkg -> buildName pkg == name && targetArch pkg == host) (_installedPackages indexContents)
+    let matches = S.filter (\pkg -> buildName pkg == name && targetArch pkg == host) packs
 
     pure (S.lookupMax matches)
 
+-- TODO: garbage collect old packages as well, and things which are broken b/c
+-- their dependencies are gone...
+garbageCollect :: (MonadIO m, MonadDb m, MonadReader Verbosity m)
+               => m ()
+garbageCollect = do
+    allPkgs <- installedDb
+    let manuals = (toList . S.filter manual) allPkgs
+    allDeps <- S.unions <$> traverse getTransitiveDeps manuals
+    let redundant = allPkgs S.\\ allDeps
+    traverse_ uninstallPkg redundant
+
+getTransitiveDeps :: (MonadIO m, MonadDb m) => BuildCfg -> m (S.Set BuildCfg)
+getTransitiveDeps cfg = do
+    let names = fst <$> pinnedDeps cfg
+        host = targetArch cfg
+    next <- traverse (\n -> getTransitiveDepsByName n host) (T.unpack <$> names)
+    pure $ S.insert cfg (S.unions next)
+
+lookupOrFail :: (MonadIO m, MonadDb m) => String -> Maybe TargetTriple -> m BuildCfg
+lookupOrFail name host = do
+    pk <- lookupPackage name host
+    case pk of
+        Just cfg -> pure cfg
+        Nothing  -> notInstalled name
+
+getTransitiveDepsByName :: (MonadIO m, MonadDb m) => String -> Maybe TargetTriple -> m (S.Set BuildCfg)
+getTransitiveDepsByName = getTransitiveDeps <=*< lookupOrFail
+
+uninstallPkgByName :: (MonadReader Verbosity m, MonadIO m, MonadDb m)
+                   => String
+                   -> Maybe TargetTriple
+                   -> m ()
+uninstallPkgByName name host =
+    uninstallPkg =<< lookupOrFail name host
+
 uninstallPkg :: (MonadIO m, MonadDb m, MonadReader Verbosity m)
-             => CPkg
-             -> Maybe TargetTriple
-             -> Bool
-             -> BuildVars
+             => BuildCfg
              -> m ()
-uninstallPkg cpkg host glob b = do
-    unregisterPkg cpkg host glob b
+uninstallPkg cpkg = do
+    unregisterPkg cpkg
     (liftIO . removeDirectoryRecursive)
-        =<< cPkgToDir cpkg host glob b
+        =<< buildCfgToDir cpkg
 
 unregisterPkg :: (MonadIO m, MonadDb m, MonadReader Verbosity m)
-              => CPkg
-              -> Maybe TargetTriple
-              -> Bool -- ^ Globally installed?
-              -> BuildVars
+              => BuildCfg
               -> m ()
-unregisterPkg cpkg host glob b = do
+unregisterPkg buildCfg = do
 
-    putDiagnostic ("Unregistering packag " ++ pkgName cpkg ++ "...")
+    putDiagnostic ("Unregistering package " ++ buildName buildCfg ++ "...")
 
     indexFile <- pkgIndex
     indexContents <- memIndex
 
-    let buildCfg = \usr -> pkgToBuildCfg cpkg host glob usr b
-        modIndex = over installedPackages (S.delete (buildCfg False) . S.delete (buildCfg True))
+    let modIndex = over installedPackages (S.delete buildCfg)
         newIndex = modIndex indexContents
 
     modify modIndex

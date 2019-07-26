@@ -10,6 +10,7 @@ module CPkgPrelude ( -- * Base reëxports
                    , filterM
                    , ($>)
                    , (<=<)
+                   , (<=*<)
                    , MonadIO (..)
                    , Void
                    -- * Dhall reëxports
@@ -34,6 +35,7 @@ module CPkgPrelude ( -- * Base reëxports
                    , getAppUserDataDirectory
                    ) where
 
+import           Control.Composition       ((<=*<))
 import           Control.Monad
 import           Control.Monad.IO.Class    (MonadIO (..))
 import           Data.Binary               (Binary)

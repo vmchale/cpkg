@@ -29,6 +29,8 @@ module Package.C (
                  , printLdLibPath
                  , printCabalFlags
                  , buildByName
+                 , uninstallPkgByName
+                 , garbageCollect
                  -- * Dhall functionality
                  , cPkgDhallToCPkg
                  , getCPkg
