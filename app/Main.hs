@@ -90,7 +90,8 @@ uninstall :: Parser Command
 uninstall = Uninstall
     <$> argument str
         (metavar "PACKAGE"
-        <> help "Name of package to uninstall")
+        <> help "Name of package to uninstall"
+        <> completer (listIOCompleter allPackages))
     <*> verbosity
     <*> target
 
