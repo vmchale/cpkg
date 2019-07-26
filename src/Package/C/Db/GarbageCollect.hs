@@ -59,17 +59,26 @@ cleanSymlinks :: (MonadReader Verbosity m, MonadIO m) => m ()
 cleanSymlinks = do
     pkDir <- liftIO globalPkgDir
     let binDir = pkDir </> "bin"
-    exists <- liftIO $ doesDirectoryExist binDir
+        manDir = pkgDir </> "share" </> "man"
+        man1Dir = manDir </> "man1"
+        man3Dir = manDir </> "man3"
+    traverse_ cleanDir
+        [binDir, man1Dir, man3Dir]
+
+
+cleanDir :: (MonadReader Verbosity m, MonadIO m) => FilePath -> m ()
+cleanDir dir = do
+    exists <- liftIO $ doesDirectoryExist dir
     when exists $ do
-        bins <- liftIO $ listDirectory binDir
-        forM_ bins $ \bin -> do
-            let binAbs = binDir </> bin
-            brk <- liftIO $ isBroken binAbs
+        links <- liftIO $ listDirectory dir
+        forM_ links $ \link -> do
+            let linkAbs = dir </> link
+            brk <- liftIO $ isBroken linkAbs
             when brk $
-                putDiagnostic ("Removing link " ++ binAbs ++ "...") *>
-                liftIO (removeFile binAbs)
+                putDiagnostic ("Removing link " ++ linkAbs ++ "...") *>
+                liftIO (removeFile linkAbs)
 
 isBroken :: FilePath -> IO Bool
-isBroken = doesFileExist <=< getSymbolicLinkTarget
+isBroken = (fmap not . doesFileExist) <=< getSymbolicLinkTarget
 
 -- getSymbolicLinkTarget
