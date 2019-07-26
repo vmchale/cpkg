@@ -1,5 +1,10 @@
 # cpkg
 
+## 0.2.3.0
+
+  * Add `garbage-collect` subcommand
+  * Add `uninstall` subcommand
+
 ## 0.2.2.0
 
   * Add `printLdLibFlags` function and add functionality to CLI interface

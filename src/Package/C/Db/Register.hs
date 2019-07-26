@@ -151,7 +151,11 @@ lookupPackage name host = do
     pure (S.lookupMax matches)
 
 -- TODO: garbage collect old packages as well, and things which are broken b/c
--- their dependencies are gone...
+-- their dependencies are gone
+--
+-- also remove cached artifacts
+--
+-- | @since 0.2.3.0
 garbageCollect :: (MonadIO m, MonadDb m, MonadReader Verbosity m)
                => m ()
 garbageCollect = do
@@ -178,6 +182,7 @@ lookupOrFail name host = do
 getTransitiveDepsByName :: (MonadIO m, MonadDb m) => String -> Maybe TargetTriple -> m (S.Set BuildCfg)
 getTransitiveDepsByName = getTransitiveDeps <=*< lookupOrFail
 
+-- | @since 0.2.3.0
 uninstallPkgByName :: (MonadReader Verbosity m, MonadIO m, MonadDb m)
                    => String
                    -> Maybe TargetTriple
