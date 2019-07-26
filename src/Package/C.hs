@@ -31,6 +31,7 @@ module Package.C (
                  , buildByName
                  , uninstallPkgByName
                  , garbageCollect
+                 , cleanCache
                  -- * Dhall functionality
                  , cPkgDhallToCPkg
                  , getCPkg
@@ -46,6 +47,7 @@ module Package.C (
 
 import           Package.C.Build
 import           Package.C.Build.Tree
+import           Package.C.Db.GarbageCollect
 import           Package.C.Db.Monad
 import           Package.C.Db.Register
 import           Package.C.Db.Type

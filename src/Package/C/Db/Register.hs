@@ -7,8 +7,8 @@ module Package.C.Db.Register ( registerPkg
                              , unregisterPkg
                              , uninstallPkg
                              , uninstallPkgByName
-                             , getTransitiveDepsByName
-                             , garbageCollect
+                             , installedDb
+                             , lookupOrFail
                              , cPkgToDir
                              , globalPkgDir
                              , printCompilerFlags
@@ -32,7 +32,6 @@ import qualified Data.ByteString.Lazy as BSL
 import           Data.Hashable        (Hashable (..))
 import           Data.List            (intercalate)
 import qualified Data.Set             as S
-import qualified Data.Text            as T
 import           Numeric              (showHex)
 import           Package.C.Db.Memory
 import           Package.C.Db.Monad
@@ -122,11 +121,6 @@ installedDb :: (MonadIO m, MonadDb m)
 installedDb =
     _installedPackages <$> memIndex
 
--- garbageCollect :: (MonadIO m, MonadDb m)
-               -- => m (S.Set BuildCfg)
--- garbageCollect = do
-    -- userPackages <- (S.filter manual) <$> installedDb
-
 packageInstalled :: (MonadIO m, MonadDb m)
                  => CPkg
                  -> Maybe TargetTriple
@@ -150,37 +144,12 @@ lookupPackage name host = do
 
     pure (S.lookupMax matches)
 
--- TODO: garbage collect old packages as well, and things which are broken b/c
--- their dependencies are gone
---
--- also remove cached artifacts
---
--- | @since 0.2.3.0
-garbageCollect :: (MonadIO m, MonadDb m, MonadReader Verbosity m)
-               => m ()
-garbageCollect = do
-    allPkgs <- installedDb
-    let manuals = (toList . S.filter manual) allPkgs
-    allDeps <- S.unions <$> traverse getTransitiveDeps manuals
-    let redundant = allPkgs S.\\ allDeps
-    traverse_ uninstallPkg redundant
-
-getTransitiveDeps :: (MonadIO m, MonadDb m) => BuildCfg -> m (S.Set BuildCfg)
-getTransitiveDeps cfg = do
-    let names = fst <$> pinnedDeps cfg
-        host = targetArch cfg
-    next <- traverse (\n -> getTransitiveDepsByName n host) (T.unpack <$> names)
-    pure $ S.insert cfg (S.unions next)
-
 lookupOrFail :: (MonadIO m, MonadDb m) => String -> Maybe TargetTriple -> m BuildCfg
 lookupOrFail name host = do
     pk <- lookupPackage name host
     case pk of
         Just cfg -> pure cfg
         Nothing  -> notInstalled name
-
-getTransitiveDepsByName :: (MonadIO m, MonadDb m) => String -> Maybe TargetTriple -> m (S.Set BuildCfg)
-getTransitiveDepsByName = getTransitiveDeps <=*< lookupOrFail
 
 -- | @since 0.2.3.0
 uninstallPkgByName :: (MonadReader Verbosity m, MonadIO m, MonadDb m)

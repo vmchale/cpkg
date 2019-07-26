@@ -8,6 +8,7 @@ module CPkgPrelude ( -- * Base reëxports
                    , fold
                    , toList
                    , filterM
+                   , forM_
                    , ($>)
                    , (<=<)
                    , (<=*<)

@@ -58,6 +58,7 @@ library
         Package.C.Db.Register
         Package.C.Db.Monad
         Package.C.Db.Memory
+        Package.C.Db.GarbageCollect
         Package.C.PackageSet
         Package.C.Logging
         System.Process.Ext
