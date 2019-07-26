@@ -172,7 +172,7 @@ unregisterPkg :: (MonadIO m, MonadDb m, MonadReader Verbosity m)
               -> m ()
 unregisterPkg buildCfg = do
 
-    putDiagnostic ("Unregistering package " ++ buildName buildCfg ++ "...")
+    putLoud ("Unregistering package " ++ buildName buildCfg ++ "...")
 
     indexFile <- pkgIndex
     indexContents <- memIndex
