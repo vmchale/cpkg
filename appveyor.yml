@@ -5,6 +5,7 @@ build: off
 before_test:
   - choco install ghc
   - choco install cabal
+  - choco install pkgconfiglite
 
 test_script:
   - refreshenv
