@@ -2402,6 +2402,7 @@ let m17n =
         λ(cfg : types.BuildVars) →
           [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS }) ]
       , pkgDeps = [ prelude.unbounded "libXt" ]
+      , pkgBuildDeps = [ prelude.unbounded "binutils" ]
       }
 in
 
