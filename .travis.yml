@@ -1,5 +1,5 @@
 ---
-sudo: false
+sudo: true
 language: c
 cache:
   directories:
