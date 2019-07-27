@@ -21,7 +21,7 @@ data BuildDirs = BuildDirs { libraries :: [FilePath]
 
 getAll :: [BuildDirs] -> BuildDirs
 getAll bds =
-    let go f = fold (f <$> bds)
+    let go f = concat (f <$> bds)
     in BuildDirs (go libraries) (go share) (go include) (go binaries)
 
 -- in order to prevent the "vanilla" libffi from preceding the *cross* libffi,
@@ -51,12 +51,13 @@ buildWithContext :: DepTree CPkg
 buildWithContext cTree host sta glob = zygoM' dirAlg buildAlg cTree
 
     where buildAlg :: DepTreeF CPkg (BuildDirs, ()) -> PkgM ()
-          buildAlg (DepNodeF c preBds) =
-            buildCPkg c host sta glob ds (immoralFilter host ls) is (filterCross host bs)
+          buildAlg (DepNodeF c usr preBds) =
+            buildCPkg c host sta glob usr ds (immoralFilter host ls) is (filterCross host bs)
                 where (BuildDirs ls ds is bs) = getAll (fst <$> preBds)
           buildAlg (BldDepNodeF c preBds) =
-            buildCPkg c Nothing False False ds ls is bs -- don't use static libraries for build dependencies
-            -- also don't install them globally for obvious reasons
+            buildCPkg c Nothing False False False ds ls is bs -- don't use static libraries for build dependencies
+            -- also don't install them globally
+            -- build dependencies are not manual!
                 where (BuildDirs ls ds is bs) = getAll (fst <$> preBds)
 
           mkBuildDirs :: MonadIO m => FilePath -> BuildDirs -> m BuildDirs
@@ -79,7 +80,7 @@ buildWithContext cTree host sta glob = zygoM' dirAlg buildAlg cTree
             pure (BuildDirs (nubOrd links) (nubOrd shares) (nubOrd includes) (nubOrd bins))
 
           dirAlg :: DepTreeF CPkg BuildDirs -> PkgM BuildDirs
-          dirAlg (DepNodeF c bds) = do
+          dirAlg (DepNodeF c _ bds) = do
 
             let bldDirs@(BuildDirs ls ds is bs) = getAll bds
 
@@ -100,6 +101,7 @@ buildWithContext cTree host sta glob = zygoM' dirAlg buildAlg cTree
             mkBuildDirs pkgDir bldDirs
 
 -- TODO: should this parse a string into a TargetTriple instead?
+-- | Manually install a package
 buildByName :: PackId -> Maybe TargetTriple -> Maybe String -> Bool -> Bool -> PkgM ()
 buildByName pkId host pkSet sta glob = do
     allPkgs <- liftIO (pkgsM pkId pkSet)

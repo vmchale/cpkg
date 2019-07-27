@@ -127,7 +127,6 @@ let cmake =
                 , prelude.copyFile wrapped wrapped
                 , prelude.symlinkBinary wrapped
                 ]
-      , pkgBuildDeps = [ prelude.unbounded "make" ]
       }
 in
 
@@ -258,7 +257,6 @@ let glibc =
       , pkgBuildDeps = [ prelude.unbounded "bison"
                        , prelude.unbounded "gawk"
                        , prelude.unbounded "python3"
-                       , prelude.unbounded "make"
                        ]
       }
 in
@@ -355,7 +353,6 @@ let nasm =
       { pkgUrl = "http://www.nasm.us/pub/nasm/releasebuilds/${prelude.showVersion v}.02/nasm-${prelude.showVersion v}.02.tar.xz"
       , pkgSubdir = "nasm-${prelude.showVersion v}.02"
       , installCommand = prelude.installWithBinaries [ "bin/nasm", "bin/ndisasm" ]
-      , pkgBuildDeps = [ prelude.unbounded "make" ]
       }
 in
 
@@ -373,7 +370,6 @@ let ncurses =
 
           prelude.configureWithFlags ([ "--with-shared", "--enable-widec" ] # crossArgs) cfg
           -- enable-widec is necessary because util-linux uses libncursesw
-      , pkgBuildDeps = [ prelude.unbounded "make" ]
       }
 in
 
@@ -386,9 +382,7 @@ in
 let pcre =
   λ(v : List Natural) →
     prelude.simplePackage { name = "pcre", version = v } ⫽
-      { pkgUrl = "https://ftp.pcre.org/pub/pcre/pcre-${prelude.showVersion v}.tar.bz2"
-      , pkgBuildDeps = [ prelude.unbounded "make" ]
-      }
+      { pkgUrl = "https://ftp.pcre.org/pub/pcre/pcre-${prelude.showVersion v}.tar.bz2" }
 in
 
 let perl5 =
@@ -426,7 +420,6 @@ let libpng =
     prelude.simplePackage { name = "libpng", version = v } ⫽
       { pkgUrl = "https://download.sourceforge.net/libpng/libpng-${prelude.showVersion v}.tar.xz"
       , pkgDeps = [ prelude.unbounded "zlib" ]
-      , pkgBuildDeps = [ prelude.unbounded "make" ]
       }
 in
 
@@ -536,9 +529,7 @@ in
 let gettext =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "gettext", version = v } ⫽
-      { installCommand = prelude.installWithBinaries [ "bin/gettext", "bin/msgfmt", "bin/autopoint" ]
-      , pkgBuildDeps = [ prelude.unbounded "make" ]
-      }
+      { installCommand = prelude.installWithBinaries [ "bin/gettext", "bin/msgfmt", "bin/autopoint" ] }
 in
 
 let gzip =
@@ -653,7 +644,11 @@ in
 let patch =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "patch", version = v } ⫽
-      { pkgBuildDeps = [] : List types.Dep }
+      { installCommand =
+          λ(cfg : types.BuildVars) →
+            prelude.installWithBinaries [ "bin/patch" ] cfg
+              # prelude.symlinkManpages [ { file = "share/man/man1/patch.1", section = 1 } ]
+      }
 in
 
 let m4 =
@@ -665,9 +660,7 @@ let m4 =
               # prelude.defaultConfigure cfg
       , installCommand =
           prelude.installWithManpages [ { file = "share/man/man1/m4.1", section = 1 } ]
-      , pkgBuildDeps = [ prelude.unbounded "patch"
-                       , prelude.unbounded "make"
-                       ]
+      , pkgBuildDeps = [ prelude.unbounded "patch" ]
       }
 in
 
@@ -721,9 +714,7 @@ in
 let giflib =
   λ(v : List Natural) →
     prelude.simplePackage { name = "giflib", version = v } ⫽
-      { pkgUrl = "https://downloads.sourceforge.net/giflib/giflib-${prelude.showVersion v}.tar.bz2"
-      , pkgBuildDeps = [ prelude.unbounded "make" ]
-      }
+      { pkgUrl = "https://downloads.sourceforge.net/giflib/giflib-${prelude.showVersion v}.tar.bz2" }
 in
 
 let emacs =
@@ -921,9 +912,7 @@ in
 let libffi =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libffi", version = v } ⫽
-      { pkgUrl = "https://sourceware.org/ftp/libffi/libffi-${prelude.showVersion v}.tar.gz"
-      , pkgBuildDeps = [ prelude.unbounded "make" ]
-      }
+      { pkgUrl = "https://sourceware.org/ftp/libffi/libffi-${prelude.showVersion v}.tar.gz" }
 in
 
 let gdb =
@@ -947,7 +936,6 @@ let pkg-config =
     prelude.simplePackage { name = "pkg-config", version = v } ⫽
       { pkgUrl = "https://pkg-config.freedesktop.org/releases/pkg-config-${prelude.showVersion v}.tar.gz"
       , configureCommand = prelude.configureWithFlags [ "--with-internal-glib" ]
-      , pkgBuildDeps = [ prelude.unbounded "make" ]
       }
 in
 
@@ -1095,9 +1083,7 @@ let mkXProto =
   λ(name : Text) →
   λ(v : List Natural) →
     prelude.simplePackage { name = name, version = v } ⫽
-      { pkgUrl = "https://www.x.org/releases/individual/proto/${name}-${prelude.showVersion v}.tar.bz2"
-      , pkgBuildDeps = [ prelude.unbounded "make" ]
-      }
+      { pkgUrl = "https://www.x.org/releases/individual/proto/${name}-${prelude.showVersion v}.tar.bz2" }
 in
 
 let mkXProtoWithPatch =
@@ -1106,9 +1092,7 @@ let mkXProtoWithPatch =
   λ(v : List Natural) →
     mkXProto name v ⫽
       { configureCommand = prelude.configureWithPatch patch
-      , pkgBuildDeps = [ prelude.unbounded "patch"
-                       , prelude.unbounded "make"
-                       ]
+      , pkgBuildDeps = [ prelude.unbounded "patch" ]
       }
 in
 
@@ -1757,9 +1741,7 @@ in
 let xcb-proto =
   λ(v : List Natural) →
     prelude.simplePackage { name = "xcb-proto", version = v } ⫽
-      { pkgUrl = "https://xorg.freedesktop.org/archive/individual/xcb/xcb-proto-${prelude.showVersion v}.tar.bz2"
-      , pkgBuildDeps = [ prelude.unbounded "make" ]
-      }
+      { pkgUrl = "https://xorg.freedesktop.org/archive/individual/xcb/xcb-proto-${prelude.showVersion v}.tar.bz2" }
 in
 
 let libxcb =
@@ -1777,9 +1759,7 @@ in
 let libpthread-stubs =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libpthread-stubs", version = v } ⫽
-      { pkgUrl = "https://www.x.org/archive/individual/xcb/libpthread-stubs-${prelude.showVersion v}.tar.bz2"
-      , pkgBuildDeps = [ prelude.unbounded "make" ]
-      }
+      { pkgUrl = "https://www.x.org/archive/individual/xcb/libpthread-stubs-${prelude.showVersion v}.tar.bz2" }
 in
 
 let xorgConfigure =
@@ -1815,9 +1795,7 @@ let mkXUtil =
   λ(name : Text) →
   λ(v : List Natural) →
     prelude.simplePackage { name = name, version = v } ⫽
-      { pkgUrl = "https://www.x.org/releases/individual/util/${name}-${prelude.showVersion v}.tar.bz2"
-      , pkgBuildDeps = [ prelude.unbounded "make" ]
-      }
+      { pkgUrl = "https://www.x.org/releases/individual/util/${name}-${prelude.showVersion v}.tar.bz2" }
 in
 
 let libXrender =
@@ -1957,9 +1935,7 @@ in
 let expat =
   λ(v : List Natural) →
     prelude.simplePackage { name = "expat", version = v } ⫽
-      { pkgUrl = "https://github.com/libexpat/libexpat/releases/download/R_${prelude.underscoreVersion v}/expat-${prelude.showVersion v}.tar.bz2"
-      , pkgBuildDeps = [ prelude.unbounded "make" ]
-      }
+      { pkgUrl = "https://github.com/libexpat/libexpat/releases/download/R_${prelude.underscoreVersion v}/expat-${prelude.showVersion v}.tar.bz2" }
 in
 
 let gperf =
@@ -2286,6 +2262,7 @@ in
 let libarchive =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libarchive", version = v } ⫽
+    -- https://github.com/libarchive/libarchive/releases/download/v3.4.0/libarchive-3.4.0.tar.gz
       { pkgUrl = "https://www.libarchive.org/downloads/libarchive-${prelude.showVersion v}.tar.gz"
       -- , pkgDeps = [ prelude.unbounded "libxml2" ]
       , pkgDeps = [ prelude.unbounded "xz"
@@ -2425,6 +2402,7 @@ let m17n =
         λ(cfg : types.BuildVars) →
           [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS }) ]
       , pkgDeps = [ prelude.unbounded "libXt" ]
+      , pkgBuildDeps = [ prelude.unbounded "binutils" ]
       }
 in
 
@@ -3531,9 +3509,7 @@ let blas =
     prelude.simplePackage { name = "blas", version = v } ⫽
       { pkgUrl = "http://www.netlib.org/blas/blas-${prelude.showVersion v}.tgz"
       , pkgSubdir = "BLAS-${prelude.showVersion v}"
-      , pkgBuildDeps = [ prelude.unbounded "make"
-                       , prelude.unbounded "gcc"
-                       ]
+      , pkgBuildDeps = [ prelude.unbounded "gcc" ]
       , configureCommand = prelude.doNothing
       , installCommand =
         λ(_ : types.BuildVars) →
@@ -3547,9 +3523,7 @@ let openblas =
     prelude.simplePackage { name = "openblas", version = v } ⫽
       { pkgUrl = "https://github.com/xianyi/OpenBLAS/archive/v${versionString}.tar.gz"
       , pkgSubdir = "OpenBLAS-${versionString}"
-      , pkgBuildDeps = [ prelude.unbounded "make"
-                       , prelude.unbounded "gcc"
-                       ]
+      , pkgBuildDeps = [ prelude.unbounded "gcc" ]
       , pkgDeps = [ prelude.unbounded "gcc" ]
       , configureCommand = prelude.doNothing
       , installCommand = prelude.installPrefix
@@ -3566,9 +3540,7 @@ let r =
       , pkgDeps = [ prelude.unbounded "readline"
                   , prelude.unbounded "libXt"
                   ]
-      , pkgBuildDeps = [ prelude.unbounded "make"
-                       , prelude.unbounded "gcc"
-                       ]
+      , pkgBuildDeps = [ prelude.unbounded "gcc" ]
       , installCommand = prelude.installWithBinaries [ "bin/R", "bin/Rscript" ]
       }
 in

@@ -8,8 +8,10 @@ module CPkgPrelude ( -- * Base reëxports
                    , fold
                    , toList
                    , filterM
+                   , forM_
                    , ($>)
                    , (<=<)
+                   , (<=*<)
                    , MonadIO (..)
                    , Void
                    -- * Dhall reëxports
@@ -30,9 +32,11 @@ module CPkgPrelude ( -- * Base reëxports
                    , (</>)
                    -- * Exports from "System.Directory"
                    , doesFileExist
+                   , removeDirectoryRecursive
                    , getAppUserDataDirectory
                    ) where
 
+import           Control.Composition       ((<=*<))
 import           Control.Monad
 import           Control.Monad.IO.Class    (MonadIO (..))
 import           Data.Binary               (Binary)
