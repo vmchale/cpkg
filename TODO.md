@@ -33,13 +33,15 @@
 # Documentation
 - [ ] Document use of `cabal.project` files (which is simpler...)
 # Features
+- [ ] Source depends like `CImg`
 - [ ] Something like cabal flags - enable exif with feh, for example...
 - [ ] Pass verbosity to configuration/build script
 - [ ] Constraint solver
 - [ ] Build/handle preprocessors
   - [ ] Don't try to use cross-compiler on preprocessors
 - [x] Nix-style builds
-  - [ ] Garbage collection
+  - [x] Garbage collection
+    - [ ] Make it less crappy
 - [ ] Caching
   - [ ] Cache global package set?
 - [ ] `unpack` subcommand for packages
@@ -91,6 +93,7 @@
 - [ ] https://sourceforge.net/projects/infozip/files/
 - [ ] fdupes
 - [ ] Figlet
+- [ ] http://www.linuxfromscratch.org/blfs/view/7.5/postlfs/acl.html
 - [ ] GHC (`https://downloads.haskell.org/~ghc/8.6.3/ghc-8.6.3-src.tar.xz`)
   & cross-compiler
 - [ ] weighttp
@@ -107,7 +110,7 @@
 - [ ] https://sourceware.org/newlib/
 - [ ] fish
 - [ ] libtizcore
-- [ ] ghostscript
+- [ ] ghostscript http://www.linuxfromscratch.org/blfs/view/svn/pst/gs.html
 - [ ] https://github.com/yaml/libyaml
 - [ ] https://mosh.org/mosh-1.3.2.tar.gz
 - [ ] http://www.linuxfromscratch.org/blfs/view/svn/general/boost.html
@@ -172,10 +175,14 @@
 - [ ] zstd
 - [ ] lz4
 - [ ] oclint
+- [ ] https://www.cs.ubc.ca/research/flann/
 - [ ] pdftotext http://www.xpdfreader.com/download.html
 - [ ] Firefox
 - [ ] github-linguist (??)
+- [ ] https://github.com/microsoft/mimalloc
 - [ ] http://www.linuxfromscratch.org/blfs/view/8.3/kde/okular5.html
+- [ ] http://cimg.eu/links.shtml
+- [ ] http://www.linuxfromscratch.org/blfs/view/svn/gnome/nautilus.html
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in
