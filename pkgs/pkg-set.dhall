@@ -441,7 +441,7 @@ in
 let valgrind =
   λ(v : List Natural) →
     prelude.simplePackage { name = "valgrind", version = v } ⫽
-      { pkgUrl = "http://www.valgrind.org/downloads/valgrind-${prelude.showVersion v}.tar.bz2"
+      { pkgUrl = "https://sourceware.org/pub/valgrind/valgrind-${prelude.showVersion v}.tar.bz2"
       , installCommand = prelude.installWithBinaries [ "bin/valgrind" ]
       , configureCommand = prelude.configureMkExes [ "auxprogs/make_or_upd_vgversion_h" ]
       }
@@ -1344,13 +1344,13 @@ let fontconfig =
 in
 
 let util-linux =
-  λ(x : { version : List Natural, patch : Natural }) →
+  λ(x : { version : List Natural }) →
     let versionString = prelude.showVersion x.version
     in
-    let fullVersion = versionString ++ "." ++ Natural/show x.patch
+    let fullVersion = versionString
     in
 
-    prelude.simplePackage { name = "util-linux", version = prelude.fullVersion x } ⫽
+    prelude.simplePackage { name = "util-linux", version = x.version } ⫽
       { pkgUrl = "https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v${versionString}/util-linux-${fullVersion}.tar.xz"
       , configureCommand =
         λ(cfg : types.BuildVars) →
@@ -3766,7 +3766,7 @@ in
 , ruby { version = [2,6], patch = 3 }
 , scour [0,37]
 , scrnsaverproto [1,2,2]
-, sdl2 [2,0,9]
+, sdl2 [2,0,10]
 , sed [4,7]
 , shared-mime-info [1,10]
 , sqlite { year = 2018, version = [3,26,0] }
@@ -3777,10 +3777,10 @@ in
 , tesseract [4,0,0]
 , time [1,9]
 , unistring [0,9,10]
-, util-linux { version = [2,33], patch = 1 }
+, util-linux { version = [2,34] }
 , util-macros [1,19,2]
 , vala { version = [0,43], patch = 6 }
-, valgrind [3,14,0]
+, valgrind [3,15,0]
 , vim [8,1]
 , wayland [1,16,0]
 , wget [1,20,3]
