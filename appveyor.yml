@@ -5,6 +5,8 @@ build: off
 before_test:
   - choco install ghc
   - choco install cabal
+  - choco install pkgconfiglite
+  - choco install GnuWin
 
 test_script:
   - refreshenv
