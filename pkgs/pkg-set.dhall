@@ -3782,7 +3782,7 @@ in
 , vala { version = [0,43], patch = 6 }
 , valgrind [3,15,0]
 , vim [8,1]
-, wayland [1,16,0]
+, wayland [1,17,0]
 , wget [1,20,3]
 , which [2,21]
 , xcb-proto [1,13]
