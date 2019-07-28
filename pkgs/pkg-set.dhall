@@ -3101,24 +3101,25 @@ let libboost =
       }
 in
 
+-- LLVM builds run out of RAM on my 64GB machine
+let slowBuild =
+  λ(cfg : types.BuildVars) →
+    [ prelude.call { program = "cmake"
+                    , arguments = [ "--build", ".", "--config", "Release", "--", "-j", "3" ]
+                    , environment = prelude.defaultEnv
+                    , procDir = Some "build"
+                    }
+    ]
+in
+
 let llvm =
   λ(v : List Natural) →
-    let llvmBuild =
-      λ(cfg : types.BuildVars) →
-        [ prelude.call { program = "cmake"
-                       , arguments = [ "--build", ".", "--config", "Release", "--", "-j", "3" ]
-                       , environment = prelude.defaultEnv
-                       , procDir = Some "build"
-                       }
-        ]
-    in
-
     let versionString = prelude.showVersion v in
     prelude.simplePackage { name = "llvm", version = v } ⫽ prelude.cmakePackage ⫽
-      { pkgUrl = "http://releases.llvm.org/${versionString}/llvm-${versionString}.src.tar.xz"
+      { pkgUrl = "https://github.com/llvm/llvm-project/releases/download/llvmorg-${versionString}/llvm-${versionString}.src.tar.xz"
       , pkgSubdir = "llvm-${versionString}.src"
       , pkgStream = False
-      , buildCommand = llvmBuild
+      , buildCommand = slowBuild
       }
 in
 
@@ -3702,8 +3703,7 @@ in
 , libXt [1,2,0]
 , libXtst [1,2,3]
 , libXxf86vm [1,1,4]
-, llvm [8,0,0]
-, llvm [7,1,0] ⫽{ pkgName = "llvm-7.1" }
+, llvm [8,0,1]
 , lmdb [0,9,23]
 , lua [5,3,5]
 , lz4 [1,9,1]
@@ -3728,7 +3728,6 @@ in
 , nginx [1,15,7]
 , ninja [1,9,0]
 , node [10,15,1]
-, node [8,15,1] ⫽ { pkgName = "node8" }
 , npth [1,6]
 , nspr [4,20]
 , openblas [0,3,2]
@@ -3753,7 +3752,7 @@ in
 , pygobject { version = [2,28], patch = 7 }
 , pygtk { version = [2,24], patch = 0 }
 , python [2,7,16]
-, python [3,7,3]
+, python [3,7,4]
 , qrencode [4,0,2]
 , qt { version = [5,13], patch = 0 }
 , quazip [0,8,1]
