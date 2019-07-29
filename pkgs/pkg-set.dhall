@@ -3620,7 +3620,7 @@ in
 , gtk2 { version = [2,24], patch = 32 }
 , gtk3 { version = [3,24], patch = 9 }
 , gzip [1,9]
-, harfbuzz [2,5,1]
+, harfbuzz [2,5,3]
 , htop [2,2,0]
 , icu [64,2]
 , icu-le-hb [1,0,3]
