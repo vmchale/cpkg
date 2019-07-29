@@ -1,0 +1,11 @@
+--- configure	2019-07-29 00:27:04.243320828 -0500
++++ configure	2019-07-29 00:27:19.619494190 -0500
+@@ -14,6 +14,8 @@
+ ## M4sh Initialization. ##
+ ## -------------------- ##
+ 
++ulimit -s 65536
++
+ # Be more Bourne compatible
+ DUALCASE=1; export DUALCASE # for MKS sh
+ if test -n "${ZSH_VERSION+set}" && (emulate sh) >/dev/null 2>&1; then :
