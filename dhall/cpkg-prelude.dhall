@@ -352,10 +352,15 @@ let mkPathVar =
     concatMapText Text (λ(dir : Text) → "${dir}:") binDirs
 in
 
+let unixPath =
+  λ(binDirs : List Text) →
+    { var = "PATH", value = mkPathVar binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
+in
+
 let defaultPath =
   λ(cfg : types.BuildVars) →
     if isUnix cfg.buildOS
-      then [ { var = "PATH", value = mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" } ] : List types.EnvVar
+      then [ unixPath cfg.binDirs ] : List types.EnvVar
       else [] : List types.EnvVar -- FIXME: handle non-unix case
 in
 
@@ -1235,4 +1240,5 @@ in
 , configureWithPatches = configureWithPatches
 , configureWithPatch  = configureWithPatch
 , installPrefix       = installPrefix
+, unixPath            = unixPath
 }

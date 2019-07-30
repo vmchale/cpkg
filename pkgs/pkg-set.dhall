@@ -3625,13 +3625,32 @@ let librsvg =
       }
 in
 
-let ats-temptory =
+let ats =
   λ(v : List Natural) →
+
     let versionString = prelude.showVersion v in
-    prelude.simplePackage { name = "ATS-Temptory", version = v } ⫽
-      { pkgUrl = "https://github.com/sparverius/Temptory-Release/releases/download/v${versionString}/ATS-Temptory-gmp-${versionString}.tgz"
-      , pkgSubdir = "ATS-Temptory-gmp-0.0.0"
+
+    let atsBuild =
+      λ(cfg : types.BuildVars) →
+        let buildDir = cfg.currentDir ++ "/ATS2-Postiats-gmp-${versionString}"
+        in
+
+        [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
+                                              , arguments = [ "CFLAGS=${(prelude.mkCFlags cfg).value} -I${buildDir}/src/CBOOT/ccomp/runtime -I${buildDir}/src/CBOOT"
+                                                            , "LDFLAGS='${(prelude.mkLDFlags cfg.linkDirs).value}'"
+                                                            ]
+                                              , environment = Some (prelude.buildEnv cfg)
+                                              })
+        ]
+    in
+
+    prelude.simplePackage { name = "ats", version = v } ⫽
+      { pkgUrl = "http://ats-lang.sourceforge.net/IMPLEMENT/Postiats/ATS2-Postiats-${versionString}.tgz"
+      , pkgSubdir = "ATS2-Postiats-gmp-${versionString}"
       , pkgDeps = [ prelude.unbounded "gmp" ]
+      , buildCommand = atsBuild
+      , installCommand = prelude.installWithBinaries [ "bin/patsopt" ]
+      , pkgStream = False
       }
 in
 
@@ -3649,7 +3668,7 @@ in
 , at-spi-atk { version = [2,33], patch = 2 }
 , at-spi-core { version = [2,33], patch = 2 }
 , atk { version = [2,33], patch = 3 }
-, ats-temptory [0,0,1]
+, ats [0,3,13]
 , babl { version = [0,1], patch = 68 }
 , binutils [2,32]
 , bison [3,3,1]
