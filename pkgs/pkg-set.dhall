@@ -770,6 +770,7 @@ let autoconf =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "autoconf", version = v } ⫽
       { pkgBuildDeps = [ prelude.lowerBound { name =  "m4", lower = [1,4,16] } ]
+      -- m4 runDep?
       , installCommand = prelude.installWithBinaries [ "bin/autoconf", "bin/autoheader", "bin/autom4te", "bin/autoreconf" ]
       }
 in
@@ -1381,11 +1382,13 @@ let gobject-introspection =
 
     prelude.ninjaPackage { name = "gobject-introspection", version = prelude.fullVersion x } ⫽
       { pkgUrl = "https://download.gnome.org/sources/gobject-introspection/${versionString}/gobject-introspection-${fullVersion}.tar.xz"
-      , pkgBuildDeps = [ prelude.unbounded "meson" ] -- prelude.unbounded "flex" "bison" ]
+      , pkgBuildDeps = [ prelude.unbounded "meson" ]
       , pkgDeps = [ prelude.lowerBound { name = "glib", lower = [2,58,0] } ]
       , installCommand =
           λ(cfg : types.BuildVars) →
-            [ prelude.mkExe "build/tools/g-ir-scanner" ]
+            [ prelude.mkExe "build/tools/g-ir-scanner"
+            , prelude.copyFile "build/gobject-introspection-1.0.pc" "lib/pkgconfig/gobject-introspection-1.0.pc"
+            ]
               # prelude.ninjaInstall cfg
       }
 in
@@ -2418,7 +2421,21 @@ let mkGimpPackage =
 in
 
 let babl =
-  mkGimpPackage "babl"
+  λ(x : { version : List Natural, patch : Natural }) →
+    let versionString = prelude.showVersion x.version
+    in
+    let fullVersion = versionString ++ "." ++ Natural/show x.patch
+    in
+    prelude.simplePackage { name = "babl", version = prelude.fullVersion x } ⫽
+      { pkgUrl = "https://download.gimp.org/pub/babl/${versionString}/babl-${fullVersion}.tar.xz"
+      , pkgBuildDeps = [ prelude.unbounded "autoconf"
+                       , prelude.unbounded "automake"
+                       , prelude.unbounded "libtool"
+                       , prelude.unbounded "pkg-config"
+                       ]
+      , pkgDeps = [ prelude.unbounded "lcms2" ]
+      , configureCommand = prelude.autogenConfigure
+      }
 in
 
 let gegl =
@@ -2429,6 +2446,7 @@ let gegl =
                   , prelude.unbounded "json-glib"
                   ]
       , configureCommand = prelude.preloadCfg
+      , pkgStream = False
       }
 in
 
@@ -2446,6 +2464,7 @@ let json-glib =
                   , prelude.unbounded "libjpeg-turbo"
                   , prelude.unbounded "libpng"
                   ]
+      , pkgBuildDeps = [ prelude.unbounded "gettext" ]
       , installCommand =
           prelude.ninjaInstallWithPkgConfig (prelude.mesonMoves [ "json-glib-1.0.pc" ])
       }
@@ -3546,6 +3565,7 @@ let r =
       }
 in
 
+<<<<<<< HEAD
 let libspng =
   λ(v : List Natural) →
     prelude.ninjaPackage { name = "libspng", version = v } ⫽
@@ -3558,6 +3578,98 @@ let libspng =
       }
 in
 
+=======
+let glib-networking =
+  λ(x : { version : List Natural, patch : Natural }) →
+    let versionString = prelude.showVersion x.version
+    in
+    let fullVersion = versionString ++ "." ++ Natural/show x.patch
+    in
+
+    prelude.ninjaPackage { name = "glib-networking", version = prelude.fullVersion x } ⫽
+      { pkgUrl = "http://ftp.gnome.org/pub/gnome/sources/glib-networking/${versionString}/glib-networking-${fullVersion}.tar.xz"
+      , pkgBuildDeps = [ prelude.unbounded "pkg-config"
+                       , prelude.unbounded "gettext"
+                       ]
+      , pkgDeps = [ prelude.unbounded "glib"
+                  , prelude.unbounded "gnutls"
+                  ]
+      }
+in
+
+let libwebp =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libwebp", version = v } ⫽
+      { pkgUrl = "https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.0.3.tar.gz" }
+in
+
+let rustc =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "rustc", version = v } ⫽
+      -- FIXME: other architectures
+      { pkgUrl = "https://static.rust-lang.org/dist/rust-${versionString}-x86_64-unknown-linux-gnu.tar.gz"
+      , pkgSubdir = "rust-${versionString}-x86_64-unknown-linux-gnu"
+      , configureCommand = prelude.doNothing
+      , buildCommand = prelude.doNothing
+      , installCommand =
+          λ(cfg : types.BuildVars) →
+            [ prelude.call (prelude.defaultCall ⫽ { program = "./install.sh"
+                                                  , arguments = [ "--prefix=${cfg.installDir}", "--disable-ldconfig" ]
+                                                  })
+            ]
+      , pkgStream = False
+      }
+in
+
+let librsvg =
+  λ(x : { version : List Natural, patch : Natural }) →
+    mkGnomeSimple "librsvg" x ⫽
+      { pkgBuildDeps = [ prelude.lowerBound { name = "rustc", lower = [1,16,0] }
+                       , prelude.unbounded "pkg-config"
+                       ]
+      , pkgDeps = [ prelude.lowerBound { name = "cairo", lower = [1,16,0] }
+                  , prelude.lowerBound { name = "libxml2", lower = [2,9,0] }
+                  , prelude.lowerBound { name = "libcroco", lower = [0,6,1] }
+                  , prelude.unbounded "pango"
+                  , prelude.lowerBound { name = "gdk-pixbuf", lower = [2,20] }
+                  , prelude.unbounded "gobject-introspection"
+                  , prelude.lowerBound { name = "glib", lower = [2,10,0] }
+                  ]
+      }
+in
+
+let ats =
+  λ(v : List Natural) →
+
+    let versionString = prelude.showVersion v in
+
+    let atsBuild =
+      λ(cfg : types.BuildVars) →
+        let buildDir = cfg.currentDir ++ "/ATS2-Postiats-gmp-${versionString}"
+        in
+
+        [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
+                                              , arguments = [ "CFLAGS=${(prelude.mkCFlags cfg).value} -I${buildDir}/src/CBOOT/ccomp/runtime -I${buildDir}/src/CBOOT"
+                                                            , "LDFLAGS='${(prelude.mkLDFlags cfg.linkDirs).value}'"
+                                                            ]
+                                              , environment = Some (prelude.buildEnv cfg)
+                                              })
+        ]
+    in
+
+    prelude.simplePackage { name = "ats", version = v } ⫽
+      { pkgUrl = "http://ats-lang.sourceforge.net/IMPLEMENT/Postiats/ATS2-Postiats-${versionString}.tgz"
+      , pkgSubdir = "ATS2-Postiats-gmp-${versionString}"
+      , pkgDeps = [ prelude.unbounded "gmp" ]
+      , buildCommand = atsBuild
+      , installCommand = prelude.installWithBinaries [ "bin/patsopt" ]
+      , pkgStream = False
+      }
+in
+
+-- https://downloads.haskell.org/~ghc/8.6.5/ghc-8.6.5-x86_64-deb9-linux.tar.xz
+>>>>>>> 91761a60302f6431cc9d822b492eb97440eb6c63
 -- http://www.linuxfromscratch.org/lfs/view/development/chapter06/findutils.html
 -- TODO: musl-ghc?
 -- https://hub.darcs.net/raichoo/hikari
@@ -3571,7 +3683,8 @@ in
 , at-spi-atk { version = [2,33], patch = 2 }
 , at-spi-core { version = [2,33], patch = 2 }
 , atk { version = [2,33], patch = 3 }
-, babl { version = [0,1], patch = 60 }
+, ats [0,3,13]
+, babl { version = [0,1], patch = 68 }
 , binutils [2,32]
 , bison [3,3,1]
 , blas [3,8,0]
@@ -3579,7 +3692,7 @@ in
 , cairo [1,16,0]
 , chickenScheme [5,0,0]
 , cimg [2,6,6]
-, cmake { version = [3,13], patch = 4 }
+, cmake { version = [3,15], patch = 1 }
 , compositeproto [0,4]
 , coreutils [8,31]
 , ctags [5,8]
@@ -3609,14 +3722,15 @@ in
 , gcc [9,1,0]
 , gdb [8,2]
 , gdk-pixbuf { version = [2,38], patch = 1 }
-, gegl { version = [0,4], patch = 12 }
+, gegl { version = [0,4], patch = 16 }
 , gettext [0,20,1]
 , gexiv2 { version = [0,12], patch = 0 }
 , gperf [3,1]
 , gperftools [2,7]
 , giflib [5,1,4]
 , git [2,19,2]
-, glib { version = [2,60], patch = 4 }
+, glib { version = [2,61], patch = 1 }
+, glib-networking { version = [2,61], patch = 2 }
 , glproto [1,4,17]
 , glu [9,0,0]
 , json-glib { version = [1,4], patch = 4 }
@@ -3625,12 +3739,12 @@ in
 , gobject-introspection { version = [1,60], patch = 2 }
 , gnome-doc-utils { version = [0,20], patch = 10 }
 , gnupg [2,2,16]
-, gnutls { version = [3,6], patch = 8 }
+, gnutls { version = [3,6], patch = 9 }
 , graphviz [2,40,1]
 , grep [3,3]
 , gsl [2,5]
 , gtk2 { version = [2,24], patch = 32 }
-, gtk3 { version = [3,24], patch = 9 }
+, gtk3 { version = [3,24], patch = 10 }
 , gzip [1,9]
 , harfbuzz [2,5,3]
 , htop [2,2,0]
@@ -3670,26 +3784,28 @@ in
 , libjpeg-turbo [2,0,2]
 , libksba [1,3,5]
 , libmypaint [1,3,0]
-, libnettle [3,4,1]
+, libnettle [3,5,1]
+, libopenjpeg [2,3,1]
+, libotf [0,9,16]
 , libpciaccess [0,14]
 , libpng [1,6,35]
 , libpsl [0,21,0]
 , libpthread-stubs [0,4]
-, libopenjpeg [2,3,1]
-, libotf [0,9,16]
 , libraw [0,19,2]
+, librsvg { version = [2,45], patch = 8 }
 , libsamplerate [0,1,9]
 , libselinux [2,8]
 , libsndfile [1,0,28]
 , libsepol [2,8]
 , libsodium [1,0,17]
-, libsoup { version = [2,67], patch = 1 }
+, libsoup { version = [2,67], patch = 3 }
 , libspng [0,4,5]
 , libssh2 [1,8,0]
-, libtasn1 [4,13]
+, libtasn1 [4,14]
 , libtiff [4,0,10]
 , libtool [2,4,6]
 , libuv [1,24,0]
+, libwebp [1,0,3]
 , libSM [1,2,3]
 , libthai [0,1,28]
 , libX11 [1,6,8]
@@ -3705,7 +3821,7 @@ in
 , libXft [2,3,3]
 , libXi [1,7,10]
 , libXinerama [1,1,4]
-, libxml2 [2,9,8]
+, libxml2 [2,9,9]
 , libXmu [1,1,3]
 , libXpm [3,5,12]
 , libXScrnSaver [1,2,3]
@@ -3758,7 +3874,7 @@ in
 , phash [0,9,6]
 , pixman [0,38,4]
 , pkg-config [0,29,2]
-, poppler [0,77,0]
+, poppler [0,79,0]
 , postgresql [11,1]
 , protobuf [3,8,0]
 , pycairo [1,18,1]
@@ -3777,6 +3893,7 @@ in
 , recordproto [1,14,2]
 , renderproto [0,11,1]
 , ruby { version = [2,6], patch = 3 }
+, rustc [1,36,0]
 , scour [0,37]
 , scrnsaverproto [1,2,2]
 , sdl2 [2,0,10]
@@ -3792,7 +3909,7 @@ in
 , unistring [0,9,10]
 , util-linux { version = [2,34] }
 , util-macros [1,19,2]
-, vala { version = [0,43], patch = 6 }
+, vala { version = [0,45], patch = 3 }
 , valgrind [3,15,0]
 , vim [8,1]
 , wayland [1,17,0]

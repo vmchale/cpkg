@@ -67,11 +67,29 @@ buildWithContext cTree host sta glob = zygoM' dirAlg buildAlg cTree
                 includeDir = pkgDir </> "include"
                 dataDir = pkgDir </> "share"
                 binDir = pkgDir </> "bin"
-                links = linkDir64 : linkDir : ls
-                bins = binDir : bs
-                shares = dataDir : ds
 
-            -- TODO: do this for all of them?
+            binExists <- liftIO (doesDirectoryExist binDir)
+            let bins = if binExists
+                then binDir : bs
+                else bs
+
+            shareExists <- liftIO (doesDirectoryExist dataDir)
+            let shares = if shareExists
+                then dataDir : ds
+                else ds
+
+            linkExists <- liftIO (doesDirectoryExist linkDir)
+            link64Exists <- liftIO (doesDirectoryExist linkDir64)
+
+            let linkAppend = if linkExists
+                then (linkDir :)
+                else id
+            let link64Append = if link64Exists
+                then (linkDir64 :)
+                else id
+
+            let links = link64Append (linkAppend ls)
+
             includeExists <- liftIO (doesDirectoryExist includeDir)
             let includes = if includeExists
                 then includeDir : is
