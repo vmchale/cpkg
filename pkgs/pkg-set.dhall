@@ -3565,7 +3565,6 @@ let r =
       }
 in
 
-<<<<<<< HEAD
 let libspng =
   λ(v : List Natural) →
     prelude.ninjaPackage { name = "libspng", version = v } ⫽
@@ -3578,7 +3577,6 @@ let libspng =
       }
 in
 
-=======
 let glib-networking =
   λ(x : { version : List Natural, patch : Natural }) →
     let versionString = prelude.showVersion x.version
@@ -3669,7 +3667,6 @@ let ats =
 in
 
 -- https://downloads.haskell.org/~ghc/8.6.5/ghc-8.6.5-x86_64-deb9-linux.tar.xz
->>>>>>> 91761a60302f6431cc9d822b492eb97440eb6c63
 -- http://www.linuxfromscratch.org/lfs/view/development/chapter06/findutils.html
 -- TODO: musl-ghc?
 -- https://hub.darcs.net/raichoo/hikari
