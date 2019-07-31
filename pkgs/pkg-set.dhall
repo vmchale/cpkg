@@ -3546,6 +3546,18 @@ let r =
       }
 in
 
+let libspng =
+  λ(v : List Natural) →
+    prelude.ninjaPackage { name = "libspng", version = v } ⫽
+      { pkgUrl = "https://gitlab.com/randy408/libspng/uploads/6ddcaa59367b2cea474213a994b82012/libspng-${prelude.showVersion v}.tar.xz"
+      , pkgBuildDeps = [ prelude.unbounded "pkg-config"
+                       , prelude.unbounded "meson"
+                       , prelude.lowerBound { name = "ninja", lower = [1,5,0] }
+                       ]
+      , pkgDeps = [ prelude.unbounded "zlib" ]
+      }
+in
+
 -- http://www.linuxfromscratch.org/lfs/view/development/chapter06/findutils.html
 -- TODO: musl-ghc?
 -- https://hub.darcs.net/raichoo/hikari
@@ -3672,6 +3684,7 @@ in
 , libsepol [2,8]
 , libsodium [1,0,17]
 , libsoup { version = [2,67], patch = 1 }
+, libspng [0,4,5]
 , libssh2 [1,8,0]
 , libtasn1 [4,13]
 , libtiff [4,0,10]
