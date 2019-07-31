@@ -818,16 +818,21 @@ in
 let ninjaBuildWith =
   λ(linkLibs : List Text) →
   λ(cfg : types.BuildVars) →
+    let ldPreload =
+      if cfg.isCross
+        then [] : List types.EnvVar
+        else [ mkLDPreload cfg.preloadLibs ]
+    in
+
     [ call (defaultCall ⫽ { program = "ninja"
-                          , environment = Some [ mkPkgConfigVar cfg.linkDirs
-                                               , { var = "PATH", value = mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
-                                               , mkPy3Path cfg.linkDirs
-                                               , libPath cfg
-                                               , mkLDRunPath cfg.linkDirs
-                                               , mkLDFlagsGeneral cfg.linkDirs linkLibs
-                                               , mkCFlags cfg
-                                               , mkLDPreload cfg.preloadLibs
-                                               ]
+                          , environment = Some ([ mkPkgConfigVar cfg.linkDirs
+                                                , { var = "PATH", value = mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
+                                                , mkPy3Path cfg.linkDirs
+                                                , libPath cfg
+                                                , mkLDRunPath cfg.linkDirs
+                                                , mkLDFlagsGeneral cfg.linkDirs linkLibs
+                                                , mkCFlags cfg
+                                                ] # ldPreload)
                           , procDir = Some "build" }) ]
 in
 
