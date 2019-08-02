@@ -2517,6 +2517,7 @@ let libopenjpeg =
     prelude.simplePackage { name = "libopenjpeg", version = v } ⫽ prelude.cmakePackage ⫽
       { pkgUrl = "https://github.com/uclouvain/openjpeg/archive/v${versionString}.tar.gz"
       , pkgSubdir = "openjpeg-${versionString}"
+      , pkgDeps = [ prelude.unbounded "zlib" ]
       , installCommand =
           λ(cfg : types.BuildVars) →
             prelude.cmakeInstall cfg
@@ -3219,10 +3220,15 @@ let poppler =
       , pkgDeps = [ prelude.unbounded "fontconfig"
                   , prelude.unbounded "libopenjpeg"
                   , prelude.unbounded "libjpeg-turbo"
+                  , prelude.unbounded "libjpeg"
                   , prelude.unbounded "freetype"
                   , prelude.unbounded "zlib"
                   , prelude.unbounded "libpng"
+                  , prelude.unbounded "libiconv"
+                  , prelude.unbounded "harfbuzz"
+                  , prelude.unbounded "glib"
                   ]
+      -- , configureCommand = prelude.cmakeConfigureWithFlags [ "-DENABLE_LIBOPENJPEG='none'" ]
       , installCommand =
           λ(cfg : types.BuildVars) →
             prelude.cmakeInstall cfg
@@ -3666,6 +3672,12 @@ let ats =
       }
 in
 
+let libiconv =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libiconv", version = v } ⫽
+      { pkgUrl = "https://ftp.gnu.org/pub/gnu/libiconv/libiconv-${prelude.showVersion v}.tar.gz" }
+in
+
 -- https://downloads.haskell.org/~ghc/8.6.5/ghc-8.6.5-x86_64-deb9-linux.tar.xz
 -- http://www.linuxfromscratch.org/lfs/view/development/chapter06/findutils.html
 -- TODO: musl-ghc?
@@ -3711,8 +3723,8 @@ in
 , fossil [2,7]
 , flex [2,6,3] -- 2.6.4?
 , fltk { version = [1,3,4], patch = 2 }
-, freetype-prebuild [2,9,1] -- TODO: force both to have same version?
-, freetype [2,9,1]
+, freetype-prebuild [2,10,1] -- TODO: force both to have same version?
+, freetype [2,10,1]
 , fribidi [1,0,5]
 , gawk [5,0,1]
 , gc [8,0,4]
@@ -3731,7 +3743,7 @@ in
 , glproto [1,4,17]
 , glu [9,0,0]
 , json-glib { version = [1,4], patch = 4 }
-, glibc [2,29]
+, glibc [2,30]
 , gmp [6,1,2]
 , gobject-introspection { version = [1,60], patch = 2 }
 , gnome-doc-utils { version = [0,20], patch = 10 }
@@ -3777,6 +3789,7 @@ in
 , libglade { version = [2,6], patch = 4 }
 , libgpgError [1,33]
 , libICE [1,0,9]
+, libiconv [1,16]
 , libjpeg [9]
 , libjpeg-turbo [2,0,2]
 , libksba [1,3,5]
