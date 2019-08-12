@@ -3705,7 +3705,7 @@ in
 , compositeproto [0,4]
 , coreutils [8,31]
 , ctags [5,8]
-, curl [7,65,0]
+, curl [7,65,3]
 , damageproto [1,2,1]
 , dbus [1,13,12]
 , diffutils [3,7]
@@ -3728,7 +3728,7 @@ in
 , fribidi [1,0,5]
 , gawk [5,0,1]
 , gc [8,0,4]
-, gcc [9,1,0]
+, gcc [9,2,0]
 , gdb [8,2]
 , gdk-pixbuf { version = [2,38], patch = 1 }
 , gegl { version = [0,4], patch = 16 }
