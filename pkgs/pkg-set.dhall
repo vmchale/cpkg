@@ -3604,7 +3604,7 @@ in
 let libwebp =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libwebp", version = v } ⫽
-      { pkgUrl = "https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.0.3.tar.gz" }
+      { pkgUrl = "https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-${prelude.showVersion v}.tar.gz" }
 in
 
 let rustc =
@@ -3866,7 +3866,7 @@ in
 , ncurses [6,1]
 , nginx [1,15,7]
 , ninja [1,9,0]
-, node [10,15,1]
+, node [10,16,2]
 , npth [1,6]
 , nspr [4,20]
 , openblas [0,3,2]
