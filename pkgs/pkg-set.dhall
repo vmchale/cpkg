@@ -3695,7 +3695,7 @@ in
 , ats [0,3,13]
 , babl { version = [0,1], patch = 68 }
 , binutils [2,32]
-, bison [3,3,1]
+, bison [3,4,1]
 , blas [3,8,0]
 , bzip2 [1,0,6]
 , cairo [1,16,0]
