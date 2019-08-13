@@ -369,6 +369,10 @@ let ncurses =
           in
 
           prelude.configureWithFlags ([ "--with-shared", "--enable-widec" ] # crossArgs) cfg
+      , installCommand =
+          λ(cfg : types.BuildVars) →
+            prelude.defaultInstall cfg
+              # [ prelude.symlink "lib/libncursesw.so" "lib/libncurses.so" ]
           -- enable-widec is necessary because util-linux uses libncursesw
       }
 in
@@ -3902,7 +3906,7 @@ in
 , ragel [6,10]
 , randrproto [1,5,0]
 , re2c [1,1,1]
-, readline [7,0]
+, readline [8,0]
 , recordproto [1,14,2]
 , renderproto [0,11,1]
 , ruby { version = [2,6], patch = 3 }
