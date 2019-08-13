@@ -425,7 +425,10 @@ in
 
 let sed =
   λ(v : List Natural) →
-    prelude.makeGnuExe { name = "sed", version = v } -- TODO: require pcre?
+    prelude.makeGnuExe { name = "sed", version = v } ⫽ -- TODO: require pcre?
+      { installCommand =
+          prelude.installWithManpages [ { file = "share/man/man1/sed.1", section = 1 } ]
+      }
 in
 
 let tar =
