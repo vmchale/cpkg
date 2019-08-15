@@ -77,7 +77,7 @@ in
 let binutils =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "binutils", version = v } ⫽
-      { pkgUrl = "https://mirrors.ocf.berkeley.edu/gnu/binutils/binutils-${prelude.showVersion v}.tar.xz"
+      { pkgUrl = "https://ftp.gnu.org/pub/gnu/binutils/binutils-${prelude.showVersion v}.tar.xz"
       , configureCommand = prelude.configureMkExes [ "mkinstalldirs" ]
       , installCommand =
           prelude.installWithBinaries [ "bin/ar", "bin/as", "bin/ld", "bin/strip", "bin/strings", "bin/readelf", "bin/objdump", "bin/nm", "bin/ranlib" ]
