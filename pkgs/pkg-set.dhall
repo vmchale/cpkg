@@ -3340,6 +3340,7 @@ let ffmpeg =
       , pkgBuildDeps = [ prelude.unbounded "nasm" ]
       -- TODO: cross-compile
       , configureCommand = prelude.configureWithFlags [ "--enable-shared" ]
+      , installCommand = prelude.installWithBinaries [ "bin/ffmpeg" ]
       , pkgDeps = [ prelude.unbounded "bzip2" ]
       , pkgStream = False
       }
@@ -3685,6 +3686,18 @@ let libiconv =
       { pkgUrl = "https://ftp.gnu.org/pub/gnu/libiconv/libiconv-${prelude.showVersion v}.tar.gz" }
 in
 
+let libav =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libav", version = v } ⫽
+      { pkgUrl = "https://libav.org/releases/libav-${prelude.showVersion v}.tar.xz"
+      , configureCommand = prelude.configureMkExes [ "version.sh", "doc/texi2pod.pl" ]
+      , pkgBuildDeps = [ prelude.unbounded "nasm"
+                       , prelude.unbounded "perl"
+                       ]
+      , installCommand = prelude.installWithBinaries [ "bin/avconv", "bin/avprobe" ]
+      }
+in
+
 -- https://downloads.haskell.org/~ghc/8.6.5/ghc-8.6.5-x86_64-deb9-linux.tar.xz
 -- http://www.linuxfromscratch.org/lfs/view/development/chapter06/findutils.html
 -- TODO: musl-ghc?
@@ -3782,6 +3795,7 @@ in
 , libarchive [3,3,3]
 , libassuan [2,5,2]
 , libatomic_ops [7,6,10]
+, libav [12,3]
 , libboost [1,69,0]
 , libcds [2,3,2]
 , libcroco { version = [0,6], patch = 12 }
