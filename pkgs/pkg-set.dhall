@@ -152,18 +152,19 @@ let dbus =
 in
 
 let fltk =
-  λ(cfg : { version : List Natural, patch : Natural }) →
-
-    let versionString = prelude.showVersion cfg.version
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v
     in
-    let patchString = Natural/show cfg.patch
-    in
-
-    prelude.defaultPackage ⫽
-      { pkgName = "fltk"
-      , pkgVersion = prelude.fullVersion cfg
-      , pkgUrl = "http://fltk.org/pub/fltk/${versionString}/fltk-${versionString}-${patchString}-source.tar.bz2"
-      , pkgSubdir = "fltk-${versionString}-${patchString}"
+    prelude.simplePackage { name = "fltk", version = v } ⫽
+      { pkgUrl = "http://fltk.org/pub/fltk/${versionString}/fltk-${versionString}-source.tar.bz2"
+      , pkgSubdir = "fltk-${versionString}"
+      , pkgDeps = [ prelude.unbounded "libX11"
+                  , prelude.unbounded "alsa-lib"
+                  , prelude.unbounded "zlib"
+                  , prelude.unbounded "libpng"
+                  , prelude.unbounded "libXft"
+                  , prelude.unbounded "freetype"
+                  ]
       }
 in
 
@@ -3698,6 +3699,14 @@ let libav =
       }
 in
 
+let alsa-lib =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "alsa-lib", version = v } ⫽
+      { pkgUrl = "https://www.alsa-project.org/files/pub/lib/alsa-lib-${prelude.showVersion v}.tar.bz2"
+      , pkgStream = False
+      }
+in
+
 -- https://downloads.haskell.org/~ghc/8.6.5/ghc-8.6.5-x86_64-deb9-linux.tar.xz
 -- http://www.linuxfromscratch.org/lfs/view/development/chapter06/findutils.html
 -- TODO: musl-ghc?
@@ -3707,12 +3716,13 @@ in
 -- http://www.linuxfromscratch.org/blfs/view/svn/general/unzip.html
 -- https://github.com/jsoftware/jsource/archive/j807-release.tar.gz
 
-[ autoconf [2,69]
-, automake [1,16,1]
+[ alsa-lib [1,1,9]
 , at-spi-atk { version = [2,33], patch = 2 }
 , at-spi-core { version = [2,33], patch = 2 }
 , atk { version = [2,33], patch = 3 }
 , ats [0,3,13]
+, autoconf [2,69]
+, automake [1,16,1]
 , babl { version = [0,1], patch = 68 }
 , binutils [2,32]
 , bison [3,4,1]
@@ -3742,7 +3752,7 @@ in
 , fontconfig [2,13,1]
 , fossil [2,7]
 , flex [2,6,3] -- 2.6.4?
-, fltk { version = [1,3,4], patch = 2 }
+, fltk [1,3,5]
 , freetype-prebuild [2,10,1] -- TODO: force both to have same version?
 , freetype [2,10,1]
 , fribidi [1,0,5]
