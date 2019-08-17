@@ -827,7 +827,7 @@ let python =
                   ]
       , installCommand =
           λ(cfg : types.BuildVars) →
-            prelude.installWithBinaries [ "bin/python${major}" ] cfg
+            prelude.install cfg
               # prelude.symlinkManpages [ { file = "share/man/man1/python${major}.1", section = 1 } ]
       -- , installCommand =
           -- prelude.installWithWrappers [ "python${major}" ]
