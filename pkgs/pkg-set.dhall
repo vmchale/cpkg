@@ -3767,7 +3767,7 @@ in
 , gperf [3,1]
 , gperftools [2,7]
 , giflib [5,1,4]
-, git [2,19,2]
+, git [2,23,0]
 , glib { version = [2,61], patch = 1 }
 , glib-networking { version = [2,61], patch = 2 }
 , glproto [1,4,17]
