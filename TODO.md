@@ -101,6 +101,7 @@
 - [ ] `rustc`
 - [ ] https://github.com/ZBar/ZBar
 - [ ] Doxygen
+- [ ] libXcursor
 - [ ] exif, libexif-gtk, gexif (https://libexif.github.io/)
 - [ ] nomacs
 - [ ] FFmpeg
@@ -167,8 +168,8 @@
 - [ ] evince
 - [ ] https://github.com/GNOME/libgweather
 - [ ] GIMP
+- [ ] libav cross-compile
 - [ ] https://github.com/mtoyoda/sl/releases
-- [ ] glib-networking
 - [ ] libsocketcap
 - [ ] https://github.com/pinard/paxutils/releases
 - [ ] https://github.com/aperezdc/signify

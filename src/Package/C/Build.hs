@@ -181,6 +181,7 @@ forceBuildCPkg cpkg host glob usr buildVars = do
     liftIO $ createDirectoryIfMissing True pkgDir
 
     withSystemTempDirectory "cpkg" $ \p -> do
+    -- diagnosticDirectory "cpkg" $ \p -> do
 
         putDiagnostic ("Setting up temporary directory in " ++ p)
 

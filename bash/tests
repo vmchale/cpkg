@@ -3,11 +3,12 @@
 set -e
 
 cabal new-test
-# cabal new-run cpkg -- install feh -vv --pkg-set './pkgs/pkg-set.dhall' --target=arm-linux-gnueabihf
+cabal new-run cpkg -- install feh -vv --pkg-set './pkgs/pkg-set.dhall' --target=arm-linux-gnueabihf
 cabal new-run cpkg -- install emacs -vv --pkg-set './pkgs/pkg-set.dhall'
 cabal new-run cpkg -- install glibc -vv --pkg-set './pkgs/pkg-set.dhall'
 cabal new-run cpkg -- install pHash -vv --pkg-set './pkgs/pkg-set.dhall'
 cabal new-run cpkg -- install gnupg -vv --pkg-set './pkgs/pkg-set.dhall'
-# cabal new-run cpkg -- install wget -vv --pkg-set './pkgs/pkg-set.dhall' --target=arm-linux-gnueabihf
 cabal new-run cpkg -- install qt -vv --pkg-set './pkgs/pkg-set.dhall'
 cabal new-run cpkg -- install lapack -vv --pkg-set './pkgs/pkg-set.dhall'
+cabal new-run cpkg -- install pdfgrep -vv --pkg-set './pkgs/pkg-set.dhall'
+cabal new-run cpkg -- install wget -vv --pkg-set './pkgs/pkg-set.dhall' --target=arm-linux-gnueabihf

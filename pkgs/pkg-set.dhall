@@ -3909,7 +3909,7 @@ in
 , pari [2,11,1]
 , patch [2,7]
 , pcre [8,43]
-, pcre2 [10,32]
+, pcre2 [10,33]
 , pdfgrep [2,1,2]
 , perl5 [5,30,0]
 , phash [0,9,6]
