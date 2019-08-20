@@ -776,7 +776,7 @@ in
 
 let mesonEnv =
   λ(cfg : types.BuildVars) →
-    Some [ mkPkgConfigVar cfg.linkDirs
+    Some [ mkPkgConfigVar (cfg.linkDirs # cfg.shareDirs)
          , { var = "PATH", value = mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
          , mkPy3Path cfg.linkDirs
          , libPath cfg

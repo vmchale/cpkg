@@ -3707,6 +3707,13 @@ let alsa-lib =
       }
 in
 
+let bash-completion =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "bash-completion", version = v } ⫽
+      { pkgUrl = "https://github.com/scop/bash-completion/releases/download/${versionString}/bash-completion-${versionString}.tar.xz" }
+in
+
 -- https://downloads.haskell.org/~ghc/8.6.5/ghc-8.6.5-x86_64-deb9-linux.tar.xz
 -- http://www.linuxfromscratch.org/lfs/view/development/chapter06/findutils.html
 -- TODO: musl-ghc?
@@ -3724,6 +3731,7 @@ in
 , autoconf [2,69]
 , automake [1,16,1]
 , babl { version = [0,1], patch = 68 }
+, bash-completion [2,9]
 , binutils [2,32]
 , bison [3,4,1]
 , blas [3,8,0]
