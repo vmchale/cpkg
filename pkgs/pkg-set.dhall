@@ -387,7 +387,9 @@ in
 let pcre =
   λ(v : List Natural) →
     prelude.simplePackage { name = "pcre", version = v } ⫽
-      { pkgUrl = "https://ftp.pcre.org/pub/pcre/pcre-${prelude.showVersion v}.tar.bz2" }
+      { pkgUrl = "https://ftp.pcre.org/pub/pcre/pcre-${prelude.showVersion v}.tar.bz2"
+      , configureCommand = prelude.configureWithFlags [ "--enable-utf8", "--enable-unicode-properties" ]
+      }
 in
 
 let perl5 =
@@ -3574,6 +3576,7 @@ let r =
       , pkgStream = False
       , pkgDeps = [ prelude.unbounded "readline"
                   , prelude.unbounded "libXt"
+                  , prelude.unbounded "pcre"
                   ]
       , pkgBuildDeps = [ prelude.unbounded "gcc" ]
       , installCommand = prelude.installWithBinaries [ "bin/R", "bin/Rscript" ]
