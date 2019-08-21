@@ -3586,7 +3586,7 @@ in
 let libspng =
   λ(v : List Natural) →
     prelude.ninjaPackage { name = "libspng", version = v } ⫽
-      { pkgUrl = "https://gitlab.com/randy408/libspng/uploads/6ddcaa59367b2cea474213a994b82012/libspng-${prelude.showVersion v}.tar.xz"
+      { pkgUrl = "https://github.com/randy408/libspng/archive/v${prelude.showVersion v}.tar.gz"
       , pkgBuildDeps = [ prelude.unbounded "pkg-config"
                        , prelude.unbounded "meson"
                        , prelude.lowerBound { name = "ninja", lower = [1,5,0] }
@@ -3851,7 +3851,7 @@ in
 , libsepol [2,8]
 , libsodium [1,0,17]
 , libsoup { version = [2,67], patch = 3 }
-, libspng [0,4,5]
+, libspng [0,5,0]
 , libssh2 [1,8,0]
 , libtasn1 [4,14]
 , libtiff [4,0,10]
