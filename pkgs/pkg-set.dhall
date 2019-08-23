@@ -89,7 +89,7 @@ let bison =
     prelude.makeGnuExe { name = "bison", version = v } ⫽
       { configureCommand = prelude.configureMkExes [ "build-aux/move-if-change" ]
       , installCommand = prelude.installWithBinaries [ "bin/bison", "bin/yacc" ]
-      , pkgBuildDeps = [ prelude.unbounded "m4" ]
+      , pkgBuildDeps = [ prelude.unbounded "m4" ] -- coreutils
       }
 in
 
@@ -3717,6 +3717,16 @@ let bash-completion =
       { pkgUrl = "https://github.com/scop/bash-completion/releases/download/${versionString}/bash-completion-${versionString}.tar.xz" }
 in
 
+let hugs =
+  prelude.simplePackage { name = "hugs", version = [2006,9] } ⫽
+    { pkgUrl = "https://www.haskell.org/hugs/downloads/2006-09/hugs98-plus-Sep2006.tar.gz"
+    , pkgSubdir = "hugs98-plus-Sep2006"
+-- '-std=gnu89' CFLAG during configure
+    , pkgStream = False
+    -- , pkgBuildDeps = [ prelude.unbounded "perl" ]
+    }
+in
+
 -- https://downloads.haskell.org/~ghc/8.6.5/ghc-8.6.5-x86_64-deb9-linux.tar.xz
 -- http://www.linuxfromscratch.org/lfs/view/development/chapter06/findutils.html
 -- TODO: musl-ghc?
@@ -3798,6 +3808,7 @@ in
 , gzip [1,9]
 , harfbuzz [2,5,3]
 , htop [2,2,0]
+, hugs
 , icu [64,2]
 , icu-le-hb [1,0,3]
 , imageMagick [7,0,8]
@@ -3945,7 +3956,7 @@ in
 , recordproto [1,14,2]
 , renderproto [0,11,1]
 , ruby { version = [2,6], patch = 3 }
-, rustc [1,36,0]
+, rustc [1,37,0]
 , scour [0,37]
 , scrnsaverproto [1,2,2]
 , sdl2 [2,0,10]
