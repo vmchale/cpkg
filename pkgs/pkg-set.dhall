@@ -3786,8 +3786,6 @@ let ghc =
         }
 in
 
--- http://ftp.scsh.net/pub/scsh/0.6/scsh-0.6.7.tar.gz
-
 -- TODO: runghc Setup.hs configure
 -- let composition-prelude =
   -- λ(v : List Natural) →
