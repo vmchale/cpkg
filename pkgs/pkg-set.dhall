@@ -523,6 +523,7 @@ let zlib =
         [ prelude.mkExe "configure"
         , prelude.call (prelude.defaultCall ⫽ { program = "./configure"
                                               , arguments = [ "--prefix=${cfg.installDir}" ]
+                                              -- , environment = Some (host # [ { var = "PATH", value = prelude.mkPathVar cfg.binDirs } ])
                                               , environment = Some (host # [ { var = "PATH", value = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" } ])
                                               })
         ]
@@ -530,6 +531,9 @@ let zlib =
 
     prelude.simplePackage { name = "zlib", version = v } ⫽
       { pkgUrl = "http://www.zlib.net/zlib-${prelude.showVersion v}.tar.xz"
+      -- , pkgBuildDeps = [ prelude.unbounded "coreutils"
+                       -- , prelude.unbounded "sed"
+                       -- ]
       , configureCommand = zlibConfigure
       , installCommand =
           prelude.installWithManpages [ { file = "share/man/man3/zlib.3", section = 3 } ]
@@ -3142,6 +3146,23 @@ let slowBuild =
     ]
 in
 
+let clang =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "clang", version = v } ⫽ prelude.cmakePackage ⫽
+      { pkgUrl = "https://github.com/llvm/llvm-project/releases/download/llvmorg-${versionString}/cfe-${versionString}.src.tar.xz"
+      , pkgSubdir = "cfe-${versionString}.src"
+      , pkgStream = False
+      , buildCommand = slowBuild
+      , pkgDeps = [ prelude.unbounded "llvm" ]
+      , installCommand =
+          λ(cfg : types.BuildVars) →
+            prelude.cmakeInstall cfg
+              # [ prelude.symlinkBinary "bin/clang" ]
+      }
+in
+
+
 let llvm =
   λ(v : List Natural) →
     let versionString = prelude.showVersion v in
@@ -3188,7 +3209,7 @@ let gcc =
   λ(v : List Natural) →
     let versionString = prelude.showVersion v in
     prelude.simplePackage { name = "gcc", version = v } ⫽
-      { pkgUrl = "http://mirror.linux-ia64.org/gnu/gcc/releases/gcc-${versionString}/gcc-${versionString}.tar.xz"
+      { pkgUrl = "https://ftp.gnu.org/pub/gnu/gcc/gcc-${versionString}/gcc-${versionString}.tar.xz"
       , configureCommand =
           λ(cfg : types.BuildVars) →
             [ prelude.call { program = "contrib/download_prerequisites"
@@ -3198,7 +3219,8 @@ let gcc =
                            }
             ] #
               prelude.configureWithFlags [ "--disable-multilib" ] cfg
-      , installCommand = prelude.installWithBinaries [ "bin/gcc", "bin/g++", "bin/gcc-ar", "bin/gcc-nm", "bin/gfortran", "bin/gcc-ranlib" ]
+      , installCommand =
+          prelude.installWithBinaries [ "bin/gcc", "bin/g++", "bin/gcc-ar", "bin/gcc-nm", "bin/gfortran", "bin/gcc-ranlib" ]
       , pkgBuildDeps = [ prelude.unbounded "curl"
                        , prelude.unbounded "sed"
                        ]
@@ -3718,17 +3740,60 @@ let bash-completion =
 in
 
 let hugs =
+  let hugsEnv =
+    λ(_ : List Text) →
+    λ(cfg : types.BuildVars) →
+      Some [ { var = "CFLAGS", value = "-std=gnu89" }
+           , { var = "PATH", value = prelude.mkPathVar cfg.binDirs }
+           ]
+  in
   prelude.simplePackage { name = "hugs", version = [2006,9] } ⫽
     { pkgUrl = "https://www.haskell.org/hugs/downloads/2006-09/hugs98-plus-Sep2006.tar.gz"
     , pkgSubdir = "hugs98-plus-Sep2006"
--- '-std=gnu89' CFLAG during configure
+    , configureCommand = prelude.generalConfigure hugsEnv "configure" ([] : List Text) ([] : List Text)
     , pkgStream = False
-    -- , pkgBuildDeps = [ prelude.unbounded "perl" ]
+    , pkgBuildDeps = [ prelude.unbounded "coreutils"
+                     , prelude.unbounded "sed"
+                     , prelude.unbounded "gcc"
+                     , prelude.unbounded "binutils"
+                     , prelude.unbounded "grep"
+                     , prelude.unbounded "findutils"
+                     ]
     }
 in
 
--- https://downloads.haskell.org/~ghc/8.6.5/ghc-8.6.5-x86_64-deb9-linux.tar.xz
--- http://www.linuxfromscratch.org/lfs/view/development/chapter06/findutils.html
+let bash =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "bash", version = v } ⫽
+        { pkgUrl = "https://ftp.gnu.org/gnu/bash/bash-${prelude.showVersion v}.tar.gz" }
+in
+
+let findutils =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "findutils", version = v } ⫽
+        { pkgUrl = "https://ftp.gnu.org/pub/gnu/findutils/findutils-${prelude.showVersion v}.tar.gz"
+        , pkgStream = False
+        }
+in
+
+let ghc =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "ghc", version = v } ⫽
+        { pkgUrl = "https://downloads.haskell.org/~ghc/${versionString}/ghc-${versionString}-x86_64-deb9-linux.tar.xz"
+        , buildCommand = prelude.doNothing
+        , pkgStream = False
+        }
+in
+
+-- http://ftp.scsh.net/pub/scsh/0.6/scsh-0.6.7.tar.gz
+
+-- TODO: runghc Setup.hs configure
+-- let composition-prelude =
+  -- λ(v : List Natural) →
+    -- prelude.mkHackagePackage { name = "composition-prelude", version = v }
+-- in
+
 -- TODO: musl-ghc?
 -- https://hub.darcs.net/raichoo/hikari
 -- https://versaweb.dl.sourceforge.net/project/schilytools/schily-2019-03-29.tar.bz2
@@ -3744,6 +3809,7 @@ in
 , autoconf [2,69]
 , automake [1,16,1]
 , babl { version = [0,1], patch = 68 }
+, bash [5,0]
 , bash-completion [2,9]
 , binutils [2,32]
 , bison [3,4,1]
@@ -3752,6 +3818,7 @@ in
 , cairo [1,16,0]
 , chickenScheme [5,0,0]
 , cimg [2,6,6]
+, clang [8,0,1]
 , cmake { version = [3,15], patch = 1 }
 , compositeproto [0,4]
 , coreutils [8,31]
@@ -3769,6 +3836,7 @@ in
 , feh [3,1,1]
 , ffmpeg [4,1,3]
 , fftw [3,3,8]
+, findutils [4,6,0]
 , fixesproto [5,0]
 , fontconfig [2,13,1]
 , fossil [2,7]
@@ -3785,6 +3853,7 @@ in
 , gegl { version = [0,4], patch = 16 }
 , gettext [0,20,1]
 , gexiv2 { version = [0,12], patch = 0 }
+, ghc [8,6,5]
 , gperf [3,1]
 , gperftools [2,7]
 , giflib [5,1,4]
@@ -3907,7 +3976,7 @@ in
 , memcached [1,5,12]
 , mercury
 , mesa [19,0,5]
-, meson [0,50,1]
+, meson [0,51,1]
 , mpc [1,1,0]
 , mpfr [4,0,2]
 , mpg123 [1,25,10]
@@ -3962,7 +4031,7 @@ in
 , sdl2 [2,0,10]
 , sed [4,7]
 , shared-mime-info [1,10]
-, sqlite { year = 2018, version = [3,26,0] }
+, sqlite { year = 2019, version = [3,29,0] }
 , swig [3,0,12]
 , tar [1,30]
 , tcc [0,9,27]
