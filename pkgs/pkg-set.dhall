@@ -3891,7 +3891,7 @@ in
 , lapack [3,8,0]
 , lcms2 [2,9]
 , leptonica [1,78,0]
-, libarchive [3,3,3]
+, libarchive [3,4,0]
 , libassuan [2,5,2]
 , libatomic_ops [7,6,10]
 , libav [12,3]
