@@ -77,7 +77,7 @@ in
 let binutils =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "binutils", version = v } ⫽
-      { pkgUrl = "https://mirrors.ocf.berkeley.edu/gnu/binutils/binutils-${prelude.showVersion v}.tar.xz"
+      { pkgUrl = "https://ftp.gnu.org/pub/gnu/binutils/binutils-${prelude.showVersion v}.tar.xz"
       , configureCommand = prelude.configureMkExes [ "mkinstalldirs" ]
       , installCommand =
           prelude.installWithBinaries [ "bin/ar", "bin/as", "bin/ld", "bin/strip", "bin/strings", "bin/readelf", "bin/objdump", "bin/nm", "bin/ranlib" ]
@@ -89,7 +89,7 @@ let bison =
     prelude.makeGnuExe { name = "bison", version = v } ⫽
       { configureCommand = prelude.configureMkExes [ "build-aux/move-if-change" ]
       , installCommand = prelude.installWithBinaries [ "bin/bison", "bin/yacc" ]
-      , pkgBuildDeps = [ prelude.unbounded "m4" ]
+      , pkgBuildDeps = [ prelude.unbounded "m4" ] -- coreutils
       }
 in
 
@@ -152,18 +152,19 @@ let dbus =
 in
 
 let fltk =
-  λ(cfg : { version : List Natural, patch : Natural }) →
-
-    let versionString = prelude.showVersion cfg.version
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v
     in
-    let patchString = Natural/show cfg.patch
-    in
-
-    prelude.defaultPackage ⫽
-      { pkgName = "fltk"
-      , pkgVersion = prelude.fullVersion cfg
-      , pkgUrl = "http://fltk.org/pub/fltk/${versionString}/fltk-${versionString}-${patchString}-source.tar.bz2"
-      , pkgSubdir = "fltk-${versionString}-${patchString}"
+    prelude.simplePackage { name = "fltk", version = v } ⫽
+      { pkgUrl = "http://fltk.org/pub/fltk/${versionString}/fltk-${versionString}-source.tar.bz2"
+      , pkgSubdir = "fltk-${versionString}"
+      , pkgDeps = [ prelude.unbounded "libX11"
+                  , prelude.unbounded "alsa-lib"
+                  , prelude.unbounded "zlib"
+                  , prelude.unbounded "libpng"
+                  , prelude.unbounded "libXft"
+                  , prelude.unbounded "freetype"
+                  ]
       }
 in
 
@@ -386,7 +387,9 @@ in
 let pcre =
   λ(v : List Natural) →
     prelude.simplePackage { name = "pcre", version = v } ⫽
-      { pkgUrl = "https://ftp.pcre.org/pub/pcre/pcre-${prelude.showVersion v}.tar.bz2" }
+      { pkgUrl = "https://ftp.pcre.org/pub/pcre/pcre-${prelude.showVersion v}.tar.bz2"
+      , configureCommand = prelude.configureWithFlags [ "--enable-utf8", "--enable-unicode-properties" ]
+      }
 in
 
 let perl5 =
@@ -520,6 +523,7 @@ let zlib =
         [ prelude.mkExe "configure"
         , prelude.call (prelude.defaultCall ⫽ { program = "./configure"
                                               , arguments = [ "--prefix=${cfg.installDir}" ]
+                                              -- , environment = Some (host # [ { var = "PATH", value = prelude.mkPathVar cfg.binDirs } ])
                                               , environment = Some (host # [ { var = "PATH", value = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" } ])
                                               })
         ]
@@ -527,6 +531,9 @@ let zlib =
 
     prelude.simplePackage { name = "zlib", version = v } ⫽
       { pkgUrl = "http://www.zlib.net/zlib-${prelude.showVersion v}.tar.xz"
+      -- , pkgBuildDeps = [ prelude.unbounded "coreutils"
+                       -- , prelude.unbounded "sed"
+                       -- ]
       , configureCommand = zlibConfigure
       , installCommand =
           prelude.installWithManpages [ { file = "share/man/man3/zlib.3", section = 3 } ]
@@ -3139,6 +3146,23 @@ let slowBuild =
     ]
 in
 
+let clang =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "clang", version = v } ⫽ prelude.cmakePackage ⫽
+      { pkgUrl = "https://github.com/llvm/llvm-project/releases/download/llvmorg-${versionString}/cfe-${versionString}.src.tar.xz"
+      , pkgSubdir = "cfe-${versionString}.src"
+      , pkgStream = False
+      , buildCommand = slowBuild
+      , pkgDeps = [ prelude.unbounded "llvm" ]
+      , installCommand =
+          λ(cfg : types.BuildVars) →
+            prelude.cmakeInstall cfg
+              # [ prelude.symlinkBinary "bin/clang" ]
+      }
+in
+
+
 let llvm =
   λ(v : List Natural) →
     let versionString = prelude.showVersion v in
@@ -3185,7 +3209,7 @@ let gcc =
   λ(v : List Natural) →
     let versionString = prelude.showVersion v in
     prelude.simplePackage { name = "gcc", version = v } ⫽
-      { pkgUrl = "http://mirror.linux-ia64.org/gnu/gcc/releases/gcc-${versionString}/gcc-${versionString}.tar.xz"
+      { pkgUrl = "https://ftp.gnu.org/pub/gnu/gcc/gcc-${versionString}/gcc-${versionString}.tar.xz"
       , configureCommand =
           λ(cfg : types.BuildVars) →
             [ prelude.call { program = "contrib/download_prerequisites"
@@ -3195,7 +3219,8 @@ let gcc =
                            }
             ] #
               prelude.configureWithFlags [ "--disable-multilib" ] cfg
-      , installCommand = prelude.installWithBinaries [ "bin/gcc", "bin/g++", "bin/gcc-ar", "bin/gcc-nm", "bin/gfortran", "bin/gcc-ranlib" ]
+      , installCommand =
+          prelude.installWithBinaries [ "bin/gcc", "bin/g++", "bin/gcc-ar", "bin/gcc-nm", "bin/gfortran", "bin/gcc-ranlib" ]
       , pkgBuildDeps = [ prelude.unbounded "curl"
                        , prelude.unbounded "sed"
                        ]
@@ -3340,6 +3365,7 @@ let ffmpeg =
       , pkgBuildDeps = [ prelude.unbounded "nasm" ]
       -- TODO: cross-compile
       , configureCommand = prelude.configureWithFlags [ "--enable-shared" ]
+      , installCommand = prelude.installWithBinaries [ "bin/ffmpeg" ]
       , pkgDeps = [ prelude.unbounded "bzip2" ]
       , pkgStream = False
       }
@@ -3572,6 +3598,7 @@ let r =
       , pkgStream = False
       , pkgDeps = [ prelude.unbounded "readline"
                   , prelude.unbounded "libXt"
+                  , prelude.unbounded "pcre"
                   ]
       , pkgBuildDeps = [ prelude.unbounded "gcc" ]
       , installCommand = prelude.installWithBinaries [ "bin/R", "bin/Rscript" ]
@@ -3581,7 +3608,7 @@ in
 let libspng =
   λ(v : List Natural) →
     prelude.ninjaPackage { name = "libspng", version = v } ⫽
-      { pkgUrl = "https://gitlab.com/randy408/libspng/uploads/6ddcaa59367b2cea474213a994b82012/libspng-${prelude.showVersion v}.tar.xz"
+      { pkgUrl = "https://github.com/randy408/libspng/archive/v${prelude.showVersion v}.tar.gz"
       , pkgBuildDeps = [ prelude.unbounded "pkg-config"
                        , prelude.unbounded "meson"
                        , prelude.lowerBound { name = "ninja", lower = [1,5,0] }
@@ -3685,8 +3712,86 @@ let libiconv =
       { pkgUrl = "https://ftp.gnu.org/pub/gnu/libiconv/libiconv-${prelude.showVersion v}.tar.gz" }
 in
 
--- https://downloads.haskell.org/~ghc/8.6.5/ghc-8.6.5-x86_64-deb9-linux.tar.xz
--- http://www.linuxfromscratch.org/lfs/view/development/chapter06/findutils.html
+let libav =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libav", version = v } ⫽
+      { pkgUrl = "https://libav.org/releases/libav-${prelude.showVersion v}.tar.xz"
+      , configureCommand = prelude.configureMkExes [ "version.sh", "doc/texi2pod.pl" ]
+      , pkgBuildDeps = [ prelude.unbounded "nasm"
+                       , prelude.unbounded "perl"
+                       ]
+      , installCommand = prelude.installWithBinaries [ "bin/avconv", "bin/avprobe" ]
+      }
+in
+
+let alsa-lib =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "alsa-lib", version = v } ⫽
+      { pkgUrl = "https://www.alsa-project.org/files/pub/lib/alsa-lib-${prelude.showVersion v}.tar.bz2"
+      , pkgStream = False
+      }
+in
+
+let bash-completion =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "bash-completion", version = v } ⫽
+      { pkgUrl = "https://github.com/scop/bash-completion/releases/download/${versionString}/bash-completion-${versionString}.tar.xz" }
+in
+
+let hugs =
+  let hugsEnv =
+    λ(_ : List Text) →
+    λ(cfg : types.BuildVars) →
+      Some [ { var = "CFLAGS", value = "-std=gnu89" }
+           , { var = "PATH", value = prelude.mkPathVar cfg.binDirs }
+           ]
+  in
+  prelude.simplePackage { name = "hugs", version = [2006,9] } ⫽
+    { pkgUrl = "https://www.haskell.org/hugs/downloads/2006-09/hugs98-plus-Sep2006.tar.gz"
+    , pkgSubdir = "hugs98-plus-Sep2006"
+    , configureCommand = prelude.generalConfigure hugsEnv "configure" ([] : List Text) ([] : List Text)
+    , pkgStream = False
+    , pkgBuildDeps = [ prelude.unbounded "coreutils"
+                     , prelude.unbounded "sed"
+                     , prelude.unbounded "gcc"
+                     , prelude.unbounded "binutils"
+                     , prelude.unbounded "grep"
+                     , prelude.unbounded "findutils"
+                     ]
+    }
+in
+
+let bash =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "bash", version = v } ⫽
+        { pkgUrl = "https://ftp.gnu.org/gnu/bash/bash-${prelude.showVersion v}.tar.gz" }
+in
+
+let findutils =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "findutils", version = v } ⫽
+        { pkgUrl = "https://ftp.gnu.org/pub/gnu/findutils/findutils-${prelude.showVersion v}.tar.gz"
+        , pkgStream = False
+        }
+in
+
+let ghc =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "ghc", version = v } ⫽
+        { pkgUrl = "https://downloads.haskell.org/~ghc/${versionString}/ghc-${versionString}-x86_64-deb9-linux.tar.xz"
+        , buildCommand = prelude.doNothing
+        , pkgStream = False
+        }
+in
+
+-- TODO: runghc Setup.hs configure
+-- let composition-prelude =
+  -- λ(v : List Natural) →
+    -- prelude.mkHackagePackage { name = "composition-prelude", version = v }
+-- in
+
 -- TODO: musl-ghc?
 -- https://hub.darcs.net/raichoo/hikari
 -- https://versaweb.dl.sourceforge.net/project/schilytools/schily-2019-03-29.tar.bz2
@@ -3694,21 +3799,25 @@ in
 -- http://www.linuxfromscratch.org/blfs/view/svn/general/unzip.html
 -- https://github.com/jsoftware/jsource/archive/j807-release.tar.gz
 
-[ autoconf [2,69]
-, automake [1,16,1]
+[ alsa-lib [1,1,9]
 , at-spi-atk { version = [2,33], patch = 2 }
 , at-spi-core { version = [2,33], patch = 2 }
 , atk { version = [2,33], patch = 3 }
 , ats [0,3,13]
+, autoconf [2,69]
+, automake [1,16,1]
 , babl { version = [0,1], patch = 68 }
+, bash [5,0]
+, bash-completion [2,9]
 , binutils [2,32]
 , bison [3,4,1]
 , blas [3,8,0]
 , bzip2 [1,0,6]
 , cairo [1,16,0]
 , chickenScheme [5,0,0]
-, cimg [2,6,6]
-, cmake { version = [3,15], patch = 1 }
+, cimg [2,7,0]
+, clang [8,0,1]
+, cmake { version = [3,15], patch = 2 }
 , compositeproto [0,4]
 , coreutils [8,31]
 , ctags [5,8]
@@ -3723,13 +3832,14 @@ in
 , exiv2 [0,27,1]
 , expat [2,2,6]
 , feh [3,1,1]
-, ffmpeg [4,1,3]
+, ffmpeg [4,2]
 , fftw [3,3,8]
+, findutils [4,6,0]
 , fixesproto [5,0]
 , fontconfig [2,13,1]
 , fossil [2,7]
 , flex [2,6,3] -- 2.6.4?
-, fltk { version = [1,3,4], patch = 2 }
+, fltk [1,3,5]
 , freetype-prebuild [2,10,1] -- TODO: force both to have same version?
 , freetype [2,10,1]
 , fribidi [1,0,5]
@@ -3741,10 +3851,11 @@ in
 , gegl { version = [0,4], patch = 16 }
 , gettext [0,20,1]
 , gexiv2 { version = [0,12], patch = 0 }
+, ghc [8,6,5]
 , gperf [3,1]
 , gperftools [2,7]
 , giflib [5,1,4]
-, git [2,19,2]
+, git [2,23,0]
 , glib { version = [2,61], patch = 1 }
 , glib-networking { version = [2,61], patch = 2 }
 , glproto [1,4,17]
@@ -3764,6 +3875,7 @@ in
 , gzip [1,9]
 , harfbuzz [2,5,3]
 , htop [2,2,0]
+, hugs
 , icu [64,2]
 , icu-le-hb [1,0,3]
 , imageMagick [7,0,8]
@@ -3779,9 +3891,10 @@ in
 , lapack [3,8,0]
 , lcms2 [2,9]
 , leptonica [1,78,0]
-, libarchive [3,3,3]
+, libarchive [3,4,0]
 , libassuan [2,5,2]
 , libatomic_ops [7,6,10]
+, libav [12,3]
 , libboost [1,69,0]
 , libcds [2,3,2]
 , libcroco { version = [0,6], patch = 12 }
@@ -3805,7 +3918,7 @@ in
 , libopenjpeg [2,3,1]
 , libotf [0,9,16]
 , libpciaccess [0,14]
-, libpng [1,6,35]
+, libpng [1,6,37]
 , libpsl [0,21,0]
 , libpthread-stubs [0,4]
 , libraw [0,19,2]
@@ -3816,7 +3929,7 @@ in
 , libsepol [2,8]
 , libsodium [1,0,17]
 , libsoup { version = [2,67], patch = 3 }
-, libspng [0,4,5]
+, libspng [0,5,0]
 , libssh2 [1,8,0]
 , libtasn1 [4,14]
 , libtiff [4,0,10]
@@ -3861,10 +3974,10 @@ in
 , memcached [1,5,12]
 , mercury
 , mesa [19,0,5]
-, meson [0,50,1]
+, meson [0,51,1]
 , mpc [1,1,0]
 , mpfr [4,0,2]
-, mpg123 [1,25,10]
+, mpg123 [1,25,12]
 , mosh [1,3,2]
 , motif [2,3,8]
 , musl [1,1,20]
@@ -3884,14 +3997,14 @@ in
 , pango { version = [1,43], patch = 0 }
 , pari [2,11,1]
 , patch [2,7]
-, pcre [8,42]
-, pcre2 [10,32]
+, pcre [8,43]
+, pcre2 [10,33]
 , pdfgrep [2,1,2]
 , perl5 [5,30,0]
 , phash [0,9,6]
 , pixman [0,38,4]
 , pkg-config [0,29,2]
-, poppler [0,79,0]
+, poppler [0,80,0]
 , postgresql [11,1]
 , protobuf [3,8,0]
 , pycairo [1,18,1]
@@ -3910,13 +4023,13 @@ in
 , recordproto [1,14,2]
 , renderproto [0,11,1]
 , ruby { version = [2,6], patch = 3 }
-, rustc [1,36,0]
+, rustc [1,37,0]
 , scour [0,37]
 , scrnsaverproto [1,2,2]
 , sdl2 [2,0,10]
 , sed [4,7]
 , shared-mime-info [1,10]
-, sqlite { year = 2018, version = [3,26,0] }
+, sqlite { year = 2019, version = [3,29,0] }
 , swig [3,0,12]
 , tar [1,30]
 , tcc [0,9,27]
