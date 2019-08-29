@@ -3828,7 +3828,7 @@ in
 , dri2proto [2,8]
 , eigen [3,3,7]
 , elfutils [0,176]
-, emacs [26,2]
+, emacs [26,3]
 , exiv2 [0,27,1]
 , expat [2,2,6]
 , feh [3,1,1]
