@@ -4039,7 +4039,7 @@ in
 , shared-mime-info [1,10]
 , sqlite { year = 2019, version = [3,29,0] }
 , swig [3,0,12]
-, tar [1,30]
+, tar [1,32]
 , tcc [0,9,27]
 , texinfo [6,6]
 , tesseract [4,0,0]
