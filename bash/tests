@@ -12,3 +12,4 @@ cabal new-run cpkg -- install qt -vv --pkg-set './pkgs/pkg-set.dhall'
 cabal new-run cpkg -- install lapack -vv --pkg-set './pkgs/pkg-set.dhall'
 cabal new-run cpkg -- install pdfgrep -vv --pkg-set './pkgs/pkg-set.dhall'
 cabal new-run cpkg -- install wget -vv --pkg-set './pkgs/pkg-set.dhall' --target=arm-linux-gnueabihf
+cabal new-run cpkg -- install hugs -vv --pkg-set './pkgs/pkg-set.dhall' --target=arm-linux-gnueabihf
