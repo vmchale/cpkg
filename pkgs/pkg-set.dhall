@@ -3223,6 +3223,7 @@ let gcc =
           prelude.installWithBinaries [ "bin/gcc", "bin/g++", "bin/gcc-ar", "bin/gcc-nm", "bin/gfortran", "bin/gcc-ranlib" ]
       , pkgBuildDeps = [ prelude.unbounded "curl"
                        , prelude.unbounded "sed"
+                       , prelude.unbounded "libtool"
                        ]
       , pkgStream = False
       }
@@ -3799,6 +3800,12 @@ in
 -- http://www.linuxfromscratch.org/blfs/view/svn/general/unzip.html
 -- https://github.com/jsoftware/jsource/archive/j807-release.tar.gz
 
+let cmark =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "cmark", version = v } ⫽ prelude.cmakePackage ⫽
+        { pkgUrl = "https://github.com/commonmark/cmark/archive/${prelude.showVersion v}.tar.gz" }
+in
+
 [ alsa-lib [1,1,9]
 , at-spi-atk { version = [2,33], patch = 2 }
 , at-spi-core { version = [2,33], patch = 2 }
@@ -3818,6 +3825,7 @@ in
 , cimg [2,7,0]
 , clang [8,0,1]
 , cmake { version = [3,15], patch = 2 }
+, cmark [0,29,0]
 , compositeproto [0,4]
 , coreutils [8,31]
 , ctags [5,8]
@@ -4031,7 +4039,7 @@ in
 , shared-mime-info [1,10]
 , sqlite { year = 2019, version = [3,29,0] }
 , swig [3,0,12]
-, tar [1,30]
+, tar [1,32]
 , tcc [0,9,27]
 , texinfo [6,6]
 , tesseract [4,0,0]
