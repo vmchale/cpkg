@@ -3806,6 +3806,7 @@ let cmark =
         { pkgUrl = "https://github.com/commonmark/cmark/archive/${prelude.showVersion v}.tar.gz" }
 in
 
+-- TODO: set CC for lzip and lzlib
 let lzip =
   λ(v : List Natural) →
     prelude.simplePackage { name = "lzip", version = v } ⫽
@@ -3991,7 +3992,7 @@ in
 , lua [5,3,5]
 , lz4 [1,9,1]
 , lzip [1,21]
-, lzlib [1,9]
+, lzlib [1,11]
 , m17n [1,8,0]
 , m4 [1,4,18]
 , make [4,2,1]
