@@ -3808,6 +3808,23 @@ let cmark =
         { pkgUrl = "https://github.com/commonmark/cmark/archive/${prelude.showVersion v}.tar.gz" }
 in
 
+-- TODO: set CC for lzip and lzlib
+let lzip =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "lzip", version = v } ⫽
+        { pkgUrl = "http://download.savannah.gnu.org/releases/lzip/lzip-${prelude.showVersion v}.tar.gz"
+        , installCommand = prelude.installWithBinaries [ "bin/lzip" ]
+        }
+in
+
+let lzlib =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "lzlib", version = v } ⫽
+        { pkgUrl = "http://download.savannah.gnu.org/releases/lzip/lzlib/lzlib-${prelude.showVersion v}.tar.gz"
+        , configureCommand = prelude.configureWithFlags [ "--enable-shared" ]
+        }
+in
+
 [ alsa-lib [1,1,9]
 , at-spi-atk { version = [2,33], patch = 2 }
 , at-spi-core { version = [2,33], patch = 2 }
@@ -3976,6 +3993,8 @@ in
 , lmdb [0,9,23]
 , lua [5,3,5]
 , lz4 [1,9,1]
+, lzip [1,21]
+, lzlib [1,11]
 , m17n [1,8,0]
 , m4 [1,4,18]
 , make [4,2,1]
