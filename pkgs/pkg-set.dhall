@@ -1936,7 +1936,7 @@ let bzip2 =
   let bzipShared =
     λ(cfg : types.BuildVars) →
       [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
-                                            , arguments = [ "-f", "Makefile-libbz2_so" ]
+                                            , arguments = cc cfg # [ "-f", "Makefile-libbz2_so" ]
                                             })
       ]
   in
@@ -3158,7 +3158,9 @@ let clang =
       , installCommand =
           λ(cfg : types.BuildVars) →
             prelude.cmakeInstall cfg
-              # [ prelude.symlinkBinary "bin/clang" ]
+              # [ prelude.symlinkBinary "bin/clang"
+                , prelude.symlinkBinary "bin/clang-format"
+                ]
       }
 in
 
