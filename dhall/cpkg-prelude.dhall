@@ -473,16 +473,30 @@ let configureMkExes =
     configureMkExesExtraFlags { bins = bins, extraFlags = ([] : List Text) }
 in
 
-let buildWith =
+let generalBuild =
+  λ(cpus : types.BuildVars → Natural) →
   λ(envs : List types.EnvVar) →
   λ(cfg : types.BuildVars) →
     [ call (defaultCall ⫽ { program = makeExe cfg.buildOS
-                          , arguments = [ "-j${Natural/show cfg.cpus}" ]
+                          , arguments = [ "-j${Natural/show (cpus cfg)}" ]
                           , environment =
                               Some envs
                           })
     ]
 in
+
+let defaultCpus =
+  λ(cfg : types.BuildVars) →
+    cfg.cpus
+in
+
+let singleThreaded =
+  λ(_ : types.BuildVars) →
+    1
+in
+
+let buildWith =
+  generalBuild defaultCpus
 
 let defaultBuild =
   λ(cfg : types.BuildVars) →
@@ -1246,4 +1260,7 @@ in
 , configureWithPatch  = configureWithPatch
 , installPrefix       = installPrefix
 , unixPath            = unixPath
+, generalBuild        = generalBuild
+, defaultCpus         = defaultCpus
+, singleThreaded      = singleThreaded
 }
