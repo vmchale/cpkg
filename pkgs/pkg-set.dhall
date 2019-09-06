@@ -88,8 +88,11 @@ let bison =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "bison", version = v } ⫽
       { configureCommand = prelude.configureMkExes [ "build-aux/move-if-change" ]
+      , buildCommand =
+          λ(cfg : types.BuildVars) →
+             prelude.generalBuild prelude.singleThreaded (prelude.buildEnv cfg) cfg
       , installCommand = prelude.installWithBinaries [ "bin/bison", "bin/yacc" ]
-      , pkgBuildDeps = [ prelude.unbounded "m4" ] -- coreutils
+      , pkgBuildDeps = [ prelude.unbounded "m4" ]
       }
 in
 
@@ -1210,15 +1213,9 @@ let shared-mime-info =
   λ(v : List Natural) →
     prelude.simplePackage { name = "shared-mime-info", version = v } ⫽
      { pkgUrl = "http://freedesktop.org/~hadess/shared-mime-info-${prelude.showVersion v}.tar.xz"
-     , buildCommand =
-        λ(cfg : types.BuildVars) →
-          [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS
-                                                , environment = Some (prelude.defaultPath cfg # [ prelude.libPath cfg
-                                                                                                , prelude.mkLDRunPath cfg.linkDirs
-                                                                                                , prelude.mkPerlLib { libDirs = cfg.linkDirs, perlVersion = [5,30,0], cfg = cfg }
-                                                                                                ])
-                                                })
-          ]
+      , buildCommand =
+          λ(cfg : types.BuildVars) →
+             prelude.generalBuild prelude.singleThreaded (prelude.buildEnv cfg) cfg
      , installCommand =
         λ(cfg : types.BuildVars) →
           prelude.defaultInstall cfg
@@ -2416,8 +2413,8 @@ let m17n =
     prelude.simplePackage { name = "m17n-lib", version = v } ⫽
       { pkgUrl = "http://download.savannah.gnu.org/releases/m17n/m17n-lib-${prelude.showVersion v}.tar.gz"
       , buildCommand =
-        λ(cfg : types.BuildVars) →
-          [ prelude.call (prelude.defaultCall ⫽ { program = prelude.makeExe cfg.buildOS }) ]
+          λ(cfg : types.BuildVars) →
+             prelude.generalBuild prelude.singleThreaded (prelude.buildEnv cfg) cfg
       , pkgDeps = [ prelude.unbounded "libXt" ]
       , pkgBuildDeps = [ prelude.unbounded "binutils" ]
       }
@@ -3727,6 +3724,7 @@ let libav =
       }
 in
 
+-- TODO: use bzip2 approach here; build shared + static libs
 let alsa-lib =
   λ(v : List Natural) →
     prelude.simplePackage { name = "alsa-lib", version = v } ⫽
@@ -3858,7 +3856,7 @@ in
 , emacs [26,3]
 , exiv2 [0,27,1]
 , expat [2,2,6]
-, feh [3,1,1]
+, feh [3,2,1]
 , ffmpeg [4,2]
 , fftw [3,3,8]
 , findutils [4,6,0]
