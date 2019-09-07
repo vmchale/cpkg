@@ -477,7 +477,7 @@ let vim =
           λ(cfg : types.BuildVars) →
             let mkLibDynload =
               λ(libs : List Text) →
-                concatMapSep ":" Text (λ(dir : Text) → "${dir}/python2.7/lib-dynload") libs
+                concatMapSep ":" Text (λ(dir : Text) → "${dir}:${dir}/python2.7/lib-dynload") libs
             in
             let mkPython =
               λ(libs : List Text) →
