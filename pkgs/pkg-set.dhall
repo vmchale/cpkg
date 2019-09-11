@@ -3891,7 +3891,7 @@ in
 , gmp [6,1,2]
 , gobject-introspection { version = [1,60], patch = 2 }
 , gnome-doc-utils { version = [0,20], patch = 10 }
-, gnupg [2,2,16]
+, gnupg [2,2,17]
 , gnutls { version = [3,6], patch = 9 }
 , graphviz [2,40,1]
 , grep [3,3]
@@ -3918,7 +3918,7 @@ in
 , lcms2 [2,9]
 , leptonica [1,78,0]
 , libarchive [3,4,0]
-, libassuan [2,5,2]
+, libassuan [2,5,3]
 , libatomic_ops [7,6,10]
 , libav [12,3]
 , libboost [1,69,0]
@@ -3931,9 +3931,9 @@ in
 , libevent [2,1,10]
 , libexif [0,6,21]
 , libffi [3,2,1]
-, libgcrypt [1,8,4]
+, libgcrypt [1,8,5]
 , libglade { version = [2,6], patch = 4 }
-, libgpgError [1,33]
+, libgpgError [1,36]
 , libICE [1,0,9]
 , libiconv [1,16]
 , libjpeg [9]
