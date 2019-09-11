@@ -1928,6 +1928,7 @@ let bzip2 =
                                               })
         , prelude.copyFile "libbz2.so.${versionString}" "lib/libbz2.so.${versionString}"
         , prelude.symlink "lib/libbz2.so.${versionString}" "lib/libbz2.so.1.0"
+        , prelude.symlink "lib/libbz2.so.${versionString}" "lib/libbz2.so"
         ]
     in
   let bzipShared =
@@ -2280,7 +2281,7 @@ let libarchive =
       { pkgUrl = "https://www.libarchive.org/downloads/libarchive-${prelude.showVersion v}.tar.gz"
       -- , pkgDeps = [ prelude.unbounded "libxml2" ]
       , pkgDeps = [ prelude.unbounded "xz"
-                  -- , prelude.unbounded "bzip2"
+                  , prelude.unbounded "bzip2"
                   , prelude.unbounded "zlib"
                   ]
       }
