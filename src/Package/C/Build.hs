@@ -138,7 +138,7 @@ buildCPkg cpkg host sta glob usr shr libs incls bins = do
 
 getPreloads :: [ FilePath ] -> IO [ FilePath ]
 getPreloads =
-    fmap fold . traverse (\fp -> namesMatching (fp </> "*.so"))
+    fmap concat . traverse (\fp -> namesMatching (fp </> "*.so"))
 
 -- only really suitable for hashing at this point, since we use @""@ as the
 -- install directory. we use this to get a hash which we then use to get the

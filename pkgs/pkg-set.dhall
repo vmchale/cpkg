@@ -1928,6 +1928,7 @@ let bzip2 =
                                               })
         , prelude.copyFile "libbz2.so.${versionString}" "lib/libbz2.so.${versionString}"
         , prelude.symlink "lib/libbz2.so.${versionString}" "lib/libbz2.so.1.0"
+        , prelude.symlink "lib/libbz2.so.${versionString}" "lib/libbz2.so"
         ]
     in
   let bzipShared =
@@ -2280,7 +2281,7 @@ let libarchive =
       { pkgUrl = "https://www.libarchive.org/downloads/libarchive-${prelude.showVersion v}.tar.gz"
       -- , pkgDeps = [ prelude.unbounded "libxml2" ]
       , pkgDeps = [ prelude.unbounded "xz"
-                  -- , prelude.unbounded "bzip2"
+                  , prelude.unbounded "bzip2"
                   , prelude.unbounded "zlib"
                   ]
       }
@@ -3799,6 +3800,7 @@ in
 -- https://busybox.net/downloads/busybox-1.31.0.tar.bz2
 -- http://www.linuxfromscratch.org/blfs/view/svn/general/unzip.html
 -- https://github.com/jsoftware/jsource/archive/j807-release.tar.gz
+-- https://codeload.github.com/boyerjohn/rapidstring/zip/master
 
 let cmark =
   λ(v : List Natural) →
@@ -3846,7 +3848,7 @@ in
 , compositeproto [0,4]
 , coreutils [8,31]
 , ctags [5,8]
-, curl [7,65,3]
+, curl [7,66,0]
 , damageproto [1,2,1]
 , dbus [1,13,12]
 , diffutils [3,7]
