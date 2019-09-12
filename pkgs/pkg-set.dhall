@@ -3855,7 +3855,7 @@ in
 , elfutils [0,176]
 , emacs [26,3]
 , exiv2 [0,27,1]
-, expat [2,2,6]
+, expat [2,2,7]
 , feh [3,2,1]
 , ffmpeg [4,2]
 , fftw [3,3,8]
