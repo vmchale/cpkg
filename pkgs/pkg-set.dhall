@@ -3825,6 +3825,14 @@ let lzlib =
         }
 in
 
+let lziprecover =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "lziprecover", version = v } ⫽
+        { pkgUrl = "http://download.savannah.gnu.org/releases/lzip/lziprecover/lziprecover-1.21.tar.gz"
+        , installCommand = prelude.installWithBinaries [ "bin/lziprecover" ]
+        }
+in
+
 [ alsa-lib [1,1,9]
 , at-spi-atk { version = [2,33], patch = 2 }
 , at-spi-core { version = [2,33], patch = 2 }
@@ -3994,6 +4002,7 @@ in
 , lua [5,3,5]
 , lz4 [1,9,1]
 , lzip [1,21]
+, lziprecover [1,21]
 , lzlib [1,11]
 , m17n [1,8,0]
 , m4 [1,4,18]
