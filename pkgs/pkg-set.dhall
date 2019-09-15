@@ -328,7 +328,7 @@ let libjpeg-turbo =
     prelude.cmakePackage ⫽
       { pkgName = "libjpeg-turbo"
       , pkgVersion = v
-      , pkgUrl = "https://downloads.sourceforge.net/libjpeg-turbo/libjpeg-turbo-${prelude.showVersion v}.tar.gz"
+      , pkgUrl = "https://ayera.dl.sourceforge.net/project/libjpeg-turbo/${prelude.showVersion v}/libjpeg-turbo-${prelude.showVersion v}.tar.gz"
       , pkgSubdir = "libjpeg-turbo-${prelude.showVersion v}"
       , pkgBuildDeps = [ prelude.unbounded "cmake"
                        , prelude.unbounded "nasm"
@@ -3947,7 +3947,7 @@ in
 , libICE [1,0,9]
 , libiconv [1,16]
 , libjpeg [9]
-, libjpeg-turbo [2,0,2]
+, libjpeg-turbo [2,0,3]
 , libksba [1,3,5]
 , libmypaint [1,3,0]
 , libnettle [3,5,1]
