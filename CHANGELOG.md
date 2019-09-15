@@ -1,5 +1,9 @@
 # cpkg
 
+## 0.2.3.2
+    
+  * Add `.lz` support
+
 ## 0.2.3.1
 
   * Now works with Dhall 1.25.0 on a sufficiently new GHC
