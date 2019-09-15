@@ -428,7 +428,8 @@ in
 let libpng =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libpng", version = v } ⫽
-      { pkgUrl = "https://download.sourceforge.net/libpng/libpng-${prelude.showVersion v}.tar.xz"
+      { pkgUrl = "https://newcontinuum.dl.sourceforge.net/project/libpng/libpng16/${prelude.showVersion v}/libpng-${prelude.showVersion v}.tar.xz"
+      -- "https://download.sourceforge.net/libpng/libpng-${prelude.showVersion v}.tar.xz"
       , pkgDeps = [ prelude.unbounded "zlib" ]
       }
 in
