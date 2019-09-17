@@ -1041,12 +1041,19 @@ let imageMagick =
     in
 
     prelude.simplePackage { name = "imagemagick", version = v } ⫽
-      { pkgUrl = "https://imagemagick.org/download/ImageMagick-${versionString}-21.tar.xz"
-      , pkgSubdir = "ImageMagick-${versionString}-21"
+      { pkgUrl = "https://imagemagick.org/download/ImageMagick-${versionString}-64.tar.xz"
+      , pkgSubdir = "ImageMagick-${versionString}-64"
+      , pkgDeps = [ prelude.unbounded "zlib"
+                  , prelude.unbounded "libtool"
+                  , prelude.unbounded "bzip2"
+                  , prelude.unbounded "glib"
+                  ]
       , installCommand =
           λ(cfg : types.BuildVars) →
             prelude.defaultInstall cfg
-              # [ prelude.symlink "include/ImageMagick-${major}/MagickWand" "include/wand" ]
+              # [ prelude.symlink "include/ImageMagick-${major}/MagickWand" "include/wand"
+                , prelude.symlinkBinary "bin/convert"
+                ]
       }
 in
 
@@ -1375,7 +1382,9 @@ let util-linux =
               else [] : List Text
           in
           prelude.configureWithFlags ([ "--disable-makeinstall-chown", "--disable-bash-completion"] # crossFlags) cfg
-      , pkgDeps = [ prelude.unbounded "ncurses" ]
+      , pkgDeps = [ prelude.unbounded "ncurses"
+                  , prelude.unbounded "pcre2"
+                  ]
       }
 in
 
@@ -3802,6 +3811,7 @@ in
 -- http://www.linuxfromscratch.org/blfs/view/svn/general/unzip.html
 -- https://github.com/jsoftware/jsource/archive/j807-release.tar.gz
 -- https://codeload.github.com/boyerjohn/rapidstring/zip/master
+-- https://github.com/facebook/zstd/releases/download/v1.4.3/zstd-1.4.3.tar.gz
 
 let cmark =
   λ(v : List Natural) →
