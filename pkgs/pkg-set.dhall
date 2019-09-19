@@ -3375,9 +3375,13 @@ let ffmpeg =
       { pkgUrl = "https://ffmpeg.org/releases/ffmpeg-${prelude.showVersion v}.tar.bz2"
       , pkgBuildDeps = [ prelude.unbounded "nasm" ]
       -- TODO: cross-compile
-      , configureCommand = prelude.configureWithFlags [ "--enable-shared" ]
+      , configureCommand = prelude.configureWithFlags [ "--enable-shared"
+                                                      , "--enable-libmp3lame"
+                                                      ]
       , installCommand = prelude.installWithWrappers [ "ffmpeg" ]
-      , pkgDeps = [ prelude.unbounded "bzip2" ]
+      , pkgDeps = [ prelude.unbounded "bzip2"
+                  , prelude.unbounded "libmp3lame"
+                  ]
       , pkgStream = False
       }
 in
@@ -3844,6 +3848,15 @@ let lziprecover =
         }
 in
 
+let libmp3lame =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "libmp3lame", version = v } ⫽
+        { pkgUrl = "https://downloads.sourceforge.net/lame/lame-${versionString}.tar.gz"
+        , pkgSubdir = "lame-${versionString}"
+        }
+in
+
 [ alsa-lib [1,1,9]
 , at-spi-atk { version = [2,33], patch = 2 }
 , at-spi-core { version = [2,33], patch = 2 }
@@ -3878,7 +3891,7 @@ in
 , exiv2 [0,27,1]
 , expat [2,2,7]
 , feh [3,2,1]
-, ffmpeg [4,2]
+, ffmpeg [4,2,1]
 , fftw [3,3,8]
 , findutils [4,6,0]
 , fixesproto [5,0]
@@ -3959,6 +3972,7 @@ in
 , libjpeg [9]
 , libjpeg-turbo [2,0,3]
 , libksba [1,3,5]
+, libmp3lame [3,100]
 , libmypaint [1,3,0]
 , libnettle [3,5,1]
 , libopenjpeg [2,3,1]
