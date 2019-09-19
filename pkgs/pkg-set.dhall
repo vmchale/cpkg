@@ -3377,10 +3377,27 @@ let ffmpeg =
       -- TODO: cross-compile
       , configureCommand = prelude.configureWithFlags [ "--enable-shared"
                                                       , "--enable-libmp3lame"
+                                                      , "--enable-gpl"
+                                                      , "--enable-version3"
+                                                      , "--enable-nonfree"
+                                                      , "--disable-debug"
+                                                      , "--enable-libass"
+                                                      , "--enable-libfreetype"
+                                                      , "--enable-libvorbis"
+                                                      , "--enable-avresample"
+                                                      , "--enable-gnutls"
+                                                      , "--enable-libvpx"
+                                                      , "--enable-libfdk-aac"
                                                       ]
       , installCommand = prelude.installWithWrappers [ "ffmpeg" ]
       , pkgDeps = [ prelude.unbounded "bzip2"
                   , prelude.unbounded "libmp3lame"
+                  , prelude.unbounded "libass"
+                  , prelude.unbounded "freetype"
+                  , prelude.unbounded "libvorbis"
+                  , prelude.unbounded "gnutls"
+                  , prelude.unbounded "libvpx"
+                  , prelude.unbounded "fdk-aac"
                   ]
       , pkgStream = False
       }
@@ -3816,6 +3833,7 @@ in
 -- https://github.com/jsoftware/jsource/archive/j807-release.tar.gz
 -- https://codeload.github.com/boyerjohn/rapidstring/zip/master
 -- https://github.com/facebook/zstd/releases/download/v1.4.3/zstd-1.4.3.tar.gz
+-- http://caca.zoy.org/attachment/wiki/toilet/toilet-0.3.tar.gz
 
 let cmark =
   λ(v : List Natural) →
@@ -3857,6 +3875,52 @@ let libmp3lame =
         }
 in
 
+let libass =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "libass", version = v } ⫽
+        { pkgUrl = "https://github.com/libass/libass/releases/download/${versionString}/libass-${versionString}.tar.xz"
+        , pkgBuildDeps = [ prelude.unbounded "nasm" ]
+        , pkgDeps = [ prelude.lowerBound { name = "freetype", lower = [9,10,3] }
+                    , prelude.lowerBound { name = "fribidi", lower = [0,19,0] }
+                    , prelude.lowerBound { name = "harfbuzz", lower = [0,9,5] }
+                    , prelude.lowerBound { name = "fontconfig", lower = [2,10,92] }
+                    ]
+        }
+in
+
+let libogg =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libogg", version = v } ⫽
+        { pkgUrl = "https://downloads.xiph.org/releases/ogg/libogg-${prelude.showVersion v}.tar.xz" }
+in
+
+let libvorbis =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libvorbis", version = v } ⫽
+        { pkgUrl = "https://downloads.xiph.org/releases/vorbis/libvorbis-${prelude.showVersion v}.tar.xz"
+        , pkgDeps = [ prelude.unbounded "libogg" ]
+        }
+in
+
+let libvpx =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "libvpx", version = v } ⫽
+        { pkgUrl = "https://github.com/webmproject/libvpx/archive/v${versionString}/libvpx-${versionString}.tar.gz"
+        , pkgBuildDeps = [ prelude.unbounded "nasm"
+                         , prelude.unbounded "perl"
+                         ]
+        , pkgStream = False
+        }
+in
+
+let fdk-aac =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "fdk-aac", version = v } ⫽
+        { pkgUrl = "https://downloads.sourceforge.net/opencore-amr/fdk-aac-${prelude.showVersion v}.tar.gz" }
+in
+
 [ alsa-lib [1,1,9]
 , at-spi-atk { version = [2,33], patch = 2 }
 , at-spi-core { version = [2,33], patch = 2 }
@@ -3890,6 +3954,7 @@ in
 , emacs [26,3]
 , exiv2 [0,27,1]
 , expat [2,2,7]
+, fdk-aac [2,0,0]
 , feh [3,2,1]
 , ffmpeg [4,2,1]
 , fftw [3,3,8]
@@ -3951,6 +4016,7 @@ in
 , lcms2 [2,9]
 , leptonica [1,78,0]
 , libarchive [3,4,0]
+, libass [0,14,0]
 , libassuan [2,5,3]
 , libatomic_ops [7,6,10]
 , libav [12,3]
@@ -3975,6 +4041,7 @@ in
 , libmp3lame [3,100]
 , libmypaint [1,3,0]
 , libnettle [3,5,1]
+, libogg [1,3,4]
 , libopenjpeg [2,3,1]
 , libotf [0,9,16]
 , libpciaccess [0,14]
@@ -3998,6 +4065,8 @@ in
 , libwebp [1,0,3]
 , libSM [1,2,3]
 , libthai [0,1,28]
+, libvorbis [1,3,6]
+, libvpx [1,8,1]
 , libX11 [1,6,8]
 , libXau [1,0,9]
 , libXaw [1,0,13]
