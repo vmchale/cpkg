@@ -268,7 +268,7 @@ in
 let gmp =
   λ(v : List Natural) →
     prelude.simplePackage { name = "gmp", version = v } ⫽
-      { pkgUrl = "https://gmplib.org/download/gmp/gmp-${prelude.showVersion v}.tar.xz"
+      { pkgUrl = "https://gmplib.org/download/gmp/gmp-${prelude.showVersion v}.tar.lz"
       , configureCommand = prelude.configureMkExes [ "mpn/m4-ccas" ]
       , pkgBuildDeps = [ prelude.unbounded "m4" ]
       -- TODO: run 'make check'?
@@ -328,7 +328,7 @@ let libjpeg-turbo =
     prelude.cmakePackage ⫽
       { pkgName = "libjpeg-turbo"
       , pkgVersion = v
-      , pkgUrl = "https://downloads.sourceforge.net/libjpeg-turbo/libjpeg-turbo-${prelude.showVersion v}.tar.gz"
+      , pkgUrl = "https://ayera.dl.sourceforge.net/project/libjpeg-turbo/${prelude.showVersion v}/libjpeg-turbo-${prelude.showVersion v}.tar.gz"
       , pkgSubdir = "libjpeg-turbo-${prelude.showVersion v}"
       , pkgBuildDeps = [ prelude.unbounded "cmake"
                        , prelude.unbounded "nasm"
@@ -428,7 +428,8 @@ in
 let libpng =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libpng", version = v } ⫽
-      { pkgUrl = "https://download.sourceforge.net/libpng/libpng-${prelude.showVersion v}.tar.xz"
+      { pkgUrl = "https://newcontinuum.dl.sourceforge.net/project/libpng/libpng16/${prelude.showVersion v}/libpng-${prelude.showVersion v}.tar.xz"
+      -- "https://download.sourceforge.net/libpng/libpng-${prelude.showVersion v}.tar.xz"
       , pkgDeps = [ prelude.unbounded "zlib" ]
       }
 in
@@ -1040,12 +1041,19 @@ let imageMagick =
     in
 
     prelude.simplePackage { name = "imagemagick", version = v } ⫽
-      { pkgUrl = "https://imagemagick.org/download/ImageMagick-${versionString}-21.tar.xz"
-      , pkgSubdir = "ImageMagick-${versionString}-21"
+      { pkgUrl = "https://imagemagick.org/download/ImageMagick-${versionString}-64.tar.xz"
+      , pkgSubdir = "ImageMagick-${versionString}-64"
+      , pkgDeps = [ prelude.unbounded "zlib"
+                  , prelude.unbounded "libtool"
+                  , prelude.unbounded "bzip2"
+                  , prelude.unbounded "glib"
+                  ]
       , installCommand =
           λ(cfg : types.BuildVars) →
             prelude.defaultInstall cfg
-              # [ prelude.symlink "include/ImageMagick-${major}/MagickWand" "include/wand" ]
+              # [ prelude.symlink "include/ImageMagick-${major}/MagickWand" "include/wand"
+                , prelude.symlinkBinary "bin/convert"
+                ]
       }
 in
 
@@ -1374,7 +1382,9 @@ let util-linux =
               else [] : List Text
           in
           prelude.configureWithFlags ([ "--disable-makeinstall-chown", "--disable-bash-completion"] # crossFlags) cfg
-      , pkgDeps = [ prelude.unbounded "ncurses" ]
+      , pkgDeps = [ prelude.unbounded "ncurses"
+                  , prelude.unbounded "pcre2"
+                  ]
       }
 in
 
@@ -3801,6 +3811,7 @@ in
 -- http://www.linuxfromscratch.org/blfs/view/svn/general/unzip.html
 -- https://github.com/jsoftware/jsource/archive/j807-release.tar.gz
 -- https://codeload.github.com/boyerjohn/rapidstring/zip/master
+-- https://github.com/facebook/zstd/releases/download/v1.4.3/zstd-1.4.3.tar.gz
 
 let cmark =
   λ(v : List Natural) →
@@ -3822,6 +3833,14 @@ let lzlib =
     prelude.simplePackage { name = "lzlib", version = v } ⫽
         { pkgUrl = "http://download.savannah.gnu.org/releases/lzip/lzlib/lzlib-${prelude.showVersion v}.tar.gz"
         , configureCommand = prelude.configureWithFlags [ "--enable-shared" ]
+        }
+in
+
+let lziprecover =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "lziprecover", version = v } ⫽
+        { pkgUrl = "http://download.savannah.gnu.org/releases/lzip/lziprecover/lziprecover-1.21.tar.gz"
+        , installCommand = prelude.installWithBinaries [ "bin/lziprecover" ]
         }
 in
 
@@ -3857,7 +3876,7 @@ in
 , elfutils [0,176]
 , emacs [26,3]
 , exiv2 [0,27,1]
-, expat [2,2,6]
+, expat [2,2,7]
 , feh [3,2,1]
 , ffmpeg [4,2]
 , fftw [3,3,8]
@@ -3938,7 +3957,7 @@ in
 , libICE [1,0,9]
 , libiconv [1,16]
 , libjpeg [9]
-, libjpeg-turbo [2,0,2]
+, libjpeg-turbo [2,0,3]
 , libksba [1,3,5]
 , libmypaint [1,3,0]
 , libnettle [3,5,1]
@@ -3994,6 +4013,7 @@ in
 , lua [5,3,5]
 , lz4 [1,9,1]
 , lzip [1,21]
+, lziprecover [1,21]
 , lzlib [1,11]
 , m17n [1,8,0]
 , m4 [1,4,18]

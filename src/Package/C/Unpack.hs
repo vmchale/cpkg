@@ -9,12 +9,14 @@ import           Codec.Archive.Zip      (ZipOption (..), extractFilesFromArchive
 import qualified Codec.Compression.BZip as Bzip
 import qualified Codec.Compression.GZip as Gzip
 import qualified Codec.Compression.Lzma as Lzma
+import qualified Codec.Lzip             as Lzip
 import qualified Data.ByteString.Lazy   as BSL
 import           System.Directory
 
 data TarCompress = Gz
                  | Xz
                  | Bz2
+                 | Lz
                  | None
 
 data Compression = Tar TarCompress
@@ -26,6 +28,7 @@ getCompressor Gz   = Gzip.decompress
 getCompressor None = id
 getCompressor Xz   = Lzma.decompress
 getCompressor Bz2  = Bzip.decompress
+getCompressor Lz   = Lzip.decompress . BSL.toStrict
 
 archiveResponse :: TarCompress -> FilePath -> BSL.ByteString -> IO ()
 archiveResponse compressScheme dirName =
