@@ -3366,7 +3366,7 @@ let ffmpeg =
       , pkgBuildDeps = [ prelude.unbounded "nasm" ]
       -- TODO: cross-compile
       , configureCommand = prelude.configureWithFlags [ "--enable-shared" ]
-      , installCommand = prelude.installWithBinaries [ "bin/ffmpeg" ]
+      , installCommand = prelude.installWithWrappers [ "ffmpeg" ]
       , pkgDeps = [ prelude.unbounded "bzip2" ]
       , pkgStream = False
       }
