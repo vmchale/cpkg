@@ -4103,7 +4103,7 @@ in
 , make [4,2,1]
 , mako [1,0,7]
 , markupSafe [1,0]
-, memcached [1,5,12]
+, memcached [1,5,18]
 , mercury
 , mesa [19,0,5]
 , meson [0,51,1]
