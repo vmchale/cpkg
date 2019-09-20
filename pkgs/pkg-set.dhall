@@ -3147,7 +3147,7 @@ in
 let slowBuild =
   λ(cfg : types.BuildVars) →
     [ prelude.call { program = "cmake"
-                    , arguments = [ "--build", ".", "--config", "Release", "--", "-j", "3" ]
+                    , arguments = [ "--build", ".", "--config", "Release", "--", "-j", "2" ]
                     , environment = prelude.defaultEnv
                     , procDir = Some "build"
                     }
@@ -3158,7 +3158,7 @@ let clang =
   λ(v : List Natural) →
     let versionString = prelude.showVersion v in
     prelude.simplePackage { name = "clang", version = v } ⫽ prelude.cmakePackage ⫽
-      { pkgUrl = "https://github.com/llvm/llvm-project/releases/download/llvmorg-${versionString}/cfe-${versionString}.src.tar.xz"
+      { pkgUrl = "http://releases.llvm.org/${versionString}/cfe-${versionString}.src.tar.xz"
       , pkgSubdir = "cfe-${versionString}.src"
       , pkgStream = False
       , buildCommand = slowBuild
@@ -3177,7 +3177,7 @@ let llvm =
   λ(v : List Natural) →
     let versionString = prelude.showVersion v in
     prelude.simplePackage { name = "llvm", version = v } ⫽ prelude.cmakePackage ⫽
-      { pkgUrl = "https://github.com/llvm/llvm-project/releases/download/llvmorg-${versionString}/llvm-${versionString}.src.tar.xz"
+      { pkgUrl = "http://releases.llvm.org/${versionString}/llvm-${versionString}.src.tar.xz"
       , pkgSubdir = "llvm-${versionString}.src"
       , pkgStream = False
       , buildCommand = slowBuild
@@ -3938,7 +3938,7 @@ in
 , cairo [1,16,0]
 , chickenScheme [5,0,0]
 , cimg [2,7,0]
-, clang [8,0,1]
+, clang [9,0,0]
 , cmake { version = [3,15], patch = 2 }
 , cmark [0,29,0]
 , compositeproto [0,4]
@@ -4091,7 +4091,7 @@ in
 , libXt [1,2,0]
 , libXtst [1,2,3]
 , libXxf86vm [1,1,4]
-, llvm [8,0,1]
+, llvm [9,0,0]
 , lmdb [0,9,23]
 , lua [5,3,5]
 , lz4 [1,9,1]
