@@ -2287,9 +2287,7 @@ in
 let libarchive =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libarchive", version = v } ⫽
-    -- https://github.com/libarchive/libarchive/releases/download/v3.4.0/libarchive-3.4.0.tar.gz
       { pkgUrl = "https://www.libarchive.org/downloads/libarchive-${prelude.showVersion v}.tar.gz"
-      -- , pkgDeps = [ prelude.unbounded "libxml2" ]
       , pkgDeps = [ prelude.unbounded "xz"
                   , prelude.unbounded "bzip2"
                   , prelude.unbounded "zlib"
@@ -3983,7 +3981,7 @@ in
 , gegl { version = [0,4], patch = 16 }
 , gettext [0,20,1]
 , gexiv2 { version = [0,12], patch = 0 }
-, ghc [8,6,5]
+, ghc [8,8,1]
 , gperf [3,1]
 , gperftools [2,7]
 , giflib [5,1,4]
