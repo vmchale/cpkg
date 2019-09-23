@@ -1,4 +1,4 @@
-{- Dhall prelue imports -}
+ - Dhall prelue imports -}
 let concatMapSep = https://raw.githubusercontent.com/dhall-lang/dhall-lang/9f259cd68870b912fbf2f2a08cd63dc3ccba9dc3/Prelude/Text/concatMapSep
 in
 
@@ -2247,7 +2247,7 @@ in
 let gsl =
   λ(v : List Natural) →
     prelude.simplePackage { name = "gsl", version = v } ⫽
-      { pkgUrl = "http://gnu.mirror.constant.com/gsl/gsl-${prelude.showVersion v}.tar.gz" }
+      { pkgUrl = "http://mirror.keystealth.org/gnu/gsl/gsl-${prelude.showVersion v}.tar.gz" }
 in
 
 let postgresql =
@@ -3993,7 +3993,7 @@ in
 , gnutls { version = [3,6], patch = 9 }
 , graphviz [2,40,1]
 , grep [3,3]
-, gsl [2,5]
+, gsl [2,6]
 , gtk2 { version = [2,24], patch = 32 }
 , gtk3 { version = [3,24], patch = 10 }
 , gzip [1,9]

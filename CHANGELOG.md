@@ -1,5 +1,9 @@
 # cpkg
 
+## 0.2.3.3
+
+  * Add `find` subcommand
+
 ## 0.2.3.2
     
   * Add `.lz` support
