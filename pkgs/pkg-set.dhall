@@ -3802,7 +3802,7 @@ in
 let findutils =
   λ(v : List Natural) →
     prelude.simplePackage { name = "findutils", version = v } ⫽
-        { pkgUrl = "https://ftp.gnu.org/pub/gnu/findutils/findutils-${prelude.showVersion v}.tar.gz"
+        { pkgUrl = "https://ftp.gnu.org/pub/gnu/findutils/findutils-${prelude.showVersion v}.tar.xz"
         , pkgStream = False
         }
 in
