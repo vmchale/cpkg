@@ -3845,15 +3845,23 @@ in
 let lzip =
   λ(v : List Natural) →
     prelude.simplePackage { name = "lzip", version = v } ⫽
-        { pkgUrl = "http://download.savannah.gnu.org/releases/lzip/lzip-${prelude.showVersion v}.tar.gz"
+        { pkgUrl = "http://download.savannah.gnu.org/releases/lzip/lzip-${prelude.showVersion v}.tar.lz"
         , installCommand = prelude.installWithBinaries [ "bin/lzip" ]
+        }
+in
+
+let lunzip =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "lunzip", version = v } ⫽
+        { pkgUrl = "http://download.savannah.gnu.org/releases/lzip/lunzip/lunzip-${prelude.showVersion v}.tar.lz"
+        , installCommand = prelude.installWithBinaries [ "bin/lunzip" ]
         }
 in
 
 let lzlib =
   λ(v : List Natural) →
     prelude.simplePackage { name = "lzlib", version = v } ⫽
-        { pkgUrl = "http://download.savannah.gnu.org/releases/lzip/lzlib/lzlib-${prelude.showVersion v}.tar.gz"
+        { pkgUrl = "http://download.savannah.gnu.org/releases/lzip/lzlib/lzlib-${prelude.showVersion v}.tar.lz"
         , configureCommand = prelude.configureWithFlags [ "--enable-shared" ]
         }
 in
@@ -3861,7 +3869,7 @@ in
 let lziprecover =
   λ(v : List Natural) →
     prelude.simplePackage { name = "lziprecover", version = v } ⫽
-        { pkgUrl = "http://download.savannah.gnu.org/releases/lzip/lziprecover/lziprecover-1.21.tar.gz"
+        { pkgUrl = "http://download.savannah.gnu.org/releases/lzip/lziprecover/lziprecover-${prelude.showVersion v}.tar.lz"
         , installCommand = prelude.installWithBinaries [ "bin/lziprecover" ]
         }
 in
@@ -4094,6 +4102,7 @@ in
 , llvm [9,0,0]
 , lmdb [0,9,23]
 , lua [5,3,5]
+, lunzip [1,11]
 , lz4 [1,9,1]
 , lzip [1,21]
 , lziprecover [1,21]
