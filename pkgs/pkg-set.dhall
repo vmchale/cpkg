@@ -1,4 +1,4 @@
- - Dhall prelue imports -}
+{- Dhall prelue imports -}
 let concatMapSep = https://raw.githubusercontent.com/dhall-lang/dhall-lang/9f259cd68870b912fbf2f2a08cd63dc3ccba9dc3/Prelude/Text/concatMapSep
 in
 
