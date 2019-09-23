@@ -3958,7 +3958,7 @@ in
 , feh [3,2,1]
 , ffmpeg [4,2,1]
 , fftw [3,3,8]
-, findutils [4,6,0]
+, findutils [4,7,0]
 , fixesproto [5,0]
 , fontconfig [2,13,1]
 , fossil [2,7]
