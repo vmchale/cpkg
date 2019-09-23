@@ -38,6 +38,7 @@ module Package.C (
                  , getPkgs
                  -- * Packaging
                  , displayPackageSet
+                 , displayPackage
                  , allPackages
                  -- * Parsers
                  , parseTriple

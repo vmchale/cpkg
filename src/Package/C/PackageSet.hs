@@ -5,11 +5,13 @@ module Package.C.PackageSet ( PackageSet (..)
                             , PackId
                             , pkgsM
                             , displayPackageSet
+                            , displayPackage
                             ) where
 
 import           CPkgPrelude
 import           Data.Containers.ListUtils
 import           Data.List                             (intersperse)
+import           Data.List                             (find)
 import qualified Data.Map                              as M
 import qualified Data.Text                             as T
 import           Data.Text.Prettyprint.Doc
@@ -28,7 +30,14 @@ defaultPackageSetDhall Nothing      = input auto "https://raw.githubusercontent.
 displayPackageSet :: Maybe String -> IO ()
 displayPackageSet = putDoc . pretty <=< defaultPackageSetDhall
 
-newtype PackageSetDhall = PackageSetDhall [ Dhall.CPkg ]
+displayPackage :: String -> IO ()
+displayPackage str = do
+    pk <- find (\ps -> T.unpack (Dhall.pkgName ps) == str) . listPackages <$> defaultPackageSetDhall Nothing
+    case pk of
+        Just p  -> putDoc (pretty p <> hardline)
+        Nothing -> unfoundPackage
+
+newtype PackageSetDhall = PackageSetDhall { listPackages :: [ Dhall.CPkg ] }
     deriving Interpret
 
 instance Pretty PackageSetDhall where

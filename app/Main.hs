@@ -12,6 +12,9 @@ import           System.Directory    (doesDirectoryExist, removeDirectoryRecursi
 cpkgVersion :: V.Version
 cpkgVersion = P.version
 
+-- dhallStandardVersion
+-- dhallVersion
+
 data DumpTarget = Linker { _pkgGet :: String }
                 | Compiler { _pkgGet :: String }
                 | PkgConfig { _pkgGets :: [String] }
@@ -26,6 +29,7 @@ data Command = Install { _pkgName :: String, _verbosity :: Verbosity, _target ::
              | Dump { _dumpTarget :: DumpTarget, _host :: Maybe Platform }
              | DumpCabal { _pkgGetsCabal :: [String], _host :: Maybe Platform }
              | List { _packageSet :: Maybe String }
+             | Find { _findPkg :: String }
              | Nuke
              | NukeCache
              | GarbageCollect { _verbosity :: Verbosity }
@@ -72,6 +76,7 @@ userCmd = hsubparser
     <> command "dump" (info dump (progDesc "Display flags to link against a particular library"))
     <> command "dump-cabal" (info dumpCabal (progDesc "Display flags to use with cabal new-build"))
     <> command "list" (info list (progDesc "List all available packages"))
+    <> command "find" (info find (progDesc "Find a package and list information"))
     <> command "nuke" (info (pure Nuke) (progDesc "Remove all globally installed libraries"))
     <> command "nuke-cache" (info (pure NukeCache) (progDesc "Remove cached soure tarballs"))
     <> command "garbage-collect" (info garbageCollect' (progDesc "Garbage collect redundant packages"))
@@ -79,6 +84,13 @@ userCmd = hsubparser
 
 list :: Parser Command
 list = List <$> packageSet
+
+find :: Parser Command
+find = Find
+    <$> argument str
+        (metavar "PACKAGE"
+        <> help "Name of package"
+        )
 
 ftypeCompletions :: String -> Mod ArgumentFields a
 ftypeCompletions ext = completer . bashCompleter $ "file -X '!*." ++ ext ++ "' -o plusdirs"
@@ -189,6 +201,7 @@ run Nuke = do
         removeDirectoryRecursive pkgDir
 run NukeCache = cleanCache
 run (List pkSet) = displayPackageSet pkSet
+run (Find pk) = displayPackage pk
 run (GarbageCollect v) = runPkgM v garbageCollect
 
 main :: IO ()
