@@ -1991,7 +1991,7 @@ let libsepol =
 
   λ(v : List Natural) →
     prelude.simplePackage { name = "libsepol", version = v } ⫽
-      { pkgUrl = "https://github.com/SELinuxProject/selinux/releases/download/20180524/libsepol-${prelude.showVersion v}.tar.gz"
+      { pkgUrl = "https://github.com/SELinuxProject/selinux/releases/download/20190315/libsepol-${prelude.showVersion v}.tar.gz"
       , configureCommand = prelude.doNothing
       , buildCommand = prelude.doNothing
       , installCommand = sepolInstall
@@ -2025,7 +2025,7 @@ let libselinux =
 
   λ(v : List Natural) →
     prelude.simplePackage { name = "libselinux", version = v } ⫽
-      { pkgUrl = "https://github.com/SELinuxProject/selinux/releases/download/20180524/libselinux-${prelude.showVersion v}.tar.gz"
+      { pkgUrl = "https://github.com/SELinuxProject/selinux/releases/download/20190315/libselinux-${prelude.showVersion v}.tar.gz"
       , configureCommand = prelude.doNothing
       , buildCommand = prelude.doNothing
       , installCommand = selinuxInstall
@@ -3959,7 +3959,7 @@ in
 , elfutils [0,176]
 , emacs [26,3]
 , exiv2 [0,27,1]
-, expat [2,2,7]
+, expat [2,2,8]
 , fdk-aac [2,0,0]
 , feh [3,2,1]
 , ffmpeg [4,2,1]
@@ -3986,7 +3986,7 @@ in
 , gperftools [2,7]
 , giflib [5,1,4]
 , git [2,23,0]
-, glib { version = [2,61], patch = 1 }
+, glib { version = [2,62], patch = 0 }
 , glib-networking { version = [2,61], patch = 2 }
 , glproto [1,4,17]
 , glu [9,0,0]
@@ -4003,7 +4003,7 @@ in
 , gtk2 { version = [2,24], patch = 32 }
 , gtk3 { version = [3,24], patch = 10 }
 , gzip [1,9]
-, harfbuzz [2,5,3]
+, harfbuzz [2,6,1]
 , htop [2,2,0]
 , hugs
 , icu [64,2]
@@ -4057,9 +4057,9 @@ in
 , libraw [0,19,2]
 , librsvg { version = [2,45], patch = 8 }
 , libsamplerate [0,1,9]
-, libselinux [2,8]
+, libselinux [2,9]
 , libsndfile [1,0,28]
-, libsepol [2,8]
+, libsepol [2,9]
 , libsodium [1,0,17]
 , libsoup { version = [2,67], patch = 3 }
 , libspng [0,5,0]
@@ -4113,7 +4113,7 @@ in
 , memcached [1,5,18]
 , mercury
 , mesa [19,0,5]
-, meson [0,51,1]
+, meson [0,51,2]
 , mpc [1,1,0]
 , mpfr [4,0,2]
 , mpg123 [1,25,12]
