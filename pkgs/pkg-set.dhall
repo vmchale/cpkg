@@ -1403,7 +1403,12 @@ let gobject-introspection =
 
     prelude.ninjaPackage { name = "gobject-introspection", version = prelude.fullVersion x } ⫽
       { pkgUrl = "https://download.gnome.org/sources/gobject-introspection/${versionString}/gobject-introspection-${fullVersion}.tar.xz"
-      , pkgBuildDeps = [ prelude.unbounded "meson" ]
+      , pkgBuildDeps = [ prelude.unbounded "meson"
+                       , prelude.unbounded "m4"
+                       , prelude.unbounded "bison"
+                       , prelude.unbounded "flex"
+                       , prelude.unbounded "pkg-config"
+                       ]
       , pkgDeps = [ prelude.lowerBound { name = "glib", lower = [2,58,0] } ]
       , installCommand =
           λ(cfg : types.BuildVars) →
@@ -3993,7 +3998,7 @@ in
 , json-glib { version = [1,4], patch = 4 }
 , glibc [2,30]
 , gmp [6,1,2]
-, gobject-introspection { version = [1,60], patch = 2 }
+, gobject-introspection { version = [1,62], patch = 0 }
 , gnome-doc-utils { version = [0,20], patch = 10 }
 , gnupg [2,2,17]
 , gnutls { version = [3,6], patch = 9 }
