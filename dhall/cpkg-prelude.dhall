@@ -580,7 +580,7 @@ in
 let makeGnuExe =
   λ(pkg : { name : Text, version : List Natural}) →
     simplePackage pkg ⫽
-      { pkgUrl = "https://ftp.gnu.org/gnu/${pkg.name}/${pkg.name}-${showVersion pkg.version}.tar.xz"
+      { pkgUrl = "https://ftp.wayne.edu/gnu/${pkg.name}/${pkg.name}-${showVersion pkg.version}.tar.xz"
       , installCommand = installWithBinaries [ "bin/${pkg.name}" ]
       }
 in
@@ -627,7 +627,7 @@ let cmakeConfigureGeneral =
     let host =
       Optional/fold types.TargetTriple cfg.targetTriple (List Text)
         (λ(tgt : types.TargetTriple) → ["-DCMAKE_C_COMPILER=${printTargetTriple tgt}-gcc", "-DCMAKE_CXX_COMPILER=${printTargetTriple tgt}-g++"])
-          (["-DCMAKE_C_COMPILER=cc", "-DCMAKE_CXX_COMPILER=c++"])
+          (["-DCMAKE_C_COMPILER=gcc", "-DCMAKE_CXX_COMPILER=g++"])
     in
     let system =
       Optional/fold types.TargetTriple cfg.targetTriple (List Text)
@@ -650,7 +650,7 @@ let cmakeEnv =
     , { var = "CMAKE_INCLUDE_PATH", value = (mkIncludePath cfg.includeDirs).value }
     , { var = "CMAKE_LIBRARY_PATH", value = (libPath cfg).value }
     ]
-      # defaultPath cfg
+      # [ { var = "PATH", value = mkPathVar cfg.binDirs } ] -- defaultPath cfg
 in
 
 let cmakeSome =
@@ -704,7 +704,7 @@ let cmakeBuild =
   λ(cfg : types.BuildVars) →
     [ call { program = "cmake"
            , arguments = [ "--build", ".", "--config", "Release", "--", "-j", Natural/show cfg.cpus ]
-           , environment = defaultEnv
+           , environment = Some (cmakeEnv cfg)
            , procDir = Some "build"
            }
     ]
@@ -714,7 +714,7 @@ let cmakeInstall =
   λ(cfg : types.BuildVars) →
     [ call { program = "cmake"
            , arguments = [ "--build", ".", "--target", "install", "--config", "Release" ]
-           , environment = defaultEnv
+           , environment = Some (cmakeEnv cfg)
            , procDir = Some "build"
            }
     ]
@@ -791,13 +791,13 @@ in
 let mesonEnv =
   λ(cfg : types.BuildVars) →
     Some [ mkPkgConfigVar (cfg.linkDirs # cfg.shareDirs)
-         , { var = "PATH", value = mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
+         , { var = "PATH", value = mkPathVar cfg.binDirs }
          , mkPy3Path cfg.linkDirs
          , libPath cfg
          , mkLDRunPath cfg.linkDirs
          , mkLDFlags cfg.linkDirs
          , mkCFlags cfg
-         , mkLDPreload cfg.preloadLibs
+         -- , mkLDPreload cfg.preloadLibs
          ]
 in
 
@@ -840,13 +840,13 @@ let ninjaBuildWith =
 
     [ call (defaultCall ⫽ { program = "ninja"
                           , environment = Some ([ mkPkgConfigVar cfg.linkDirs
-                                                , { var = "PATH", value = mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
+                                                , { var = "PATH", value = mkPathVar cfg.binDirs }
                                                 , mkPy3Path cfg.linkDirs
                                                 , libPath cfg
                                                 , mkLDRunPath cfg.linkDirs
                                                 , mkLDFlagsGeneral cfg.linkDirs linkLibs
                                                 , mkCFlags cfg
-                                                ] # ldPreload)
+                                                ]) -- # ldPreload)
                           , procDir = Some "build" }) ]
 in
 
@@ -858,7 +858,7 @@ let ninjaInstall =
   λ(cfg : types.BuildVars) →
     [ call (defaultCall ⫽ { program = "ninja"
                           , environment = Some [ mkPkgConfigVar cfg.linkDirs
-                                               , { var = "PATH", value = mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
+                                               , { var = "PATH", value = mkPathVar cfg.binDirs }
                                                , mkPy3Path cfg.linkDirs
                                                , libPath cfg
                                                , mkLDRunPath cfg.linkDirs

@@ -1,4 +1,4 @@
- - Dhall prelue imports -}
+{- Dhall prelue imports -}
 let concatMapSep = https://raw.githubusercontent.com/dhall-lang/dhall-lang/9f259cd68870b912fbf2f2a08cd63dc3ccba9dc3/Prelude/Text/concatMapSep
 in
 
@@ -77,7 +77,7 @@ in
 let binutils =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "binutils", version = v } ⫽
-      { pkgUrl = "https://ftp.gnu.org/pub/gnu/binutils/binutils-${prelude.showVersion v}.tar.xz"
+      { pkgUrl = "https://ftp.wayne.edu/gnu/binutils/binutils-${prelude.showVersion v}.tar.xz"
       , configureCommand = prelude.configureMkExes [ "mkinstalldirs" ]
       , installCommand =
           prelude.installWithBinaries [ "bin/ar", "bin/as", "bin/ld", "bin/strip", "bin/strings", "bin/readelf", "bin/objdump", "bin/nm", "bin/ranlib" ]
@@ -332,6 +332,9 @@ let libjpeg-turbo =
       , pkgSubdir = "libjpeg-turbo-${prelude.showVersion v}"
       , pkgBuildDeps = [ prelude.unbounded "cmake"
                        , prelude.unbounded "nasm"
+                       , prelude.unbounded "gcc"
+                       , prelude.unbounded "make"
+                       , prelude.unbounded "binutils"
                        ]
       }
 in
@@ -363,7 +366,7 @@ in
 let ncurses =
   λ(v : List Natural) →
     prelude.simplePackage { name = "ncurses", version = v } ⫽
-      { pkgUrl = "https://ftp.gnu.org/pub/gnu/ncurses/ncurses-${prelude.showVersion v}.tar.gz"
+      { pkgUrl = "https://ftp.wayne.edu/gnu/ncurses/ncurses-${prelude.showVersion v}.tar.gz"
       , configureCommand =
         λ(cfg : types.BuildVars) →
           let crossArgs =
@@ -944,7 +947,7 @@ in
 let libtool =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "libtool", version = v } ⫽
-      { pkgUrl = "http://ftpmirror.gnu.org/libtool/libtool-${prelude.showVersion v}.tar.gz"
+      { pkgUrl = "https://ftp.wayne.edu/gnu/libtool/libtool-${prelude.showVersion v}.tar.xz"
       , pkgBuildDeps = [ prelude.lowerBound { name =  "m4", lower = [1,4,16] } ]
       , pkgStream = False
       }
@@ -1403,8 +1406,15 @@ let gobject-introspection =
 
     prelude.ninjaPackage { name = "gobject-introspection", version = prelude.fullVersion x } ⫽
       { pkgUrl = "https://download.gnome.org/sources/gobject-introspection/${versionString}/gobject-introspection-${fullVersion}.tar.xz"
-      , pkgBuildDeps = [ prelude.unbounded "meson" ]
-      , pkgDeps = [ prelude.lowerBound { name = "glib", lower = [2,58,0] } ]
+      , pkgBuildDeps = [ prelude.unbounded "meson"
+                       , prelude.unbounded "m4"
+                       , prelude.unbounded "bison"
+                       , prelude.unbounded "flex"
+                       , prelude.unbounded "pkg-config"
+                       , prelude.unbounded "glibc"
+                       ]
+      , pkgDeps = [ prelude.lowerBound { name = "glib", lower = [2,58,0] }
+                  ]
       , installCommand =
           λ(cfg : types.BuildVars) →
             [ prelude.mkExe "build/tools/g-ir-scanner"
@@ -1455,8 +1465,8 @@ let glib =
         , prelude.call { program = "meson"
                        , arguments = [ "--prefix=${cfg.installDir}", "..", "-Dselinux=disabled" ] # crossArgs
                        , environment = Some [ prelude.mkPkgConfigVar cfg.linkDirs
-                                            , { var = "PATH", value = prelude.mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
-                                            , { var = "LDFLAGS", value = (prelude.mkLDFlags cfg.linkDirs).value ++ " -lpcre" }
+                                            , { var = "PATH", value = prelude.mkPathVar cfg.binDirs }
+                                            , { var = "LDFLAGS", value = (prelude.mkLDFlags cfg.linkDirs).value }
                                             , prelude.mkPy3Path cfg.linkDirs
                                             , prelude.libPath cfg
                                             , prelude.mkCFlags cfg
@@ -1487,7 +1497,6 @@ let glib =
             # prelude.mkExes [ "build/gobject/glib-mkenums"
                              , "build/gobject/glib-genmarshal"
                              , "build/gio/gdbus-2.0/codegen/gdbus-codegen"
-                             , "build/glib-gettextize"
                              ]
       , installCommand =
           λ(cfg : types.BuildVars) →
@@ -1669,6 +1678,9 @@ let glib =
 
       , pkgBuildDeps = [ prelude.unbounded "meson"
                        , prelude.unbounded "ninja"
+                       , prelude.unbounded "gcc"
+                       , prelude.unbounded "binutils"
+                       , prelude.unbounded "coreutils"
                        ]
       , pkgDeps = [ prelude.unbounded "util-linux"
                   , prelude.unbounded "pcre" -- >= 8.31
@@ -1991,7 +2003,7 @@ let libsepol =
 
   λ(v : List Natural) →
     prelude.simplePackage { name = "libsepol", version = v } ⫽
-      { pkgUrl = "https://github.com/SELinuxProject/selinux/releases/download/20180524/libsepol-${prelude.showVersion v}.tar.gz"
+      { pkgUrl = "https://github.com/SELinuxProject/selinux/releases/download/20190315/libsepol-${prelude.showVersion v}.tar.gz"
       , configureCommand = prelude.doNothing
       , buildCommand = prelude.doNothing
       , installCommand = sepolInstall
@@ -2025,7 +2037,7 @@ let libselinux =
 
   λ(v : List Natural) →
     prelude.simplePackage { name = "libselinux", version = v } ⫽
-      { pkgUrl = "https://github.com/SELinuxProject/selinux/releases/download/20180524/libselinux-${prelude.showVersion v}.tar.gz"
+      { pkgUrl = "https://github.com/SELinuxProject/selinux/releases/download/20190315/libselinux-${prelude.showVersion v}.tar.gz"
       , configureCommand = prelude.doNothing
       , buildCommand = prelude.doNothing
       , installCommand = selinuxInstall
@@ -2287,9 +2299,7 @@ in
 let libarchive =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libarchive", version = v } ⫽
-    -- https://github.com/libarchive/libarchive/releases/download/v3.4.0/libarchive-3.4.0.tar.gz
       { pkgUrl = "https://www.libarchive.org/downloads/libarchive-${prelude.showVersion v}.tar.gz"
-      -- , pkgDeps = [ prelude.unbounded "libxml2" ]
       , pkgDeps = [ prelude.unbounded "xz"
                   , prelude.unbounded "bzip2"
                   , prelude.unbounded "zlib"
@@ -2540,6 +2550,10 @@ let libopenjpeg =
       { pkgUrl = "https://github.com/uclouvain/openjpeg/archive/v${versionString}.tar.gz"
       , pkgSubdir = "openjpeg-${versionString}"
       , pkgDeps = [ prelude.unbounded "zlib" ]
+      , pkgBuildDeps = [ prelude.unbounded "gcc"
+                       , prelude.unbounded "make"
+                       , prelude.unbounded "binutils"
+                       ]
       , installCommand =
           λ(cfg : types.BuildVars) →
             prelude.cmakeInstall cfg
@@ -3219,7 +3233,7 @@ let gcc =
   λ(v : List Natural) →
     let versionString = prelude.showVersion v in
     prelude.simplePackage { name = "gcc", version = v } ⫽
-      { pkgUrl = "https://ftp.gnu.org/pub/gnu/gcc/gcc-${versionString}/gcc-${versionString}.tar.xz"
+      { pkgUrl = "https://ftp.wayne.edu/gnu/gcc/gcc-${versionString}/gcc-${versionString}.tar.xz"
       , configureCommand =
           λ(cfg : types.BuildVars) →
             [ prelude.call { program = "contrib/download_prerequisites"
@@ -3430,7 +3444,7 @@ in
 let make =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "make", version = v } ⫽
-      { pkgUrl = "https://ftp.gnu.org/gnu/make/make-${prelude.showVersion v}.tar.bz2"
+      { pkgUrl = "https://ftp.wayne.edu/gnu/make/make-${prelude.showVersion v}.tar.bz2"
       , configureCommand = prelude.configureWithPatch (./patches/make.patch as Text)
       , buildCommand =
           λ(cfg : types.BuildVars) →
@@ -3644,6 +3658,8 @@ let libspng =
       , pkgBuildDeps = [ prelude.unbounded "pkg-config"
                        , prelude.unbounded "meson"
                        , prelude.lowerBound { name = "ninja", lower = [1,5,0] }
+                       , prelude.unbounded "gcc"
+                       , prelude.unbounded "binutils"
                        ]
       , pkgDeps = [ prelude.unbounded "zlib" ]
       }
@@ -3741,7 +3757,7 @@ in
 let libiconv =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libiconv", version = v } ⫽
-      { pkgUrl = "https://ftp.gnu.org/pub/gnu/libiconv/libiconv-${prelude.showVersion v}.tar.gz" }
+      { pkgUrl = "https://ftp.wayne.edu/gnu/libiconv/libiconv-${prelude.showVersion v}.tar.gz" }
 in
 
 let libav =
@@ -3804,7 +3820,7 @@ in
 let findutils =
   λ(v : List Natural) →
     prelude.simplePackage { name = "findutils", version = v } ⫽
-        { pkgUrl = "https://ftp.gnu.org/pub/gnu/findutils/findutils-${prelude.showVersion v}.tar.gz"
+        { pkgUrl = "https://ftp.gnu.org/pub/gnu/findutils/findutils-${prelude.showVersion v}.tar.xz"
         , pkgStream = False
         }
 in
@@ -3845,15 +3861,23 @@ in
 let lzip =
   λ(v : List Natural) →
     prelude.simplePackage { name = "lzip", version = v } ⫽
-        { pkgUrl = "http://download.savannah.gnu.org/releases/lzip/lzip-${prelude.showVersion v}.tar.gz"
+        { pkgUrl = "http://download.savannah.gnu.org/releases/lzip/lzip-${prelude.showVersion v}.tar.lz"
         , installCommand = prelude.installWithBinaries [ "bin/lzip" ]
+        }
+in
+
+let lunzip =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "lunzip", version = v } ⫽
+        { pkgUrl = "http://download.savannah.gnu.org/releases/lzip/lunzip/lunzip-${prelude.showVersion v}.tar.lz"
+        , installCommand = prelude.installWithBinaries [ "bin/lunzip" ]
         }
 in
 
 let lzlib =
   λ(v : List Natural) →
     prelude.simplePackage { name = "lzlib", version = v } ⫽
-        { pkgUrl = "http://download.savannah.gnu.org/releases/lzip/lzlib/lzlib-${prelude.showVersion v}.tar.gz"
+        { pkgUrl = "http://download.savannah.gnu.org/releases/lzip/lzlib/lzlib-${prelude.showVersion v}.tar.lz"
         , configureCommand = prelude.configureWithFlags [ "--enable-shared" ]
         }
 in
@@ -3861,7 +3885,7 @@ in
 let lziprecover =
   λ(v : List Natural) →
     prelude.simplePackage { name = "lziprecover", version = v } ⫽
-        { pkgUrl = "http://download.savannah.gnu.org/releases/lzip/lziprecover/lziprecover-1.21.tar.gz"
+        { pkgUrl = "http://download.savannah.gnu.org/releases/lzip/lziprecover/lziprecover-${prelude.showVersion v}.tar.lz"
         , installCommand = prelude.installWithBinaries [ "bin/lziprecover" ]
         }
 in
@@ -3953,12 +3977,12 @@ in
 , elfutils [0,176]
 , emacs [26,3]
 , exiv2 [0,27,1]
-, expat [2,2,7]
+, expat [2,2,8]
 , fdk-aac [2,0,0]
 , feh [3,2,1]
 , ffmpeg [4,2,1]
 , fftw [3,3,8]
-, findutils [4,6,0]
+, findutils [4,7,0]
 , fixesproto [5,0]
 , fontconfig [2,13,1]
 , fossil [2,7]
@@ -3975,19 +3999,19 @@ in
 , gegl { version = [0,4], patch = 16 }
 , gettext [0,20,1]
 , gexiv2 { version = [0,12], patch = 0 }
-, ghc [8,6,5]
+, ghc [8,8,1]
 , gperf [3,1]
 , gperftools [2,7]
 , giflib [5,1,4]
 , git [2,23,0]
-, glib { version = [2,61], patch = 1 }
+, glib { version = [2,62], patch = 0 }
 , glib-networking { version = [2,61], patch = 2 }
 , glproto [1,4,17]
 , glu [9,0,0]
 , json-glib { version = [1,4], patch = 4 }
 , glibc [2,30]
 , gmp [6,1,2]
-, gobject-introspection { version = [1,60], patch = 2 }
+, gobject-introspection { version = [1,62], patch = 0 }
 , gnome-doc-utils { version = [0,20], patch = 10 }
 , gnupg [2,2,17]
 , gnutls { version = [3,6], patch = 9 }
@@ -3997,7 +4021,7 @@ in
 , gtk2 { version = [2,24], patch = 32 }
 , gtk3 { version = [3,24], patch = 10 }
 , gzip [1,9]
-, harfbuzz [2,5,3]
+, harfbuzz [2,6,1]
 , htop [2,2,0]
 , hugs
 , icu [64,2]
@@ -4051,9 +4075,9 @@ in
 , libraw [0,19,2]
 , librsvg { version = [2,45], patch = 8 }
 , libsamplerate [0,1,9]
-, libselinux [2,8]
+, libselinux [2,9]
 , libsndfile [1,0,28]
-, libsepol [2,8]
+, libsepol [2,9]
 , libsodium [1,0,17]
 , libsoup { version = [2,67], patch = 3 }
 , libspng [0,5,0]
@@ -4094,6 +4118,7 @@ in
 , llvm [9,0,0]
 , lmdb [0,9,23]
 , lua [5,3,5]
+, lunzip [1,11]
 , lz4 [1,9,1]
 , lzip [1,21]
 , lziprecover [1,21]
@@ -4106,7 +4131,7 @@ in
 , memcached [1,5,18]
 , mercury
 , mesa [19,0,5]
-, meson [0,51,1]
+, meson [0,51,2]
 , mpc [1,1,0]
 , mpfr [4,0,2]
 , mpg123 [1,25,12]
