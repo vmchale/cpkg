@@ -77,7 +77,7 @@ in
 let binutils =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "binutils", version = v } ⫽
-      { pkgUrl = "https://ftp.gnu.org/pub/gnu/binutils/binutils-${prelude.showVersion v}.tar.xz"
+      { pkgUrl = "https://ftp.wayne.edu/gnu/binutils/binutils-${prelude.showVersion v}.tar.xz"
       , configureCommand = prelude.configureMkExes [ "mkinstalldirs" ]
       , installCommand =
           prelude.installWithBinaries [ "bin/ar", "bin/as", "bin/ld", "bin/strip", "bin/strings", "bin/readelf", "bin/objdump", "bin/nm", "bin/ranlib" ]
@@ -332,6 +332,9 @@ let libjpeg-turbo =
       , pkgSubdir = "libjpeg-turbo-${prelude.showVersion v}"
       , pkgBuildDeps = [ prelude.unbounded "cmake"
                        , prelude.unbounded "nasm"
+                       , prelude.unbounded "gcc"
+                       , prelude.unbounded "make"
+                       , prelude.unbounded "binutils"
                        ]
       }
 in
@@ -363,7 +366,7 @@ in
 let ncurses =
   λ(v : List Natural) →
     prelude.simplePackage { name = "ncurses", version = v } ⫽
-      { pkgUrl = "https://ftp.gnu.org/pub/gnu/ncurses/ncurses-${prelude.showVersion v}.tar.gz"
+      { pkgUrl = "https://ftp.wayne.edu/gnu/ncurses/ncurses-${prelude.showVersion v}.tar.gz"
       , configureCommand =
         λ(cfg : types.BuildVars) →
           let crossArgs =
@@ -944,7 +947,7 @@ in
 let libtool =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "libtool", version = v } ⫽
-      { pkgUrl = "http://ftpmirror.gnu.org/libtool/libtool-${prelude.showVersion v}.tar.gz"
+      { pkgUrl = "https://ftp.wayne.edu/gnu/libtool/libtool-${prelude.showVersion v}.tar.xz"
       , pkgBuildDeps = [ prelude.lowerBound { name =  "m4", lower = [1,4,16] } ]
       , pkgStream = False
       }
@@ -1408,8 +1411,10 @@ let gobject-introspection =
                        , prelude.unbounded "bison"
                        , prelude.unbounded "flex"
                        , prelude.unbounded "pkg-config"
+                       , prelude.unbounded "glibc"
                        ]
-      , pkgDeps = [ prelude.lowerBound { name = "glib", lower = [2,58,0] } ]
+      , pkgDeps = [ prelude.lowerBound { name = "glib", lower = [2,58,0] }
+                  ]
       , installCommand =
           λ(cfg : types.BuildVars) →
             [ prelude.mkExe "build/tools/g-ir-scanner"
@@ -1460,8 +1465,8 @@ let glib =
         , prelude.call { program = "meson"
                        , arguments = [ "--prefix=${cfg.installDir}", "..", "-Dselinux=disabled" ] # crossArgs
                        , environment = Some [ prelude.mkPkgConfigVar cfg.linkDirs
-                                            , { var = "PATH", value = prelude.mkPathVar cfg.binDirs ++ "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
-                                            , { var = "LDFLAGS", value = (prelude.mkLDFlags cfg.linkDirs).value ++ " -lpcre" }
+                                            , { var = "PATH", value = prelude.mkPathVar cfg.binDirs }
+                                            , { var = "LDFLAGS", value = (prelude.mkLDFlags cfg.linkDirs).value }
                                             , prelude.mkPy3Path cfg.linkDirs
                                             , prelude.libPath cfg
                                             , prelude.mkCFlags cfg
@@ -1492,7 +1497,6 @@ let glib =
             # prelude.mkExes [ "build/gobject/glib-mkenums"
                              , "build/gobject/glib-genmarshal"
                              , "build/gio/gdbus-2.0/codegen/gdbus-codegen"
-                             , "build/glib-gettextize"
                              ]
       , installCommand =
           λ(cfg : types.BuildVars) →
@@ -1674,6 +1678,9 @@ let glib =
 
       , pkgBuildDeps = [ prelude.unbounded "meson"
                        , prelude.unbounded "ninja"
+                       , prelude.unbounded "gcc"
+                       , prelude.unbounded "binutils"
+                       , prelude.unbounded "coreutils"
                        ]
       , pkgDeps = [ prelude.unbounded "util-linux"
                   , prelude.unbounded "pcre" -- >= 8.31
@@ -2543,6 +2550,10 @@ let libopenjpeg =
       { pkgUrl = "https://github.com/uclouvain/openjpeg/archive/v${versionString}.tar.gz"
       , pkgSubdir = "openjpeg-${versionString}"
       , pkgDeps = [ prelude.unbounded "zlib" ]
+      , pkgBuildDeps = [ prelude.unbounded "gcc"
+                       , prelude.unbounded "make"
+                       , prelude.unbounded "binutils"
+                       ]
       , installCommand =
           λ(cfg : types.BuildVars) →
             prelude.cmakeInstall cfg
@@ -3222,7 +3233,7 @@ let gcc =
   λ(v : List Natural) →
     let versionString = prelude.showVersion v in
     prelude.simplePackage { name = "gcc", version = v } ⫽
-      { pkgUrl = "https://ftp.gnu.org/pub/gnu/gcc/gcc-${versionString}/gcc-${versionString}.tar.xz"
+      { pkgUrl = "https://ftp.wayne.edu/gnu/gcc/gcc-${versionString}/gcc-${versionString}.tar.xz"
       , configureCommand =
           λ(cfg : types.BuildVars) →
             [ prelude.call { program = "contrib/download_prerequisites"
@@ -3433,7 +3444,7 @@ in
 let make =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "make", version = v } ⫽
-      { pkgUrl = "https://ftp.gnu.org/gnu/make/make-${prelude.showVersion v}.tar.bz2"
+      { pkgUrl = "https://ftp.wayne.edu/gnu/make/make-${prelude.showVersion v}.tar.bz2"
       , configureCommand = prelude.configureWithPatch (./patches/make.patch as Text)
       , buildCommand =
           λ(cfg : types.BuildVars) →
@@ -3647,6 +3658,8 @@ let libspng =
       , pkgBuildDeps = [ prelude.unbounded "pkg-config"
                        , prelude.unbounded "meson"
                        , prelude.lowerBound { name = "ninja", lower = [1,5,0] }
+                       , prelude.unbounded "gcc"
+                       , prelude.unbounded "binutils"
                        ]
       , pkgDeps = [ prelude.unbounded "zlib" ]
       }
@@ -3744,7 +3757,7 @@ in
 let libiconv =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libiconv", version = v } ⫽
-      { pkgUrl = "https://ftp.gnu.org/pub/gnu/libiconv/libiconv-${prelude.showVersion v}.tar.gz" }
+      { pkgUrl = "https://ftp.wayne.edu/gnu/libiconv/libiconv-${prelude.showVersion v}.tar.gz" }
 in
 
 let libav =
