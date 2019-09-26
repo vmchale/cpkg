@@ -4155,7 +4155,7 @@ in
 , recordproto [1,14,2]
 , renderproto [0,11,1]
 , ruby { version = [2,6], patch = 3 }
-, rustc [1,37,0]
+, rustc [1,38,0]
 , scour [0,37]
 , scrnsaverproto [1,2,2]
 , sdl2 [2,0,10]
