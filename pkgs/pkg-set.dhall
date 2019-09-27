@@ -3955,11 +3955,12 @@ let swi-prolog =
         , configureCommand = prelude.cmakeConfigureNinja
         , pkgBuildDeps = [ prelude.unbounded "cmake"
                          , prelude.unbounded "ninja"
-                         -- , prelude.unbounded "coreutils"
-                         -- , prelude.unbounded "binutils"
+                         , prelude.unbounded "coreutils"
+                         , prelude.unbounded "binutils"
                          , prelude.unbounded "gcc"
                          ]
         , pkgSubdir = "swipl-${versionString}"
+        , pkgStream = False
         }
 in
 
