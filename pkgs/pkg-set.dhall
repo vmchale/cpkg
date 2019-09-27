@@ -2832,7 +2832,11 @@ let libtiff =
       { pkgUrl = "https://download.osgeo.org/libtiff/tiff-${versionString}.tar.gz"
       , pkgSubdir = "tiff-${versionString}"
       , configureCommand = prelude.cmakeConfigureNinja
-      , pkgBuildDeps = [ prelude.unbounded "cmake" ]
+      , pkgBuildDeps = [ prelude.unbounded "cmake"
+                       , prelude.unbounded "ninja"
+                       , prelude.unbounded "gcc"
+                       , prelude.unbounded "binutils"
+                       ]
       }
 in
 
