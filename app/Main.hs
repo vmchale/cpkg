@@ -4,11 +4,11 @@ import           Control.Monad       (void, when)
 import           Data.Semigroup
 import qualified Data.Text           as T
 import qualified Data.Version        as V
+import           Dhall.Version       (dhallVersionString)
 import           Options.Applicative hiding (auto)
 import           Package.C           hiding (Command, name)
 import qualified Paths_cpkg          as P
 import           System.Directory    (doesDirectoryExist, removeDirectoryRecursive)
-import Dhall.Version (dhallVersionString)
 
 cpkgVersion :: V.Version
 cpkgVersion = P.version
