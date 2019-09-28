@@ -431,8 +431,7 @@ in
 let libpng =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libpng", version = v } ⫽
-      { pkgUrl = "https://newcontinuum.dl.sourceforge.net/project/libpng/libpng16/${prelude.showVersion v}/libpng-${prelude.showVersion v}.tar.xz"
-      -- "https://download.sourceforge.net/libpng/libpng-${prelude.showVersion v}.tar.xz"
+      { pkgUrl = "https://download.sourceforge.net/libpng/libpng-${prelude.showVersion v}.tar.xz"
       , pkgDeps = [ prelude.unbounded "zlib" ]
       }
 in
@@ -3347,7 +3346,6 @@ let phash =
                   , prelude.unbounded "libsamplerate"
                   , prelude.unbounded "mpg123"
                   , prelude.unbounded "libjpeg-turbo"
-                  -- , prelude.unbounded "libjpeg"
                   , prelude.unbounded "libpng"
                   , prelude.unbounded "fftw"
                   ]
@@ -3951,6 +3949,7 @@ let fdk-aac =
 in
 
 -- needs haskal: https://www.informatik.uni-kiel.de/~pakcs/download/pakcs-2.1.2-src.tar.gz
+-- https://ftp.gnu.org/gnu/libcdio/libcdio-2.1.0.tar.bz2
 
 let swi-prolog =
   λ(v : List Natural) →
