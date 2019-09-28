@@ -2553,6 +2553,7 @@ let libopenjpeg =
       , pkgBuildDeps = [ prelude.unbounded "gcc"
                        , prelude.unbounded "make"
                        , prelude.unbounded "binutils"
+                       , prelude.unbounded "cmake"
                        ]
       , installCommand =
           λ(cfg : types.BuildVars) →
