@@ -2833,7 +2833,11 @@ let libtiff =
       { pkgUrl = "https://download.osgeo.org/libtiff/tiff-${versionString}.tar.gz"
       , pkgSubdir = "tiff-${versionString}"
       , configureCommand = prelude.cmakeConfigureNinja
-      , pkgBuildDeps = [ prelude.unbounded "cmake" ]
+      , pkgBuildDeps = [ prelude.unbounded "cmake"
+                       , prelude.unbounded "ninja"
+                       , prelude.unbounded "gcc"
+                       , prelude.unbounded "binutils"
+                       ]
       }
 in
 
@@ -3946,6 +3950,25 @@ let fdk-aac =
         { pkgUrl = "https://downloads.sourceforge.net/opencore-amr/fdk-aac-${prelude.showVersion v}.tar.gz" }
 in
 
+-- needs haskal: https://www.informatik.uni-kiel.de/~pakcs/download/pakcs-2.1.2-src.tar.gz
+
+let swi-prolog =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.ninjaPackage { name = "swi-prolog", version = v } ⫽
+        { pkgUrl = "https://www.swi-prolog.org/download/stable/src/swipl-${versionString}.tar.gz"
+        , configureCommand = prelude.cmakeConfigureNinja
+        , pkgBuildDeps = [ prelude.unbounded "cmake"
+                         , prelude.unbounded "ninja"
+                         , prelude.unbounded "coreutils"
+                         , prelude.unbounded "binutils"
+                         , prelude.unbounded "gcc"
+                         ]
+        , pkgSubdir = "swipl-${versionString}"
+        , pkgStream = False
+        }
+in
+
 [ alsa-lib [1,1,9]
 , at-spi-atk { version = [2,33], patch = 2 }
 , at-spi-core { version = [2,33], patch = 2 }
@@ -4189,6 +4212,7 @@ in
 , shared-mime-info [1,10]
 , sqlite { year = 2019, version = [3,29,0] }
 , swig [3,0,12]
+, swi-prolog [8,0,3]
 , tar [1,32]
 , tcc [0,9,27]
 , texinfo [6,6]

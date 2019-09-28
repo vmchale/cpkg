@@ -4,6 +4,7 @@ import           Control.Monad       (void, when)
 import           Data.Semigroup
 import qualified Data.Text           as T
 import qualified Data.Version        as V
+import           Dhall.Version       (dhallVersionString)
 import           Options.Applicative hiding (auto)
 import           Package.C           hiding (Command, name)
 import qualified Paths_cpkg          as P
@@ -11,9 +12,6 @@ import           System.Directory    (doesDirectoryExist, removeDirectoryRecursi
 
 cpkgVersion :: V.Version
 cpkgVersion = P.version
-
--- dhallStandardVersion
--- dhallVersion
 
 data DumpTarget = Linker { _pkgGet :: String }
                 | Compiler { _pkgGet :: String }
@@ -55,7 +53,7 @@ wrapper = info (helper <*> versionInfo <*> userCmd)
     <> header "cpkg - a build tool for C")
 
 versionInfo :: Parser (a -> a)
-versionInfo = infoOption ("cpkg version: " ++ V.showVersion cpkgVersion) (short 'V' <> long "version" <> help "Show version")
+versionInfo = infoOption ("cpkg version: " ++ V.showVersion cpkgVersion ++ "\n" ++ "dhall version: " ++ dhallVersionString) (short 'V' <> long "version" <> help "Show version")
 
 dumpTarget :: Parser DumpTarget
 dumpTarget = hsubparser

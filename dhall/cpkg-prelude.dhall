@@ -683,7 +683,7 @@ let cmakeConfigureNinja =
     [ createDir "build"
     , call { program = "cmake"
            , arguments = [ "../", "-DCMAKE_INSTALL_PREFIX:PATH=${cfg.installDir}", "-G", "Ninja" ] # host # system
-           , environment = defaultEnv
+           , environment = Some (cmakeEnv cfg)
            , procDir = Some "build"
            }
     ]

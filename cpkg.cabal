@@ -131,7 +131,8 @@ executable cpkg
         cpkg -any,
         optparse-applicative -any,
         directory -any,
-        text -any
+        text -any,
+        dhall >= 1.26.1
 
     if (flag(development) && impl(ghc <=8.2))
         ghc-options: -Werror
