@@ -650,7 +650,7 @@ let cmakeEnv =
     , { var = "CMAKE_INCLUDE_PATH", value = (mkIncludePath cfg.includeDirs).value }
     , { var = "CMAKE_LIBRARY_PATH", value = (libPath cfg).value }
     ]
-      # [ { var = "PATH", value = mkPathVar cfg.binDirs } ] -- defaultPath cfg
+      # defaultPath cfg
 in
 
 let cmakeSome =
@@ -790,15 +790,14 @@ in
 
 let mesonEnv =
   λ(cfg : types.BuildVars) →
-    Some [ mkPkgConfigVar (cfg.linkDirs # cfg.shareDirs)
-         , { var = "PATH", value = mkPathVar cfg.binDirs }
-         , mkPy3Path cfg.linkDirs
-         , libPath cfg
-         , mkLDRunPath cfg.linkDirs
-         , mkLDFlags cfg.linkDirs
-         , mkCFlags cfg
-         -- , mkLDPreload cfg.preloadLibs
-         ]
+    Some ([ mkPkgConfigVar (cfg.linkDirs # cfg.shareDirs)
+          , mkPy3Path cfg.linkDirs
+          , libPath cfg
+          , mkLDRunPath cfg.linkDirs
+          , mkLDFlags cfg.linkDirs
+          , mkCFlags cfg
+          -- , mkLDPreload cfg.preloadLibs
+          ] # defaultPath cfg)
 in
 
 let mesonConfigureGeneral =
@@ -840,13 +839,12 @@ let ninjaBuildWith =
 
     [ call (defaultCall ⫽ { program = "ninja"
                           , environment = Some ([ mkPkgConfigVar cfg.linkDirs
-                                                , { var = "PATH", value = mkPathVar cfg.binDirs }
                                                 , mkPy3Path cfg.linkDirs
                                                 , libPath cfg
                                                 , mkLDRunPath cfg.linkDirs
                                                 , mkLDFlagsGeneral cfg.linkDirs linkLibs
                                                 , mkCFlags cfg
-                                                ]) -- # ldPreload)
+                                                ] # defaultPath cfg) -- # ldPreload)
                           , procDir = Some "build" }) ]
 in
 
@@ -857,14 +855,13 @@ in
 let ninjaInstall =
   λ(cfg : types.BuildVars) →
     [ call (defaultCall ⫽ { program = "ninja"
-                          , environment = Some [ mkPkgConfigVar cfg.linkDirs
-                                               , { var = "PATH", value = mkPathVar cfg.binDirs }
-                                               , mkPy3Path cfg.linkDirs
-                                               , libPath cfg
-                                               , mkLDRunPath cfg.linkDirs
-                                               , mkLDFlags cfg.linkDirs
-                                               , mkCFlags cfg
-                                               ]
+                          , environment = Some ([ mkPkgConfigVar cfg.linkDirs
+                                                , mkPy3Path cfg.linkDirs
+                                                , libPath cfg
+                                                , mkLDRunPath cfg.linkDirs
+                                                , mkLDFlags cfg.linkDirs
+                                                , mkCFlags cfg
+                                                ] # defaultPath cfg)
                           , arguments = [ "install" ]
                           , procDir = Some "build"
                           })

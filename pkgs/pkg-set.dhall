@@ -332,9 +332,7 @@ let libjpeg-turbo =
       , pkgSubdir = "libjpeg-turbo-${prelude.showVersion v}"
       , pkgBuildDeps = [ prelude.unbounded "cmake"
                        , prelude.unbounded "nasm"
-                       , prelude.unbounded "gcc"
                        , prelude.unbounded "make"
-                       , prelude.unbounded "binutils"
                        ]
       }
 in
@@ -1463,14 +1461,13 @@ let glib =
         , prelude.writeFile { file = "build/cross.txt", contents = prelude.mesonCfgFile cfg }
         , prelude.call { program = "meson"
                        , arguments = [ "--prefix=${cfg.installDir}", "..", "-Dselinux=disabled" ] # crossArgs
-                       , environment = Some [ prelude.mkPkgConfigVar cfg.linkDirs
-                                            , { var = "PATH", value = prelude.mkPathVar cfg.binDirs }
-                                            , { var = "LDFLAGS", value = (prelude.mkLDFlags cfg.linkDirs).value }
-                                            , prelude.mkPy3Path cfg.linkDirs
-                                            , prelude.libPath cfg
-                                            , prelude.mkCFlags cfg
-                                            , prelude.mkPkgConfigVar cfg.linkDirs
-                                            ]
+                       , environment = Some ([ prelude.mkPkgConfigVar cfg.linkDirs
+                                             , { var = "LDFLAGS", value = (prelude.mkLDFlags cfg.linkDirs).value }
+                                             , prelude.mkPy3Path cfg.linkDirs
+                                             , prelude.libPath cfg
+                                             , prelude.mkCFlags cfg
+                                             , prelude.mkPkgConfigVar cfg.linkDirs
+                                             ] # prelude.defaultPath cfg)
                        , procDir = Some "build"
                        }
         ]
@@ -1677,9 +1674,6 @@ let glib =
 
       , pkgBuildDeps = [ prelude.unbounded "meson"
                        , prelude.unbounded "ninja"
-                       , prelude.unbounded "gcc"
-                       , prelude.unbounded "binutils"
-                       , prelude.unbounded "coreutils"
                        ]
       , pkgDeps = [ prelude.unbounded "util-linux"
                   , prelude.unbounded "pcre" -- >= 8.31
@@ -2549,9 +2543,7 @@ let libopenjpeg =
       { pkgUrl = "https://github.com/uclouvain/openjpeg/archive/v${versionString}.tar.gz"
       , pkgSubdir = "openjpeg-${versionString}"
       , pkgDeps = [ prelude.unbounded "zlib" ]
-      , pkgBuildDeps = [ prelude.unbounded "gcc"
-                       , prelude.unbounded "make"
-                       , prelude.unbounded "binutils"
+      , pkgBuildDeps = [ prelude.unbounded "make"
                        , prelude.unbounded "cmake"
                        ]
       , installCommand =
@@ -2834,8 +2826,6 @@ let libtiff =
       , configureCommand = prelude.cmakeConfigureNinja
       , pkgBuildDeps = [ prelude.unbounded "cmake"
                        , prelude.unbounded "ninja"
-                       , prelude.unbounded "gcc"
-                       , prelude.unbounded "binutils"
                        ]
       }
 in
@@ -3661,8 +3651,6 @@ let libspng =
       , pkgBuildDeps = [ prelude.unbounded "pkg-config"
                        , prelude.unbounded "meson"
                        , prelude.lowerBound { name = "ninja", lower = [1,5,0] }
-                       , prelude.unbounded "gcc"
-                       , prelude.unbounded "binutils"
                        ]
       , pkgDeps = [ prelude.unbounded "zlib" ]
       }
@@ -3960,8 +3948,6 @@ let swi-prolog =
         , pkgBuildDeps = [ prelude.unbounded "cmake"
                          , prelude.unbounded "ninja"
                          , prelude.unbounded "coreutils"
-                         , prelude.unbounded "binutils"
-                         , prelude.unbounded "gcc"
                          ]
         , pkgSubdir = "swipl-${versionString}"
         , pkgStream = False
