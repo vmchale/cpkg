@@ -4171,7 +4171,7 @@ in
 , pixman [0,38,4]
 , pkg-config [0,29,2]
 , poppler [0,80,0]
-, postgresql [11,1]
+, postgresql [11,5]
 , protobuf [3,8,0]
 , pycairo [1,18,1]
 , pygobject { version = [2,28], patch = 7 }
