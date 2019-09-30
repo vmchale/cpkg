@@ -301,7 +301,7 @@ let mkPerlLib =
     in
     let arch = x.cfg.buildArch
     in
-    let flag = concatMapSep ":" Text (λ(dir : Text) → dir ++ "/site_perl/${showVersion x.perlVersion}/${printArch arch}-${printOS os}/") x.libDirs
+    let flag = concatMapSep ":" Text (λ(dir : Text) → "${dir}/site_perl/${showVersion x.perlVersion}/${printArch arch}-${printOS os}/") x.libDirs
     in
     let major = Optional/fold Natural (List/head Natural x.perlVersion) Text (Natural/show) ""
     in
@@ -689,17 +689,6 @@ let cmakeConfigureNinja =
     ]
 in
 
-let perlConfigure =
-  λ(cfg : types.BuildVars) →
-
-  [ call { program = "perl"
-         , arguments = [ "Makefile.PL", "PREFIX=${cfg.installDir}" ]
-         , environment = defaultEnv
-         , procDir = None Text
-         }
-  ]
-in
-
 let cmakeBuild =
   λ(cfg : types.BuildVars) →
     [ call { program = "cmake"
@@ -999,6 +988,16 @@ let preloadEnv =
                             , mkLDPreload cfg.preloadLibs
                             , mkPerlLib { libDirs = cfg.linkDirs, perlVersion = [5,30,0], cfg = cfg } -- TODO: take this as a parameter
                             ])
+in
+
+let perlConfigure =
+  λ(cfg : types.BuildVars) →
+    [ call { program = "perl"
+           , arguments = [ "Makefile.PL", "PREFIX=${cfg.installDir}" ]
+           , environment = preloadEnv ([] : List Text) cfg
+           , procDir = None Text
+           }
+    ]
 in
 
 let preloadCfg =

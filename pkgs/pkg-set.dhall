@@ -3954,6 +3954,31 @@ let swi-prolog =
         }
 in
 
+let exiftool =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "exiftool", version = v } ⫽
+        { pkgUrl = "https://sno.phy.queensu.ca/~phil/exiftool/Image-ExifTool-${versionString}.tar.gz"
+        , pkgSubdir = "Image-ExifTool-${versionString}"
+        , configureCommand = prelude.perlConfigure
+        , installCommand =
+            -- TODO make this more general
+            λ(cfg : types.BuildVars) →
+              let perlWrapper = "PERL5LIB=${cfg.installDir}/lib/site_perl/5.30.0/ ${cfg.installDir}/bin/exiftool $@"
+              in
+              let wrapped = "wrapper/exiftool"
+              in
+              prelude.defaultInstall cfg
+                # [ prelude.createDir "wrapper"
+                  , prelude.writeFile { file = wrapped, contents = perlWrapper }
+                  , prelude.mkExe wrapped
+                  , prelude.copyFile wrapped wrapped
+                  , prelude.symlinkBinary wrapped
+                  ]
+        , pkgBuildDeps = [ prelude.unbounded "perl" ]
+        }
+in
+
 [ alsa-lib [1,1,9]
 , at-spi-atk { version = [2,33], patch = 2 }
 , at-spi-core { version = [2,33], patch = 2 }
@@ -3985,6 +4010,7 @@ in
 , eigen [3,3,7]
 , elfutils [0,176]
 , emacs [26,3]
+, exiftool [11,65]
 , exiv2 [0,27,1]
 , expat [2,2,8]
 , fdk-aac [2,0,0]
