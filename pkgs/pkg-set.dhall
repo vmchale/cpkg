@@ -4178,7 +4178,7 @@ in
 , ncurses [6,1]
 , nginx [1,15,7]
 , ninja [1,9,0]
-, node [10,16,2]
+, node [10,16,3]
 , npth [1,6]
 , nspr [4,20]
 , openblas [0,3,2]
