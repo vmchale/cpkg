@@ -332,9 +332,7 @@ let libjpeg-turbo =
       , pkgSubdir = "libjpeg-turbo-${prelude.showVersion v}"
       , pkgBuildDeps = [ prelude.unbounded "cmake"
                        , prelude.unbounded "nasm"
-                       , prelude.unbounded "gcc"
                        , prelude.unbounded "make"
-                       , prelude.unbounded "binutils"
                        ]
       }
 in
@@ -431,8 +429,7 @@ in
 let libpng =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libpng", version = v } ⫽
-      { pkgUrl = "https://newcontinuum.dl.sourceforge.net/project/libpng/libpng16/${prelude.showVersion v}/libpng-${prelude.showVersion v}.tar.xz"
-      -- "https://download.sourceforge.net/libpng/libpng-${prelude.showVersion v}.tar.xz"
+      { pkgUrl = "https://download.sourceforge.net/libpng/libpng-${prelude.showVersion v}.tar.xz"
       , pkgDeps = [ prelude.unbounded "zlib" ]
       }
 in
@@ -1464,14 +1461,13 @@ let glib =
         , prelude.writeFile { file = "build/cross.txt", contents = prelude.mesonCfgFile cfg }
         , prelude.call { program = "meson"
                        , arguments = [ "--prefix=${cfg.installDir}", "..", "-Dselinux=disabled" ] # crossArgs
-                       , environment = Some [ prelude.mkPkgConfigVar cfg.linkDirs
-                                            , { var = "PATH", value = prelude.mkPathVar cfg.binDirs }
-                                            , { var = "LDFLAGS", value = (prelude.mkLDFlags cfg.linkDirs).value }
-                                            , prelude.mkPy3Path cfg.linkDirs
-                                            , prelude.libPath cfg
-                                            , prelude.mkCFlags cfg
-                                            , prelude.mkPkgConfigVar cfg.linkDirs
-                                            ]
+                       , environment = Some ([ prelude.mkPkgConfigVar cfg.linkDirs
+                                             , { var = "LDFLAGS", value = (prelude.mkLDFlags cfg.linkDirs).value }
+                                             , prelude.mkPy3Path cfg.linkDirs
+                                             , prelude.libPath cfg
+                                             , prelude.mkCFlags cfg
+                                             , prelude.mkPkgConfigVar cfg.linkDirs
+                                             ] # prelude.defaultPath cfg)
                        , procDir = Some "build"
                        }
         ]
@@ -1678,9 +1674,6 @@ let glib =
 
       , pkgBuildDeps = [ prelude.unbounded "meson"
                        , prelude.unbounded "ninja"
-                       , prelude.unbounded "gcc"
-                       , prelude.unbounded "binutils"
-                       , prelude.unbounded "coreutils"
                        ]
       , pkgDeps = [ prelude.unbounded "util-linux"
                   , prelude.unbounded "pcre" -- >= 8.31
@@ -2550,9 +2543,8 @@ let libopenjpeg =
       { pkgUrl = "https://github.com/uclouvain/openjpeg/archive/v${versionString}.tar.gz"
       , pkgSubdir = "openjpeg-${versionString}"
       , pkgDeps = [ prelude.unbounded "zlib" ]
-      , pkgBuildDeps = [ prelude.unbounded "gcc"
-                       , prelude.unbounded "make"
-                       , prelude.unbounded "binutils"
+      , pkgBuildDeps = [ prelude.unbounded "make"
+                       , prelude.unbounded "cmake"
                        ]
       , installCommand =
           λ(cfg : types.BuildVars) →
@@ -2834,8 +2826,6 @@ let libtiff =
       , configureCommand = prelude.cmakeConfigureNinja
       , pkgBuildDeps = [ prelude.unbounded "cmake"
                        , prelude.unbounded "ninja"
-                       , prelude.unbounded "gcc"
-                       , prelude.unbounded "binutils"
                        ]
       }
 in
@@ -3346,7 +3336,6 @@ let phash =
                   , prelude.unbounded "libsamplerate"
                   , prelude.unbounded "mpg123"
                   , prelude.unbounded "libjpeg-turbo"
-                  -- , prelude.unbounded "libjpeg"
                   , prelude.unbounded "libpng"
                   , prelude.unbounded "fftw"
                   ]
@@ -3662,8 +3651,6 @@ let libspng =
       , pkgBuildDeps = [ prelude.unbounded "pkg-config"
                        , prelude.unbounded "meson"
                        , prelude.lowerBound { name = "ninja", lower = [1,5,0] }
-                       , prelude.unbounded "gcc"
-                       , prelude.unbounded "binutils"
                        ]
       , pkgDeps = [ prelude.unbounded "zlib" ]
       }
@@ -3950,6 +3937,7 @@ let fdk-aac =
 in
 
 -- needs haskal: https://www.informatik.uni-kiel.de/~pakcs/download/pakcs-2.1.2-src.tar.gz
+-- https://ftp.gnu.org/gnu/libcdio/libcdio-2.1.0.tar.bz2
 
 let swi-prolog =
   λ(v : List Natural) →
@@ -3960,11 +3948,34 @@ let swi-prolog =
         , pkgBuildDeps = [ prelude.unbounded "cmake"
                          , prelude.unbounded "ninja"
                          , prelude.unbounded "coreutils"
-                         , prelude.unbounded "binutils"
-                         , prelude.unbounded "gcc"
                          ]
         , pkgSubdir = "swipl-${versionString}"
         , pkgStream = False
+        }
+in
+
+let exiftool =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "exiftool", version = v } ⫽
+        { pkgUrl = "https://sno.phy.queensu.ca/~phil/exiftool/Image-ExifTool-${versionString}.tar.gz"
+        , pkgSubdir = "Image-ExifTool-${versionString}"
+        , configureCommand = prelude.perlConfigure
+        , installCommand =
+            -- TODO make this more general
+            λ(cfg : types.BuildVars) →
+              let perlWrapper = "PERL5LIB=${cfg.installDir}/lib/site_perl/5.30.0/ ${cfg.installDir}/bin/exiftool $@"
+              in
+              let wrapped = "wrapper/exiftool"
+              in
+              prelude.defaultInstall cfg
+                # [ prelude.createDir "wrapper"
+                  , prelude.writeFile { file = wrapped, contents = perlWrapper }
+                  , prelude.mkExe wrapped
+                  , prelude.copyFile wrapped wrapped
+                  , prelude.symlinkBinary wrapped
+                  ]
+        , pkgBuildDeps = [ prelude.unbounded "perl" ]
         }
 in
 
@@ -3999,6 +4010,7 @@ in
 , eigen [3,3,7]
 , elfutils [0,176]
 , emacs [26,3]
+, exiftool [11,65]
 , exiv2 [0,27,1]
 , expat [2,2,8]
 , fdk-aac [2,0,0]
@@ -4166,7 +4178,7 @@ in
 , ncurses [6,1]
 , nginx [1,15,7]
 , ninja [1,9,0]
-, node [10,16,2]
+, node [10,16,3]
 , npth [1,6]
 , nspr [4,20]
 , openblas [0,3,2]
@@ -4185,7 +4197,7 @@ in
 , pixman [0,38,4]
 , pkg-config [0,29,2]
 , poppler [0,80,0]
-, postgresql [11,1]
+, postgresql [11,5]
 , protobuf [3,8,0]
 , pycairo [1,18,1]
 , pygobject { version = [2,28], patch = 7 }
