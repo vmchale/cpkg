@@ -32,7 +32,9 @@ getCompressor Lz   = Lzip.decompress . BSL.toStrict
 
 archiveResponse :: TarCompress -> FilePath -> BSL.ByteString -> IO ()
 archiveResponse compressScheme dirName =
-    Archive.unpackToDirLazy dirName . getCompressor compressScheme
+    fmap (either showError id) . Archive.runArchiveM . Archive.unpackToDirLazy dirName . getCompressor compressScheme
+
+    where showError = error . show
 
 tarResponse :: TarCompress -> FilePath -> BSL.ByteString -> IO ()
 tarResponse compressScheme dirName =
