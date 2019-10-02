@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
 set -e pipefail
-DOCS_PATH=$(PKG_CONFIG_PATH=$(cpkg dump pkg-config libarchive) cabal haddock --haddock-for-hackage | tail -n1)
+DOCS_PATH=$(PKG_CONFIG_PATH=$(cpkg dump pkg-config libarchive) cabal haddock -w ghc-8.6.5 --haddock-for-hackage | tail -n1)
 cabal upload --publish -d "$DOCS_PATH"
