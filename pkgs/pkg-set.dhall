@@ -1041,7 +1041,7 @@ let imageMagick =
     in
 
     prelude.simplePackage { name = "imagemagick", version = v } ⫽
-      { pkgUrl = "https://imagemagick.org/download/ImageMagick-${versionString}-64.tar.xz"
+      { pkgUrl = "https://imagemagick.org/download/ImageMagick-${versionString}-67.tar.xz"
       , pkgSubdir = "ImageMagick-${versionString}-64"
       , pkgDeps = [ prelude.unbounded "zlib"
                   , prelude.unbounded "libtool"
