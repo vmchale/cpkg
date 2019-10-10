@@ -28,7 +28,7 @@ getCompressor Gz   = Gzip.decompress
 getCompressor None = id
 getCompressor Xz   = Lzma.decompress
 getCompressor Bz2  = Bzip.decompress
-getCompressor Lz   = Lzip.decompress . BSL.toStrict
+getCompressor Lz   = Lzip.decompress
 
 archiveResponse :: TarCompress -> FilePath -> BSL.ByteString -> IO ()
 archiveResponse compressScheme dirName =
