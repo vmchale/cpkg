@@ -972,7 +972,9 @@ in
 let readline =
   λ(v : List Natural) →
     prelude.simplePackage { name = "readline", version = v } ⫽
-      { pkgUrl = "https://ftp.gnu.org/gnu/readline/readline-${prelude.showVersion v}.tar.gz" } -- TODO: should this depend on ncurses?
+      { pkgUrl = "https://ftp.gnu.org/gnu/readline/readline-${prelude.showVersion v}.tar.gz"
+      , pkgBuildDeps = [ prelude.unbounded "make" ]
+      } -- TODO: should this depend on ncurses?
 in
 
 let pixman =
@@ -4024,6 +4026,8 @@ let apr-util =
         , pkgStream = False
         }
 in
+-- https://versaweb.dl.sourceforge.net/project/sbcl/sbcl/1.5.7/sbcl-1.5.7-x86-64-linux-binary.tar.bz2
+-- http://www.xach.com/lisp/buildapp.tgz
 
 [ alsa-lib [1,1,9]
 , apr [1,7,0]
