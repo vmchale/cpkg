@@ -1,5 +1,9 @@
 # cpkg
 
+## 0.2.3.5
+
+  * Use `lzlib` 0.3.0.0
+
 ## 0.2.3.4
 
   * Use `libarchive` 2.0.0.0
