@@ -2,6 +2,9 @@
 let concatMapSep = https://raw.githubusercontent.com/dhall-lang/dhall-lang/9f259cd68870b912fbf2f2a08cd63dc3ccba9dc3/Prelude/Text/concatMapSep
 in
 
+let concat = https://raw.githubusercontent.com/dhall-lang/dhall-lang/dbcf50c27b1592a6acfd38cb3ba976e3a36b74fe/Prelude/Text/concat
+in
+
 let concatMapText = https://raw.githubusercontent.com/dhall-lang/dhall-lang/9f259cd68870b912fbf2f2a08cd63dc3ccba9dc3/Prelude/Text/concatMap
 in
 
@@ -3979,7 +3982,52 @@ let exiftool =
         }
 in
 
+let subversion =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "subversion", version = v } ⫽
+        { pkgUrl = "https://www-eu.apache.org/dist/subversion/subversion-${prelude.showVersion v}.tar.bz2"
+        , pkgDeps = [ prelude.unbounded "apr"
+                    , prelude.unbounded "apr-util"
+                    , prelude.unbounded "sqlite"
+                    , prelude.unbounded "lz4"
+                    , prelude.unbounded "zlib"
+                    , prelude.unbounded "utf8proc"
+                    ]
+        , pkgBuildDeps = [ prelude.unbounded "pkg-config" ]
+        , installCommand = prelude.installWithBinaries [ "bin/svn" ]
+        }
+in
+
+let utf8proc =
+  λ(v : List Natural) →
+    let versionString = prelude.showVersion v in
+    prelude.simplePackage { name = "utf8proc", version = v } ⫽ prelude.cmakePackage ⫽
+        { pkgUrl = "https://github.com/JuliaStrings/utf8proc/archive/v${versionString}.tar.gz" }
+in
+
+let apr =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "apr", version = v } ⫽
+        { pkgUrl = "https://www-eu.apache.org/dist/apr/apr-${prelude.showVersion v}.tar.bz2"
+        , pkgStream = False
+        }
+in
+
+let apr-util =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "apr-util", version = v } ⫽
+        { pkgUrl = "https://www-eu.apache.org/dist/apr/apr-util-${prelude.showVersion v}.tar.bz2"
+        , pkgDeps = [ prelude.unbounded "apr" ]
+        , configureCommand =
+            λ(cfg : types.BuildVars) →
+              prelude.configureWithFlags [ "--with-apr=${concat cfg.linkDirs}/../" ] cfg
+        , pkgStream = False
+        }
+in
+
 [ alsa-lib [1,1,9]
+, apr [1,7,0]
+, apr-util [1,6,1]
 , at-spi-atk { version = [2,33], patch = 2 }
 , at-spi-core { version = [2,33], patch = 2 }
 , atk { version = [2,33], patch = 3 }
@@ -4154,7 +4202,7 @@ in
 , lmdb [0,9,23]
 , lua [5,3,5]
 , lunzip [1,11]
-, lz4 [1,9,1]
+, lz4 [1,9,2]
 , lzip [1,21]
 , lziprecover [1,21]
 , lzlib [1,11]
@@ -4221,7 +4269,8 @@ in
 , sdl2 [2,0,10]
 , sed [4,7]
 , shared-mime-info [1,10]
-, sqlite { year = 2019, version = [3,29,0] }
+, sqlite { year = 2019, version = [3,30,0] }
+, subversion [1,12,2]
 , swig [3,0,12]
 , swi-prolog [8,0,3]
 , tar [1,32]
@@ -4230,6 +4279,7 @@ in
 , tesseract [4,0,0]
 , time [1,9]
 , unistring [0,9,10]
+, utf8proc [2,4,0]
 , util-linux { version = [2,34] }
 , util-macros [1,19,2]
 , vala { version = [0,45], patch = 3 }
