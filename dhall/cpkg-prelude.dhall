@@ -588,7 +588,7 @@ in
 let makeGnuLibrary =
   λ(pkg : { name : Text, version : List Natural}) →
     simplePackage pkg ⫽
-      { pkgUrl = "https://mirrors.ocf.berkeley.edu/gnu/lib${pkg.name}/lib${pkg.name}-${showVersion pkg.version}.tar.xz"
+      { pkgUrl = "https://ftp.gnu.org/pub/gnu/lib${pkg.name}/lib${pkg.name}-${showVersion pkg.version}.tar.xz"
       , pkgSubdir = "lib${pkg.name}-${showVersion pkg.version}"
       }
 in
