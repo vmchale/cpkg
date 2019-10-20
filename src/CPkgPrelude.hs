@@ -15,8 +15,8 @@ module CPkgPrelude ( -- * Base reëxports
                    , MonadIO (..)
                    , Void
                    -- * Dhall reëxports
-                   , Inject
-                   , Interpret
+                   , ToDhall
+                   , FromDhall
                    -- * hashable reëxports
                    , Hashable
                    -- * Exports from "Data.Binary"
@@ -45,7 +45,7 @@ import           Data.Functor              (($>))
 import           Data.Hashable             (Hashable)
 import           Data.Text.Prettyprint.Doc
 import           Data.Void                 (Void)
-import           Dhall                     (Inject, Interpret)
+import           Dhall                     (FromDhall, ToDhall)
 import           GHC.Generics              (Generic)
 import           GHC.Natural               (Natural)
 import           Lens.Micro                (Lens', over)

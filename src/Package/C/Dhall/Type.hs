@@ -31,10 +31,10 @@ data BuildVars = BuildVars { installDir   :: T.Text
                            , buildArch    :: Arch
                            , static       :: Bool
                            , cpus         :: Natural
-                           } deriving (Generic, Inject)
+                           } deriving (Generic, ToDhall)
 
 data EnvVar = EnvVar { var :: T.Text, value :: T.Text }
-            deriving (Generic, Interpret)
+            deriving (Generic, FromDhall)
 
 data Command = CreateDirectory { dir :: T.Text }
              | MakeExecutable { file :: T.Text }
@@ -49,7 +49,7 @@ data Command = CreateDirectory { dir :: T.Text }
              | Write { contents :: T.Text, file :: T.Text }
              | CopyFile { src :: T.Text, dest :: T.Text }
              | Patch { patchContents :: T.Text }
-             deriving (Generic, Interpret)
+             deriving (Generic, FromDhall)
 
 data CPkg = CPkg { pkgName          :: T.Text
                  , pkgVersion       :: [ Natural ]
@@ -63,7 +63,7 @@ data CPkg = CPkg { pkgName          :: T.Text
                  , installCommand   :: BuildVars -> [ Command ]
                  -- TODO: add "description" field for printing
                  -- TODO: add "test" command for e.g. `make check`
-                 } deriving (Generic, Interpret)
+                 } deriving (Generic, FromDhall)
 
 preDeps :: Doc a -> [ Dep ] -> Doc a
 preDeps _ []   = ""

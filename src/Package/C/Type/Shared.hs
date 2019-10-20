@@ -15,8 +15,8 @@ data VersionBound = Lower { lower :: Version }
                   | Upper { upper :: Version }
                   | LowerUpper { lower :: Version, upper :: Version }
                   | NoBound
-                  deriving (Generic, Interpret)
+                  deriving (Generic, FromDhall)
 
 data Dep = Dep { name  :: T.Text
                , bound :: VersionBound
-               } deriving (Generic, Interpret)
+               } deriving (Generic, FromDhall)

@@ -38,7 +38,7 @@ displayPackage str = do
         Nothing -> unfoundPackage
 
 newtype PackageSetDhall = PackageSetDhall { listPackages :: [ Dhall.CPkg ] }
-    deriving Interpret
+    deriving FromDhall
 
 instance Pretty PackageSetDhall where
     pretty (PackageSetDhall set) = vdisplay (intersperse hardline (pretty <$> set)) <> hardline

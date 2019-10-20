@@ -9,7 +9,7 @@ import           CPkgPrelude
 import           Data.List   (intercalate)
 
 newtype Version = Version [ Natural ]
-    deriving (Eq, Ord, Interpret, Binary, Hashable)
+    deriving (Eq, Ord, FromDhall, Binary, Hashable)
 
 showVersion :: Version -> String
 showVersion (Version v) = intercalate "." (show <$> v)

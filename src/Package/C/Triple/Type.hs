@@ -19,7 +19,7 @@ data TargetTriple = TargetTriple { arch         :: Arch
                                  , os           :: OS
                                  , abi          :: Maybe ABI
                                  }
-                                 deriving (Eq, Ord, Hashable, Binary, Generic, Inject)
+                                 deriving (Eq, Ord, Hashable, Binary, Generic, ToDhall)
 
 instance Pretty TargetTriple where
     pretty (TargetTriple a (Just m) o (Just ab)) = dashed [pretty a, pretty m, pretty o, pretty ab]
@@ -34,7 +34,7 @@ data Manufacturer = Unknown
                   | Apple
                   | IBM
                   | PC
-                  deriving (Eq, Ord, Hashable, Binary, Generic, Inject)
+                  deriving (Eq, Ord, Hashable, Binary, Generic, ToDhall)
 
 instance Pretty Manufacturer where
     pretty Unknown = "unknown"
@@ -65,7 +65,7 @@ data Arch = X64
           | MipsIsa32r6
           | MipsIsa64r6El
           | MipsIsa64r6
-          deriving (Eq, Ord, Hashable, Binary, Generic, Inject)
+          deriving (Eq, Ord, Hashable, Binary, Generic, ToDhall)
 
 instance Pretty Arch where
     pretty X64           = "x86_64"
@@ -98,7 +98,7 @@ data ABI = GNU
          | GNUeabihf
          | GNUspe
          | MinGw
-         deriving (Eq, Ord, Hashable, Binary, Generic, Inject)
+         deriving (Eq, Ord, Hashable, Binary, Generic, ToDhall)
 
 instance Pretty ABI where
     pretty GNU       = "gnu"
@@ -123,7 +123,7 @@ data OS = Darwin
         | Hurd
         | Android
         | NoOs
-        deriving (Eq, Ord, Hashable, Binary, Generic, Inject)
+        deriving (Eq, Ord, Hashable, Binary, Generic, ToDhall)
         -- IRIX? OpenSSL OSes?
 
 instance Pretty OS where
