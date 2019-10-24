@@ -416,6 +416,9 @@ let perl5 =
     prelude.simplePackage { name = "perl", version = v } ⫽
       { pkgUrl = "https://www.cpan.org/src/${major}.0/perl-${prelude.showVersion v}.tar.gz"
       , configureCommand = perlConfigure
+      , buildCommand =
+          λ(cfg : types.BuildVars) →
+             prelude.generalBuild prelude.singleThreaded (prelude.buildEnv cfg) cfg
       , installCommand =
         λ(cfg : types.BuildVars) →
           let libperlFile =
