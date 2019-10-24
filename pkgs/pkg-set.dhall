@@ -4029,8 +4029,6 @@ let apr-util =
         , pkgStream = False
         }
 in
--- https://versaweb.dl.sourceforge.net/project/sbcl/sbcl/1.5.7/sbcl-1.5.7-x86-64-linux-binary.tar.bz2
--- http://www.xach.com/lisp/buildapp.tgz
 
 [ alsa-lib [1,1,9]
 , apr [1,7,0]
@@ -4222,11 +4220,11 @@ in
 , mercury
 , mesa [19,0,5]
 , meson [0,51,2]
+, mosh [1,3,2]
+, motif [2,3,8]
 , mpc [1,1,0]
 , mpfr [4,0,2]
 , mpg123 [1,25,12]
-, mosh [1,3,2]
-, motif [2,3,8]
 , musl [1,1,20]
 , nano [4,3]
 , nasm [2,14]
@@ -4258,7 +4256,7 @@ in
 , pygobject { version = [2,28], patch = 7 }
 , pygtk { version = [2,24], patch = 0 }
 , python [2,7,16]
-, python [3,7,4]
+, python [3,8,0]
 , qrencode [4,0,2]
 , qt { version = [5,13], patch = 0 }
 , quazip [0,8,1]

@@ -751,7 +751,7 @@ let mkPyPath =
 in
 
 let mkPy3Path =
-  mkPyPath [3,7]
+  mkPyPath [3,8]
 in
 
 {- Write a cross-compilation configuration file for use with meson -}
@@ -785,7 +785,7 @@ let mesonEnv =
           , mkLDRunPath cfg.linkDirs
           , mkLDFlags cfg.linkDirs
           , mkCFlags cfg
-          -- , mkLDPreload cfg.preloadLibs
+          , mkLDPreload cfg.preloadLibs
           ] # defaultPath cfg)
 in
 
@@ -833,7 +833,7 @@ let ninjaBuildWith =
                                                 , mkLDRunPath cfg.linkDirs
                                                 , mkLDFlagsGeneral cfg.linkDirs linkLibs
                                                 , mkCFlags cfg
-                                                ] # defaultPath cfg) -- # ldPreload)
+                                                ] # defaultPath cfg # ldPreload)
                           , procDir = Some "build" }) ]
 in
 
@@ -937,15 +937,15 @@ let pythonPackage =
 in
 
 let python3Build =
-  pythonBuild [3,7]
+  pythonBuild [3,8]
 in
 
 let python3Install =
-  pythonInstall [3,7]
+  pythonInstall [3,8]
 in
 
 let python3Package =
-  pythonPackage [3,7]
+  pythonPackage [3,8]
 in
 
 let python2Package =
@@ -1031,7 +1031,7 @@ let mkPyWrapper =
 in
 
 let mkPy3Wrapper =
-  mkPyWrapper [3,7]
+  mkPyWrapper [3,8]
 in
 
 let mkPy2Wrapper =
@@ -1047,7 +1047,7 @@ let installWithPyWrappers =
 in
 
 let installWithPy3Wrappers =
-  installWithPyWrappers [3,7]
+  installWithPyWrappers [3,8]
 in
 
 {- This is used to make bash scripts that wrap an executable. Since executables
