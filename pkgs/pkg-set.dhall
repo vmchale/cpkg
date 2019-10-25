@@ -3122,7 +3122,7 @@ let libcds =
   λ(v : List Natural) →
     let versionString = prelude.showVersion v in
     prelude.simplePackage { name = "libcds", version = v } ⫽ prelude.cmakePackage ⫽
-      { pkgUrl = "https://pilotfiber.dl.sourceforge.net/project/libcds/cds-${versionString}/cds-${versionString}.tar.gz"
+      { pkgUrl = "https://downloads.sourceforge.net/libcds/cds-${prelude.showVersion v}.tar.gz"
       , pkgSubdir = "cds-${versionString}"
       , pkgDeps = [ prelude.unbounded "libboost" ]
       }
