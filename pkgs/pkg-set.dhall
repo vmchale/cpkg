@@ -4030,6 +4030,33 @@ let apr-util =
         }
 in
 
+let libsass =
+  λ(v : List Natural) →
+    prelude.simplePackage { name = "libsass", version = v } ⫽
+        { pkgUrl = "https://github.com/sass/libsass/archive/${prelude.showVersion v}.tar.gz"
+        , pkgBuildDeps = [ prelude.unbounded "autoconf"
+                         , prelude.unbounded "automake"
+                         , prelude.unbounded "m4"
+                         , prelude.unbounded "grep"
+                         , prelude.unbounded "sed"
+                         , prelude.unbounded "coreutils"
+                         , prelude.unbounded "libtool"
+                         ]
+        , configureCommand =
+            λ(cfg : types.BuildVars) →
+              [ prelude.call { program = "autoreconf"
+                            , arguments = [ "-i" ]
+                            , environment = Some [ { var = "PATH", value = prelude.mkPathVar cfg.binDirs }
+                                                  , prelude.mkAclocalPath cfg.shareDirs
+                                                  ]
+                            , procDir = None Text
+                            }
+              ]
+              # prelude.defaultConfigure cfg
+      , pkgStream = False
+      }
+in
+
 [ alsa-lib [1,1,9]
 , apr [1,7,0]
 , apr-util [1,6,1]
@@ -4163,6 +4190,7 @@ in
 , libraw [0,19,2]
 , librsvg { version = [2,45], patch = 8 }
 , libsamplerate [0,1,9]
+, libsass [3,6,2]
 , libselinux [2,9]
 , libsndfile [1,0,28]
 , libsepol [2,9]
