@@ -3076,6 +3076,7 @@ let node =
           λ(cfg : types.BuildVars) →
             prelude.installWithBinaries [ "bin/node", "bin/npm" ] cfg
               # [ prelude.mkExe "${cfg.installDir}/lib/node_modules/npm/bin/npm-cli.js" ]
+      , pkgStream = False
       }
 in
 
@@ -4259,7 +4260,7 @@ in
 , ncurses [6,1]
 , nginx [1,15,7]
 , ninja [1,9,0]
-, node [10,16,3]
+, node [12,13,0]
 , npth [1,6]
 , nspr [4,20]
 , openblas [0,3,2]
