@@ -4070,7 +4070,7 @@ in
 , babl { version = [0,1], patch = 68 }
 , bash [5,0]
 , bash-completion [2,9]
-, binutils [2,32]
+, binutils [2,33,1]
 , bison [3,4,1]
 , blas [3,8,0]
 , bzip2 [1,0,6]
