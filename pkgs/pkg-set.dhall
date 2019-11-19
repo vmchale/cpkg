@@ -531,8 +531,8 @@ let zlib =
         in
 
         [ prelude.mkExe "configure"
-        , prelude.call (prelude.defaultCall ⫽ { program = "./configure"
-                                              , arguments = [ "--prefix=${cfg.installDir}" ]
+        , prelude.call (prelude.defaultCall ⫽ { program = "sh"
+                                              , arguments = [ "configure", "--prefix=${cfg.installDir}" ]
                                               -- , environment = Some (host # [ { var = "PATH", value = prelude.mkPathVar cfg.binDirs } ])
                                               , environment = Some (host # [ { var = "PATH", value = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" } ])
                                               })
@@ -672,6 +672,7 @@ let patch =
           λ(cfg : types.BuildVars) →
             prelude.installWithBinaries [ "bin/patch" ] cfg
               # prelude.symlinkManpages [ { file = "share/man/man1/patch.1", section = 1 } ]
+      , pkgStream = False
       }
 in
 
@@ -685,6 +686,7 @@ let m4 =
       , installCommand =
           prelude.installWithManpages [ { file = "share/man/man1/m4.1", section = 1 } ]
       , pkgBuildDeps = [ prelude.unbounded "patch" ]
+      , pkgStream = False
       }
 in
 

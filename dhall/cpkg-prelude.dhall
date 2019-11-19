@@ -428,8 +428,8 @@ let generalConfigure =
     in
 
     [ mkExe filename
-    , call (defaultCall ⫽ { program = "./${filename}"
-                          , arguments = modifyArgs [ "--prefix=${cfg.installDir}" ] # extraFlags
+    , call (defaultCall ⫽ { program = "sh"
+                          , arguments = modifyArgs [ "${filename}", "--prefix=${cfg.installDir}" ] # extraFlags
                           , environment = envVars linkLibs cfg
                           })
     ]
