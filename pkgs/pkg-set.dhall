@@ -4110,7 +4110,7 @@ in
 , gawk [5,0,1]
 , gc [8,0,4]
 , gcc [9,2,0]
-, gdb [8,2]
+, gdb [8,3,1]
 , gdk-pixbuf { version = [2,38], patch = 1 }
 , gegl { version = [0,4], patch = 16 }
 , gettext [0,20,1]
