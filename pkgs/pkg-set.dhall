@@ -945,7 +945,9 @@ in
 let gdb =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "gdb", version = v } ⫽
-      { configureCommand = prelude.configureMkExes [ "mkinstalldirs" ] }
+      { pkgStream = False
+      , pkgBuildDeps = [ prelude.unbounded "texinfo" ]
+      }
 in
 
 -- lol the libtoolize binary is empty for some reason
