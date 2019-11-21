@@ -4080,7 +4080,7 @@ in
 , chickenScheme [5,0,0]
 , cimg [2,7,0]
 , clang [9,0,0]
-, cmake { version = [3,15], patch = 2 }
+, cmake { version = [3,15], patch = 5 }
 , cmark [0,29,0]
 , compositeproto [0,4]
 , coreutils [8,31]
@@ -4281,7 +4281,7 @@ in
 , pixman [0,38,4]
 , pkg-config [0,29,2]
 , poppler [0,80,0]
-, postgresql [11,5]
+, postgresql [12,1]
 , protobuf [3,8,0]
 , pycairo [1,18,1]
 , pygobject { version = [2,28], patch = 7 }
@@ -4299,7 +4299,7 @@ in
 , recordproto [1,14,2]
 , renderproto [0,11,1]
 , ruby { version = [2,6], patch = 3 }
-, rustc [1,38,0]
+, rustc [1,39,0]
 , scour [0,37]
 , scrnsaverproto [1,2,2]
 , sdl2 [2,0,10]
