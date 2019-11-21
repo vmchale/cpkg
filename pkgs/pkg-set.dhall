@@ -403,8 +403,8 @@ let perl5 =
   let perlConfigure =
     λ(cfg : types.BuildVars) →
       [ prelude.mkExe "Configure"
-      , prelude.call (prelude.defaultCall ⫽ { program = "./Configure"
-                                            , arguments = [ "-des", "-Dprefix=${cfg.installDir}" ] # (if cfg.static then [] : List Text else [ "-Duseshrplib" ])
+      , prelude.call (prelude.defaultCall ⫽ { program = "sh"
+                                            , arguments = [ "./Configure", "-des", "-Dprefix=${cfg.installDir}" ] # (if cfg.static then [] : List Text else [ "-Duseshrplib" ])
                                             })
       ]
   in
@@ -721,8 +721,8 @@ let openssl =
                 else "linux-x86_64"
             in
             [ prelude.mkExe "Configure"
-            , prelude.call (prelude.defaultCall ⫽ { program = "./Configure"
-                                                  , arguments = [ "--prefix=${cfg.installDir}", targetMakefile, sharedFlag ] -- FIXME: gcc platform doesn't support shared libraries
+            , prelude.call (prelude.defaultCall ⫽ { program = "perl"
+                                                  , arguments = [ "./Configure", "--prefix=${cfg.installDir}", targetMakefile, sharedFlag ] -- FIXME: gcc platform doesn't support shared libraries
                                                   , environment = opensslCfgVars cfg
                                                   })
             ]
@@ -3454,7 +3454,8 @@ let make =
       , configureCommand = prelude.configureWithPatch (./patches/make.patch as Text)
       , buildCommand =
           λ(cfg : types.BuildVars) →
-            [ prelude.call (prelude.defaultCall ⫽ { program = "./build.sh"
+            [ prelude.call (prelude.defaultCall ⫽ { program = "sh"
+                                                  , arguments = [ "build.sh" ]
                                                   , environment = Some (prelude.buildEnv cfg)
                                                   })
             ]
