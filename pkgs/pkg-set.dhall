@@ -272,8 +272,8 @@ let gmp =
   λ(v : List Natural) →
     prelude.simplePackage { name = "gmp", version = v } ⫽
       { pkgUrl = "https://gmplib.org/download/gmp/gmp-${prelude.showVersion v}.tar.lz"
-      , configureCommand = prelude.configureMkExes [ "mpn/m4-ccas" ]
       , pkgBuildDeps = [ prelude.unbounded "m4" ]
+      , pkgStream = False
       -- TODO: run 'make check'?
       }
 in
