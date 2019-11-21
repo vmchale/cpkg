@@ -409,6 +409,29 @@ let perl5 =
       ]
   in
 
+  let linkDir =
+    λ(os : types.OS) →
+      merge
+        -- this is still terrible lol
+        { FreeBSD   = "CORE"
+        , OpenBSD   = "CORE"
+        , NetBSD    = "CORE"
+        , Solaris   = "CORE"
+        , Dragonfly = "CORE"
+        , Linux     = "CORE"
+        , Darwin    = "darwin-2level/CORE"
+        , Windows   = "CORE"
+        , Redox     = "CORE"
+        , Haiku     = "CORE"
+        , IOS       = "darwin-2level/CORE"
+        , AIX       = "CORE"
+        , Hurd      = "CORE"
+        , Android   = "CORE"
+        , NoOs      = "CORE"
+        }
+      os
+  in
+
   λ(v : List Natural) →
     let major = Optional/fold Natural (List/head Natural v) Text Natural/show ""
     in
@@ -424,11 +447,11 @@ let perl5 =
           let libperlFile =
             if cfg.static
               then "libperl.a"
-              else "libperl.so"
+              else "libperl.${prelude.libSuffix (prelude.osCfg cfg)}"
           in
 
           prelude.installWithBinaries [ "bin/perl", "bin/cpan" ] cfg
-            # [ prelude.symlink "lib/${prelude.showVersion v}/${prelude.printArch cfg.buildArch}-${prelude.printOS cfg.buildOS}/CORE/${libperlFile}" "lib/${libperlFile}" ]
+            # [ prelude.symlink "lib/${prelude.showVersion v}/${prelude.printArch cfg.buildArch}-${prelude.printOS cfg.buildOS}/${linkDir cfg.buildOS}/${libperlFile}" "lib/${libperlFile}" ]
       }
 in
 
@@ -704,9 +727,32 @@ let openssl =
       Some (prelude.mkCCVar cfg # prelude.configEnv ([] : List Text) cfg)
   in
 
+  let cfgOS =
+    λ(os : types.OS) →
+      merge
+        -- this is still terrible lol
+        { FreeBSD   = "BSD-x86_64"
+        , OpenBSD   = "BSD-x86_64"
+        , NetBSD    = "BSD-x86_64"
+        , Solaris   = "solaris64-x86_64-cc"
+        , Dragonfly = "BSD-x86_64"
+        , Linux     = "linux-x86_64"
+        , Darwin    = "darwin64-x86_64-cc"
+        , Windows   = "mingw64"
+        , Redox     = "gcc"
+        , Haiku     = "haiku-x86_64"
+        , IOS       = "ios64-cross"
+        , AIX       = "aix64-cc"
+        , Hurd      = "hurd-x86"
+        , Android   = "android64-aarch64"
+        , NoOs      = "gcc"
+        }
+      os
+  in
+
   λ(v : List Natural) →
     prelude.simplePackage { name = "openssl", version = v } ⫽
-      { pkgUrl = "https://www.openssl.org/source/openssl-${prelude.showVersion v}c.tar.gz"
+      { pkgUrl = "https://www.openssl.org/source/openssl-${prelude.showVersion v}d.tar.gz"
       , configureCommand =
           λ(cfg : types.BuildVars) →
             let sharedFlag =
@@ -718,15 +764,14 @@ let openssl =
             let targetMakefile =
               if cfg.isCross
                 then "gcc"
-                else "linux-x86_64"
+                else cfgOS cfg.buildOS
             in
-            [ prelude.mkExe "Configure"
-            , prelude.call (prelude.defaultCall ⫽ { program = "perl"
+            [ prelude.call (prelude.defaultCall ⫽ { program = "perl"
                                                   , arguments = [ "./Configure", "--prefix=${cfg.installDir}", targetMakefile, sharedFlag ] -- FIXME: gcc platform doesn't support shared libraries
                                                   , environment = opensslCfgVars cfg
                                                   })
             ]
-      , pkgSubdir = "openssl-${prelude.showVersion v}c"
+      , pkgSubdir = "openssl-${prelude.showVersion v}d"
       , pkgBuildDeps = [ prelude.unbounded "perl" ]
       }
 in
