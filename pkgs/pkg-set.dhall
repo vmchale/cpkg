@@ -468,6 +468,8 @@ let sed =
     prelude.makeGnuExe { name = "sed", version = v } ⫽ -- TODO: require pcre?
       { installCommand =
           prelude.installWithManpages [ { file = "share/man/man1/sed.1", section = 1 } ]
+      , configureCommand = prelude.configureWithFlags [ "--disable-dependency-tracking" ]
+      , pkgStream = False
       }
 in
 
