@@ -124,7 +124,7 @@ data OS = Darwin
         | Android
         | NoOs
         deriving (Eq, Ord, Hashable, Binary, Generic, ToDhall)
-        -- IRIX? OpenSSL OSes?
+        -- IRIX? HP UX?
 
 instance Pretty OS where
     pretty Darwin    = "darwin"

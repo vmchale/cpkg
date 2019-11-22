@@ -74,6 +74,30 @@ let printManufacturer =
       x
 in
 
+let libSuffix =
+  λ(os : types.OS) →
+    merge
+      { FreeBSD   = "so"
+      , OpenBSD   = "so"
+      , NetBSD    = "so"
+      , Solaris   = "so"
+      , Dragonfly = "so"
+      , Linux     = "so"
+      , Darwin    = "dylib"
+      , Windows   = "so"
+      , Redox     = "so"
+      , Haiku     = "so"
+      , IOS       = "dylib"
+      , AIX       = "so"
+      , Hurd      = "so"
+      , Android   = "so"
+      , NoOs      = "so"
+      }
+    os
+in
+
+{- Print the ABI for use with GCC -}
+
 let printOS =
   λ(os : types.OS) →
     merge
@@ -1259,4 +1283,5 @@ in
 , generalBuild        = generalBuild
 , defaultCpus         = defaultCpus
 , singleThreaded      = singleThreaded
+, libSuffix           = libSuffix
 }
