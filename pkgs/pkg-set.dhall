@@ -578,7 +578,10 @@ in
 let gettext =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "gettext", version = v } ⫽
-      { installCommand = prelude.installWithBinaries [ "bin/gettext", "bin/msgfmt", "bin/autopoint" ] }
+      { installCommand = prelude.installWithBinaries [ "bin/gettext", "bin/msgfmt", "bin/autopoint" ]
+      , configureCommand = prelude.configureWithFlags [ "--disable-dependency-tracking" ]
+      , pkgStream = False
+      }
 in
 
 let gzip =
@@ -4171,7 +4174,7 @@ in
 , gperf [3,1]
 , gperftools [2,7]
 , giflib [5,1,4]
-, git [2,23,0]
+, git [2,24,0]
 , glib { version = [2,62], patch = 0 }
 , glib-networking { version = [2,61], patch = 2 }
 , glproto [1,4,17]
