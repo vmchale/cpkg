@@ -3117,7 +3117,10 @@ in
 let texinfo =
   λ(v : List Natural) →
     prelude.simplePackage { name = "texinfo", version = v } ⫽
-      { pkgUrl = "https://ftp.gnu.org/gnu/texinfo/texinfo-${prelude.showVersion v}.tar.xz" }
+      { pkgUrl = "https://ftp.gnu.org/gnu/texinfo/texinfo-${prelude.showVersion v}.tar.xz"
+      , configureCommand = prelude.configureWithFlags [ "--disable-dependency-tracking" ]
+      , pkgStream = False
+      }
 in
 
 let node =
