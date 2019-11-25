@@ -2334,6 +2334,7 @@ let sqlite =
     prelude.simplePackage { name = "sqlite", version = x.version } ⫽
       { pkgUrl = "https://sqlite.org/${Natural/show x.year}/sqlite-autoconf-${versionString}000.tar.gz"
       , pkgSubdir = "sqlite-autoconf-${versionString}000"
+      , pkgStream = False
       }
 in
 
