@@ -468,6 +468,8 @@ let sed =
     prelude.makeGnuExe { name = "sed", version = v } ⫽ -- TODO: require pcre?
       { installCommand =
           prelude.installWithManpages [ { file = "share/man/man1/sed.1", section = 1 } ]
+      , configureCommand = prelude.configureWithFlags [ "--disable-dependency-tracking" ]
+      , pkgStream = False
       }
 in
 
@@ -576,7 +578,10 @@ in
 let gettext =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "gettext", version = v } ⫽
-      { installCommand = prelude.installWithBinaries [ "bin/gettext", "bin/msgfmt", "bin/autopoint" ] }
+      { installCommand = prelude.installWithBinaries [ "bin/gettext", "bin/msgfmt", "bin/autopoint" ]
+      , configureCommand = prelude.configureWithFlags [ "--disable-dependency-tracking" ]
+      , pkgStream = False
+      }
 in
 
 let gzip =
@@ -2329,6 +2334,7 @@ let sqlite =
     prelude.simplePackage { name = "sqlite", version = x.version } ⫽
       { pkgUrl = "https://sqlite.org/${Natural/show x.year}/sqlite-autoconf-${versionString}000.tar.gz"
       , pkgSubdir = "sqlite-autoconf-${versionString}000"
+      , pkgStream = False
       }
 in
 
@@ -3112,7 +3118,10 @@ in
 let texinfo =
   λ(v : List Natural) →
     prelude.simplePackage { name = "texinfo", version = v } ⫽
-      { pkgUrl = "https://ftp.gnu.org/gnu/texinfo/texinfo-${prelude.showVersion v}.tar.xz" }
+      { pkgUrl = "https://ftp.gnu.org/gnu/texinfo/texinfo-${prelude.showVersion v}.tar.xz"
+      , configureCommand = prelude.configureWithFlags [ "--disable-dependency-tracking" ]
+      , pkgStream = False
+      }
 in
 
 let node =
@@ -4169,7 +4178,7 @@ in
 , gperf [3,1]
 , gperftools [2,7]
 , giflib [5,1,4]
-, git [2,23,0]
+, git [2,24,0]
 , glib { version = [2,62], patch = 0 }
 , glib-networking { version = [2,61], patch = 2 }
 , glproto [1,4,17]
