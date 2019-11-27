@@ -4137,7 +4137,7 @@ in
 , chickenScheme [5,0,0]
 , cimg [2,7,0]
 , clang [9,0,0]
-, cmake { version = [3,15], patch = 5 }
+, cmake { version = [3,16], patch = 0 }
 , cmark [0,29,0]
 , compositeproto [0,4]
 , coreutils [8,31]
