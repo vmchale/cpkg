@@ -1,21 +1,21 @@
 {- Dhall prelue imports -}
-let concatMapSep = https://raw.githubusercontent.com/dhall-lang/dhall-lang/9f259cd68870b912fbf2f2a08cd63dc3ccba9dc3/Prelude/Text/concatMapSep
+let concatMapSep = https://raw.githubusercontent.com/dhall-lang/dhall-lang/9f259cd68870b912fbf2f2a08cd63dc3ccba9dc3/Prelude/Text/concatMapSep sha256:c272aca80a607bc5963d1fcb38819e7e0d3e72ac4d02b1183b1afb6a91340840
 in
 
-let concat = https://raw.githubusercontent.com/dhall-lang/dhall-lang/dbcf50c27b1592a6acfd38cb3ba976e3a36b74fe/Prelude/Text/concat
+let concat = https://raw.githubusercontent.com/dhall-lang/dhall-lang/dbcf50c27b1592a6acfd38cb3ba976e3a36b74fe/Prelude/Text/concat sha256:731265b0288e8a905ecff95c97333ee2db614c39d69f1514cb8eed9259745fc0
 in
 
-let concatMapText = https://raw.githubusercontent.com/dhall-lang/dhall-lang/9f259cd68870b912fbf2f2a08cd63dc3ccba9dc3/Prelude/Text/concatMap
+let concatMapText = https://raw.githubusercontent.com/dhall-lang/dhall-lang/9f259cd68870b912fbf2f2a08cd63dc3ccba9dc3/Prelude/Text/concatMap sha256:7a0b0b99643de69d6f94ba49441cd0fa0507cbdfa8ace0295f16097af37e226f
 in
 
-let not = https://raw.githubusercontent.com/dhall-lang/dhall-lang/9f259cd68870b912fbf2f2a08cd63dc3ccba9dc3/Prelude/Bool/not
+let not = https://raw.githubusercontent.com/dhall-lang/dhall-lang/9f259cd68870b912fbf2f2a08cd63dc3ccba9dc3/Prelude/Bool/not sha256:723df402df24377d8a853afed08d9d69a0a6d86e2e5b2bac8960b0d4756c7dc4
 in
 
 {- cpkg prelude imports -}
-let types = ../dhall/cpkg-types.dhall
+let types = ../dhall/cpkg-types.dhall sha256:caef717db41539eb7ded38d8cd676ba998bd387171ba3fd2db7fea9e8ee8f361
 in
 
-let prelude = ../dhall/cpkg-prelude.dhall
+let prelude = ../dhall/cpkg-prelude.dhall sha256:ed6a398217c984a479a686f4fc9a07152380286cd35a8e9a9bbad8a470046310
 in
 
 {- gnupg: https://www.gnupg.org/ -}
