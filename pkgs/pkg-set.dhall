@@ -709,7 +709,7 @@ let m4 =
     prelude.makeGnuExe { name = "m4", version = v } ⫽
       { configureCommand =
           λ(cfg : types.BuildVars) →
-            [ prelude.patch (./patches/m4.patch as Text) ]
+            [ prelude.patch (./patches/m4.patch sha256:1fecaf9238401d3fdcad92516f7c45e866e50630eae7efdaaee0da943a532b23 as Text) ]
               # prelude.defaultConfigure cfg
       , installCommand =
           prelude.installWithManpages [ { file = "share/man/man1/m4.1", section = 1 } ]
@@ -1185,11 +1185,11 @@ let mkXProtoWithPatch =
 in
 
 let xproto =
-  mkXProtoWithPatch "xproto" (./patches/xproto.patch as Text)
+  mkXProtoWithPatch "xproto" (./patches/xproto.patch sha256:325215e1b547918dfe63278824cda399e61a36b6f11896c863dfacc0cb06e322 as Text)
 in
 
 let renderproto =
-  mkXProtoWithPatch "renderproto" (./patches/renderproto.patch as Text)
+  mkXProtoWithPatch "renderproto" (./patches/renderproto.patch sha256:f2f154171dabe139ba07f8602fbada3b23f3d53b5773655cfe31cba2ceb70295 as Text)
 in
 
 let randrproto =
@@ -1197,7 +1197,7 @@ let randrproto =
 in
 
 let scrnsaverproto =
-  mkXProtoWithPatch "scrnsaverproto" (./patches/scrnsaverproto.patch as Text)
+  mkXProtoWithPatch "scrnsaverproto" (./patches/scrnsaverproto.patch sha256:31983d73cdf49e8d8ed2583593f57b47d889062ae7f5bc5934a59e1e5e3e81f3 as Text)
 in
 
 let recordproto =
@@ -1307,7 +1307,7 @@ let intltool =
       { pkgUrl = "https://launchpad.net/intltool/trunk/${versionString}/+download/intltool-${versionString}.tar.gz"
       , configureCommand =
           λ(cfg : types.BuildVars) →
-            [ prelude.patch (./patches/intltool.patch as Text)
+            [ prelude.patch (./patches/intltool.patch sha256:e33e9b3e43d80a17475e36c05ed4e649fa5d610991044749e6321dff555cc8e5 as Text)
             , prelude.mkExe "configure"
             , prelude.call (prelude.defaultCall ⫽ { program = "./configure"
                                                   , arguments = [ "--prefix=${cfg.installDir}" ]
@@ -1932,7 +1932,7 @@ let inputproto =
 in
 
 let xineramaproto =
-  mkXProtoWithPatch "xineramaproto" (./patches/xineramaproto.patch as Text)
+  mkXProtoWithPatch "xineramaproto" (./patches/xineramaproto.patch sha256:cc2dec3895d71256bfb878ab420bb63ad6708e17a1785805473760bb9d98a310 as Text)
 in
 
 let xtrans =
@@ -1970,7 +1970,7 @@ let libXext =
 in
 
 let xextproto =
-  mkXProtoWithPatch "xextproto" (./patches/xextproto.patch as Text)
+  mkXProtoWithPatch "xextproto" (./patches/xextproto.patch sha256:67185f1122233556a40a3d3df5a4967aca8533be62112f3c5e393308b70f3217 as Text)
 in
 
 let fixesproto =
@@ -3415,7 +3415,7 @@ let phash =
                        ]
       , configureCommand =
           λ(cfg : types.BuildVars) →
-            [ prelude.patch (./patches/pHash.patch as Text)
+            [ prelude.patch (./patches/pHash.patch sha256:d442c0bb6c66893badf8642d8c8123026f21e78513f91af422c4d4ee70a28d50 as Text)
             , prelude.call { program = "autoreconf"
                            , arguments = [ "-i" ]
                            , environment = Some [ { var = "PATH", value = prelude.mkPathVar cfg.binDirs }
@@ -3505,7 +3505,7 @@ let make =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "make", version = v } ⫽
       { pkgUrl = "https://ftp.wayne.edu/gnu/make/make-${prelude.showVersion v}.tar.bz2"
-      , configureCommand = prelude.configureWithPatch (./patches/make.patch as Text)
+      , configureCommand = prelude.configureWithPatch (./patches/make.patch sha256:56f3260d302d1ecd0173ab6e5ccc0e4806fb8f0bc6aa68a1d7ef4fca77d85572 as Text)
       , buildCommand =
           λ(cfg : types.BuildVars) →
             [ prelude.call (prelude.defaultCall ⫽ { program = "sh"
