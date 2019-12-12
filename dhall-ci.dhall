@@ -5,7 +5,8 @@ in      dhallCi.dhallCi
           [ "pkgs/pkg-set.dhall"
           , "dhall/cpkg-prelude.dhall"
           , "dhall/cpkg-types.dhall"
-          , "self-ci.dhall"
+          , "dhall-ci.dhall"
+          , "haskell-ci.dhall"
           ]
       ⫽ { on =
             [ dhallCi.printEvent dhallCi.Event.Push

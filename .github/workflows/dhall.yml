@@ -18,7 +18,8 @@ jobs:
           dhall --file pkgs/pkg-set.dhall
           dhall --file dhall/cpkg-prelude.dhall
           dhall --file dhall/cpkg-types.dhall
-          dhall --file self-ci.dhall
+          dhall --file dhall-ci.dhall
+          dhall --file haskell-ci.dhall
 name: "Dhall CI"
 on:
   - push
