@@ -1,0 +1,37 @@
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: "Install libarchive"
+        run: |
+          wget https://www.libarchive.org/downloads/libarchive-3.4.0.tar.gz
+          tar xvf libarchive-3.4.0.tar.gz
+          cd libarchive-3.4.0
+          ./configure
+          make -j
+          sudo make install
+      - uses: "actions/checkout@v1"
+      - uses: "actions/setup-haskell@v1"
+        with:
+          cabal-version: "${{ matrix.cabal }}"
+          ghc-version: "${{ matrix.ghc }}"
+      - name: "Install dependencies"
+        run: |
+          cabal update
+          cabal build --enable-tests --enable-benchmarks --only-dependencies
+      - name: Build
+        run: "cabal build --enable-tests --enable-benchmarks"
+      - name: Tests
+        run: "cabal test"
+      - name: Documentation
+        run: "cabal haddock"
+    strategy:
+      matrix:
+        cabal:
+          - "3.0"
+        ghc:
+          - "8.4.4"
+          - "8.6.5"
+name: "Haskell CI"
+on:
+  - push
