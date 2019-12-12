@@ -1,3 +1,4 @@
+*.swp
 .ghc.environment.*
 .hspec-failures
 tags
