@@ -1,29 +1,22 @@
 {- Dhall prelue imports -}
 let concatMapSep = https://raw.githubusercontent.com/dhall-lang/dhall-lang/9f259cd68870b912fbf2f2a08cd63dc3ccba9dc3/Prelude/Text/concatMapSep sha256:c272aca80a607bc5963d1fcb38819e7e0d3e72ac4d02b1183b1afb6a91340840
-in
 
 let concat = https://raw.githubusercontent.com/dhall-lang/dhall-lang/dbcf50c27b1592a6acfd38cb3ba976e3a36b74fe/Prelude/Text/concat sha256:731265b0288e8a905ecff95c97333ee2db614c39d69f1514cb8eed9259745fc0
-in
 
 let concatMapText = https://raw.githubusercontent.com/dhall-lang/dhall-lang/9f259cd68870b912fbf2f2a08cd63dc3ccba9dc3/Prelude/Text/concatMap sha256:7a0b0b99643de69d6f94ba49441cd0fa0507cbdfa8ace0295f16097af37e226f
-in
 
 let not = https://raw.githubusercontent.com/dhall-lang/dhall-lang/9f259cd68870b912fbf2f2a08cd63dc3ccba9dc3/Prelude/Bool/not sha256:723df402df24377d8a853afed08d9d69a0a6d86e2e5b2bac8960b0d4756c7dc4
-in
 
 {- cpkg prelude imports -}
 let types = ../dhall/cpkg-types.dhall sha256:caef717db41539eb7ded38d8cd676ba998bd387171ba3fd2db7fea9e8ee8f361
-in
 
 let prelude = ../dhall/cpkg-prelude.dhall sha256:ed6a398217c984a479a686f4fc9a07152380286cd35a8e9a9bbad8a470046310
-in
 
 {- gnupg: https://www.gnupg.org/ -}
 let gpgPackage =
   λ(x : { name : Text, version : List Natural }) →
     prelude.simplePackage x ⫽
       { pkgUrl = "https://gnupg.org/ftp/gcrypt/${x.name}/${x.name}-${prelude.showVersion x.version}.tar.bz2" }
-in
 
 let gnupg =
   λ(v : List Natural) →
@@ -37,35 +30,29 @@ let gnupg =
       , configureCommand = prelude.configureMkExes [ "tests/inittests", "tests/runtest", "tests/pkits/inittests" ]
       , installCommand = prelude.installWithBinaries [ "bin/gpg" ]
       }
-in
 
 let npth =
   λ(v : List Natural) →
     gpgPackage { name = "npth", version = v }
-in
 
 let libgpgError =
   λ(v : List Natural) →
     gpgPackage { name = "libgpg-error", version = v }
-in
 
 let libgcrypt =
   λ(v : List Natural) →
     gpgPackage { name = "libgcrypt", version = v } ⫽
       { pkgDeps = [ prelude.lowerBound { name = "libgpg-error", lower = [1,25] } ] }
-in
 
 let libassuan =
   λ(v : List Natural) →
     gpgPackage { name = "libassuan", version = v } ⫽
       { pkgDeps = [ prelude.lowerBound { name = "libgpg-error", lower = [1,24] } ] }
-in
 
 let libksba =
   λ(v : List Natural) →
     gpgPackage { name = "libksba", version = v } ⫽
       { pkgDeps = [ prelude.lowerBound { name = "libgpg-error", lower = [1,8] } ] }
-in
 
 {- musl: https://www.musl-libc.org/ -}
 let musl =
@@ -75,7 +62,6 @@ let musl =
       , installCommand = prelude.installWithBinaries [ "bin/musl-gcc" ]
       , configureCommand = prelude.configureMkExes [ "tools/install.sh" ]
       }
-in
 
 let binutils =
   λ(v : List Natural) →
@@ -85,7 +71,6 @@ let binutils =
       , installCommand =
           prelude.installWithBinaries [ "bin/ar", "bin/as", "bin/ld", "bin/strip", "bin/strings", "bin/readelf", "bin/objdump", "bin/nm", "bin/ranlib" ]
       }
-in
 
 let bison =
   λ(v : List Natural) →
@@ -97,15 +82,12 @@ let bison =
       , installCommand = prelude.installWithBinaries [ "bin/bison", "bin/yacc" ]
       , pkgBuildDeps = [ prelude.unbounded "m4" ]
       }
-in
 
 {- cmake https://cmake.org/ -}
 let cmake =
   λ(cfg : { version : List Natural, patch : Natural }) →
     let patchString = Natural/show cfg.patch
-    in
     let versionString = prelude.showVersion cfg.version
-    in
     let cmakeConfigure =
       λ(cfg : types.BuildVars) →
         prelude.configureMkExesExtraFlags { bins = [ "bootstrap" ]
@@ -123,7 +105,6 @@ let cmake =
       , installCommand =
           λ(cfg : types.BuildVars) →
             let wrapper = "CMAKE_ROOT=${cfg.installDir}/share/cmake-${versionString}/ ${cfg.installDir}/bin/cmake $@"
-            in
             let wrapped = "wrapper/cmake"
             in
             prelude.defaultInstall cfg
@@ -143,7 +124,6 @@ let curl =
       , installCommand = prelude.installWithBinaries [ "bin/curl" ]
       , pkgDeps = [ prelude.unbounded "zlib" ]
       }
-in
 
 let dbus =
   λ(v : List Natural) →
@@ -155,7 +135,6 @@ let dbus =
       , configureCommand = prelude.configureLinkExtraLibs [ "pcre" ]
       , pkgBuildDeps = [ prelude.unbounded "pkg-config" ]
       }
-in
 
 let fltk =
   λ(v : List Natural) →
@@ -172,7 +151,6 @@ let fltk =
                   , prelude.unbounded "freetype"
                   ]
       }
-in
 
 let gawk =
   λ(v : List Natural) →
@@ -180,7 +158,6 @@ let gawk =
       { configureCommand = prelude.configureMkExes [ "install-sh", "extension/build-aux/install-sh" ]
       , installCommand = prelude.installWithBinaries [ "bin/gawk", "bin/awk" ]
       }
-in
 
 let gc =
   λ(v : List Natural) →
@@ -189,14 +166,12 @@ let gc =
         { pkgUrl = "https://github.com/ivmai/bdwgc/releases/download/v${versionString}/gc-${versionString}.tar.gz"
         , pkgDeps = [ prelude.unbounded "libatomic_ops" ]
         }
-in
 
 let libatomic_ops =
   λ(v : List Natural) →
     let versionString = prelude.showVersion v in
     prelude.simplePackage { name = "libatomic_ops", version = v } ⫽
         { pkgUrl = "https://github.com/ivmai/libatomic_ops/releases/download/v${versionString}/libatomic_ops-${versionString}.tar.gz" }
-in
 
 let git =
   λ(v : List Natural) →
@@ -206,18 +181,15 @@ let git =
       , installCommand = prelude.installWithBinaries [ "bin/git" ]
       , pkgBuildDeps = [ prelude.unbounded "gettext" ]
       }
-in
 
 let glibc =
   let buildDir =
     Some "build"
-  in
 
   let glibcConfigure =
     λ(cfg : types.BuildVars) →
 
       let maybeHost = prelude.mkHost cfg.targetTriple
-      in
       let modifyArgs = prelude.maybeAppend Text maybeHost
       in
 
@@ -230,7 +202,6 @@ let glibc =
                            , procDir = buildDir
                            }
             ]
-  in
 
   let glibcBuild =
     λ(cfg : types.BuildVars) →
@@ -240,7 +211,6 @@ let glibc =
                      , procDir = buildDir
                      }
       ]
-  in
 
   let glibcInstall =
     λ(cfg : types.BuildVars) →
@@ -266,7 +236,6 @@ let glibc =
                        , prelude.unbounded "python3"
                        ]
       }
-in
 
 let gmp =
   λ(v : List Natural) →
@@ -276,7 +245,6 @@ let gmp =
       , pkgStream = False
       -- TODO: run 'make check'?
       }
-in
 
 let harfbuzz =
   let symlinkHarfbuzz =
@@ -324,7 +292,6 @@ let harfbuzz =
                 , symlinkHarfbuzz "hb.h"
                 ]
       }
-in
 
 let libjpeg-turbo =
   λ(v : List Natural) →
@@ -338,7 +305,6 @@ let libjpeg-turbo =
                        , prelude.unbounded "make"
                        ]
       }
-in
 
 let libuv =
   λ(v : List Natural) →
@@ -353,7 +319,6 @@ let libuv =
                        , prelude.unbounded "libtool"
                        ]
       }
-in
 
 let nasm =
   λ(v : List Natural) →
@@ -362,7 +327,6 @@ let nasm =
       , pkgSubdir = "nasm-${prelude.showVersion v}.02"
       , installCommand = prelude.installWithBinaries [ "bin/nasm", "bin/ndisasm" ]
       }
-in
 
 let ncurses =
   λ(v : List Natural) →
@@ -383,13 +347,11 @@ let ncurses =
               # [ prelude.symlink "lib/libncursesw.so" "lib/libncurses.so" ]
           -- enable-widec is necessary because util-linux uses libncursesw
       }
-in
 
 let pcre2 =
   λ(v : List Natural) →
     prelude.simplePackage { name = "pcre2", version = v } ⫽
       { pkgUrl = "https://ftp.pcre.org/pub/pcre/pcre2-${prelude.showVersion v}.tar.bz2" }
-in
 
 let pcre =
   λ(v : List Natural) →
