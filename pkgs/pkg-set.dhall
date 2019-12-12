@@ -3326,7 +3326,6 @@ let poppler =
                                              , "pdfunite"
                                              ]
       }
-in
 
 let tesseract =
   λ(v : List Natural) →
@@ -3340,7 +3339,6 @@ let tesseract =
       , configureCommand = prelude.autogenConfigure
       , installCommand = prelude.installWithBinaries [ "bin/tesseract" ]
       }
-in
 
 let leptonica =
   λ(v : List Natural) →
@@ -3348,12 +3346,10 @@ let leptonica =
       { pkgUrl = "http://leptonica.org/source/leptonica-${prelude.showVersion v}.tar.gz"
       , pkgDeps = [ prelude.unbounded "zlib" ]
       }
-in
 
 let grep =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "grep", version = v }
-in
 
 let phash =
   λ(v : List Natural) →
@@ -3389,7 +3385,6 @@ let phash =
               # prelude.defaultConfigure cfg
       , pkgStream = False
       }
-in
 
 let cimg =
   λ(v : List Natural) →
@@ -3403,7 +3398,6 @@ let cimg =
           λ(_ : types.BuildVars) →
             [ prelude.copyFile "CImg.h" "include/CImg.h" ]
       }
-in
 
 let ffmpeg =
   λ(v : List Natural) →
@@ -3437,31 +3431,26 @@ let ffmpeg =
                   ]
       , pkgStream = False
       }
-in
 
 let libsndfile =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libsndfile", version = v } ⫽
       { pkgUrl = "http://www.mega-nerd.com/libsndfile/files/libsndfile-${prelude.showVersion v}.tar.gz" }
-in
 
 let libsamplerate =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libsamplerate", version = v } ⫽
       { pkgUrl = "http://www.mega-nerd.com/SRC/libsamplerate-${prelude.showVersion v}.tar.gz" }
-in
 
 let mpg123 =
   λ(v : List Natural) →
     prelude.simplePackage { name = "mpg123", version = v } ⫽
       { pkgUrl = "http://www.mpg123.de/download/mpg123-${prelude.showVersion v}.tar.bz2" }
-in
 
 let time =
   λ(v : List Natural) →
     prelude.makeGnuExe { name = "time", version = v } ⫽
         { pkgUrl = "https://ftp.gnu.org/gnu/time/time-${prelude.showVersion v}.tar.gz" }
-in
 
 let make =
   λ(v : List Natural) →
@@ -3482,7 +3471,6 @@ let make =
             ]
       , pkgBuildDeps = [ prelude.unbounded "patch" ]
       }
-in
 
 let mercury =
   let mercuryBuild =
@@ -3492,7 +3480,6 @@ let mercury =
                                             , environment = Some (prelude.buildEnv cfg)
                                             })
       ]
-  in
   let mercuryCommon =
       { pkgUrl = "http://dl.mercurylang.org/release/mercury-srcdist-14.01.1.tar.gz"
       , pkgSubdir = "mercury-srcdist-14.01.1"
@@ -3504,12 +3491,10 @@ let mercury =
     { pkgBuildDeps = [ prelude.unbounded "flex" ]
     , pkgStream = False
     }
-in
 
 let qt =
   λ(x : { version : List Natural, patch : Natural }) →
     let versionString = prelude.showVersion x.version
-    in
     let fullVersion = versionString ++ "." ++ Natural/show x.patch
     in
 
@@ -3538,7 +3523,6 @@ let qt =
       -- TODO: -no-opengl in cross
       , pkgStream = False
       }
-in
 
 let lz4 =
   λ(v : List Natural) →
@@ -3553,7 +3537,6 @@ let lz4 =
                                                   })
             ]
       }
-in
 
 let fftw =
   λ(v : List Natural) →
@@ -3561,7 +3544,6 @@ let fftw =
       { pkgUrl = "http://www.fftw.org/fftw-${prelude.showVersion v}.tar.gz"
       , configureCommand = prelude.configureWithFlags [ "--enable-shared", "--enable-threads", "--with-combined-threads" ]
       }
-in
 
 let icu-le-hb =
   λ(v : List Natural) →
@@ -3573,7 +3555,6 @@ let icu-le-hb =
                   ]
       , pkgBuildDeps = [ prelude.unbounded "pkg-config" ]
       }
-in
 
 let icu =
   λ(v : List Natural) →
@@ -3585,7 +3566,6 @@ let icu =
                        -- sed, coreutils, pkg-config?
                        ]
       }
-in
 
 let opencv =
   λ(v : List Natural) →
@@ -3604,7 +3584,6 @@ let opencv =
                  , prelude.unbounded "ffmpeg"
                  ]
      }
-in
 
 let libraw =
   λ(v : List Natural) →
@@ -3612,7 +3591,6 @@ let libraw =
       { pkgUrl = "https://www.libraw.org/data/LibRaw-${prelude.showVersion v}.tar.gz"
       , pkgSubdir = "LibRaw-${prelude.showVersion v}"
       }
-in
 
 let quazip =
   λ(v : List Natural) →
@@ -3622,7 +3600,6 @@ let quazip =
                   , prelude.unbounded "qt"
                   ]
       }
-in
 
 let eigen =
   λ(v : List Natural) →
@@ -3630,7 +3607,6 @@ let eigen =
       { pkgUrl = "http://bitbucket.org/eigen/eigen/get/${prelude.showVersion v}.tar.bz2"
       , pkgSubdir = "eigen-eigen-323c052e1731"
       }
-in
 
 let blas =
   λ(v : List Natural) →
@@ -3643,7 +3619,6 @@ let blas =
         λ(_ : types.BuildVars) →
           [ prelude.copyFile "blas_LINUX.a" "lib/blas.a" ]
       }
-in
 
 let openblas =
   λ(v : List Natural) →
@@ -3656,7 +3631,6 @@ let openblas =
       , configureCommand = prelude.doNothing
       , installCommand = prelude.installPrefix
       }
-in
 
 let r =
   λ(v : List Natural) →
@@ -3672,7 +3646,6 @@ let r =
       , pkgBuildDeps = [ prelude.unbounded "gcc" ]
       , installCommand = prelude.installWithBinaries [ "bin/R", "bin/Rscript" ]
       }
-in
 
 let libspng =
   λ(v : List Natural) →
@@ -3684,12 +3657,10 @@ let libspng =
                        ]
       , pkgDeps = [ prelude.unbounded "zlib" ]
       }
-in
 
 let glib-networking =
   λ(x : { version : List Natural, patch : Natural }) →
     let versionString = prelude.showVersion x.version
-    in
     let fullVersion = versionString ++ "." ++ Natural/show x.patch
     in
 
@@ -3702,13 +3673,11 @@ let glib-networking =
                   , prelude.unbounded "gnutls"
                   ]
       }
-in
 
 let libwebp =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libwebp", version = v } ⫽
       { pkgUrl = "https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-${prelude.showVersion v}.tar.gz" }
-in
 
 let rustc =
   λ(v : List Natural) →
@@ -3727,7 +3696,6 @@ let rustc =
             ]
       , pkgStream = False
       }
-in
 
 let librsvg =
   λ(x : { version : List Natural, patch : Natural }) →
@@ -3744,7 +3712,6 @@ let librsvg =
                   , prelude.lowerBound { name = "glib", lower = [2,10,0] }
                   ]
       }
-in
 
 let ats =
   λ(v : List Natural) →
@@ -3773,13 +3740,11 @@ let ats =
       , installCommand = prelude.installWithBinaries [ "bin/patsopt" ]
       , pkgStream = False
       }
-in
 
 let libiconv =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libiconv", version = v } ⫽
       { pkgUrl = "https://ftp.wayne.edu/gnu/libiconv/libiconv-${prelude.showVersion v}.tar.gz" }
-in
 
 let libav =
   λ(v : List Natural) →
@@ -3791,7 +3756,6 @@ let libav =
                        ]
       , installCommand = prelude.installWithBinaries [ "bin/avconv", "bin/avprobe" ]
       }
-in
 
 -- TODO: use bzip2 approach here; build shared + static libs
 let alsa-lib =
@@ -3800,14 +3764,12 @@ let alsa-lib =
       { pkgUrl = "https://www.alsa-project.org/files/pub/lib/alsa-lib-${prelude.showVersion v}.tar.bz2"
       , pkgStream = False
       }
-in
 
 let bash-completion =
   λ(v : List Natural) →
     let versionString = prelude.showVersion v in
     prelude.simplePackage { name = "bash-completion", version = v } ⫽
       { pkgUrl = "https://github.com/scop/bash-completion/releases/download/${versionString}/bash-completion-${versionString}.tar.xz" }
-in
 
 let hugs =
   let hugsEnv =
@@ -3830,13 +3792,11 @@ let hugs =
                      , prelude.unbounded "findutils"
                      ]
     }
-in
 
 let bash =
   λ(v : List Natural) →
     prelude.simplePackage { name = "bash", version = v } ⫽
         { pkgUrl = "https://ftp.gnu.org/gnu/bash/bash-${prelude.showVersion v}.tar.gz" }
-in
 
 let findutils =
   λ(v : List Natural) →
@@ -3844,7 +3804,6 @@ let findutils =
         { pkgUrl = "https://ftp.gnu.org/pub/gnu/findutils/findutils-${prelude.showVersion v}.tar.xz"
         , pkgStream = False
         }
-in
 
 let ghc =
   λ(v : List Natural) →
@@ -3854,7 +3813,6 @@ let ghc =
         , buildCommand = prelude.doNothing
         , pkgStream = False
         }
-in
 
 -- TODO: runghc Setup.hs configure
 -- let composition-prelude =
@@ -3876,7 +3834,6 @@ let cmark =
   λ(v : List Natural) →
     prelude.simplePackage { name = "cmark", version = v } ⫽ prelude.cmakePackage ⫽
         { pkgUrl = "https://github.com/commonmark/cmark/archive/${prelude.showVersion v}.tar.gz" }
-in
 
 -- TODO: set CC for lzip and lzlib
 let lzip =
@@ -3885,7 +3842,6 @@ let lzip =
         { pkgUrl = "http://gnu.mirrors.pair.com/savannah/savannah/lzip/lzip-${prelude.showVersion v}.tar.lz"
         , installCommand = prelude.installWithBinaries [ "bin/lzip" ]
         }
-in
 
 let lunzip =
   λ(v : List Natural) →
@@ -3893,7 +3849,6 @@ let lunzip =
         { pkgUrl = "http://download.savannah.gnu.org/releases/lzip/lunzip/lunzip-${prelude.showVersion v}.tar.lz"
         , installCommand = prelude.installWithBinaries [ "bin/lunzip" ]
         }
-in
 
 let lzlib =
   λ(v : List Natural) →
@@ -3901,7 +3856,6 @@ let lzlib =
         { pkgUrl = "http://download.savannah.gnu.org/releases/lzip/lzlib/lzlib-${prelude.showVersion v}.tar.lz"
         , configureCommand = prelude.configureWithFlags [ "--enable-shared" ]
         }
-in
 
 let lziprecover =
   λ(v : List Natural) →
@@ -3909,7 +3863,6 @@ let lziprecover =
         { pkgUrl = "http://download.savannah.gnu.org/releases/lzip/lziprecover/lziprecover-${prelude.showVersion v}.tar.lz"
         , installCommand = prelude.installWithBinaries [ "bin/lziprecover" ]
         }
-in
 
 let libmp3lame =
   λ(v : List Natural) →
@@ -3918,7 +3871,6 @@ let libmp3lame =
         { pkgUrl = "https://downloads.sourceforge.net/lame/lame-${versionString}.tar.gz"
         , pkgSubdir = "lame-${versionString}"
         }
-in
 
 let libass =
   λ(v : List Natural) →
@@ -3932,13 +3884,11 @@ let libass =
                     , prelude.lowerBound { name = "fontconfig", lower = [2,10,92] }
                     ]
         }
-in
 
 let libogg =
   λ(v : List Natural) →
     prelude.simplePackage { name = "libogg", version = v } ⫽
         { pkgUrl = "https://downloads.xiph.org/releases/ogg/libogg-${prelude.showVersion v}.tar.xz" }
-in
 
 let libvorbis =
   λ(v : List Natural) →
@@ -3946,7 +3896,6 @@ let libvorbis =
         { pkgUrl = "https://downloads.xiph.org/releases/vorbis/libvorbis-${prelude.showVersion v}.tar.xz"
         , pkgDeps = [ prelude.unbounded "libogg" ]
         }
-in
 
 let libvpx =
   λ(v : List Natural) →
@@ -3958,13 +3907,11 @@ let libvpx =
                          ]
         , pkgStream = False
         }
-in
 
 let fdk-aac =
   λ(v : List Natural) →
     prelude.simplePackage { name = "fdk-aac", version = v } ⫽
         { pkgUrl = "https://downloads.sourceforge.net/opencore-amr/fdk-aac-${prelude.showVersion v}.tar.gz" }
-in
 
 -- needs haskal: https://www.informatik.uni-kiel.de/~pakcs/download/pakcs-2.1.2-src.tar.gz
 -- https://ftp.gnu.org/gnu/libcdio/libcdio-2.1.0.tar.bz2
@@ -3982,7 +3929,6 @@ let swi-prolog =
         , pkgSubdir = "swipl-${versionString}"
         , pkgStream = False
         }
-in
 
 let exiftool =
   λ(v : List Natural) →
@@ -3995,7 +3941,6 @@ let exiftool =
             -- TODO make this more general
             λ(cfg : types.BuildVars) →
               let perlWrapper = "PERL5LIB=${cfg.installDir}/lib/site_perl/5.30.0/ ${cfg.installDir}/bin/exiftool $@"
-              in
               let wrapped = "wrapper/exiftool"
               in
               prelude.defaultInstall cfg
@@ -4007,7 +3952,6 @@ let exiftool =
                   ]
         , pkgBuildDeps = [ prelude.unbounded "perl" ]
         }
-in
 
 let subversion =
   λ(v : List Natural) →
@@ -4023,14 +3967,12 @@ let subversion =
         , pkgBuildDeps = [ prelude.unbounded "pkg-config" ]
         , installCommand = prelude.installWithBinaries [ "bin/svn" ]
         }
-in
 
 let utf8proc =
   λ(v : List Natural) →
     let versionString = prelude.showVersion v in
     prelude.simplePackage { name = "utf8proc", version = v } ⫽ prelude.cmakePackage ⫽
         { pkgUrl = "https://github.com/JuliaStrings/utf8proc/archive/v${versionString}.tar.gz" }
-in
 
 let apr =
   λ(v : List Natural) →
@@ -4038,7 +3980,6 @@ let apr =
         { pkgUrl = "https://www-eu.apache.org/dist/apr/apr-${prelude.showVersion v}.tar.bz2"
         , pkgStream = False
         }
-in
 
 let apr-util =
   λ(v : List Natural) →
@@ -4050,7 +3991,6 @@ let apr-util =
               prelude.configureWithFlags [ "--with-apr=${concat cfg.linkDirs}/../" ] cfg
         , pkgStream = False
         }
-in
 
 let libsass =
   λ(v : List Natural) →
