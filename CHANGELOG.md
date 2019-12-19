@@ -1,5 +1,9 @@
 # cpkg
 
+## 0.2.3.7
+
+  * Pin package
+
 ## 0.2.3.6
 
   * Use `dhall` 1.27.0
