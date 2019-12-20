@@ -3990,7 +3990,7 @@ in
 , pygobject { version = [2,28], patch = 7 }
 , pygtk { version = [2,24], patch = 0 }
 , python [2,7,16]
-, python [3,8,0]
+, python [3,8,1]
 , qrencode [4,0,2]
 , qt { version = [5,13], patch = 0 }
 , quazip [0,8,1]
