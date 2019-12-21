@@ -563,7 +563,11 @@ let valgrind =
         ⫽ { pkgUrl =
               "https://sourceware.org/pub/valgrind/valgrind-${prelude.showVersion
                                                                 v}.tar.bz2"
-          , installCommand = prelude.installWithBinaries [ "bin/valgrind" ]
+          , installCommand =
+                λ(cfg : types.BuildVars)
+              →   prelude.installWithBinaries [ "bin/valgrind" ] cfg
+                # prelude.symlinkManpages
+                    [ { file = "share/man/man1/pdfgrep.1", section = 1 } ]
           , configureCommand =
               prelude.configureMkExes [ "auxprogs/make_or_upd_vgversion_h" ]
           }
