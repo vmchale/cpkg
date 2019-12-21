@@ -10,8 +10,7 @@ module Package.C.PackageSet ( PackageSet (..)
 
 import           CPkgPrelude
 import           Data.Containers.ListUtils
-import           Data.List                             (intersperse)
-import           Data.List                             (find)
+import           Data.List                             (find, intersperse)
 import qualified Data.Map                              as M
 import qualified Data.Text                             as T
 import           Data.Text.Prettyprint.Doc

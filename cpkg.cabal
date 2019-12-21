@@ -101,13 +101,8 @@ library
         libarchive >=2.0.0.0,
         dir-traverse >=0.2.1.0,
         composition-prelude >=1.5.2.0,
-        lzlib >=0.3.0.0
-
-    if impl(ghc <8.4)
-        build-depends: dhall >=1.27.0 && <1.25.0
-
-    else
-        build-depends: dhall >=1.27.0
+        lzlib >=0.3.0.0,
+        dhall >=1.27.0
 
     if (flag(development) && impl(ghc <=8.2))
         ghc-options: -Werror
