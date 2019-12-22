@@ -4736,7 +4736,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , chickenScheme [ 5, 0, 0 ]
     , cimg [ 2, 7, 0 ]
     , clang [ 9, 0, 0 ]
-    , cmake { version = [ 3, 16 ], patch = 0 }
+    , cmake { version = [ 3, 16 ], patch = 2 }
     , cmark [ 0, 29, 0 ]
     , compositeproto [ 0, 4 ]
     , coreutils [ 8, 31 ]
