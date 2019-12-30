@@ -4827,7 +4827,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , libev [ 4, 25 ]
     , libevent [ 2, 1, 10 ]
     , libexif [ 0, 6, 21 ]
-    , libffi [ 3, 2, 1 ]
+    , libffi [ 3, 3 ]
     , libgcrypt [ 1, 8, 5 ]
     , libglade { version = [ 2, 6 ], patch = 4 }
     , libgpgError [ 1, 36 ]
