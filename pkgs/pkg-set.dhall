@@ -1505,7 +1505,7 @@ let intltool =
                                   (   prelude.defaultPath cfg
                                     # [ prelude.mkPerlLib
                                           { libDirs = cfg.linkDirs
-                                          , perlVersion = [ 5, 30, 0 ]
+                                          , perlVersion = [ 5, 30, 1 ]
                                           , cfg = cfg
                                           }
                                       ]

@@ -367,7 +367,7 @@ let configEnv =
           , libPath cfg
           , mkLDRunPath cfg.linkDirs
           , mkPerlLib
-              { libDirs = cfg.linkDirs, perlVersion = [ 5, 30, 0 ], cfg = cfg }
+              { libDirs = cfg.linkDirs, perlVersion = [ 5, 30, 1 ], cfg = cfg }
           ]
 
 let buildEnv =
@@ -375,7 +375,7 @@ let buildEnv =
       →   defaultPath cfg
         # [ mkPkgConfigVar (cfg.shareDirs # cfg.linkDirs)
           , mkPerlLib
-              { libDirs = cfg.linkDirs, perlVersion = [ 5, 30, 0 ], cfg = cfg }
+              { libDirs = cfg.linkDirs, perlVersion = [ 5, 30, 1 ], cfg = cfg }
           , mkLDPath cfg.linkDirs
           , mkLDFlagsGeneral cfg.linkDirs ([] : List Text)
           ]
@@ -1055,7 +1055,7 @@ let preloadEnv =
               , mkLDPreload cfg.preloadLibs
               , mkPerlLib
                   { libDirs = cfg.linkDirs
-                  , perlVersion = [ 5, 30, 0 ]
+                  , perlVersion = [ 5, 30, 1 ]
                   , cfg = cfg
                   }
               ]
