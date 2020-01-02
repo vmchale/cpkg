@@ -15,7 +15,7 @@ let types =
       ../dhall/cpkg-types.dhall sha256:caef717db41539eb7ded38d8cd676ba998bd387171ba3fd2db7fea9e8ee8f361
 
 let prelude =
-      ../dhall/cpkg-prelude.dhall sha256:ed6a398217c984a479a686f4fc9a07152380286cd35a8e9a9bbad8a470046310
+      ../dhall/cpkg-prelude.dhall sha256:a8dc1bfd659bb1d87a35bf6da3ed28b6ef8e268b216c42e40a0e4f2607e6a38e
 
 let gpgPackage =
         λ(x : { name : Text, version : List Natural })
@@ -4813,7 +4813,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , lapack [ 3, 8, 0 ]
     , lcms2 [ 2, 9 ]
     , leptonica [ 1, 78, 0 ]
-    , libarchive [ 3, 4, 0 ]
+    , libarchive [ 3, 4, 1 ]
     , libass [ 0, 14, 0 ]
     , libassuan [ 2, 5, 3 ]
     , libatomic_ops [ 7, 6, 10 ]
