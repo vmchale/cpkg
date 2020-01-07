@@ -4892,7 +4892,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , pycairo [ 1, 18, 1 ]
     , pygobject { version = [ 2, 28 ], patch = 7 }
     , pygtk { version = [ 2, 24 ], patch = 0 }
-    , python [ 2, 7, 16 ]
+    , python [ 2, 7, 17 ]
     , python [ 3, 8, 1 ]
     , qrencode [ 4, 0, 2 ]
     , qt { version = [ 5, 13 ], patch = 0 }
@@ -4926,7 +4926,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , util-macros [ 1, 19, 2 ]
     , vala { version = [ 0, 45 ], patch = 3 }
     , valgrind [ 3, 15, 0 ]
-    , vim [ 8, 1 ]
+    , vim [ 8, 2 ]
     , wayland [ 1, 17, 0 ]
     , wget [ 1, 20, 3 ]
     , which [ 2, 21 ]
