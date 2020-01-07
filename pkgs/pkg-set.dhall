@@ -3382,7 +3382,7 @@ let fossil =
                                                                v}.tar.gz"
           , installCommand = prelude.installWithBinaries [ "bin/fossil" ]
           , pkgDeps = [ prelude.unbounded "zlib", prelude.unbounded "openssl" ]
-          , pkgSteam = False
+          , pkgStream = False
           }
 
 let libcroco =
