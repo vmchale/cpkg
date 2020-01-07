@@ -1,5 +1,10 @@
 # cpkg
 
+## 0.2.3.8
+
+  * Support `.zst` via [zstd](http://hackage.haskell.org/package/zstd) library
+  * Pin new Dhall package set
+
 ## 0.2.3.7
 
   * Pin package
