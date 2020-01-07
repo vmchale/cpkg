@@ -1,5 +1,9 @@
 # cpkg
 
+## 0.2.4.0
+
+  * Use [`libarchive`](http://hackage.haskell.org/package/libarchive) exclusively
+
 ## 0.2.3.8
 
   * Support `.zst` via [zstd](http://hackage.haskell.org/package/zstd) library

@@ -1,6 +1,6 @@
 cabal-version:      1.18
 name:               cpkg
-version:            0.2.3.9
+version:            0.2.4.0
 license:            BSD3
 license-file:       LICENSE
 copyright:          Copyright: (c) 2018-2019 Vanessa McHale
