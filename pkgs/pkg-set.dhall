@@ -3380,10 +3380,9 @@ let fossil =
         ⫽ { pkgUrl =
               "https://fossil-scm.org/fossil/uv/fossil-src-${prelude.showVersion
                                                                v}.tar.gz"
-          , configureCommand =
-              prelude.configureMkExes [ "autosetup/find-tclsh" ]
           , installCommand = prelude.installWithBinaries [ "bin/fossil" ]
           , pkgDeps = [ prelude.unbounded "zlib", prelude.unbounded "openssl" ]
+          , pkgSteam = False
           }
 
 let libcroco =

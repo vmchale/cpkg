@@ -103,7 +103,7 @@ library
         composition-prelude >=1.5.2.0,
         lzlib >=0.3.0.0,
         dhall >=1.27.0,
-        zstd
+        zstd -any
 
     if (flag(development) && impl(ghc <=8.2))
         ghc-options: -Werror
