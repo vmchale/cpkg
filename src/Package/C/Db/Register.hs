@@ -213,7 +213,7 @@ pkgToBuildCfg :: CPkg
               -> Bool -- ^ Was this package manually installed?
               -> BuildVars
               -> BuildCfg
-pkgToBuildCfg (CPkg n v _ _ _ bds ds cCmd bCmd iCmd) host glob usr bVar =
+pkgToBuildCfg (CPkg n v _ _ bds ds cCmd bCmd iCmd) host glob usr bVar =
     BuildCfg n v (go <$> bds) (go <$> ds) host glob (cCmd bVar) (bCmd bVar) (iCmd bVar) usr -- TODO: fix pinned build deps &c.
     where placeholderVersion = Version [0,1,0,0]
           go (Dep n' _) = (n', placeholderVersion)

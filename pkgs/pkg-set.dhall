@@ -15,7 +15,7 @@ let types =
       ../dhall/cpkg-types.dhall sha256:caef717db41539eb7ded38d8cd676ba998bd387171ba3fd2db7fea9e8ee8f361
 
 let prelude =
-      ../dhall/cpkg-prelude.dhall sha256:a8dc1bfd659bb1d87a35bf6da3ed28b6ef8e268b216c42e40a0e4f2607e6a38e
+      ../dhall/cpkg-prelude.dhall sha256:4eae9adcc22ceda96091f3fa560aa095dbf8de05f7cf0387061042a9f31d10ee
 
 let gpgPackage =
         λ(x : { name : Text, version : List Natural })
@@ -243,20 +243,14 @@ let glibc =
 
               let modifyArgs = prelude.maybeAppend Text maybeHost
 
-              in    prelude.mkExes
-                      [ "configure"
-                      , "scripts/mkinstalldirs"
-                      , "scripts/rellns-sh"
-                      ]
-                  # [ prelude.createDir "build"
-                    , prelude.call
-                        { program = "../configure"
-                        , arguments =
-                            modifyArgs [ "--prefix=${cfg.installDir}" ]
-                        , environment = prelude.configSome ([] : List Text) cfg
-                        , procDir = buildDir
-                        }
-                    ]
+              in  [ prelude.createDir "build"
+                  , prelude.call
+                      { program = "../configure"
+                      , arguments = modifyArgs [ "--prefix=${cfg.installDir}" ]
+                      , environment = prelude.configSome ([] : List Text) cfg
+                      , procDir = buildDir
+                      }
+                  ]
 
       let glibcBuild =
               λ(cfg : types.BuildVars)
@@ -303,7 +297,6 @@ let gmp =
               "https://gmplib.org/download/gmp/gmp-${prelude.showVersion
                                                        v}.tar.lz"
           , pkgBuildDeps = [ prelude.unbounded "m4" ]
-          , pkgStream = False
           }
 
 let harfbuzz =
@@ -448,8 +441,7 @@ let pcre =
 let perl5 =
       let perlConfigure =
               λ(cfg : types.BuildVars)
-            → [ prelude.mkExe "Configure"
-              , prelude.call
+            → [ prelude.call
                   (   prelude.defaultCall
                     ⫽ { program = "sh"
                       , arguments =
@@ -548,7 +540,6 @@ let sed =
                 [ { file = "share/man/man1/sed.1", section = 1 } ]
           , configureCommand =
               prelude.configureWithFlags [ "--disable-dependency-tracking" ]
-          , pkgStream = False
           }
 
 let tar = λ(v : List Natural) → prelude.makeGnuExe { name = "tar", version = v }
@@ -643,8 +634,7 @@ let zlib =
                 λ(cfg : types.BuildVars)
               → let host = prelude.mkCCVar cfg
 
-                in  [ prelude.mkExe "configure"
-                    , prelude.call
+                in  [ prelude.call
                         (   prelude.defaultCall
                           ⫽ { program = "sh"
                             , arguments =
@@ -679,7 +669,6 @@ let gettext =
                 [ "bin/gettext", "bin/msgfmt", "bin/autopoint" ]
           , configureCommand =
               prelude.configureWithFlags [ "--disable-dependency-tracking" ]
-          , pkgStream = False
           }
 
 let gzip =
@@ -714,9 +703,7 @@ let gnutls =
                       { name = "p11-kit", lower = [ 0, 23, 1 ] }
                   ]
               , configureCommand =
-                    λ(cfg : types.BuildVars)
-                  →   prelude.mkExes [ "src/gen-mech-list.sh" ]
-                    # prelude.configureLinkExtraLibs [ "nettle", "hogweed" ] cfg
+                  prelude.configureLinkExtraLibs [ "nettle", "hogweed" ]
               }
 
 let lapack =
@@ -805,7 +792,6 @@ let patch =
               →   prelude.installWithBinaries [ "bin/patch" ] cfg
                 # prelude.symlinkManpages
                     [ { file = "share/man/man1/patch.1", section = 1 } ]
-          , pkgStream = False
           }
 
 let m4 =
@@ -821,7 +807,6 @@ let m4 =
               prelude.installWithManpages
                 [ { file = "share/man/man1/m4.1", section = 1 } ]
           , pkgBuildDeps = [ prelude.unbounded "patch" ]
-          , pkgStream = False
           }
 
 let nginx =
@@ -1144,7 +1129,7 @@ let libffi =
 let gdb =
         λ(v : List Natural)
       →   prelude.makeGnuExe { name = "gdb", version = v }
-        ⫽ { pkgStream = False, pkgBuildDeps = [ prelude.unbounded "texinfo" ] }
+        ⫽ { pkgBuildDeps = [ prelude.unbounded "texinfo" ] }
 
 let libtool =
         λ(v : List Natural)
@@ -1154,7 +1139,6 @@ let libtool =
                                                              v}.tar.xz"
           , pkgBuildDeps =
               [ prelude.lowerBound { name = "m4", lower = [ 1, 4, 16 ] } ]
-          , pkgStream = False
           }
 
 let pkg-config =
@@ -1295,8 +1279,7 @@ let gtk2 =
 
       let gtkConfig =
               λ(cfg : types.BuildVars)
-            → [ prelude.mkExe "configure"
-              , prelude.call
+            → [ prelude.call
                   (   prelude.defaultCall
                     ⫽ { program = "./configure"
                       , arguments = [ "--prefix=${cfg.installDir}" ]
@@ -1495,7 +1478,6 @@ let intltool =
                     λ(cfg : types.BuildVars)
                   → [ prelude.patch
                         ./patches/intltool.patch sha256:e33e9b3e43d80a17475e36c05ed4e649fa5d610991044749e6321dff555cc8e5 as Text
-                    , prelude.mkExe "configure"
                     , prelude.call
                         (   prelude.defaultCall
                           ⫽ { program = "./configure"
@@ -1600,9 +1582,7 @@ let meson =
 let ninja =
       let ninjaConfigure =
               λ(cfg : types.BuildVars)
-            → [ prelude.mkExe "configure.py"
-              , prelude.mkExe "src/inline.sh"
-              , prelude.call
+            → [ prelude.call
                   (   prelude.defaultCall
                     ⫽ { program = "./configure.py"
                       , arguments = [ "--bootstrap" ]
@@ -2566,8 +2546,7 @@ let gtk3 =
 
       let gtkConfig =
               λ(cfg : types.BuildVars)
-            → [ prelude.mkExe "configure"
-              , prelude.call
+            → [ prelude.call
                   (   prelude.defaultCall
                     ⫽ { program = "./configure"
                       , arguments = [ "--prefix=${cfg.installDir}" ]
@@ -2700,7 +2679,6 @@ let sqlite =
                   "https://sqlite.org/${Natural/show
                                           x.year}/sqlite-autoconf-${versionString}000.tar.gz"
               , pkgSubdir = "sqlite-autoconf-${versionString}000"
-              , pkgStream = False
               }
 
 let ragel =
@@ -2746,9 +2724,7 @@ let pygtk =
         in    mkGnomeSimple "pygtk" x
             ⫽ { pkgUrl =
                   "http://ftp.gnome.org/pub/gnome/sources/pygtk/${versionString}/pygtk-${fullVersion}.tar.bz2"
-              , configureCommand =
-                    λ(cfg : types.BuildVars)
-                  → prelude.mkExes [ "py-compile" ] # prelude.preloadCfg cfg
+              , configureCommand = prelude.preloadCfg
               , pkgDeps =
                   [ prelude.lowerBound { name = "glib", lower = [ 2, 8, 0 ] }
                   , prelude.lowerBound
@@ -2909,7 +2885,6 @@ let gegl =
               , prelude.unbounded "json-glib"
               ]
           , configureCommand = prelude.preloadCfg
-          , pkgStream = False
           }
 
 let libexif =
@@ -3382,7 +3357,6 @@ let fossil =
                                                                v}.tar.gz"
           , installCommand = prelude.installWithBinaries [ "bin/fossil" ]
           , pkgDeps = [ prelude.unbounded "zlib", prelude.unbounded "openssl" ]
-          , pkgStream = False
           }
 
 let libcroco =
@@ -3580,7 +3554,6 @@ let texinfo =
                                                            v}.tar.xz"
           , configureCommand =
               prelude.configureWithFlags [ "--disable-dependency-tracking" ]
-          , pkgStream = False
           }
 
 let node =
@@ -3597,7 +3570,6 @@ let node =
                     # [ prelude.mkExe
                           "${cfg.installDir}/lib/node_modules/npm/bin/npm-cli.js"
                       ]
-              , pkgStream = False
               }
 
 let glu =
@@ -3687,7 +3659,6 @@ let libboost =
                       "https://dl.bintray.com/boostorg/release/${prelude.showVersion
                                                                    v}/source/boost_${versionString}.tar.bz2"
                   , pkgSubdir = "boost_${versionString}"
-                  , pkgStream = False
                   , configureCommand = boostConfigure
                   , buildCommand = prelude.doNothing
                   , installCommand = boostInstall
@@ -3713,7 +3684,6 @@ let clang =
             ⫽ { pkgUrl =
                   "http://releases.llvm.org/${versionString}/cfe-${versionString}.src.tar.xz"
               , pkgSubdir = "cfe-${versionString}.src"
-              , pkgStream = False
               , buildCommand = slowBuild
               , pkgDeps = [ prelude.unbounded "llvm" ]
               , installCommand =
@@ -3733,7 +3703,6 @@ let llvm =
             ⫽ { pkgUrl =
                   "http://releases.llvm.org/${versionString}/llvm-${versionString}.src.tar.xz"
               , pkgSubdir = "llvm-${versionString}.src"
-              , pkgStream = False
               , buildCommand = slowBuild
               }
 
@@ -3749,7 +3718,6 @@ let pari =
                 "Configure"
                 ([] : List Text)
                 ([] : List Text)
-          , pkgStream = False
           }
 
 let pdfgrep =
@@ -3806,7 +3774,6 @@ let gcc =
                   , prelude.unbounded "sed"
                   , prelude.unbounded "libtool"
                   ]
-              , pkgStream = False
               }
 
 let ruby =
@@ -3821,7 +3788,6 @@ let ruby =
                   "https://cache.ruby-lang.org/pub/ruby/${versionString}/ruby-${fullVersion}.tar.gz"
               , installCommand =
                   prelude.installWithBinaries [ "bin/ruby", "bin/gem" ]
-              , pkgStream = False
               , pkgDeps =
                   [ prelude.unbounded "readline", prelude.unbounded "openssl" ]
               }
@@ -3935,7 +3901,6 @@ let phash =
                       }
                   ]
                 # prelude.defaultConfigure cfg
-          , pkgStream = False
           }
 
 let cimg =
@@ -3986,7 +3951,6 @@ let ffmpeg =
               , prelude.unbounded "libvpx"
               , prelude.unbounded "fdk-aac"
               ]
-          , pkgStream = False
           }
 
 let libsndfile =
@@ -4069,7 +4033,7 @@ let mercury =
 
       in    prelude.simplePackage { name = "mercury", version = [ 14, 1, 1 ] }
           ⫽ mercuryCommon
-          ⫽ { pkgBuildDeps = [ prelude.unbounded "flex" ], pkgStream = False }
+          ⫽ { pkgBuildDeps = [ prelude.unbounded "flex" ] }
 
 let qt =
         λ(x : { version : List Natural, patch : Natural })
@@ -4102,7 +4066,6 @@ let qt =
                   , prelude.unbounded "giflib"
                   , prelude.unbounded "glib"
                   ]
-              , pkgStream = False
               }
 
 let lz4 =
@@ -4246,7 +4209,6 @@ let r =
             ⫽ { pkgUrl =
                   "https://cran.r-project.org/src/base/R-3/R-${versionString}.tar.gz"
               , pkgSubdir = "R-${versionString}"
-              , pkgStream = False
               , pkgDeps =
                   [ prelude.unbounded "readline"
                   , prelude.unbounded "libXt"
@@ -4319,7 +4281,6 @@ let rustc =
                             }
                         )
                     ]
-              , pkgStream = False
               }
 
 let librsvg =
@@ -4373,7 +4334,6 @@ let ats =
                   , buildCommand = atsBuild
                   , installCommand =
                       prelude.installWithBinaries [ "bin/patsopt" ]
-                  , pkgStream = False
                   }
 
 let libiconv =
@@ -4403,7 +4363,6 @@ let alsa-lib =
         ⫽ { pkgUrl =
               "https://www.alsa-project.org/files/pub/lib/alsa-lib-${prelude.showVersion
                                                                        v}.tar.bz2"
-          , pkgStream = False
           }
 
 let bash-completion =
@@ -4434,7 +4393,6 @@ let hugs =
                   "configure"
                   ([] : List Text)
                   ([] : List Text)
-            , pkgStream = False
             , pkgBuildDeps =
                 [ prelude.unbounded "coreutils"
                 , prelude.unbounded "sed"
@@ -4459,7 +4417,6 @@ let findutils =
         ⫽ { pkgUrl =
               "https://ftp.gnu.org/pub/gnu/findutils/findutils-${prelude.showVersion
                                                                    v}.tar.xz"
-          , pkgStream = False
           }
 
 let ghc =
@@ -4470,7 +4427,6 @@ let ghc =
             ⫽ { pkgUrl =
                   "https://downloads.haskell.org/~ghc/${versionString}/ghc-${versionString}-x86_64-deb9-linux.tar.xz"
               , buildCommand = prelude.doNothing
-              , pkgStream = False
               }
 
 let cmark =
@@ -4574,7 +4530,6 @@ let libvpx =
                   "https://github.com/webmproject/libvpx/archive/v${versionString}/libvpx-${versionString}.tar.gz"
               , pkgBuildDeps =
                   [ prelude.unbounded "nasm", prelude.unbounded "perl" ]
-              , pkgStream = False
               }
 
 let fdk-aac =
@@ -4599,7 +4554,6 @@ let swi-prolog =
                   , prelude.unbounded "coreutils"
                   ]
               , pkgSubdir = "swipl-${versionString}"
-              , pkgStream = False
               }
 
 let exiftool =
@@ -4663,7 +4617,6 @@ let apr =
         ⫽ { pkgUrl =
               "https://www-eu.apache.org/dist/apr/apr-${prelude.showVersion
                                                           v}.tar.bz2"
-          , pkgStream = False
           }
 
 let apr-util =
@@ -4678,7 +4631,6 @@ let apr-util =
               → prelude.configureWithFlags
                   [ "--with-apr=${concat cfg.linkDirs}/../" ]
                   cfg
-          , pkgStream = False
           }
 
 let libsass =
@@ -4712,7 +4664,6 @@ let libsass =
                       }
                   ]
                 # prelude.defaultConfigure cfg
-          , pkgStream = False
           }
 
 in  [ alsa-lib [ 1, 1, 9 ]

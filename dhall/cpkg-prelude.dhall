@@ -395,8 +395,7 @@ let generalConfigure =
 
         let modifyArgs = maybeAppend Text maybeHost
 
-        in  [ mkExe filename
-            , call
+        in  [ call
                 (   defaultCall
                   ⫽ { program = "./${filename}"
                     , arguments =
@@ -516,7 +515,6 @@ let defaultPackage =
       , installCommand = defaultInstall
       , pkgBuildDeps = [] : List types.Dep
       , pkgDeps = [] : List types.Dep
-      , pkgStream = True
       }
 
 let simplePackage =
@@ -710,8 +708,7 @@ let cmakePackage =
 
 let autogenConfigure =
         λ(cfg : types.BuildVars)
-      →   [ mkExe "autogen.sh"
-          , call
+      →   [ call
               (   defaultCall
                 ⫽ { program = "./autogen.sh"
                   , environment =

@@ -4,7 +4,6 @@ module Package.C.Unpack ( unpackResponse
                         ) where
 
 import qualified Codec.Archive               as Archive
-import qualified Codec.Archive.Tar           as Tar
 import           Codec.Archive.Zip           (ZipOption (..), extractFilesFromArchive, toArchive)
 import qualified Codec.Compression.BZip      as Bzip
 import qualified Codec.Compression.GZip      as Gzip
@@ -39,16 +38,11 @@ archiveResponse compressScheme dirName =
 
     where showError = error . show
 
-tarResponse :: TarCompress -> FilePath -> BSL.ByteString -> IO ()
-tarResponse compressScheme dirName =
-    Tar.unpack dirName . Tar.read . getCompressor compressScheme
-
 zipResponse :: FilePath -> BSL.ByteString -> IO ()
 zipResponse dirName response = withCurrentDirectory dirName $ do
     let options = OptDestination dirName
     extractFilesFromArchive [options] (toArchive response)
 
-unpackResponse :: Compression -> Bool -> FilePath -> BSL.ByteString -> IO ()
-unpackResponse (Tar tarCmp) True fp response  = tarResponse tarCmp fp response
-unpackResponse (Tar tarCmp) False fp response = archiveResponse tarCmp fp response
-unpackResponse Zip _ fp response              = zipResponse fp response
+unpackResponse :: Compression -> FilePath -> BSL.ByteString -> IO ()
+unpackResponse (Tar tarCmp) fp response = archiveResponse tarCmp fp response
+unpackResponse Zip fp response          = zipResponse fp response

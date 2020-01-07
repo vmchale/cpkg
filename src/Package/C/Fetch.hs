@@ -36,10 +36,9 @@ cacheDir = (</> "cache") <$> globalPkgDir
 
 fetchUrl :: String -- ^ URL
          -> String -- ^ Package name
-         -> Bool -- ^ Stream using @tar@ package?
          -> FilePath -- ^ Directory to unpack to
          -> PkgM ()
-fetchUrl url name libArch dirName = do
+fetchUrl url name dirName = do
 
         let tarballName = fromJust (asFilename url)
         tarballDir <- (</> tarballName) <$> cacheDir
@@ -72,4 +71,4 @@ fetchUrl url name libArch dirName = do
 
         putNormal ("Unpacking " ++ name)
 
-        liftIO $ unpackResponse compression libArch dirName response
+        liftIO $ unpackResponse compression dirName response

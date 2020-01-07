@@ -49,7 +49,6 @@ data CPkg = CPkg { pkgName          :: String
                  , pkgVersion       :: Version
                  , pkgUrl           :: String
                  , pkgSubdir        :: String
-                 , pkgStream        :: Bool -- ^ Use @tar@ package to stream
                  , pkgBuildDeps     :: [ Dep ]
                  , pkgDeps          :: [ Dep ]
                  , configureCommand :: BuildVars -> [ Command ]
@@ -75,8 +74,8 @@ buildVarsToDhallBuildVars :: BuildVars -> Dhall.BuildVars
 buildVarsToDhallBuildVars (BuildVars dir' cd tgt' cross incls prelds shr lds bins os' arch' sta nproc) = Dhall.BuildVars (T.pack dir') (T.pack cd) tgt' cross (T.pack <$> incls) (T.pack <$> prelds) (T.pack <$> shr) (T.pack <$> lds) (T.pack <$> bins) os' arch' sta (fromIntegral nproc)
 
 cPkgDhallToCPkg :: Dhall.CPkg -> CPkg
-cPkgDhallToCPkg (Dhall.CPkg n v url subdir stream bldDeps deps cfgCmd buildCmd installCmd) =
-    CPkg (T.unpack n) (Version v) (T.unpack url) (T.unpack subdir) stream bldDeps deps configure build install
+cPkgDhallToCPkg (Dhall.CPkg n v url subdir bldDeps deps cfgCmd buildCmd installCmd) =
+    CPkg (T.unpack n) (Version v) (T.unpack url) (T.unpack subdir) bldDeps deps configure build install
 
     where configure cfg = commandDhallToCommand <$> cfgCmd (buildVarsToDhallBuildVars cfg)
           build cfg = commandDhallToCommand <$> buildCmd (buildVarsToDhallBuildVars cfg)

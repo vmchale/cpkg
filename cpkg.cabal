@@ -82,7 +82,6 @@ library
         zlib -any,
         bzlib -any,
         lzma -any,
-        tar -any,
         zip-archive -any,
         prettyprinter -any,
         http-client -any,
