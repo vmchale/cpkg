@@ -6,7 +6,7 @@
 - [ ] Maybe fix `acid-state`?
 - [ ] Investigate possible upstream bug when downloading `fltk` and unpacking
   the `.tar.gz`
-- [ ] Fix tar library and/or rewrite it
+- [x] Fix tar library and/or rewrite it
 - [x] Dhall space leak
   - [ ] Dhall performance problems
 - [ ] Fix `hp2pretty` completions to work with `.hp` files alone
@@ -184,6 +184,7 @@
 - [ ] http://www.linuxfromscratch.org/blfs/view/8.3/kde/okular5.html
 - [ ] http://cimg.eu/links.shtml
 - [ ] http://www.linuxfromscratch.org/blfs/view/svn/gnome/nautilus.html
+- [ ] wxWidgets/erlang
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in
