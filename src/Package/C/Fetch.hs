@@ -23,6 +23,7 @@ urlToCompression s | ".tar.gz" `isSuffixOf` s || ".tgz" `isSuffixOf` s = pure $ 
                    | ".tar.xz" `isSuffixOf` s || ".txz" `isSuffixOf` s = pure $ Tar Xz
                    | ".tar.bz2" `isSuffixOf` s = pure $ Tar Bz2
                    | ".tar.lz" `isSuffixOf` s = pure $ Tar Lz
+                   | ".tar.zst" `isSuffixOf` s = pure $ Tar Zstd
                    | ".tar" `isSuffixOf` s = pure $ Tar None
                    | ".zip" `isSuffixOf` s = pure Zip
                    | otherwise = unrecognized s
