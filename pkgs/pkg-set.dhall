@@ -4737,7 +4737,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , gmp [ 6, 1, 2 ]
     , gobject-introspection { version = [ 1, 62 ], patch = 0 }
     , gnome-doc-utils { version = [ 0, 20 ], patch = 10 }
-    , gnupg [ 2, 2, 17 ]
+    , gnupg [ 2, 2, 19 ]
     , gnutls { version = [ 3, 6 ], patch = 9 }
     , graphviz [ 2, 40, 1 ]
     , grep [ 3, 3 ]
