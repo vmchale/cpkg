@@ -687,13 +687,13 @@ let wget =
           }
 
 let gnutls =
-        λ(cfg : { version : List Natural, patch : Natural })
+        λ(cfg : { version : List Natural, patch : List Natural })
       → let versionString = prelude.showVersion cfg.version
 
         in    prelude.simplePackage
-                { name = "gnutls", version = prelude.fullVersion cfg }
+                { name = "gnutls", version = cfg.version # cfg.patch }
             ⫽ { pkgUrl =
-                  "https://www.gnupg.org/ftp/gcrypt/gnutls/v${versionString}/gnutls-${versionString}.${Natural/show
+                  "https://www.gnupg.org/ftp/gcrypt/gnutls/v${versionString}/gnutls-${versionString}.${prelude.showVersion
                                                                                                          cfg.patch}.tar.xz"
               , pkgDeps =
                   [ prelude.lowerBound { name = "nettle", lower = [ 3, 1 ] }
@@ -4738,7 +4738,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , gobject-introspection { version = [ 1, 62 ], patch = 0 }
     , gnome-doc-utils { version = [ 0, 20 ], patch = 10 }
     , gnupg [ 2, 2, 19 ]
-    , gnutls { version = [ 3, 6 ], patch = 9 }
+    , gnutls { version = [ 3, 6 ], patch = [ 11, 1 ] }
     , graphviz [ 2, 40, 1 ]
     , grep [ 3, 3 ]
     , gsl [ 2, 6 ]
@@ -4807,7 +4807,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , libsoup { version = [ 2, 67 ], patch = 3 }
     , libspng [ 0, 5, 0 ]
     , libssh2 [ 1, 8, 0 ]
-    , libtasn1 [ 4, 14 ]
+    , libtasn1 [ 4, 15, 0 ]
     , libtiff [ 4, 0, 10 ]
     , libtool [ 2, 4, 6 ]
     , libuv [ 1, 24, 0 ]
