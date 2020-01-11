@@ -5,8 +5,7 @@
 # update the repository's linecount
 
 set -e
-cabal new-run cpkg -- check-set pkgs/pkg-set.dhall
-cabal new-run cpkg -w ghc-8.2.2 -- check-set pkgs/pkg-set.dhall
-cabal new-test
-echo ':ctags' | cabal new-repl
+cabal new-run cpkg -w ghc-8.6.5 -- check-set pkgs/pkg-set.dhall
+cabal new-test -w ghc-8.6.5
+echo ':ctags' | cabal new-repl -w ghc-8.6.5
 perl -0777 -i -pe 's/```\n----.*```/```\n'"$(poly -c)"'\n```/igs' README.md
