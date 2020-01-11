@@ -2364,7 +2364,7 @@ let libsepol =
       in    λ(v : List Natural)
           →   prelude.simplePackage { name = "libsepol", version = v }
             ⫽ { pkgUrl =
-                  "https://github.com/SELinuxProject/selinux/releases/download/20190315/libsepol-${prelude.showVersion
+                  "https://github.com/SELinuxProject/selinux/releases/download/20191204/libsepol-${prelude.showVersion
                                                                                                      v}.tar.gz"
               , configureCommand = prelude.doNothing
               , buildCommand = prelude.doNothing
@@ -2405,7 +2405,7 @@ let libselinux =
       in    λ(v : List Natural)
           →   prelude.simplePackage { name = "libselinux", version = v }
             ⫽ { pkgUrl =
-                  "https://github.com/SELinuxProject/selinux/releases/download/20190315/libselinux-${prelude.showVersion
+                  "https://github.com/SELinuxProject/selinux/releases/download/20191204/libselinux-${prelude.showVersion
                                                                                                        v}.tar.gz"
               , configureCommand = prelude.doNothing
               , buildCommand = prelude.doNothing
@@ -4679,9 +4679,9 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , bash [ 5, 0 ]
     , bash-completion [ 2, 9 ]
     , binutils [ 2, 33, 1 ]
-    , bison [ 3, 4, 1 ]
+    , bison [ 3, 5 ]
     , blas [ 3, 8, 0 ]
-    , bzip2 [ 1, 0, 6 ]
+    , bzip2 [ 1, 0, 8 ]
     , cairo [ 1, 16, 0 ]
     , chickenScheme [ 5, 0, 0 ]
     , cimg [ 2, 7, 0 ]
@@ -4701,10 +4701,10 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , emacs [ 26, 3 ]
     , exiftool [ 11, 65 ]
     , exiv2 [ 0, 27, 1 ]
-    , expat [ 2, 2, 8 ]
-    , fdk-aac [ 2, 0, 0 ]
+    , expat [ 2, 2, 9 ]
+    , fdk-aac [ 2, 0, 1 ]
     , feh [ 3, 2, 1 ]
-    , ffmpeg [ 4, 2, 1 ]
+    , ffmpeg [ 4, 2, 2 ]
     , fftw [ 3, 3, 8 ]
     , findutils [ 4, 7, 0 ]
     , fixesproto [ 5, 0 ]
@@ -4714,7 +4714,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , fltk [ 1, 3, 5 ]
     , freetype-prebuild [ 2, 10, 1 ]
     , freetype [ 2, 10, 1 ]
-    , fribidi [ 1, 0, 5 ]
+    , fribidi [ 1, 0, 8 ]
     , gawk [ 5, 0, 1 ]
     , gc [ 8, 0, 4 ]
     , gcc [ 9, 2, 0 ]
@@ -4728,7 +4728,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , gperftools [ 2, 7 ]
     , giflib [ 5, 1, 4 ]
     , git [ 2, 24, 1 ]
-    , glib { version = [ 2, 62 ], patch = 0 }
+    , glib { version = [ 2, 63 ], patch = 3 }
     , glib-networking { version = [ 2, 61 ], patch = 2 }
     , glproto [ 1, 4, 17 ]
     , glu [ 9, 0, 0 ]
@@ -4745,7 +4745,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , gtk2 { version = [ 2, 24 ], patch = 32 }
     , gtk3 { version = [ 3, 24 ], patch = 10 }
     , gzip [ 1, 9 ]
-    , harfbuzz [ 2, 6, 1 ]
+    , harfbuzz [ 2, 6, 4 ]
     , htop [ 2, 2, 0 ]
     , hugs
     , icu [ 64, 2 ]
@@ -4784,7 +4784,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , libICE [ 1, 0, 9 ]
     , libiconv [ 1, 16 ]
     , libjpeg [ 9 ]
-    , libjpeg-turbo [ 2, 0, 3 ]
+    , libjpeg-turbo [ 2, 0, 4 ]
     , libksba [ 1, 3, 5 ]
     , libmp3lame [ 3, 100 ]
     , libmypaint [ 1, 3, 0 ]
@@ -4800,9 +4800,9 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , librsvg { version = [ 2, 45 ], patch = 8 }
     , libsamplerate [ 0, 1, 9 ]
     , libsass [ 3, 6, 2 ]
-    , libselinux [ 2, 9 ]
+    , libselinux [ 3, 0 ]
     , libsndfile [ 1, 0, 28 ]
-    , libsepol [ 2, 9 ]
+    , libsepol [ 3, 0 ]
     , libsodium [ 1, 0, 17 ]
     , libsoup { version = [ 2, 67 ], patch = 3 }
     , libspng [ 0, 5, 0 ]
@@ -4815,7 +4815,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , libSM [ 1, 2, 3 ]
     , libthai [ 0, 1, 28 ]
     , libvorbis [ 1, 3, 6 ]
-    , libvpx [ 1, 8, 1 ]
+    , libvpx [ 1, 8, 2 ]
     , libX11 [ 1, 6, 8 ]
     , libXau [ 1, 0, 9 ]
     , libXaw [ 1, 0, 13 ]
@@ -4886,7 +4886,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , phash [ 0, 9, 6 ]
     , pixman [ 0, 38, 4 ]
     , pkg-config [ 0, 29, 2 ]
-    , poppler [ 0, 80, 0 ]
+    , poppler [ 0, 84, 0 ]
     , postgresql [ 12, 1 ]
     , protobuf [ 3, 8, 0 ]
     , pycairo [ 1, 18, 1 ]
