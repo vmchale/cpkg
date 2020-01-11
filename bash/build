@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-PKG_CONFIG_PATH=$(cpkg dump pkg-config libarchive) cabal build "$@"
