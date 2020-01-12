@@ -2671,15 +2671,12 @@ let postgresql =
               }
 
 let sqlite =
-        λ(x : { year : Natural, version : List Natural })
-      → let versionString = prelude.squishVersion x.version
-
-        in    prelude.simplePackage { name = "sqlite", version = x.version }
-            ⫽ { pkgUrl =
-                  "https://sqlite.org/${Natural/show
-                                          x.year}/sqlite-autoconf-${versionString}000.tar.gz"
-              , pkgSubdir = "sqlite-autoconf-${versionString}000"
-              }
+        λ(x : { version : List Natural })
+      →   prelude.simplePackage { name = "sqlite", version = x.version }
+        ⫽ { pkgUrl =
+              "https://www.sqlite.org/2019/sqlite-autoconf-3300100.tar.gz"
+          , pkgSubdir = "sqlite-autoconf-3300100"
+          }
 
 let ragel =
         λ(v : List Natural)
@@ -4911,7 +4908,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , sdl2 [ 2, 0, 10 ]
     , sed [ 4, 7 ]
     , shared-mime-info [ 1, 10 ]
-    , sqlite { year = 2019, version = [ 3, 30, 0 ] }
+    , sqlite { version = [ 3, 30, 1 ] }
     , subversion [ 1, 12, 2 ]
     , swig [ 3, 0, 12 ]
     , swi-prolog [ 8, 0, 3 ]
