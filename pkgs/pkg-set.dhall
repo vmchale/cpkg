@@ -4724,7 +4724,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , gperf [ 3, 1 ]
     , gperftools [ 2, 7 ]
     , giflib [ 5, 1, 4 ]
-    , git [ 2, 24, 1 ]
+    , git [ 2, 25, 0 ]
     , glib { version = [ 2, 63 ], patch = 3 }
     , glib-networking { version = [ 2, 61 ], patch = 2 }
     , glproto [ 1, 4, 17 ]
