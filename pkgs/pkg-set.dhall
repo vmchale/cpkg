@@ -4663,6 +4663,21 @@ let libsass =
                 # prelude.defaultConfigure cfg
           }
 
+let zstd =
+        λ(v : List Natural)
+      → let versionString = prelude.showVersion v
+
+        in    prelude.simplePackage { name = "zstd", version = v }
+            ⫽ prelude.cmakePackage
+            ⫽ { pkgUrl =
+                  "https://github.com/facebook/zstd/releases/download/v${versionString}/zstd-${versionString}.tar.zst"
+              , pkgSubdir = "zstd-${versionString}/build/cmake"
+              , installCommand =
+                    λ(cfg : types.BuildVars)
+                  →   prelude.cmakeInstall cfg
+                    # [ prelude.symlinkBinary "bin/zstd" ]
+              }
+
 in  [ alsa-lib [ 1, 1, 9 ]
     , apr [ 1, 7, 0 ]
     , apr-util [ 1, 6, 1 ]
@@ -4741,7 +4756,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , gsl [ 2, 6 ]
     , gtk2 { version = [ 2, 24 ], patch = 32 }
     , gtk3 { version = [ 3, 24 ], patch = 10 }
-    , gzip [ 1, 9 ]
+    , gzip [ 1, 10 ]
     , harfbuzz [ 2, 6, 4 ]
     , htop [ 2, 2, 0 ]
     , hugs
@@ -4936,4 +4951,5 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , xtrans [ 1, 4, 0 ]
     , xz [ 5, 2, 4 ]
     , zlib [ 1, 2, 11 ]
+    , zstd [ 1, 4, 4 ]
     ]
