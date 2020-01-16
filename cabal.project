@@ -1,4 +1,5 @@
 packages: ./
 constraints: cpkg +development
+           , zlib +pkg-config
 
 max-backjumps: 40000
