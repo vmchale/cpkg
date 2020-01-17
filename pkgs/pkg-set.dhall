@@ -2278,6 +2278,8 @@ let bzip2 =
                     , prelude.symlink
                         "lib/libbz2.so.${versionString}"
                         "lib/libbz2.so"
+                    , prelude.symlinkBinary "bin/bzip2"
+                    , prelude.symlinkBinary "bin/bzip2recover"
                     ]
 
             let bzipShared =
