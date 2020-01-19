@@ -4660,6 +4660,7 @@ let luarocks =
               "http://luarocks.org/releases/luarocks-${prelude.showVersion
                                                          v}.tar.gz"
           , pkgBuildDeps = [ prelude.unbounded "lua" ]
+          , installCommand = prelude.installWithBinaries [ "bin/luarocks" ]
           }
 
 in  [ alsa-lib [ 1, 1, 9 ]
