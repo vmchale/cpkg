@@ -29,12 +29,12 @@ let gnupg =
         λ(v : List Natural)
       →   gpgPackage { name = "gnupg", version = v }
         ⫽ { pkgDeps =
-              [ prelude.lowerBound { name = "npth", lower = [ 1, 2 ] }
-              , prelude.lowerBound { name = "libgpg-error", lower = [ 1, 24 ] }
-              , prelude.lowerBound { name = "libgcrypt", lower = [ 1, 7, 0 ] }
-              , prelude.lowerBound { name = "libassuan", lower = [ 2, 5, 0 ] }
-              , prelude.lowerBound { name = "libksba", lower = [ 1, 3, 4 ] }
-              ]
+            [ prelude.lowerBound { name = "npth", lower = [ 1, 2 ] }
+            , prelude.lowerBound { name = "libgpg-error", lower = [ 1, 24 ] }
+            , prelude.lowerBound { name = "libgcrypt", lower = [ 1, 7, 0 ] }
+            , prelude.lowerBound { name = "libassuan", lower = [ 2, 5, 0 ] }
+            , prelude.lowerBound { name = "libksba", lower = [ 1, 3, 4 ] }
+            ]
           , configureCommand =
               prelude.configureMkExes
                 [ "tests/inittests", "tests/runtest", "tests/pkits/inittests" ]
@@ -50,23 +50,21 @@ let libgcrypt =
         λ(v : List Natural)
       →   gpgPackage { name = "libgcrypt", version = v }
         ⫽ { pkgDeps =
-              [ prelude.lowerBound { name = "libgpg-error", lower = [ 1, 25 ] }
-              ]
+            [ prelude.lowerBound { name = "libgpg-error", lower = [ 1, 25 ] } ]
           }
 
 let libassuan =
         λ(v : List Natural)
       →   gpgPackage { name = "libassuan", version = v }
         ⫽ { pkgDeps =
-              [ prelude.lowerBound { name = "libgpg-error", lower = [ 1, 24 ] }
-              ]
+            [ prelude.lowerBound { name = "libgpg-error", lower = [ 1, 24 ] } ]
           }
 
 let libksba =
         λ(v : List Natural)
       →   gpgPackage { name = "libksba", version = v }
         ⫽ { pkgDeps =
-              [ prelude.lowerBound { name = "libgpg-error", lower = [ 1, 8 ] } ]
+            [ prelude.lowerBound { name = "libgpg-error", lower = [ 1, 8 ] } ]
           }
 
 let musl =
@@ -171,7 +169,7 @@ let dbus =
               "https://dbus.freedesktop.org/releases/dbus/dbus-${prelude.showVersion
                                                                    v}.tar.xz"
           , pkgDeps =
-              [ prelude.unbounded "expat", prelude.unbounded "libselinux" ]
+            [ prelude.unbounded "expat", prelude.unbounded "libselinux" ]
           , configureCommand = prelude.configureLinkExtraLibs [ "pcre" ]
           , pkgBuildDeps = [ prelude.unbounded "pkg-config" ]
           }
@@ -185,13 +183,13 @@ let fltk =
                   "http://fltk.org/pub/fltk/${versionString}/fltk-${versionString}-source.tar.bz2"
               , pkgSubdir = "fltk-${versionString}"
               , pkgDeps =
-                  [ prelude.unbounded "libX11"
-                  , prelude.unbounded "alsa-lib"
-                  , prelude.unbounded "zlib"
-                  , prelude.unbounded "libpng"
-                  , prelude.unbounded "libXft"
-                  , prelude.unbounded "freetype"
-                  ]
+                [ prelude.unbounded "libX11"
+                , prelude.unbounded "alsa-lib"
+                , prelude.unbounded "zlib"
+                , prelude.unbounded "libpng"
+                , prelude.unbounded "libXft"
+                , prelude.unbounded "freetype"
+                ]
               }
 
 let gawk =
@@ -284,10 +282,10 @@ let glibc =
               , buildCommand = glibcBuild
               , installCommand = glibcInstall
               , pkgBuildDeps =
-                  [ prelude.unbounded "bison"
-                  , prelude.unbounded "gawk"
-                  , prelude.unbounded "python3"
-                  ]
+                [ prelude.unbounded "bison"
+                , prelude.unbounded "gawk"
+                , prelude.unbounded "python3"
+                ]
               }
 
 let gmp =
@@ -309,9 +307,9 @@ let harfbuzz =
                   "https://www.freedesktop.org/software/harfbuzz/release/harfbuzz-${prelude.showVersion
                                                                                       v}.tar.xz"
               , pkgDeps =
-                  [ prelude.unbounded "freetype-prebuild"
-                  , prelude.unbounded "glib"
-                  ]
+                [ prelude.unbounded "freetype-prebuild"
+                , prelude.unbounded "glib"
+                ]
               , pkgBuildDeps = [ prelude.unbounded "pkg-config" ]
               , configureCommand =
                   prelude.configureLinkExtraLibs [ "pcre", "z" ]
@@ -359,10 +357,10 @@ let libjpeg-turbo =
                                                                                                v}.tar.gz"
           , pkgSubdir = "libjpeg-turbo-${prelude.showVersion v}"
           , pkgBuildDeps =
-              [ prelude.unbounded "cmake"
-              , prelude.unbounded "nasm"
-              , prelude.unbounded "make"
-              ]
+            [ prelude.unbounded "cmake"
+            , prelude.unbounded "nasm"
+            , prelude.unbounded "make"
+            ]
           }
 
 let libuv =
@@ -377,10 +375,10 @@ let libuv =
           , pkgSubdir = "libuv-v${prelude.showVersion v}"
           , configureCommand = prelude.autogenConfigure
           , pkgBuildDeps =
-              [ prelude.unbounded "m4"
-              , prelude.unbounded "automake"
-              , prelude.unbounded "libtool"
-              ]
+            [ prelude.unbounded "m4"
+            , prelude.unbounded "automake"
+            , prelude.unbounded "libtool"
+            ]
           }
 
 let nasm =
@@ -574,7 +572,7 @@ let vim =
           , configureCommand =
               prelude.configureMkExesExtraFlags
                 { bins =
-                    [ "src/configure", "src/auto/configure", "src/which.sh" ]
+                  [ "src/configure", "src/auto/configure", "src/which.sh" ]
                 , extraFlags = [ "--enable-gui=no", "--enable-pythoninterp" ]
                 }
           , installCommand =
@@ -614,11 +612,11 @@ let vim =
                       , prelude.symlinkBinary wrapped
                       ]
           , pkgDeps =
-              [ prelude.unbounded "ncurses"
-              , prelude.unbounded "libXpm"
-              , prelude.unbounded "libXt"
-              , prelude.unbounded "python2"
-              ]
+            [ prelude.unbounded "ncurses"
+            , prelude.unbounded "libXpm"
+            , prelude.unbounded "libXt"
+            , prelude.unbounded "python2"
+            ]
           }
 
 let xz =
@@ -638,16 +636,15 @@ let zlib =
                         (   prelude.defaultCall
                           ⫽ { program = "sh"
                             , arguments =
-                                [ "configure", "--prefix=${cfg.installDir}" ]
-                            , environment =
-                                Some
-                                  (   host
-                                    # [ { var = "PATH"
-                                        , value =
-                                            "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-                                        }
-                                      ]
-                                  )
+                              [ "configure", "--prefix=${cfg.installDir}" ]
+                            , environment = Some
+                                (   host
+                                  # [ { var = "PATH"
+                                      , value =
+                                          "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+                                      }
+                                    ]
+                                )
                             }
                         )
                     ]
@@ -696,12 +693,11 @@ let gnutls =
                   "https://www.gnupg.org/ftp/gcrypt/gnutls/v${versionString}/gnutls-${versionString}.${prelude.showVersion
                                                                                                          cfg.patch}.tar.xz"
               , pkgDeps =
-                  [ prelude.lowerBound { name = "nettle", lower = [ 3, 1 ] }
-                  , prelude.unbounded "unistring"
-                  , prelude.lowerBound { name = "libtasn1", lower = [ 4, 9 ] }
-                  , prelude.lowerBound
-                      { name = "p11-kit", lower = [ 0, 23, 1 ] }
-                  ]
+                [ prelude.lowerBound { name = "nettle", lower = [ 3, 1 ] }
+                , prelude.unbounded "unistring"
+                , prelude.lowerBound { name = "libtasn1", lower = [ 4, 9 ] }
+                , prelude.lowerBound { name = "p11-kit", lower = [ 0, 23, 1 ] }
+                ]
               , configureCommand =
                   prelude.configureLinkExtraLibs [ "nettle", "hogweed" ]
               }
@@ -716,7 +712,7 @@ let lapack =
                                                        v}.tar.gz"
           , pkgSubdir = "lapack-${prelude.showVersion v}"
           , pkgBuildDeps =
-              [ prelude.unbounded "cmake", prelude.unbounded "gcc" ]
+            [ prelude.unbounded "cmake", prelude.unbounded "gcc" ]
           }
 
 let cairo =
@@ -729,13 +725,12 @@ let cairo =
                   "https://www.cairographics.org/releases/cairo-${prelude.showVersion
                                                                     v}.tar.xz"
               , pkgDeps =
-                  [ prelude.lowerBound { name = "pixman", lower = [ 0, 30, 0 ] }
-                  , prelude.lowerBound
-                      { name = "freetype", lower = [ 9, 7, 3 ] }
-                  , prelude.lowerBound
-                      { name = "fontconfig", lower = [ 2, 2, 95 ] }
-                  , prelude.unbounded "libXext"
-                  ]
+                [ prelude.lowerBound { name = "pixman", lower = [ 0, 30, 0 ] }
+                , prelude.lowerBound { name = "freetype", lower = [ 9, 7, 3 ] }
+                , prelude.lowerBound
+                    { name = "fontconfig", lower = [ 2, 2, 95 ] }
+                , prelude.unbounded "libXext"
+                ]
               , installCommand =
                     λ(cfg : types.BuildVars)
                   →   prelude.defaultInstall cfg
@@ -861,11 +856,11 @@ let openssl =
                             (   prelude.defaultCall
                               ⫽ { program = "perl"
                                 , arguments =
-                                    [ "./Configure"
-                                    , "--prefix=${cfg.installDir}"
-                                    , targetMakefile
-                                    , sharedFlag
-                                    ]
+                                  [ "./Configure"
+                                  , "--prefix=${cfg.installDir}"
+                                  , targetMakefile
+                                  , sharedFlag
+                                  ]
                                 , environment = opensslCfgVars cfg
                                 }
                             )
@@ -894,32 +889,32 @@ let emacs =
         λ(v : List Natural)
       →   prelude.makeGnuExe { name = "emacs", version = v }
         ⫽ { pkgDeps =
-              [ prelude.unbounded "giflib"
-              , prelude.unbounded "libXaw"
-              , prelude.unbounded "libpng"
-              , prelude.unbounded "libjpeg-turbo"
-              , prelude.unbounded "ncurses"
-              , prelude.unbounded "gtk3"
-              , prelude.unbounded "libotf"
-              , prelude.unbounded "m17n-lib"
-              , prelude.unbounded "gnutls"
-              , prelude.unbounded "libXft"
-              , prelude.unbounded "dbus"
-              , prelude.unbounded "cairo"
-              ]
+            [ prelude.unbounded "giflib"
+            , prelude.unbounded "libXaw"
+            , prelude.unbounded "libpng"
+            , prelude.unbounded "libjpeg-turbo"
+            , prelude.unbounded "ncurses"
+            , prelude.unbounded "gtk3"
+            , prelude.unbounded "libotf"
+            , prelude.unbounded "m17n-lib"
+            , prelude.unbounded "gnutls"
+            , prelude.unbounded "libXft"
+            , prelude.unbounded "dbus"
+            , prelude.unbounded "cairo"
+            ]
           , configureCommand =
               prelude.configureMkExesExtraFlags
                 { bins =
-                    [ "build-aux/move-if-change", "build-aux/update-subdirs" ]
+                  [ "build-aux/move-if-change", "build-aux/update-subdirs" ]
                 , extraFlags =
-                    [ "--with-tiff=no"
-                    , "--with-libotf"
-                    , "--with-m17n-flt"
-                    , "--with-gnutls"
-                    , "--with-xft"
-                    , "--with-dbus"
-                    , "--with-cairo=yes"
-                    ]
+                  [ "--with-tiff=no"
+                  , "--with-libotf"
+                  , "--with-m17n-flt"
+                  , "--with-gnutls"
+                  , "--with-xft"
+                  , "--with-dbus"
+                  , "--with-cairo=yes"
+                  ]
                 }
           , installCommand =
                 λ(cfg : types.BuildVars)
@@ -942,7 +937,7 @@ let automake =
         λ(v : List Natural)
       →   prelude.makeGnuExe { name = "automake", version = v }
         ⫽ { pkgBuildDeps =
-              [ prelude.lowerBound { name = "autoconf", lower = [ 2, 65 ] } ]
+            [ prelude.lowerBound { name = "autoconf", lower = [ 2, 65 ] } ]
           , installCommand =
               prelude.installWithBinaries [ "bin/automake", "bin/aclocal" ]
           }
@@ -951,7 +946,7 @@ let autoconf =
         λ(v : List Natural)
       →   prelude.makeGnuExe { name = "autoconf", version = v }
         ⫽ { pkgBuildDeps =
-              [ prelude.lowerBound { name = "m4", lower = [ 1, 4, 16 ] } ]
+            [ prelude.lowerBound { name = "m4", lower = [ 1, 4, 16 ] } ]
           , installCommand =
               prelude.installWithBinaries
                 [ "bin/autoconf"
@@ -1015,7 +1010,7 @@ let python =
                             )
                             cfg
               , pkgDeps =
-                  [ prelude.unbounded "libffi", prelude.unbounded "ncurses" ]
+                [ prelude.unbounded "libffi", prelude.unbounded "ncurses" ]
               , installCommand =
                     λ(cfg : types.BuildVars)
                   →   prelude.installWithBinaries [ "bin/python${major}" ] cfg
@@ -1080,7 +1075,7 @@ let lua =
                       (   prelude.defaultCall
                         ⫽ { program = "make"
                           , arguments =
-                              [ "install", "INSTALL_TOP=${cfg.installDir}" ]
+                            [ "install", "INSTALL_TOP=${cfg.installDir}" ]
                           }
                       )
                   ]
@@ -1093,7 +1088,7 @@ let lua =
               , buildCommand = luaBuild
               , installCommand = luaInstall
               , pkgDeps =
-                  [ prelude.unbounded "readline", prelude.unbounded "ncurses" ]
+                [ prelude.unbounded "readline", prelude.unbounded "ncurses" ]
               }
 
 let libtasn1 =
@@ -1112,9 +1107,9 @@ let p11kit =
                                                                          v}/p11-kit-${prelude.showVersion
                                                                                         v}.tar.gz"
           , pkgDeps =
-              [ prelude.lowerBound { name = "libffi", lower = [ 3, 0, 0 ] }
-              , prelude.unbounded "libtasn1"
-              ]
+            [ prelude.lowerBound { name = "libffi", lower = [ 3, 0, 0 ] }
+            , prelude.unbounded "libtasn1"
+            ]
           , pkgBuildDeps = [ prelude.unbounded "pkg-config" ]
           }
 
@@ -1138,7 +1133,7 @@ let libtool =
               "https://ftp.wayne.edu/gnu/libtool/libtool-${prelude.showVersion
                                                              v}.tar.xz"
           , pkgBuildDeps =
-              [ prelude.lowerBound { name = "m4", lower = [ 1, 4, 16 ] } ]
+            [ prelude.lowerBound { name = "m4", lower = [ 1, 4, 16 ] } ]
           }
 
 let pkg-config =
@@ -1212,10 +1207,10 @@ let freetype =
         λ(v : List Natural)
       →   freetype-shared { name = "freetype", version = v }
         ⫽ { pkgDeps =
-              [ prelude.unbounded "zlib"
-              , prelude.unbounded "harfbuzz"
-              , prelude.unbounded "libpng"
-              ]
+            [ prelude.unbounded "zlib"
+            , prelude.unbounded "harfbuzz"
+            , prelude.unbounded "libpng"
+            ]
           , configureCommand =
               prelude.configureMkExesExtraFlags
                 { bins = [ "builds/unix/configure" ]
@@ -1245,11 +1240,11 @@ let imageMagick =
                   "https://imagemagick.org/download/ImageMagick-${versionString}-67.tar.xz"
               , pkgSubdir = "ImageMagick-${versionString}-67"
               , pkgDeps =
-                  [ prelude.unbounded "zlib"
-                  , prelude.unbounded "libtool"
-                  , prelude.unbounded "bzip2"
-                  , prelude.unbounded "glib"
-                  ]
+                [ prelude.unbounded "zlib"
+                , prelude.unbounded "libtool"
+                , prelude.unbounded "bzip2"
+                , prelude.unbounded "glib"
+                ]
               , installCommand =
                     λ(cfg : types.BuildVars)
                   →   prelude.defaultInstall cfg
@@ -1299,15 +1294,13 @@ let gtk2 =
                       "http://ftp.gnome.org/pub/gnome/sources/gtk+/${versionString}/gtk+-${fullVersion}.tar.xz"
                   , pkgSubdir = "gtk+-${fullVersion}"
                   , pkgDeps =
-                      [ prelude.lowerBound { name = "cairo", lower = [ 1, 6 ] }
-                      , prelude.lowerBound { name = "pango", lower = [ 1, 20 ] }
-                      , prelude.lowerBound
-                          { name = "atk", lower = [ 1, 29, 2 ] }
-                      , prelude.lowerBound
-                          { name = "glib", lower = [ 2, 28, 0 ] }
-                      , prelude.lowerBound
-                          { name = "gdk-pixbuf", lower = [ 2, 38, 0 ] }
-                      ]
+                    [ prelude.lowerBound { name = "cairo", lower = [ 1, 6 ] }
+                    , prelude.lowerBound { name = "pango", lower = [ 1, 20 ] }
+                    , prelude.lowerBound { name = "atk", lower = [ 1, 29, 2 ] }
+                    , prelude.lowerBound { name = "glib", lower = [ 2, 28, 0 ] }
+                    , prelude.lowerBound
+                        { name = "gdk-pixbuf", lower = [ 2, 38, 0 ] }
+                    ]
                   , buildCommand =
                         λ(cfg : types.BuildVars)
                       → prelude.buildWith (gtkEnv cfg) cfg
@@ -1414,20 +1407,18 @@ let pango =
                           "include/pango"
                       ]
               , pkgBuildDeps =
-                  [ prelude.lowerBound { name = "meson", lower = [ 0, 48, 0 ] }
-                  , prelude.unbounded "gobject-introspection"
-                  ]
+                [ prelude.lowerBound { name = "meson", lower = [ 0, 48, 0 ] }
+                , prelude.unbounded "gobject-introspection"
+                ]
               , pkgDeps =
-                  [ prelude.lowerBound
-                      { name = "fontconfig", lower = [ 2, 11, 91 ] }
-                  , prelude.lowerBound { name = "cairo", lower = [ 1, 12, 10 ] }
-                  , prelude.lowerBound
-                      { name = "fribidi", lower = [ 0, 19, 7 ] }
-                  , prelude.lowerBound
-                      { name = "harfbuzz", lower = [ 1, 4, 2 ] }
-                  , prelude.unbounded "libXrender"
-                  , prelude.unbounded "libxcb"
-                  ]
+                [ prelude.lowerBound
+                    { name = "fontconfig", lower = [ 2, 11, 91 ] }
+                , prelude.lowerBound { name = "cairo", lower = [ 1, 12, 10 ] }
+                , prelude.lowerBound { name = "fribidi", lower = [ 0, 19, 7 ] }
+                , prelude.lowerBound { name = "harfbuzz", lower = [ 1, 4, 2 ] }
+                , prelude.unbounded "libXrender"
+                , prelude.unbounded "libxcb"
+                ]
               }
 
 let libxml2 =
@@ -1437,10 +1428,10 @@ let libxml2 =
               "http://xmlsoft.org/sources/libxml2-${prelude.showVersion
                                                       v}.tar.gz"
           , pkgDeps =
-              [ prelude.unbounded "zlib"
-              , prelude.unbounded "xz"
-              , prelude.unbounded "python2"
-              ]
+            [ prelude.unbounded "zlib"
+            , prelude.unbounded "xz"
+            , prelude.unbounded "python2"
+            ]
           }
 
 let shared-mime-info =
@@ -1461,10 +1452,10 @@ let shared-mime-info =
                 # [ prelude.symlink "share/pkgconfig" "lib/pkgconfig" ]
           , pkgDeps = [ prelude.unbounded "glib", prelude.unbounded "libxml2" ]
           , pkgBuildDeps =
-              [ prelude.lowerBound { name = "intltool", lower = [ 0, 35, 0 ] }
-              , prelude.unbounded "sed"
-              , prelude.unbounded "gettext"
-              ]
+            [ prelude.lowerBound { name = "intltool", lower = [ 0, 35, 0 ] }
+            , prelude.unbounded "sed"
+            , prelude.unbounded "gettext"
+            ]
           }
 
 let intltool =
@@ -1482,22 +1473,21 @@ let intltool =
                         (   prelude.defaultCall
                           ⫽ { program = "./configure"
                             , arguments = [ "--prefix=${cfg.installDir}" ]
-                            , environment =
-                                Some
-                                  (   prelude.defaultPath cfg
-                                    # [ prelude.mkPerlLib
-                                          { libDirs = cfg.linkDirs
-                                          , perlVersion = [ 5, 30, 1 ]
-                                          , cfg = cfg
-                                          }
-                                      ]
-                                  )
+                            , environment = Some
+                                (   prelude.defaultPath cfg
+                                  # [ prelude.mkPerlLib
+                                        { libDirs = cfg.linkDirs
+                                        , perlVersion = [ 5, 30, 1 ]
+                                        , cfg = cfg
+                                        }
+                                    ]
+                                )
                             }
                         )
                     ]
               , pkgDeps = [ prelude.unbounded "XML-Parser" ]
               , pkgBuildDeps =
-                  [ prelude.lowerBound { name = "perl", lower = [ 5, 8, 1 ] } ]
+                [ prelude.lowerBound { name = "perl", lower = [ 5, 8, 1 ] } ]
               }
 
 let gdk-pixbuf =
@@ -1512,20 +1502,19 @@ let gdk-pixbuf =
               →   [ prelude.call
                       (   prelude.defaultCall
                         ⫽ { program = "ninja"
-                          , environment =
-                              Some
-                                [ prelude.mkPkgConfigVar cfg.linkDirs
-                                , { var = "PATH"
-                                  , value =
-                                          prelude.mkPathVar cfg.binDirs
-                                      ++  ":${cfg.currentDir}/gdk-pixbuf-${fullVersion}/build/gdk-pixbuf:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-                                  }
-                                , prelude.mkPy3Path cfg.linkDirs
-                                , prelude.libPath cfg
-                                , prelude.mkLDRunPath cfg.linkDirs
-                                , prelude.mkLDFlags cfg.linkDirs
-                                , prelude.mkCFlags cfg
-                                ]
+                          , environment = Some
+                              [ prelude.mkPkgConfigVar cfg.linkDirs
+                              , { var = "PATH"
+                                , value =
+                                        prelude.mkPathVar cfg.binDirs
+                                    ++  ":${cfg.currentDir}/gdk-pixbuf-${fullVersion}/build/gdk-pixbuf:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+                                }
+                              , prelude.mkPy3Path cfg.linkDirs
+                              , prelude.libPath cfg
+                              , prelude.mkLDRunPath cfg.linkDirs
+                              , prelude.mkLDFlags cfg.linkDirs
+                              , prelude.mkCFlags cfg
+                              ]
                           , arguments = [ "install" ]
                           , procDir = Some "build"
                           }
@@ -1545,13 +1534,13 @@ let gdk-pixbuf =
               , installCommand =
                   gdkInstall (prelude.mesonMoves [ "gdk-pixbuf-2.0.pc" ])
               , pkgDeps =
-                  [ prelude.unbounded "glib"
-                  , prelude.unbounded "libjpeg-turbo"
-                  , prelude.unbounded "libpng"
-                  , prelude.unbounded "gobject-introspection"
-                  , prelude.unbounded "shared-mime-info"
-                  , prelude.unbounded "libX11"
-                  ]
+                [ prelude.unbounded "glib"
+                , prelude.unbounded "libjpeg-turbo"
+                , prelude.unbounded "libpng"
+                , prelude.unbounded "gobject-introspection"
+                , prelude.unbounded "shared-mime-info"
+                , prelude.unbounded "libX11"
+                ]
               }
 
 let xmlParser =
@@ -1614,10 +1603,10 @@ let fontconfig =
               "https://www.freedesktop.org/software/fontconfig/release/fontconfig-${prelude.showVersion
                                                                                       v}.tar.bz2"
           , pkgDeps =
-              [ prelude.unbounded "freetype"
-              , prelude.unbounded "expat"
-              , prelude.unbounded "util-linux"
-              ]
+            [ prelude.unbounded "freetype"
+            , prelude.unbounded "expat"
+            , prelude.unbounded "util-linux"
+            ]
           , pkgBuildDeps = [ prelude.unbounded "gperf" ]
           }
 
@@ -1647,7 +1636,7 @@ let util-linux =
                           )
                           cfg
               , pkgDeps =
-                  [ prelude.unbounded "ncurses", prelude.unbounded "pcre2" ]
+                [ prelude.unbounded "ncurses", prelude.unbounded "pcre2" ]
               }
 
 let fribidi =
@@ -1672,15 +1661,15 @@ let gobject-introspection =
             ⫽ { pkgUrl =
                   "https://download.gnome.org/sources/gobject-introspection/${versionString}/gobject-introspection-${fullVersion}.tar.xz"
               , pkgBuildDeps =
-                  [ prelude.unbounded "meson"
-                  , prelude.unbounded "m4"
-                  , prelude.unbounded "bison"
-                  , prelude.unbounded "flex"
-                  , prelude.unbounded "pkg-config"
-                  , prelude.unbounded "glibc"
-                  ]
+                [ prelude.unbounded "meson"
+                , prelude.unbounded "m4"
+                , prelude.unbounded "bison"
+                , prelude.unbounded "flex"
+                , prelude.unbounded "pkg-config"
+                , prelude.unbounded "glibc"
+                ]
               , pkgDeps =
-                  [ prelude.lowerBound { name = "glib", lower = [ 2, 58, 0 ] } ]
+                [ prelude.lowerBound { name = "glib", lower = [ 2, 58, 0 ] } ]
               , installCommand =
                     λ(cfg : types.BuildVars)
                   →   [ prelude.mkExe "build/tools/g-ir-scanner"
@@ -1707,7 +1696,7 @@ let flex =
             ⫽ { pkgUrl =
                   "https://github.com/westes/flex/releases/download/v${versionString}/flex-${versionString}.tar.gz"
               , pkgBuildDeps =
-                  [ prelude.unbounded "m4", prelude.unbounded "bison" ]
+                [ prelude.unbounded "m4", prelude.unbounded "bison" ]
               , configureCommand = prelude.configWithEnv flexEnv
               , installCommand = prelude.installWithBinaries [ "bin/flex" ]
               }
@@ -1740,20 +1729,19 @@ let glib =
                               , "-Dselinux=disabled"
                               ]
                             # crossArgs
-                        , environment =
-                            Some
-                              (   [ prelude.mkPkgConfigVar cfg.linkDirs
-                                  , { var = "LDFLAGS"
-                                    , value =
-                                        (prelude.mkLDFlags cfg.linkDirs).value
-                                    }
-                                  , prelude.mkPy3Path cfg.linkDirs
-                                  , prelude.libPath cfg
-                                  , prelude.mkCFlags cfg
-                                  , prelude.mkPkgConfigVar cfg.linkDirs
-                                  ]
-                                # prelude.defaultPath cfg
-                              )
+                        , environment = Some
+                            (   [ prelude.mkPkgConfigVar cfg.linkDirs
+                                , { var = "LDFLAGS"
+                                  , value =
+                                      (prelude.mkLDFlags cfg.linkDirs).value
+                                  }
+                                , prelude.mkPy3Path cfg.linkDirs
+                                , prelude.libPath cfg
+                                , prelude.mkCFlags cfg
+                                , prelude.mkPkgConfigVar cfg.linkDirs
+                                ]
+                              # prelude.defaultPath cfg
+                            )
                         , procDir = Some "build"
                         }
                     ]
@@ -1972,14 +1960,14 @@ let glib =
                       , symlinkGunix "gunixsocketaddress.h"
                       ]
               , pkgBuildDeps =
-                  [ prelude.unbounded "meson", prelude.unbounded "ninja" ]
+                [ prelude.unbounded "meson", prelude.unbounded "ninja" ]
               , pkgDeps =
-                  [ prelude.unbounded "util-linux"
-                  , prelude.unbounded "pcre"
-                  , prelude.unbounded "libffi"
-                  , prelude.unbounded "zlib"
-                  , prelude.unbounded "dbus"
-                  ]
+                [ prelude.unbounded "util-linux"
+                , prelude.unbounded "pcre"
+                , prelude.unbounded "libffi"
+                , prelude.unbounded "zlib"
+                , prelude.unbounded "dbus"
+                ]
               }
 
 let atk =
@@ -1993,9 +1981,9 @@ let atk =
             ⫽ { pkgUrl =
                   "https://ftp.gnome.org/pub/gnome/sources/atk/${versionString}/atk-${fullVersion}.tar.xz"
               , pkgBuildDeps =
-                  [ prelude.unbounded "gobject-introspection"
-                  , prelude.unbounded "gettext"
-                  ]
+                [ prelude.unbounded "gobject-introspection"
+                , prelude.unbounded "gettext"
+                ]
               , pkgDeps = [ prelude.unbounded "glib" ]
               , installCommand =
                   prelude.ninjaInstallWithPkgConfig
@@ -2103,11 +2091,11 @@ let libxcb =
               "https://xorg.freedesktop.org/archive/individual/xcb/libxcb-${prelude.showVersion
                                                                               v}.tar.bz2"
           , pkgDeps =
-              [ prelude.lowerBound { name = "xcb-proto", lower = [ 1, 13 ] }
-              , prelude.unbounded "libXau"
-              , prelude.unbounded "libpthread-stubs"
-              , prelude.unbounded "libXdmcp"
-              ]
+            [ prelude.lowerBound { name = "xcb-proto", lower = [ 1, 13 ] }
+            , prelude.unbounded "libXau"
+            , prelude.unbounded "libpthread-stubs"
+            , prelude.unbounded "libXdmcp"
+            ]
           }
 
 let libpthread-stubs =
@@ -2156,10 +2144,10 @@ let libXrender =
       mkXLibDeps
         { name = "libXrender"
         , deps =
-            [ prelude.unbounded "xproto"
-            , prelude.unbounded "renderproto"
-            , prelude.unbounded "libX11"
-            ]
+          [ prelude.unbounded "xproto"
+          , prelude.unbounded "renderproto"
+          , prelude.unbounded "libX11"
+          ]
         }
 
 let util-macros = mkXUtil "util-macros"
@@ -2168,11 +2156,11 @@ let libXft =
       mkXLibDeps
         { name = "libXft"
         , deps =
-            [ prelude.unbounded "freetype"
-            , prelude.unbounded "fontconfig"
-            , prelude.unbounded "libXrender"
-            , prelude.unbounded "libX11"
-            ]
+          [ prelude.unbounded "freetype"
+          , prelude.unbounded "fontconfig"
+          , prelude.unbounded "libXrender"
+          , prelude.unbounded "libX11"
+          ]
         }
 
 let kbproto = mkXProto "kbproto"
@@ -2181,12 +2169,12 @@ let libX11 =
       mkXLibDeps
         { name = "libX11"
         , deps =
-            [ prelude.unbounded "libxcb"
-            , prelude.unbounded "kbproto"
-            , prelude.unbounded "xextproto"
-            , prelude.unbounded "inputproto"
-            , prelude.unbounded "xtrans"
-            ]
+          [ prelude.unbounded "libxcb"
+          , prelude.unbounded "kbproto"
+          , prelude.unbounded "xextproto"
+          , prelude.unbounded "inputproto"
+          , prelude.unbounded "xtrans"
+          ]
         }
 
 let inputproto = mkXProto "inputproto"
@@ -2202,33 +2190,33 @@ let libXrandr =
       mkXLibDeps
         { name = "libXrandr"
         , deps =
-            [ prelude.unbounded "util-macros"
-            , prelude.unbounded "libXext"
-            , prelude.unbounded "libXrender"
-            , prelude.unbounded "libX11"
-            , prelude.unbounded "randrproto"
-            ]
+          [ prelude.unbounded "util-macros"
+          , prelude.unbounded "libXext"
+          , prelude.unbounded "libXrender"
+          , prelude.unbounded "libX11"
+          , prelude.unbounded "randrproto"
+          ]
         }
 
 let libXinerama =
       mkXLibDeps
         { name = "libXinerama"
         , deps =
-            [ prelude.unbounded "util-macros"
-            , prelude.unbounded "libX11"
-            , prelude.unbounded "libXext"
-            , prelude.unbounded "xineramaproto"
-            ]
+          [ prelude.unbounded "util-macros"
+          , prelude.unbounded "libX11"
+          , prelude.unbounded "libXext"
+          , prelude.unbounded "xineramaproto"
+          ]
         }
 
 let libXext =
       mkXLibDeps
         { name = "libXext"
         , deps =
-            [ prelude.lowerBound { name = "xextproto", lower = [ 7, 1, 99 ] }
-            , prelude.lowerBound { name = "xproto", lower = [ 7, 0, 13 ] }
-            , prelude.lowerBound { name = "libX11", lower = [ 1, 6 ] }
-            ]
+          [ prelude.lowerBound { name = "xextproto", lower = [ 7, 1, 99 ] }
+          , prelude.lowerBound { name = "xproto", lower = [ 7, 0, 13 ] }
+          , prelude.lowerBound { name = "libX11", lower = [ 1, 6 ] }
+          ]
         }
 
 let xextproto =
@@ -2244,10 +2232,10 @@ let libXScrnSaver =
         λ(v : List Natural)
       →   mkXLib "libXScrnSaver" v
         ⫽ { pkgDeps =
-              [ prelude.unbounded "util-macros"
-              , prelude.unbounded "libXext"
-              , prelude.unbounded "scrnsaverproto"
-              ]
+            [ prelude.unbounded "util-macros"
+            , prelude.unbounded "libXext"
+            , prelude.unbounded "scrnsaverproto"
+            ]
           }
 
 let bzip2 =
@@ -2351,14 +2339,13 @@ let libsepol =
                             , "install"
                             , "-j${Natural/show cfg.cpus}"
                             ]
-                      , environment =
-                          Some
-                            (   prelude.defaultPath cfg
-                              # [ prelude.mkLDFlags cfg.linkDirs
-                                , prelude.mkCFlags cfg
-                                , prelude.mkPkgConfigVar cfg.linkDirs
-                                ]
-                            )
+                      , environment = Some
+                          (   prelude.defaultPath cfg
+                            # [ prelude.mkLDFlags cfg.linkDirs
+                              , prelude.mkCFlags cfg
+                              , prelude.mkPkgConfigVar cfg.linkDirs
+                              ]
+                          )
                       }
                   )
               ]
@@ -2391,15 +2378,14 @@ let libselinux =
                             , "install"
                             , "-j${Natural/show cfg.cpus}"
                             ]
-                      , environment =
-                          Some
-                            (   prelude.defaultPath cfg
-                              # [ prelude.mkLDFlags cfg.linkDirs
-                                , prelude.mkCFlags cfg
-                                , prelude.mkPkgConfigVar cfg.linkDirs
-                                , prelude.libPath cfg
-                                ]
-                            )
+                      , environment = Some
+                          (   prelude.defaultPath cfg
+                            # [ prelude.mkLDFlags cfg.linkDirs
+                              , prelude.mkCFlags cfg
+                              , prelude.mkPkgConfigVar cfg.linkDirs
+                              , prelude.libPath cfg
+                              ]
+                          )
                       }
                   )
               ]
@@ -2413,7 +2399,7 @@ let libselinux =
               , buildCommand = prelude.doNothing
               , installCommand = selinuxInstall
               , pkgDeps =
-                  [ prelude.unbounded "pcre", prelude.unbounded "libsepol" ]
+                [ prelude.unbounded "pcre", prelude.unbounded "libsepol" ]
               , pkgBuildDeps = [ prelude.unbounded "pkg-config" ]
               }
 
@@ -2458,11 +2444,10 @@ let at-spi-atk =
         λ(x : { version : List Natural, patch : Natural })
       →   mkGnomeNinja "at-spi2-atk" x
         ⫽ { pkgDeps =
-              [ prelude.lowerBound
-                  { name = "at-spi2-core", lower = [ 2, 32, 2 ] }
-              , prelude.lowerBound { name = "atk", lower = [ 2, 29, 2 ] }
-              , prelude.unbounded "libxml2"
-              ]
+            [ prelude.lowerBound { name = "at-spi2-core", lower = [ 2, 32, 2 ] }
+            , prelude.lowerBound { name = "atk", lower = [ 2, 29, 2 ] }
+            , prelude.unbounded "libxml2"
+            ]
           , installCommand =
               prelude.ninjaInstallWithPkgConfig
                 (prelude.mesonMoves [ "atk-bridge-2.0.pc" ])
@@ -2475,7 +2460,7 @@ let libdrm =
               "https://dri.freedesktop.org/libdrm/libdrm-${prelude.showVersion
                                                              v}.tar.bz2"
           , pkgDeps =
-              [ prelude.unbounded "libpciaccess", prelude.unbounded "cairo" ]
+            [ prelude.unbounded "libpciaccess", prelude.unbounded "cairo" ]
           , installCommand =
               prelude.ninjaInstallWithPkgConfig
                 ( prelude.mesonMoves
@@ -2564,15 +2549,15 @@ let gtk3 =
               , buildCommand =
                   λ(cfg : types.BuildVars) → prelude.buildWith (gtkEnv cfg) cfg
               , pkgDeps =
-                  [ prelude.lowerBound { name = "pango", lower = [ 1, 41, 0 ] }
-                  , prelude.unbounded "at-spi2-atk"
-                  , prelude.lowerBound { name = "atk", lower = [ 2, 15, 1 ] }
-                  , prelude.lowerBound
-                      { name = "gdk-pixbuf", lower = [ 2, 30, 0 ] }
-                  , prelude.unbounded "libXft"
-                  , prelude.lowerBound { name = "libepoxy", lower = [ 1, 4 ] }
-                  , prelude.unbounded "libXi"
-                  ]
+                [ prelude.lowerBound { name = "pango", lower = [ 1, 41, 0 ] }
+                , prelude.unbounded "at-spi2-atk"
+                , prelude.lowerBound { name = "atk", lower = [ 2, 15, 1 ] }
+                , prelude.lowerBound
+                    { name = "gdk-pixbuf", lower = [ 2, 30, 0 ] }
+                , prelude.unbounded "libXft"
+                , prelude.lowerBound { name = "libepoxy", lower = [ 1, 4 ] }
+                , prelude.unbounded "libXi"
+                ]
               , pkgBuildDeps = [ prelude.unbounded "binutils" ]
               }
 
@@ -2701,10 +2686,10 @@ let libarchive =
               "https://www.libarchive.org/downloads/libarchive-${prelude.showVersion
                                                                    v}.tar.gz"
           , pkgDeps =
-              [ prelude.unbounded "xz"
-              , prelude.unbounded "bzip2"
-              , prelude.unbounded "zlib"
-              ]
+            [ prelude.unbounded "xz"
+            , prelude.unbounded "bzip2"
+            , prelude.unbounded "zlib"
+            ]
           }
 
 let pygobject =
@@ -2725,11 +2710,11 @@ let pygtk =
                   "http://ftp.gnome.org/pub/gnome/sources/pygtk/${versionString}/pygtk-${fullVersion}.tar.bz2"
               , configureCommand = prelude.preloadCfg
               , pkgDeps =
-                  [ prelude.lowerBound { name = "glib", lower = [ 2, 8, 0 ] }
-                  , prelude.lowerBound
-                      { name = "pygobject", lower = [ 2, 21, 3 ] }
-                  , prelude.unbounded "python2"
-                  ]
+                [ prelude.lowerBound { name = "glib", lower = [ 2, 8, 0 ] }
+                , prelude.lowerBound
+                    { name = "pygobject", lower = [ 2, 21, 3 ] }
+                , prelude.unbounded "python2"
+                ]
               }
 
 let libglade =
@@ -2743,10 +2728,9 @@ let libglade =
             ⫽ { pkgUrl =
                   "http://ftp.gnome.org/pub/gnome/sources/libglade/${versionString}/libglade-${fullVersion}.tar.bz2"
               , pkgDeps =
-                  [ prelude.lowerBound
-                      { name = "libxml2", lower = [ 2, 4, 10 ] }
-                  , prelude.lowerBound { name = "gtk2", lower = [ 2, 5, 0 ] }
-                  ]
+                [ prelude.lowerBound { name = "libxml2", lower = [ 2, 4, 10 ] }
+                , prelude.lowerBound { name = "gtk2", lower = [ 2, 5, 0 ] }
+                ]
               , configureCommand = prelude.configureLinkExtraLibs [ "fribidi" ]
               }
 
@@ -2771,11 +2755,11 @@ let libXt =
       mkXLibDeps
         { name = "libXt"
         , deps =
-            [ prelude.unbounded "libICE"
-            , prelude.unbounded "libSM"
-            , prelude.unbounded "libX11"
-            , prelude.unbounded "kbproto"
-            ]
+          [ prelude.unbounded "libICE"
+          , prelude.unbounded "libSM"
+          , prelude.unbounded "libX11"
+          , prelude.unbounded "kbproto"
+          ]
         }
 
 let libICE =
@@ -2800,21 +2784,21 @@ let libXaw3d =
       mkXLibDeps
         { name = "libXaw3d"
         , deps =
-            [ prelude.unbounded "libX11"
-            , prelude.unbounded "libXt"
-            , prelude.unbounded "libXmu"
-            , prelude.unbounded "libXext"
-            ]
+          [ prelude.unbounded "libX11"
+          , prelude.unbounded "libXt"
+          , prelude.unbounded "libXmu"
+          , prelude.unbounded "libXext"
+          ]
         }
 
 let libXmu =
       mkXLibDeps
         { name = "libXmu"
         , deps =
-            [ prelude.unbounded "util-macros"
-            , prelude.unbounded "libXt"
-            , prelude.unbounded "libXext"
-            ]
+          [ prelude.unbounded "util-macros"
+          , prelude.unbounded "libXt"
+          , prelude.unbounded "libXext"
+          ]
         }
 
 let libotf =
@@ -2866,11 +2850,11 @@ let babl =
             ⫽ { pkgUrl =
                   "https://download.gimp.org/pub/babl/${versionString}/babl-${fullVersion}.tar.xz"
               , pkgBuildDeps =
-                  [ prelude.unbounded "autoconf"
-                  , prelude.unbounded "automake"
-                  , prelude.unbounded "libtool"
-                  , prelude.unbounded "pkg-config"
-                  ]
+                [ prelude.unbounded "autoconf"
+                , prelude.unbounded "automake"
+                , prelude.unbounded "libtool"
+                , prelude.unbounded "pkg-config"
+                ]
               , pkgDeps = [ prelude.unbounded "lcms2" ]
               , configureCommand = prelude.autogenConfigure
               }
@@ -2879,10 +2863,10 @@ let gegl =
         λ(x : { version : List Natural, patch : Natural })
       →   mkGimpPackage "gegl" x
         ⫽ { pkgDeps =
-              [ prelude.lowerBound { name = "babl", lower = [ 0, 1, 58 ] }
-              , prelude.lowerBound { name = "glib", lower = [ 2, 44, 0 ] }
-              , prelude.unbounded "json-glib"
-              ]
+            [ prelude.lowerBound { name = "babl", lower = [ 0, 1, 58 ] }
+            , prelude.lowerBound { name = "glib", lower = [ 2, 44, 0 ] }
+            , prelude.unbounded "json-glib"
+            ]
           , configureCommand = prelude.preloadCfg
           }
 
@@ -2899,10 +2883,10 @@ let json-glib =
         λ(x : { version : List Natural, patch : Natural })
       →   mkGnomeNinja "json-glib" x
         ⫽ { pkgDeps =
-              [ prelude.unbounded "glib"
-              , prelude.unbounded "libjpeg-turbo"
-              , prelude.unbounded "libpng"
-              ]
+            [ prelude.unbounded "glib"
+            , prelude.unbounded "libjpeg-turbo"
+            , prelude.unbounded "libpng"
+            ]
           , pkgBuildDeps = [ prelude.unbounded "gettext" ]
           , installCommand =
               prelude.ninjaInstallWithPkgConfig
@@ -2938,7 +2922,7 @@ let libmypaint =
                   "https://github.com/mypaint/libmypaint/releases/download/v${versionString}/libmypaint-${versionString}.tar.xz"
               , pkgDeps = [ prelude.unbounded "json-c" ]
               , pkgBuildDeps =
-                  [ prelude.unbounded "intltool", prelude.unbounded "gettext" ]
+                [ prelude.unbounded "intltool", prelude.unbounded "gettext" ]
               }
 
 let json-c =
@@ -2962,7 +2946,7 @@ let libopenjpeg =
               , pkgSubdir = "openjpeg-${versionString}"
               , pkgDeps = [ prelude.unbounded "zlib" ]
               , pkgBuildDeps =
-                  [ prelude.unbounded "make", prelude.unbounded "cmake" ]
+                [ prelude.unbounded "make", prelude.unbounded "cmake" ]
               , installCommand =
                     λ(cfg : types.BuildVars)
                   →   prelude.cmakeInstall cfg
@@ -3000,10 +2984,10 @@ let motif =
             ⫽ { pkgUrl =
                   "https://iweb.dl.sourceforge.net/project/motif/Motif%20${versionString}%20Source%20Code/motif-${versionString}.tar.gz"
               , pkgDeps =
-                  [ prelude.unbounded "libXft"
-                  , prelude.unbounded "libpng"
-                  , prelude.unbounded "freetype"
-                  ]
+                [ prelude.unbounded "libXft"
+                , prelude.unbounded "libpng"
+                , prelude.unbounded "freetype"
+                ]
               }
 
 let libjpeg =
@@ -3060,11 +3044,11 @@ let feh =
                     (   prelude.defaultCall
                       ⫽ { program = prelude.makeExe cfg.buildOS
                         , arguments =
-                            [ "CFLAGS=${(prelude.mkCFlags cfg).value}"
-                            , "-j${Natural/show cfg.cpus}"
-                            , "PREFIX=${cfg.installDir}"
-                            , "install"
-                            ]
+                          [ "CFLAGS=${(prelude.mkCFlags cfg).value}"
+                          , "-j${Natural/show cfg.cpus}"
+                          , "PREFIX=${cfg.installDir}"
+                          , "install"
+                          ]
                         }
                     )
                 ]
@@ -3080,11 +3064,11 @@ let feh =
               , installCommand = fehInstall
               , pkgBuildDeps = [ prelude.unbounded "sed" ]
               , pkgDeps =
-                  [ prelude.unbounded "imlib2"
-                  , prelude.unbounded "libXt"
-                  , prelude.unbounded "libXinerama"
-                  , prelude.unbounded "curl"
-                  ]
+                [ prelude.unbounded "imlib2"
+                , prelude.unbounded "libXt"
+                , prelude.unbounded "libXinerama"
+                , prelude.unbounded "curl"
+                ]
               }
 
 let imlib2 =
@@ -3094,12 +3078,12 @@ let imlib2 =
               "https://downloads.sourceforge.net/enlightenment/imlib2-${prelude.showVersion
                                                                           v}.tar.bz2"
           , pkgDeps =
-              [ prelude.unbounded "libXext"
-              , prelude.unbounded "freetype"
-              , prelude.unbounded "libjpeg"
-              , prelude.unbounded "libpng"
-              , prelude.unbounded "giflib"
-              ]
+            [ prelude.unbounded "libXext"
+            , prelude.unbounded "freetype"
+            , prelude.unbounded "libjpeg"
+            , prelude.unbounded "libpng"
+            , prelude.unbounded "giflib"
+            ]
           }
 
 let jemalloc =
@@ -3136,17 +3120,16 @@ let openssh =
                   (   prelude.defaultCall
                     ⫽ { program = prelude.makeExe cfg.buildOS
                       , arguments =
-                          [ "PRIVSEP_PATH=${cfg.installDir}/var"
-                          , "install"
-                          , "-j${Natural/show cfg.cpus}"
-                          ]
-                      , environment =
-                          Some
-                            (   prelude.defaultPath cfg
-                              # [ prelude.mkPkgConfigVar cfg.linkDirs
-                                , prelude.libPath cfg
-                                ]
-                            )
+                        [ "PRIVSEP_PATH=${cfg.installDir}/var"
+                        , "install"
+                        , "-j${Natural/show cfg.cpus}"
+                        ]
+                      , environment = Some
+                          (   prelude.defaultPath cfg
+                            # [ prelude.mkPkgConfigVar cfg.linkDirs
+                              , prelude.libPath cfg
+                              ]
+                          )
                       }
                   )
               ]
@@ -3192,17 +3175,15 @@ let mesa =
                   "https://mesa.freedesktop.org/archive/mesa-${prelude.showVersion
                                                                  v}.tar.xz"
               , pkgDeps =
-                  [ prelude.lowerBound { name = "libdrm", lower = [ 2, 4, 75 ] }
-                  , prelude.unbounded "libXdamage"
-                  , prelude.unbounded "libXfixes"
-                  , prelude.unbounded "libXxf86vm"
-                  , prelude.lowerBound
-                      { name = "libxshmfence", lower = [ 1, 1 ] }
-                  , prelude.lowerBound
-                      { name = "glproto", lower = [ 1, 4, 14 ] }
-                  , prelude.lowerBound { name = "dri2proto", lower = [ 2, 8 ] }
-                  , prelude.unbounded "libXrandr"
-                  ]
+                [ prelude.lowerBound { name = "libdrm", lower = [ 2, 4, 75 ] }
+                , prelude.unbounded "libXdamage"
+                , prelude.unbounded "libXfixes"
+                , prelude.unbounded "libXxf86vm"
+                , prelude.lowerBound { name = "libxshmfence", lower = [ 1, 1 ] }
+                , prelude.lowerBound { name = "glproto", lower = [ 1, 4, 14 ] }
+                , prelude.lowerBound { name = "dri2proto", lower = [ 2, 8 ] }
+                , prelude.unbounded "libXrandr"
+                ]
               , configureCommand =
                   prelude.configureWithFlags
                     [ "--enable-autotools"
@@ -3214,30 +3195,30 @@ let libXdamage =
       mkXLibDeps
         { name = "libXdamage"
         , deps =
-            [ prelude.unbounded "libXfixes", prelude.unbounded "damageproto" ]
+          [ prelude.unbounded "libXfixes", prelude.unbounded "damageproto" ]
         }
 
 let libXfixes =
       mkXLibDeps
         { name = "libXfixes"
         , deps =
-            [ prelude.unbounded "xproto"
-            , prelude.unbounded "fixesproto"
-            , prelude.unbounded "xextproto"
-            , prelude.unbounded "libX11"
-            ]
+          [ prelude.unbounded "xproto"
+          , prelude.unbounded "fixesproto"
+          , prelude.unbounded "xextproto"
+          , prelude.unbounded "libX11"
+          ]
         }
 
 let libXxf86vm =
       mkXLibDeps
         { name = "libXxf86vm"
         , deps =
-            [ prelude.unbounded "xproto"
-            , prelude.unbounded "libX11"
-            , prelude.unbounded "xextproto"
-            , prelude.unbounded "libXext"
-            , prelude.unbounded "xf86vidmodeproto"
-            ]
+          [ prelude.unbounded "xproto"
+          , prelude.unbounded "libX11"
+          , prelude.unbounded "xextproto"
+          , prelude.unbounded "libXext"
+          , prelude.unbounded "xf86vidmodeproto"
+          ]
         }
 
 let libxshmfence =
@@ -3248,14 +3229,14 @@ let gnome-doc-utils =
         λ(x : { version : List Natural, patch : Natural })
       →   mkGnomeSimple "gnome-doc-utils" x
         ⫽ { pkgDeps =
-              [ prelude.lowerBound { name = "libxslt", lower = [ 1, 1, 8 ] }
-              , prelude.lowerBound { name = "libxml2", lower = [ 2, 6, 12 ] }
-              ]
+            [ prelude.lowerBound { name = "libxslt", lower = [ 1, 1, 8 ] }
+            , prelude.lowerBound { name = "libxml2", lower = [ 2, 6, 12 ] }
+            ]
           , pkgBuildDeps =
-              [ prelude.lowerBound { name = "intltool", lower = [ 0, 35, 0 ] }
-              , prelude.unbounded "gettext"
-              , prelude.unbounded "python2"
-              ]
+            [ prelude.lowerBound { name = "intltool", lower = [ 0, 35, 0 ] }
+            , prelude.unbounded "gettext"
+            , prelude.unbounded "python2"
+            ]
           , configureCommand = prelude.configureMkExes [ "py-compile" ]
           }
 
@@ -3298,7 +3279,7 @@ let libtiff =
               , pkgSubdir = "tiff-${versionString}"
               , configureCommand = prelude.cmakeConfigureNinja
               , pkgBuildDeps =
-                  [ prelude.unbounded "cmake", prelude.unbounded "ninja" ]
+                [ prelude.unbounded "cmake", prelude.unbounded "ninja" ]
               }
 
 let nspr =
@@ -3362,9 +3343,9 @@ let libcroco =
         λ(x : { version : List Natural, patch : Natural })
       →   mkGnomeSimple "libcroco" x
         ⫽ { pkgDeps =
-              [ prelude.lowerBound { name = "glib", lower = [ 2, 0 ] }
-              , prelude.lowerBound { name = "libxml2", lower = [ 2, 4, 23 ] }
-              ]
+            [ prelude.lowerBound { name = "glib", lower = [ 2, 0 ] }
+            , prelude.lowerBound { name = "libxml2", lower = [ 2, 4, 23 ] }
+            ]
           }
 
 let libsoup =
@@ -3427,13 +3408,13 @@ let libsoup =
 
         in    mkGnomeNinja "libsoup" x
             ⫽ { pkgDeps =
-                  [ prelude.unbounded "glib"
-                  , prelude.unbounded "sqlite"
-                  , prelude.unbounded "libxml2"
-                  , prelude.unbounded "libpsl"
-                  , prelude.unbounded "krb5"
-                  , prelude.unbounded "gobject-introspection"
-                  ]
+                [ prelude.unbounded "glib"
+                , prelude.unbounded "sqlite"
+                , prelude.unbounded "libxml2"
+                , prelude.unbounded "libpsl"
+                , prelude.unbounded "krb5"
+                , prelude.unbounded "gobject-introspection"
+                ]
               , pkgBuildDeps = [ prelude.unbounded "vala" ]
               , configureCommand =
                     λ(cfg : types.BuildVars)
@@ -3478,9 +3459,9 @@ let vala =
       →   mkGnomeSimple "vala" x
         ⫽ { pkgBuildDeps = [ prelude.unbounded "flex" ]
           , pkgDeps =
-              [ prelude.lowerBound { name = "glib", lower = [ 2, 40, 0 ] }
-              , prelude.lowerBound { name = "graphviz", lower = [ 2, 15 ] }
-              ]
+            [ prelude.lowerBound { name = "glib", lower = [ 2, 40, 0 ] }
+            , prelude.lowerBound { name = "graphviz", lower = [ 2, 15 ] }
+            ]
           , configureCommand =
               prelude.configureMkExes [ "build-aux/git-version-gen" ]
           }
@@ -3541,7 +3522,7 @@ let tcc =
                                                                         v}.tar.bz2"
           , configureCommand = prelude.configureMkExes [ "texi2pod.pl" ]
           , pkgBuildDeps =
-              [ prelude.unbounded "perl", prelude.unbounded "texinfo" ]
+            [ prelude.unbounded "perl", prelude.unbounded "texinfo" ]
           , installCommand = prelude.installWithBinaries [ "bin/tcc" ]
           }
 
@@ -3586,10 +3567,10 @@ let libXcomposite =
       mkXLibDeps
         { name = "libXcomposite"
         , deps =
-            [ prelude.unbounded "libX11"
-            , prelude.lowerBound { name = "compositeproto", lower = [ 0, 4 ] }
-            , prelude.unbounded "libXfixes"
-            ]
+          [ prelude.unbounded "libX11"
+          , prelude.lowerBound { name = "compositeproto", lower = [ 0, 4 ] }
+          , prelude.unbounded "libXfixes"
+          ]
         }
 
 let mosh =
@@ -3598,10 +3579,10 @@ let mosh =
         ⫽ { pkgUrl = "https://mosh.org/mosh-${prelude.showVersion v}.tar.gz"
           , pkgBuildDeps = [ prelude.unbounded "protobuf" ]
           , pkgDeps =
-              [ prelude.unbounded "zlib"
-              , prelude.unbounded "protobuf"
-              , prelude.unbounded "openssl"
-              ]
+            [ prelude.unbounded "zlib"
+            , prelude.unbounded "protobuf"
+            , prelude.unbounded "openssl"
+            ]
           , installCommand = prelude.installWithBinaries [ "bin/mosh" ]
           }
 
@@ -3642,10 +3623,10 @@ let libboost =
                   (   prelude.defaultCall
                     ⫽ { program = "./b2"
                       , arguments =
-                          [ "install"
-                          , "--prefix=${cfg.installDir}"
-                          , "--without-python"
-                          ]
+                        [ "install"
+                        , "--prefix=${cfg.installDir}"
+                        , "--without-python"
+                        ]
                       }
                   )
               ]
@@ -3668,7 +3649,7 @@ let slowBuild =
       → [ prelude.call
             { program = "cmake"
             , arguments =
-                [ "--build", ".", "--config", "Release", "--", "-j", "2" ]
+              [ "--build", ".", "--config", "Release", "--", "-j", "2" ]
             , environment = prelude.defaultEnv
             , procDir = Some "build"
             }
@@ -3726,7 +3707,7 @@ let pdfgrep =
               "https://pdfgrep.org/download/pdfgrep-${prelude.showVersion
                                                         v}.tar.gz"
           , pkgDeps =
-              [ prelude.unbounded "poppler", prelude.unbounded "libgcrypt" ]
+            [ prelude.unbounded "poppler", prelude.unbounded "libgcrypt" ]
           , installCommand =
                 λ(cfg : types.BuildVars)
               →   prelude.installWithWrappers [ "pdfgrep" ] cfg
@@ -3769,10 +3750,10 @@ let gcc =
                     , "bin/gcc-ranlib"
                     ]
               , pkgBuildDeps =
-                  [ prelude.unbounded "curl"
-                  , prelude.unbounded "sed"
-                  , prelude.unbounded "libtool"
-                  ]
+                [ prelude.unbounded "curl"
+                , prelude.unbounded "sed"
+                , prelude.unbounded "libtool"
+                ]
               }
 
 let ruby =
@@ -3788,7 +3769,7 @@ let ruby =
               , installCommand =
                   prelude.installWithBinaries [ "bin/ruby", "bin/gem" ]
               , pkgDeps =
-                  [ prelude.unbounded "readline", prelude.unbounded "openssl" ]
+                [ prelude.unbounded "readline", prelude.unbounded "openssl" ]
               }
 
 let poppler =
@@ -3799,17 +3780,17 @@ let poppler =
               "https://poppler.freedesktop.org/poppler-${prelude.showVersion
                                                            v}.tar.xz"
           , pkgDeps =
-              [ prelude.unbounded "fontconfig"
-              , prelude.unbounded "libopenjpeg"
-              , prelude.unbounded "libjpeg-turbo"
-              , prelude.unbounded "libjpeg"
-              , prelude.unbounded "freetype"
-              , prelude.unbounded "zlib"
-              , prelude.unbounded "libpng"
-              , prelude.unbounded "libiconv"
-              , prelude.unbounded "harfbuzz"
-              , prelude.unbounded "glib"
-              ]
+            [ prelude.unbounded "fontconfig"
+            , prelude.unbounded "libopenjpeg"
+            , prelude.unbounded "libjpeg-turbo"
+            , prelude.unbounded "libjpeg"
+            , prelude.unbounded "freetype"
+            , prelude.unbounded "zlib"
+            , prelude.unbounded "libpng"
+            , prelude.unbounded "libiconv"
+            , prelude.unbounded "harfbuzz"
+            , prelude.unbounded "glib"
+            ]
           , installCommand =
                 λ(cfg : types.BuildVars)
               →   prelude.cmakeInstall cfg
@@ -3837,12 +3818,12 @@ let tesseract =
               "https://github.com/tesseract-ocr/tesseract/archive/${prelude.showVersion
                                                                       v}.tar.gz"
           , pkgDeps =
-              [ prelude.lowerBound { name = "leptonica", lower = [ 1, 74 ] } ]
+            [ prelude.lowerBound { name = "leptonica", lower = [ 1, 74 ] } ]
           , pkgBuildDeps =
-              [ prelude.unbounded "libtool"
-              , prelude.unbounded "automake"
-              , prelude.unbounded "pkg-config"
-              ]
+            [ prelude.unbounded "libtool"
+            , prelude.unbounded "automake"
+            , prelude.unbounded "pkg-config"
+            ]
           , configureCommand = prelude.autogenConfigure
           , installCommand = prelude.installWithBinaries [ "bin/tesseract" ]
           }
@@ -3865,23 +3846,23 @@ let phash =
         ⫽ { pkgUrl =
               "http://phash.org/releases/pHash-${prelude.showVersion v}.tar.gz"
           , pkgDeps =
-              [ prelude.lowerBound { name = "CImg", lower = [ 1, 3 ] }
-              , prelude.unbounded "ffmpeg"
-              , prelude.unbounded "libsndfile"
-              , prelude.unbounded "libsamplerate"
-              , prelude.unbounded "mpg123"
-              , prelude.unbounded "libjpeg-turbo"
-              , prelude.unbounded "libpng"
-              , prelude.unbounded "fftw"
-              ]
+            [ prelude.lowerBound { name = "CImg", lower = [ 1, 3 ] }
+            , prelude.unbounded "ffmpeg"
+            , prelude.unbounded "libsndfile"
+            , prelude.unbounded "libsamplerate"
+            , prelude.unbounded "mpg123"
+            , prelude.unbounded "libjpeg-turbo"
+            , prelude.unbounded "libpng"
+            , prelude.unbounded "fftw"
+            ]
           , pkgBuildDeps =
-              [ prelude.unbounded "autoconf"
-              , prelude.unbounded "automake"
-              , prelude.unbounded "grep"
-              , prelude.unbounded "coreutils"
-              , prelude.unbounded "sed"
-              , prelude.unbounded "libtool"
-              ]
+            [ prelude.unbounded "autoconf"
+            , prelude.unbounded "automake"
+            , prelude.unbounded "grep"
+            , prelude.unbounded "coreutils"
+            , prelude.unbounded "sed"
+            , prelude.unbounded "libtool"
+            ]
           , configureCommand =
                 λ(cfg : types.BuildVars)
               →   [ prelude.patch
@@ -3889,13 +3870,12 @@ let phash =
                   , prelude.call
                       { program = "autoreconf"
                       , arguments = [ "-i" ]
-                      , environment =
-                          Some
-                            [ { var = "PATH"
-                              , value = prelude.mkPathVar cfg.binDirs
-                              }
-                            , prelude.mkAclocalPath cfg.shareDirs
-                            ]
+                      , environment = Some
+                          [ { var = "PATH"
+                            , value = prelude.mkPathVar cfg.binDirs
+                            }
+                          , prelude.mkAclocalPath cfg.shareDirs
+                          ]
                       , procDir = None Text
                       }
                   ]
@@ -3941,15 +3921,15 @@ let ffmpeg =
                 ]
           , installCommand = prelude.installWithWrappers [ "ffmpeg" ]
           , pkgDeps =
-              [ prelude.unbounded "bzip2"
-              , prelude.unbounded "libmp3lame"
-              , prelude.unbounded "libass"
-              , prelude.unbounded "freetype"
-              , prelude.unbounded "libvorbis"
-              , prelude.unbounded "gnutls"
-              , prelude.unbounded "libvpx"
-              , prelude.unbounded "fdk-aac"
-              ]
+            [ prelude.unbounded "bzip2"
+            , prelude.unbounded "libmp3lame"
+            , prelude.unbounded "libass"
+            , prelude.unbounded "freetype"
+            , prelude.unbounded "libvorbis"
+            , prelude.unbounded "gnutls"
+            , prelude.unbounded "libvpx"
+            , prelude.unbounded "fdk-aac"
+            ]
           }
 
 let libsndfile =
@@ -4046,25 +4026,25 @@ let qt =
                   "https://download.qt.io/archive/qt/${versionString}/${fullVersion}/single/qt-everywhere-src-${fullVersion}.tar.xz"
               , pkgSubdir = "qt-everywhere-src-${fullVersion}"
               , pkgBuildDeps =
-                  [ prelude.unbounded "flex"
-                  , prelude.unbounded "bison"
-                  , prelude.unbounded "pkg-config"
-                  , prelude.unbounded "gperf"
-                  , prelude.unbounded "perl"
-                  , prelude.unbounded "python2"
-                  , prelude.unbounded "git"
-                  ]
+                [ prelude.unbounded "flex"
+                , prelude.unbounded "bison"
+                , prelude.unbounded "pkg-config"
+                , prelude.unbounded "gperf"
+                , prelude.unbounded "perl"
+                , prelude.unbounded "python2"
+                , prelude.unbounded "git"
+                ]
               , pkgDeps =
-                  [ prelude.unbounded "fontconfig"
-                  , prelude.unbounded "mesa"
-                  , prelude.unbounded "dbus"
-                  , prelude.unbounded "freetype"
-                  , prelude.unbounded "harfbuzz"
-                  , prelude.unbounded "libjpeg-turbo"
-                  , prelude.unbounded "libpng"
-                  , prelude.unbounded "giflib"
-                  , prelude.unbounded "glib"
-                  ]
+                [ prelude.unbounded "fontconfig"
+                , prelude.unbounded "mesa"
+                , prelude.unbounded "dbus"
+                , prelude.unbounded "freetype"
+                , prelude.unbounded "harfbuzz"
+                , prelude.unbounded "libjpeg-turbo"
+                , prelude.unbounded "libpng"
+                , prelude.unbounded "giflib"
+                , prelude.unbounded "glib"
+                ]
               }
 
 let lz4 =
@@ -4118,9 +4098,9 @@ let icu =
                                                                             v}-src.tgz"
           , pkgSubdir = "icu/source"
           , pkgBuildDeps =
-              [ prelude.lowerBound { name = "make", lower = [ 3, 80 ] }
-              , prelude.unbounded "python3"
-              ]
+            [ prelude.lowerBound { name = "make", lower = [ 3, 80 ] }
+            , prelude.unbounded "python3"
+            ]
           }
 
 let opencv =
@@ -4131,17 +4111,17 @@ let opencv =
               "https://github.com/opencv/opencv/archive/${prelude.showVersion
                                                             v}.zip"
           , pkgBuildDeps =
-              [ prelude.lowerBound { name = "cmake", lower = [ 2, 8, 7 ] }
-              , prelude.unbounded "pkg-config"
-              , prelude.unbounded "python2"
-              ]
+            [ prelude.lowerBound { name = "cmake", lower = [ 2, 8, 7 ] }
+            , prelude.unbounded "pkg-config"
+            , prelude.unbounded "python2"
+            ]
           , pkgDeps =
-              [ prelude.unbounded "zlib"
-              , prelude.unbounded "libjpeg-turbo"
-              , prelude.unbounded "libpng"
-              , prelude.unbounded "gtk3"
-              , prelude.unbounded "ffmpeg"
-              ]
+            [ prelude.unbounded "zlib"
+            , prelude.unbounded "libjpeg-turbo"
+            , prelude.unbounded "libpng"
+            , prelude.unbounded "gtk3"
+            , prelude.unbounded "ffmpeg"
+            ]
           }
 
 let libraw =
@@ -4209,10 +4189,10 @@ let r =
                   "https://cran.r-project.org/src/base/R-3/R-${versionString}.tar.gz"
               , pkgSubdir = "R-${versionString}"
               , pkgDeps =
-                  [ prelude.unbounded "readline"
-                  , prelude.unbounded "libXt"
-                  , prelude.unbounded "pcre"
-                  ]
+                [ prelude.unbounded "readline"
+                , prelude.unbounded "libXt"
+                , prelude.unbounded "pcre"
+                ]
               , pkgBuildDeps = [ prelude.unbounded "gcc" ]
               , installCommand =
                   prelude.installWithBinaries [ "bin/R", "bin/Rscript" ]
@@ -4225,10 +4205,10 @@ let libspng =
               "https://github.com/randy408/libspng/archive/v${prelude.showVersion
                                                                 v}.tar.gz"
           , pkgBuildDeps =
-              [ prelude.unbounded "pkg-config"
-              , prelude.unbounded "meson"
-              , prelude.lowerBound { name = "ninja", lower = [ 1, 5, 0 ] }
-              ]
+            [ prelude.unbounded "pkg-config"
+            , prelude.unbounded "meson"
+            , prelude.lowerBound { name = "ninja", lower = [ 1, 5, 0 ] }
+            ]
           , pkgDeps = [ prelude.unbounded "zlib" ]
           }
 
@@ -4243,11 +4223,9 @@ let glib-networking =
             ⫽ { pkgUrl =
                   "http://ftp.gnome.org/pub/gnome/sources/glib-networking/${versionString}/glib-networking-${fullVersion}.tar.xz"
               , pkgBuildDeps =
-                  [ prelude.unbounded "pkg-config"
-                  , prelude.unbounded "gettext"
-                  ]
+                [ prelude.unbounded "pkg-config", prelude.unbounded "gettext" ]
               , pkgDeps =
-                  [ prelude.unbounded "glib", prelude.unbounded "gnutls" ]
+                [ prelude.unbounded "glib", prelude.unbounded "gnutls" ]
               }
 
 let libwebp =
@@ -4274,9 +4252,9 @@ let rustc =
                         (   prelude.defaultCall
                           ⫽ { program = "./install.sh"
                             , arguments =
-                                [ "--prefix=${cfg.installDir}"
-                                , "--disable-ldconfig"
-                                ]
+                              [ "--prefix=${cfg.installDir}"
+                              , "--disable-ldconfig"
+                              ]
                             }
                         )
                     ]
@@ -4286,18 +4264,18 @@ let librsvg =
         λ(x : { version : List Natural, patch : Natural })
       →   mkGnomeSimple "librsvg" x
         ⫽ { pkgBuildDeps =
-              [ prelude.lowerBound { name = "rustc", lower = [ 1, 16, 0 ] }
-              , prelude.unbounded "pkg-config"
-              ]
+            [ prelude.lowerBound { name = "rustc", lower = [ 1, 16, 0 ] }
+            , prelude.unbounded "pkg-config"
+            ]
           , pkgDeps =
-              [ prelude.lowerBound { name = "cairo", lower = [ 1, 16, 0 ] }
-              , prelude.lowerBound { name = "libxml2", lower = [ 2, 9, 0 ] }
-              , prelude.lowerBound { name = "libcroco", lower = [ 0, 6, 1 ] }
-              , prelude.unbounded "pango"
-              , prelude.lowerBound { name = "gdk-pixbuf", lower = [ 2, 20 ] }
-              , prelude.unbounded "gobject-introspection"
-              , prelude.lowerBound { name = "glib", lower = [ 2, 10, 0 ] }
-              ]
+            [ prelude.lowerBound { name = "cairo", lower = [ 1, 16, 0 ] }
+            , prelude.lowerBound { name = "libxml2", lower = [ 2, 9, 0 ] }
+            , prelude.lowerBound { name = "libcroco", lower = [ 0, 6, 1 ] }
+            , prelude.unbounded "pango"
+            , prelude.lowerBound { name = "gdk-pixbuf", lower = [ 2, 20 ] }
+            , prelude.unbounded "gobject-introspection"
+            , prelude.lowerBound { name = "glib", lower = [ 2, 10, 0 ] }
+            ]
           }
 
 let ats =
@@ -4314,12 +4292,11 @@ let ats =
                             (   prelude.defaultCall
                               ⫽ { program = prelude.makeExe cfg.buildOS
                                 , arguments =
-                                    [ "CFLAGS=${( prelude.mkCFlags cfg
-                                                ).value} -I${buildDir}/src/CBOOT/ccomp/runtime -I${buildDir}/src/CBOOT"
-                                    , "LDFLAGS='${( prelude.mkLDFlags
-                                                      cfg.linkDirs
-                                                  ).value}'"
-                                    ]
+                                  [ "CFLAGS=${( prelude.mkCFlags cfg
+                                              ).value} -I${buildDir}/src/CBOOT/ccomp/runtime -I${buildDir}/src/CBOOT"
+                                  , "LDFLAGS='${( prelude.mkLDFlags cfg.linkDirs
+                                                ).value}'"
+                                  ]
                                 , environment = Some (prelude.buildEnv cfg)
                                 }
                             )
@@ -4351,7 +4328,7 @@ let libav =
           , configureCommand =
               prelude.configureMkExes [ "version.sh", "doc/texi2pod.pl" ]
           , pkgBuildDeps =
-              [ prelude.unbounded "nasm", prelude.unbounded "perl" ]
+            [ prelude.unbounded "nasm", prelude.unbounded "perl" ]
           , installCommand =
               prelude.installWithBinaries [ "bin/avconv", "bin/avprobe" ]
           }
@@ -4393,13 +4370,13 @@ let hugs =
                   ([] : List Text)
                   ([] : List Text)
             , pkgBuildDeps =
-                [ prelude.unbounded "coreutils"
-                , prelude.unbounded "sed"
-                , prelude.unbounded "gcc"
-                , prelude.unbounded "binutils"
-                , prelude.unbounded "grep"
-                , prelude.unbounded "findutils"
-                ]
+              [ prelude.unbounded "coreutils"
+              , prelude.unbounded "sed"
+              , prelude.unbounded "gcc"
+              , prelude.unbounded "binutils"
+              , prelude.unbounded "grep"
+              , prelude.unbounded "findutils"
+              ]
             }
 
 let bash =
@@ -4492,15 +4469,12 @@ let libass =
                   "https://github.com/libass/libass/releases/download/${versionString}/libass-${versionString}.tar.xz"
               , pkgBuildDeps = [ prelude.unbounded "nasm" ]
               , pkgDeps =
-                  [ prelude.lowerBound
-                      { name = "freetype", lower = [ 9, 10, 3 ] }
-                  , prelude.lowerBound
-                      { name = "fribidi", lower = [ 0, 19, 0 ] }
-                  , prelude.lowerBound
-                      { name = "harfbuzz", lower = [ 0, 9, 5 ] }
-                  , prelude.lowerBound
-                      { name = "fontconfig", lower = [ 2, 10, 92 ] }
-                  ]
+                [ prelude.lowerBound { name = "freetype", lower = [ 9, 10, 3 ] }
+                , prelude.lowerBound { name = "fribidi", lower = [ 0, 19, 0 ] }
+                , prelude.lowerBound { name = "harfbuzz", lower = [ 0, 9, 5 ] }
+                , prelude.lowerBound
+                    { name = "fontconfig", lower = [ 2, 10, 92 ] }
+                ]
               }
 
 let libogg =
@@ -4528,7 +4502,7 @@ let libvpx =
             ⫽ { pkgUrl =
                   "https://github.com/webmproject/libvpx/archive/v${versionString}/libvpx-${versionString}.tar.gz"
               , pkgBuildDeps =
-                  [ prelude.unbounded "nasm", prelude.unbounded "perl" ]
+                [ prelude.unbounded "nasm", prelude.unbounded "perl" ]
               }
 
 let fdk-aac =
@@ -4548,10 +4522,10 @@ let swi-prolog =
                   "https://www.swi-prolog.org/download/stable/src/swipl-${versionString}.tar.gz"
               , configureCommand = prelude.cmakeConfigureNinja
               , pkgBuildDeps =
-                  [ prelude.unbounded "cmake"
-                  , prelude.unbounded "ninja"
-                  , prelude.unbounded "coreutils"
-                  ]
+                [ prelude.unbounded "cmake"
+                , prelude.unbounded "ninja"
+                , prelude.unbounded "coreutils"
+                ]
               , pkgSubdir = "swipl-${versionString}"
               }
 
@@ -4589,13 +4563,13 @@ let subversion =
               "https://www-eu.apache.org/dist/subversion/subversion-${prelude.showVersion
                                                                         v}.tar.bz2"
           , pkgDeps =
-              [ prelude.unbounded "apr"
-              , prelude.unbounded "apr-util"
-              , prelude.unbounded "sqlite"
-              , prelude.unbounded "lz4"
-              , prelude.unbounded "zlib"
-              , prelude.unbounded "utf8proc"
-              ]
+            [ prelude.unbounded "apr"
+            , prelude.unbounded "apr-util"
+            , prelude.unbounded "sqlite"
+            , prelude.unbounded "lz4"
+            , prelude.unbounded "zlib"
+            , prelude.unbounded "utf8proc"
+            ]
           , pkgBuildDeps = [ prelude.unbounded "pkg-config" ]
           , installCommand = prelude.installWithBinaries [ "bin/svn" ]
           }
@@ -4639,26 +4613,25 @@ let libsass =
               "https://github.com/sass/libsass/archive/${prelude.showVersion
                                                            v}.tar.gz"
           , pkgBuildDeps =
-              [ prelude.unbounded "autoconf"
-              , prelude.unbounded "automake"
-              , prelude.unbounded "m4"
-              , prelude.unbounded "grep"
-              , prelude.unbounded "sed"
-              , prelude.unbounded "coreutils"
-              , prelude.unbounded "libtool"
-              ]
+            [ prelude.unbounded "autoconf"
+            , prelude.unbounded "automake"
+            , prelude.unbounded "m4"
+            , prelude.unbounded "grep"
+            , prelude.unbounded "sed"
+            , prelude.unbounded "coreutils"
+            , prelude.unbounded "libtool"
+            ]
           , configureCommand =
                 λ(cfg : types.BuildVars)
               →   [ prelude.call
                       { program = "autoreconf"
                       , arguments = [ "-i" ]
-                      , environment =
-                          Some
-                            [ { var = "PATH"
-                              , value = prelude.mkPathVar cfg.binDirs
-                              }
-                            , prelude.mkAclocalPath cfg.shareDirs
-                            ]
+                      , environment = Some
+                          [ { var = "PATH"
+                            , value = prelude.mkPathVar cfg.binDirs
+                            }
+                          , prelude.mkAclocalPath cfg.shareDirs
+                          ]
                       , procDir = None Text
                       }
                   ]
@@ -4679,6 +4652,15 @@ let zstd =
                   →   prelude.cmakeInstall cfg
                     # [ prelude.symlinkBinary "bin/zstd" ]
               }
+
+let luarocks =
+        λ(v : List Natural)
+      →   prelude.simplePackage { name = "luarocks", version = v }
+        ⫽ { pkgUrl =
+              "http://luarocks.org/releases/luarocks-${prelude.showVersion
+                                                         v}.tar.gz"
+          , pkgBuildDeps = [ prelude.unbounded "lua" ]
+          }
 
 in  [ alsa-lib [ 1, 1, 9 ]
     , apr [ 1, 7, 0 ]
@@ -4857,6 +4839,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , llvm [ 9, 0, 0 ]
     , lmdb [ 0, 9, 23 ]
     , lua [ 5, 3, 5 ]
+    , luarocks [ 3, 2, 1 ]
     , lunzip [ 1, 11 ]
     , lz4 [ 1, 9, 2 ]
     , lzip [ 1, 21 ]
