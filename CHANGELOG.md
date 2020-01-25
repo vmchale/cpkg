@@ -1,5 +1,9 @@
 # cpkg
 
+## 0.2.4.1
+
+  * Use `bz2` in place of `bzlib` for now
+
 ## 0.2.4.0
 
   * Use [`libarchive`](http://hackage.haskell.org/package/libarchive) exclusively
