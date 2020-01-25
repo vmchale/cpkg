@@ -80,7 +80,7 @@ library
         temporary -any,
         bytestring -any,
         zlib -any,
-        bzlib -any,
+        bz2 >=0.1.1.0,
         lzma -any,
         zip-archive -any,
         prettyprinter -any,
