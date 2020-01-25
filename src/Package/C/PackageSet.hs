@@ -24,7 +24,7 @@ import           Package.C.Type.Tree
 
 defaultPackageSetDhall :: Maybe String -> IO PackageSetDhall
 defaultPackageSetDhall (Just pkSet) = input auto (T.pack pkSet)
-defaultPackageSetDhall Nothing      = input auto "https://raw.githubusercontent.com/vmchale/cpkg/33b0eca5b21132e509c23c74ed7c2f1b31001ad5/pkgs/pkg-set.dhall sha256:180fb74ad3ab3a5fdced4efefceb2ccab96d07ef729e5768f3dfaf2e304a351b"
+defaultPackageSetDhall Nothing      = input auto "https://raw.githubusercontent.com/vmchale/cpkg/723eeb50c991465fff61ec2aa298b29e09d9451d/pkgs/pkg-set.dhall sha256:0d6e0a0f4177d5bf64e7c6e940cffda19fc3ff61bb67637a0c2ce4ac4c7df0a0"
 
 displayPackageSet :: Maybe String -> IO ()
 displayPackageSet = putDoc . pretty <=< defaultPackageSetDhall
