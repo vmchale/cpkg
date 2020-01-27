@@ -7,10 +7,11 @@ import           System.Info           (arch, os)
 
 dhallArch :: Arch
 dhallArch = case arch of
-    "x86_64" -> X64
-    "x86"    -> X86
-    "arm"    -> Arm
-    _        -> error "unrecognized architecture"
+    "x86_64"  -> X64
+    "x86"     -> X86
+    "arm"     -> Arm
+    "aarch64" -> AArch
+    _         -> error "unrecognized architecture"
 
 dhallOS :: OS
 dhallOS = case os of
