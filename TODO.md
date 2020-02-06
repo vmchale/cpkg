@@ -110,6 +110,7 @@
 - [ ] charset (?)
 - [ ] weighttpd https://github.com/lighttpd/weighttp
 - [ ] https://sourceware.org/newlib/
+- [ ] https://labs.tomasino.org/gnu-recutils/
 - [ ] fish
 - [ ] libtizcore
 - [ ] ghostscript http://www.linuxfromscratch.org/blfs/view/svn/pst/gs.html

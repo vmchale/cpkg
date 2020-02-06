@@ -4741,7 +4741,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , glu [ 9, 0, 0 ]
     , json-glib { version = [ 1, 4 ], patch = 4 }
     , glibc [ 2, 30 ]
-    , gmp [ 6, 1, 2 ]
+    , gmp [ 6, 2, 0 ]
     , gobject-introspection { version = [ 1, 62 ], patch = 0 }
     , gnome-doc-utils { version = [ 0, 20 ], patch = 10 }
     , gnupg [ 2, 2, 19 ]
