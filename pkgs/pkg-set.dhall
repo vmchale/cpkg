@@ -4423,6 +4423,15 @@ let lzip =
           , installCommand = prelude.installWithBinaries [ "bin/lzip" ]
           }
 
+let clzip =
+        λ(v : List Natural)
+      →   prelude.simplePackage { name = "clzip", version = v }
+        ⫽ { pkgUrl =
+              "http://download.savannah.gnu.org/releases/lzip/clzip/clzip-${prelude.showVersion
+                                                                              v}.tar.lz"
+          , installCommand = prelude.installWithBinaries [ "bin/clzip" ]
+          }
+
 let lunzip =
         λ(v : List Natural)
       →   prelude.simplePackage { name = "lunzip", version = v }
@@ -4683,6 +4692,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , chickenScheme [ 5, 0, 0 ]
     , cimg [ 2, 7, 0 ]
     , clang [ 9, 0, 0 ]
+    , clzip [ 1, 11 ]
     , cmake { version = [ 3, 16 ], patch = 2 }
     , cmark [ 0, 29, 0 ]
     , compositeproto [ 0, 4 ]

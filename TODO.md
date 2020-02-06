@@ -98,6 +98,7 @@
   & cross-compiler
 - [ ] weighttp
 - [ ] `patscc`
+- [ ] http://www.qhull.org/download/qhull-2019-src-7.3.2.tgz
 - [ ] `rustc`
 - [ ] https://github.com/ZBar/ZBar
 - [ ] Doxygen
