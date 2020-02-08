@@ -4418,8 +4418,8 @@ let lzip =
         λ(v : List Natural)
       →   prelude.simplePackage { name = "lzip", version = v }
         ⫽ { pkgUrl =
-              "http://gnu.mirrors.pair.com/savannah/savannah/lzip/lzip-${prelude.showVersion
-                                                                           v}.tar.lz"
+              "http://download.savannah.gnu.org/releases/lzip/lzip-${prelude.showVersion
+                                                                       v}.tar.lz"
           , installCommand = prelude.installWithBinaries [ "bin/lzip" ]
           }
 
