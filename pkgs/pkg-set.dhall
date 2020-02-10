@@ -4787,7 +4787,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , libffi [ 3, 3 ]
     , libgcrypt [ 1, 8, 5 ]
     , libglade { version = [ 2, 6 ], patch = 4 }
-    , libgpgError [ 1, 36 ]
+    , libgpgError [ 1, 37 ]
     , libICE [ 1, 0, 9 ]
     , libiconv [ 1, 16 ]
     , libjpeg [ 9 ]
