@@ -4304,7 +4304,7 @@ let ats =
 
             in    prelude.simplePackage { name = "ats", version = v }
                 ⫽ { pkgUrl =
-                      "http://ats-lang.sourceforge.net/IMPLEMENT/Postiats/ATS2-Postiats-${versionString}.tgz"
+                      "http://ats-lang.sourceforge.net/IMPLEMENT/Postiats/ATS2-Postiats-gmp-${versionString}.tgz"
                   , pkgSubdir = "ATS2-Postiats-gmp-${versionString}"
                   , pkgDeps = [ prelude.unbounded "gmp" ]
                   , buildCommand = atsBuild
@@ -4678,7 +4678,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , at-spi-atk { version = [ 2, 33 ], patch = 2 }
     , at-spi-core { version = [ 2, 33 ], patch = 2 }
     , atk { version = [ 2, 33 ], patch = 3 }
-    , ats [ 0, 3, 13 ]
+    , ats [ 0, 4, 0 ]
     , autoconf [ 2, 69 ]
     , automake [ 1, 16, 1 ]
     , babl { version = [ 0, 1 ], patch = 68 }
