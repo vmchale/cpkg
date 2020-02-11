@@ -4682,7 +4682,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , autoconf [ 2, 69 ]
     , automake [ 1, 16, 1 ]
     , babl { version = [ 0, 1 ], patch = 68 }
-    , bash [ 5, 0 ]
+    , bash [ 5, 0, 16 ]
     , bash-completion [ 2, 9 ]
     , binutils [ 2, 33, 1 ]
     , bison [ 3, 5 ]
@@ -4693,7 +4693,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , cimg [ 2, 7, 0 ]
     , clang [ 9, 0, 0 ]
     , clzip [ 1, 11 ]
-    , cmake { version = [ 3, 16 ], patch = 2 }
+    , cmake { version = [ 3, 16 ], patch = 4 }
     , cmark [ 0, 29, 0 ]
     , compositeproto [ 0, 4 ]
     , coreutils [ 8, 31 ]
