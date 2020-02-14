@@ -4887,7 +4887,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , pango { version = [ 1, 43 ], patch = 0 }
     , pari [ 2, 11, 1 ]
     , patch [ 2, 7 ]
-    , pcre [ 8, 43 ]
+    , pcre [ 8, 44 ]
     , pcre2 [ 10, 33 ]
     , pdfgrep [ 2, 1, 2 ]
     , perl5 [ 5, 30, 1 ]
