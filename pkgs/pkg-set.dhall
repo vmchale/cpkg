@@ -4309,7 +4309,8 @@ let ats =
                   , pkgDeps = [ prelude.unbounded "gmp" ]
                   , buildCommand = atsBuild
                   , installCommand =
-                      prelude.installWithBinaries [ "bin/patsopt" ]
+                      prelude.installWithBinaries
+                        [ "bin/patsopt", "bin/patscc" ]
                   }
 
 let libiconv =
