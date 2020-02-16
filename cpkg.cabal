@@ -1,9 +1,9 @@
 cabal-version:      1.18
 name:               cpkg
-version:            0.2.4.4
+version:            0.2.4.5
 license:            BSD3
 license-file:       LICENSE
-copyright:          Copyright: (c) 2018-2019 Vanessa McHale
+copyright:          Copyright: (c) 2018-2020 Vanessa McHale
 maintainer:         vamchale@gmail.com
 author:             Vanessa McHale
 synopsis:           Build tool for C
