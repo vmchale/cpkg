@@ -15,7 +15,7 @@ let types =
       ../dhall/cpkg-types.dhall sha256:caef717db41539eb7ded38d8cd676ba998bd387171ba3fd2db7fea9e8ee8f361
 
 let prelude =
-      ../dhall/cpkg-prelude.dhall sha256:4eae9adcc22ceda96091f3fa560aa095dbf8de05f7cf0387061042a9f31d10ee
+      ../dhall/cpkg-prelude.dhall sha256:908d9f80be0c4bc294b5bb4ae3e3b9245659800c20ea3510518d1b1b649ffaaf
 
 let gpgPackage =
         λ(x : { name : Text, version : List Natural })
@@ -1503,18 +1503,18 @@ let gdk-pixbuf =
                       (   prelude.defaultCall
                         ⫽ { program = "ninja"
                           , environment = Some
-                              [ prelude.mkPkgConfigVar cfg.linkDirs
-                              , { var = "PATH"
-                                , value =
-                                        prelude.mkPathVar cfg.binDirs
-                                    ++  ":${cfg.currentDir}/gdk-pixbuf-${fullVersion}/build/gdk-pixbuf:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-                                }
-                              , prelude.mkPy3Path cfg.linkDirs
-                              , prelude.libPath cfg
-                              , prelude.mkLDRunPath cfg.linkDirs
-                              , prelude.mkLDFlags cfg.linkDirs
-                              , prelude.mkCFlags cfg
-                              ]
+                            [ prelude.mkPkgConfigVar cfg.linkDirs
+                            , { var = "PATH"
+                              , value =
+                                      prelude.mkPathVar cfg.binDirs
+                                  ++  ":${cfg.currentDir}/gdk-pixbuf-${fullVersion}/build/gdk-pixbuf:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+                              }
+                            , prelude.mkPy3Path cfg.linkDirs
+                            , prelude.libPath cfg
+                            , prelude.mkLDRunPath cfg.linkDirs
+                            , prelude.mkLDFlags cfg.linkDirs
+                            , prelude.mkCFlags cfg
+                            ]
                           , arguments = [ "install" ]
                           , procDir = Some "build"
                           }
@@ -3871,11 +3871,11 @@ let phash =
                       { program = "autoreconf"
                       , arguments = [ "-i" ]
                       , environment = Some
-                          [ { var = "PATH"
-                            , value = prelude.mkPathVar cfg.binDirs
-                            }
-                          , prelude.mkAclocalPath cfg.shareDirs
-                          ]
+                        [ { var = "PATH"
+                          , value = prelude.mkPathVar cfg.binDirs
+                          }
+                        , prelude.mkAclocalPath cfg.shareDirs
+                        ]
                       , procDir = None Text
                       }
                   ]
@@ -4637,11 +4637,11 @@ let libsass =
                       { program = "autoreconf"
                       , arguments = [ "-i" ]
                       , environment = Some
-                          [ { var = "PATH"
-                            , value = prelude.mkPathVar cfg.binDirs
-                            }
-                          , prelude.mkAclocalPath cfg.shareDirs
-                          ]
+                        [ { var = "PATH"
+                          , value = prelude.mkPathVar cfg.binDirs
+                          }
+                        , prelude.mkAclocalPath cfg.shareDirs
+                        ]
                       , procDir = None Text
                       }
                   ]
