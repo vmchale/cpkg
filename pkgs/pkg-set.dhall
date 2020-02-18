@@ -4751,7 +4751,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , grep [ 3, 3 ]
     , gsl [ 2, 6 ]
     , gtk2 { version = [ 2, 24 ], patch = 32 }
-    , gtk3 { version = [ 3, 24 ], patch = 10 }
+    , gtk3 { version = [ 3, 24 ], patch = 14 }
     , gzip [ 1, 10 ]
     , harfbuzz [ 2, 6, 4 ]
     , htop [ 2, 2, 0 ]
