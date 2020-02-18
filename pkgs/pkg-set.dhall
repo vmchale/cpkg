@@ -1503,18 +1503,18 @@ let gdk-pixbuf =
                       (   prelude.defaultCall
                         ⫽ { program = "ninja"
                           , environment = Some
-                            [ prelude.mkPkgConfigVar cfg.linkDirs
-                            , { var = "PATH"
-                              , value =
-                                      prelude.mkPathVar cfg.binDirs
-                                  ++  ":${cfg.currentDir}/gdk-pixbuf-${fullVersion}/build/gdk-pixbuf:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-                              }
-                            , prelude.mkPy3Path cfg.linkDirs
-                            , prelude.libPath cfg
-                            , prelude.mkLDRunPath cfg.linkDirs
-                            , prelude.mkLDFlags cfg.linkDirs
-                            , prelude.mkCFlags cfg
-                            ]
+                              [ prelude.mkPkgConfigVar cfg.linkDirs
+                              , { var = "PATH"
+                                , value =
+                                        prelude.mkPathVar cfg.binDirs
+                                    ++  ":${cfg.currentDir}/gdk-pixbuf-${fullVersion}/build/gdk-pixbuf:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+                                }
+                              , prelude.mkPy3Path cfg.linkDirs
+                              , prelude.libPath cfg
+                              , prelude.mkLDRunPath cfg.linkDirs
+                              , prelude.mkLDFlags cfg.linkDirs
+                              , prelude.mkCFlags cfg
+                              ]
                           , arguments = [ "install" ]
                           , procDir = Some "build"
                           }
@@ -3871,11 +3871,11 @@ let phash =
                       { program = "autoreconf"
                       , arguments = [ "-i" ]
                       , environment = Some
-                        [ { var = "PATH"
-                          , value = prelude.mkPathVar cfg.binDirs
-                          }
-                        , prelude.mkAclocalPath cfg.shareDirs
-                        ]
+                          [ { var = "PATH"
+                            , value = prelude.mkPathVar cfg.binDirs
+                            }
+                          , prelude.mkAclocalPath cfg.shareDirs
+                          ]
                       , procDir = None Text
                       }
                   ]
@@ -4637,11 +4637,11 @@ let libsass =
                       { program = "autoreconf"
                       , arguments = [ "-i" ]
                       , environment = Some
-                        [ { var = "PATH"
-                          , value = prelude.mkPathVar cfg.binDirs
-                          }
-                        , prelude.mkAclocalPath cfg.shareDirs
-                        ]
+                          [ { var = "PATH"
+                            , value = prelude.mkPathVar cfg.binDirs
+                            }
+                          , prelude.mkAclocalPath cfg.shareDirs
+                          ]
                       , procDir = None Text
                       }
                   ]
@@ -4913,7 +4913,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , readline [ 8, 0 ]
     , recordproto [ 1, 14, 2 ]
     , renderproto [ 0, 11, 1 ]
-    , ruby { version = [ 2, 6 ], patch = 3 }
+    , ruby { version = [ 2, 7 ], patch = 0 }
     , rustc [ 1, 41, 0 ]
     , scour [ 0, 37 ]
     , scrnsaverproto [ 1, 2, 2 ]
