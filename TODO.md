@@ -1,4 +1,5 @@
 # Upstream
+- [ ] Report CBOR decoding?
 - [ ] Fix Dhall parser
   - [ ] Add typechecking benchmarks
 - [ ] Ask how to implement `init`/`tail` in Dhall

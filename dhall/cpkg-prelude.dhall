@@ -210,6 +210,27 @@ let isUnix =
           }
           os
 
+let isMac =
+        λ(os : types.OS)
+      → merge
+          { FreeBSD = False
+          , OpenBSD = False
+          , NetBSD = False
+          , Solaris = False
+          , Dragonfly = False
+          , Linux = False
+          , Darwin = True
+          , Windows = False
+          , Redox = False
+          , Haiku = False
+          , IOS = False
+          , AIX = False
+          , Hurd = False
+          , Android = False
+          , NoOs = False
+          }
+          os
+
 let mkLDFlagsGeneral =
         λ(libDirs : List Text)
       → λ(linkLibs : List Text)
@@ -395,11 +416,25 @@ let generalConfigure =
 
         let modifyArgs = maybeAppend Text maybeHost
 
+        let mac = isMac cfg.buildOS
+
+        let modifyProg =
+                    if mac
+
+              then  λ(x : List Text) → [ "${filename}" ] # x
+
+              else  λ(x : List Text) → x
+
+        let program = if mac then "sh" else "./${filename}"
+
         in  [ call
                 (   defaultCall
-                  ⫽ { program = "./${filename}"
+                  ⫽ { program = program
                     , arguments =
-                        modifyArgs [ "--prefix=${cfg.installDir}" ] # extraFlags
+                        modifyProg
+                          (   modifyArgs [ "--prefix=${cfg.installDir}" ]
+                            # extraFlags
+                          )
                     , environment = envVars linkLibs cfg
                     }
                 )
@@ -669,14 +704,14 @@ let cmakeBuild =
       → [ call
             { program = "cmake"
             , arguments =
-                [ "--build"
-                , "."
-                , "--config"
-                , "Release"
-                , "--"
-                , "-j"
-                , Natural/show cfg.cpus
-                ]
+              [ "--build"
+              , "."
+              , "--config"
+              , "Release"
+              , "--"
+              , "-j"
+              , Natural/show cfg.cpus
+              ]
             , environment = Some (cmakeEnv cfg)
             , procDir = Some "build"
             }
@@ -687,7 +722,7 @@ let cmakeInstall =
       → [ call
             { program = "cmake"
             , arguments =
-                [ "--build", ".", "--target", "install", "--config", "Release" ]
+              [ "--build", ".", "--target", "install", "--config", "Release" ]
             , environment = Some (cmakeEnv cfg)
             , procDir = Some "build"
             }
@@ -711,13 +746,12 @@ let autogenConfigure =
       →   [ call
               (   defaultCall
                 ⫽ { program = "./autogen.sh"
-                  , environment =
-                      Some
-                        (   [ mkAclocalPath cfg.shareDirs
-                            , mkPkgConfigVar (cfg.shareDirs # cfg.linkDirs)
-                            ]
-                          # defaultPath cfg
-                        )
+                  , environment = Some
+                      (   [ mkAclocalPath cfg.shareDirs
+                          , mkPkgConfigVar (cfg.shareDirs # cfg.linkDirs)
+                          ]
+                        # defaultPath cfg
+                      )
                   }
               )
           ]
@@ -839,18 +873,17 @@ let ninjaBuildWith =
         in  [ call
                 (   defaultCall
                   ⫽ { program = "ninja"
-                    , environment =
-                        Some
-                          (   [ mkPkgConfigVar cfg.linkDirs
-                              , mkPy3Path cfg.linkDirs
-                              , libPath cfg
-                              , mkLDRunPath cfg.linkDirs
-                              , mkLDFlagsGeneral cfg.linkDirs linkLibs
-                              , mkCFlags cfg
-                              ]
-                            # defaultPath cfg
-                            # ldPreload
-                          )
+                    , environment = Some
+                        (   [ mkPkgConfigVar cfg.linkDirs
+                            , mkPy3Path cfg.linkDirs
+                            , libPath cfg
+                            , mkLDRunPath cfg.linkDirs
+                            , mkLDFlagsGeneral cfg.linkDirs linkLibs
+                            , mkCFlags cfg
+                            ]
+                          # defaultPath cfg
+                          # ldPreload
+                        )
                     , procDir = Some "build"
                     }
                 )
@@ -863,17 +896,16 @@ let ninjaInstall =
       → [ call
             (   defaultCall
               ⫽ { program = "ninja"
-                , environment =
-                    Some
-                      (   [ mkPkgConfigVar cfg.linkDirs
-                          , mkPy3Path cfg.linkDirs
-                          , libPath cfg
-                          , mkLDRunPath cfg.linkDirs
-                          , mkLDFlags cfg.linkDirs
-                          , mkCFlags cfg
-                          ]
-                        # defaultPath cfg
-                      )
+                , environment = Some
+                    (   [ mkPkgConfigVar cfg.linkDirs
+                        , mkPy3Path cfg.linkDirs
+                        , libPath cfg
+                        , mkLDRunPath cfg.linkDirs
+                        , mkLDFlags cfg.linkDirs
+                        , mkCFlags cfg
+                        ]
+                      # defaultPath cfg
+                    )
                 , arguments = [ "install" ]
                 , procDir = Some "build"
                 }
@@ -928,17 +960,16 @@ let pythonBuild =
                 (   defaultCall
                   ⫽ { program = "python${major}"
                     , arguments = [ "setup.py", "build" ]
-                    , environment =
-                        Some
-                          (   [ { var = "PYTHONPATH"
-                                , value =
-                                    "${cfg.installDir}/lib/python${versionString}/site-packages"
-                                }
-                              , mkPkgConfigVar cfg.linkDirs
-                              , libPath cfg
-                              ]
-                            # defaultPath cfg
-                          )
+                    , environment = Some
+                        (   [ { var = "PYTHONPATH"
+                              , value =
+                                  "${cfg.installDir}/lib/python${versionString}/site-packages"
+                              }
+                            , mkPkgConfigVar cfg.linkDirs
+                            , libPath cfg
+                            ]
+                          # defaultPath cfg
+                        )
                     }
                 )
             ]
@@ -962,22 +993,21 @@ let pythonInstall =
                 (   defaultCall
                   ⫽ { program = "python${major}"
                     , arguments =
-                        [ "setup.py"
-                        , "install"
-                        , "--prefix=${cfg.installDir}"
-                        , "--optimize=1"
-                        ]
-                    , environment =
-                        Some
-                          (   [ { var = "PYTHONPATH"
-                                , value =
-                                    "${cfg.installDir}/lib/python${versionString}/site-packages"
-                                }
-                              , mkPkgConfigVar cfg.linkDirs
-                              , libPath cfg
-                              ]
-                            # defaultPath cfg
-                          )
+                      [ "setup.py"
+                      , "install"
+                      , "--prefix=${cfg.installDir}"
+                      , "--optimize=1"
+                      ]
+                    , environment = Some
+                        (   [ { var = "PYTHONPATH"
+                              , value =
+                                  "${cfg.installDir}/lib/python${versionString}/site-packages"
+                              }
+                            , mkPkgConfigVar cfg.linkDirs
+                            , libPath cfg
+                            ]
+                          # defaultPath cfg
+                        )
                     }
                 )
             ]
@@ -1189,10 +1219,10 @@ let installPrefix =
             (   defaultCall
               ⫽ { program = "make"
                 , arguments =
-                    [ "prefix=${cfg.installDir}"
-                    , "PREFIX=${cfg.installDir}"
-                    , "install"
-                    ]
+                  [ "prefix=${cfg.installDir}"
+                  , "PREFIX=${cfg.installDir}"
+                  , "install"
+                  ]
                 , environment = Some (buildEnv cfg)
                 }
             )

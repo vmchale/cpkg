@@ -15,7 +15,7 @@ let types =
       ../dhall/cpkg-types.dhall sha256:caef717db41539eb7ded38d8cd676ba998bd387171ba3fd2db7fea9e8ee8f361
 
 let prelude =
-      ../dhall/cpkg-prelude.dhall sha256:4eae9adcc22ceda96091f3fa560aa095dbf8de05f7cf0387061042a9f31d10ee
+      ../dhall/cpkg-prelude.dhall sha256:908d9f80be0c4bc294b5bb4ae3e3b9245659800c20ea3510518d1b1b649ffaaf
 
 let gpgPackage =
         λ(x : { name : Text, version : List Natural })
@@ -4751,7 +4751,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , grep [ 3, 3 ]
     , gsl [ 2, 6 ]
     , gtk2 { version = [ 2, 24 ], patch = 32 }
-    , gtk3 { version = [ 3, 24 ], patch = 10 }
+    , gtk3 { version = [ 3, 24 ], patch = 14 }
     , gzip [ 1, 10 ]
     , harfbuzz [ 2, 6, 4 ]
     , htop [ 2, 2, 0 ]
@@ -4913,7 +4913,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , readline [ 8, 0 ]
     , recordproto [ 1, 14, 2 ]
     , renderproto [ 0, 11, 1 ]
-    , ruby { version = [ 2, 6 ], patch = 3 }
+    , ruby { version = [ 2, 7 ], patch = 0 }
     , rustc [ 1, 41, 0 ]
     , scour [ 0, 37 ]
     , scrnsaverproto [ 1, 2, 2 ]

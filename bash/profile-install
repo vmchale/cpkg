@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+cabal build exe:cpkg -w ghc-8.8.2 --enable-profiling
+cp $(fd cpkg$ -t x -I) ~/.local/bin/cpkg-prof
