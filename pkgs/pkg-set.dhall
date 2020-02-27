@@ -4731,7 +4731,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , gegl { version = [ 0, 4 ], patch = 16 }
     , gettext [ 0, 20, 1 ]
     , gexiv2 { version = [ 0, 12 ], patch = 0 }
-    , ghc [ 8, 8, 1 ]
+    , ghc [ 8, 8, 3 ]
     , gperf [ 3, 1 ]
     , gperftools [ 2, 7 ]
     , giflib [ 5, 1, 4 ]
