@@ -4701,6 +4701,32 @@ let star =
                     ]
           }
 
+let smake =
+        λ(v : List Natural)
+      →   prelude.simplePackage { name = "smake", version = v }
+        ⫽ { pkgUrl =
+              "https://downloads.sourceforge.net/s-make/smake-${prelude.showVersion
+                                                                  v}.tar.bz2"
+          , configureCommand = prelude.doNothing
+          , installCommand =
+                λ(cfg : types.BuildVars)
+              →   [ prelude.call
+                      (   prelude.defaultCall
+                        ⫽ { program = "make"
+                          , arguments =
+                            [ "DESTDIR=${cfg.installDir}", "install" ]
+                          , environment = Some (prelude.buildEnv cfg)
+                          }
+                      )
+                  , prelude.symlinkBinary "opt/schily/bin/smake"
+                  ]
+                # prelude.symlinkManpages
+                    [ { file = "opt/schily/share/man/man1/smake.1"
+                      , section = 1
+                      }
+                    ]
+          }
+
 in  [ alsa-lib [ 1, 1, 9 ]
     , apr [ 1, 7, 0 ]
     , apr-util [ 1, 6, 1 ]
@@ -4948,6 +4974,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , sdl2 [ 2, 0, 10 ]
     , sed [ 4, 7 ]
     , shared-mime-info [ 1, 10 ]
+    , smake [ 1, 2, 5 ]
     , sqlite { version = [ 3, 30, 1 ] }
     , star [ 1, 6 ]
     , subversion [ 1, 12, 2 ]
