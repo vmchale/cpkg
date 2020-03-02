@@ -4421,7 +4421,11 @@ let lzip =
         ⫽ { pkgUrl =
               "http://download.savannah.gnu.org/releases/lzip/lzip-${prelude.showVersion
                                                                        v}.tar.lz"
-          , installCommand = prelude.installWithBinaries [ "bin/lzip" ]
+          , installCommand =
+                λ(cfg : types.BuildVars)
+              →   prelude.installWithBinaries [ "bin/lzip" ] cfg
+                # prelude.symlinkManpages
+                    [ { file = "share/man/man1/lzip.1", section = 1 } ]
           }
 
 let clzip =
@@ -4430,7 +4434,11 @@ let clzip =
         ⫽ { pkgUrl =
               "http://download.savannah.gnu.org/releases/lzip/clzip/clzip-${prelude.showVersion
                                                                               v}.tar.lz"
-          , installCommand = prelude.installWithBinaries [ "bin/clzip" ]
+          , installCommand =
+                λ(cfg : types.BuildVars)
+              →   prelude.installWithBinaries [ "bin/clzip" ] cfg
+                # prelude.symlinkManpages
+                    [ { file = "share/man/man1/clzip.1", section = 1 } ]
           }
 
 let lunzip =
@@ -4439,7 +4447,11 @@ let lunzip =
         ⫽ { pkgUrl =
               "http://download.savannah.gnu.org/releases/lzip/lunzip/lunzip-${prelude.showVersion
                                                                                 v}.tar.lz"
-          , installCommand = prelude.installWithBinaries [ "bin/lunzip" ]
+          , installCommand =
+                λ(cfg : types.BuildVars)
+              →   prelude.installWithBinaries [ "bin/lunzip" ] cfg
+                # prelude.symlinkManpages
+                    [ { file = "share/man/man1/lunzip.1", section = 1 } ]
           }
 
 let lzlib =
