@@ -1115,10 +1115,11 @@ let p11kit =
 
 let libffi =
         λ(v : List Natural)
-      →   prelude.simplePackage { name = "libffi", version = v }
+      →
+        let versionString = prelude.showVersion v in
+      prelude.simplePackage { name = "libffi", version = v }
         ⫽ { pkgUrl =
-              "https://sourceware.org/ftp/libffi/libffi-${prelude.showVersion
-                                                            v}.tar.gz"
+          "https://github.com/libffi/libffi/releases/download/v${versionString}/libffi-${versionString}.tar.gz"
           }
 
 let gdb =
