@@ -4064,6 +4064,7 @@ let lz4 =
                         , environment = Some (prelude.buildEnv cfg)
                         }
                     )
+                , prelude.symlinkBinary "bin/lz4"
                 ]
           }
 
