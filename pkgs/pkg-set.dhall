@@ -1115,12 +1115,12 @@ let p11kit =
 
 let libffi =
         λ(v : List Natural)
-      →
-        let versionString = prelude.showVersion v in
-      prelude.simplePackage { name = "libffi", version = v }
-        ⫽ { pkgUrl =
-          "https://github.com/libffi/libffi/releases/download/v${versionString}/libffi-${versionString}.tar.gz"
-          }
+      → let versionString = prelude.showVersion v
+
+        in    prelude.simplePackage { name = "libffi", version = v }
+            ⫽ { pkgUrl =
+                  "https://github.com/libffi/libffi/releases/download/v${versionString}/libffi-${versionString}.tar.gz"
+              }
 
 let gdb =
         λ(v : List Natural)
@@ -4802,7 +4802,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , gperf [ 3, 1 ]
     , gperftools [ 2, 7 ]
     , giflib [ 5, 1, 4 ]
-    , git [ 2, 25, 0 ]
+    , git [ 2, 25, 1 ]
     , glib { version = [ 2, 63 ], patch = 3 }
     , glib-networking { version = [ 2, 61 ], patch = 2 }
     , glproto [ 1, 4, 17 ]
