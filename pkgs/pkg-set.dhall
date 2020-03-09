@@ -4057,15 +4057,18 @@ let lz4 =
           , configureCommand = prelude.doNothing
           , installCommand =
                 λ(cfg : types.BuildVars)
-              → [ prelude.call
-                    (   prelude.defaultCall
-                      ⫽ { program = "make"
-                        , arguments = [ "PREFIX=${cfg.installDir}", "install" ]
-                        , environment = Some (prelude.buildEnv cfg)
-                        }
-                    )
-                , prelude.symlinkBinary "bin/lz4"
-                ]
+              →   [ prelude.call
+                      (   prelude.defaultCall
+                        ⫽ { program = "make"
+                          , arguments =
+                            [ "PREFIX=${cfg.installDir}", "install" ]
+                          , environment = Some (prelude.buildEnv cfg)
+                          }
+                      )
+                  , prelude.symlinkBinary "bin/lz4"
+                  ]
+                # prelude.symlinkManpages
+                    [ { file = "share/man/man1/lz4.1", section = 1 } ]
           }
 
 let fftw =
