@@ -4687,7 +4687,11 @@ let luarocks =
               "http://luarocks.org/releases/luarocks-${prelude.showVersion
                                                          v}.tar.gz"
           , pkgBuildDeps = [ prelude.unbounded "lua" ]
-          , installCommand = prelude.installWithWrappers [ "luarocks" ]
+          , installCommand =
+                λ(cfg : types.BuildVars)
+              →   prelude.installWithWrappers [ "luarocks" ] cfg
+                # prelude.symlinkManpages
+                    [ { file = "share/man/man1/zstd.1", section = 1 } ]
           }
 
 let star =
