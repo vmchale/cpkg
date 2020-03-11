@@ -4678,6 +4678,8 @@ let zstd =
                     λ(cfg : types.BuildVars)
                   →   prelude.cmakeInstall cfg
                     # [ prelude.symlinkBinary "bin/zstd" ]
+                    # prelude.symlinkManpages
+                        [ { file = "share/man/man1/zstd.1", section = 1 } ]
               }
 
 let luarocks =
@@ -4687,11 +4689,7 @@ let luarocks =
               "http://luarocks.org/releases/luarocks-${prelude.showVersion
                                                          v}.tar.gz"
           , pkgBuildDeps = [ prelude.unbounded "lua" ]
-          , installCommand =
-                λ(cfg : types.BuildVars)
-              →   prelude.installWithWrappers [ "luarocks" ] cfg
-                # prelude.symlinkManpages
-                    [ { file = "share/man/man1/zstd.1", section = 1 } ]
+          , installCommand = prelude.installWithWrappers [ "luarocks" ]
           }
 
 let star =
