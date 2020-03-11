@@ -4977,7 +4977,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , pygobject { version = [ 2, 28 ], patch = 7 }
     , pygtk { version = [ 2, 24 ], patch = 0 }
     , python [ 2, 7, 17 ]
-    , python [ 3, 8, 1 ]
+    , python [ 3, 8, 2 ]
     , qrencode [ 4, 0, 2 ]
     , qt { version = [ 5, 13 ], patch = 0 }
     , quazip [ 0, 8, 1 ]
