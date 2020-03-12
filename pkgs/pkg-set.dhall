@@ -4798,7 +4798,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , fribidi [ 1, 0, 9 ]
     , gawk [ 5, 0, 1 ]
     , gc [ 8, 0, 4 ]
-    , gcc [ 9, 2, 0 ]
+    , gcc [ 9, 3, 0 ]
     , gdb [ 8, 3, 1 ]
     , gdk-pixbuf { version = [ 2, 38 ], patch = 1 }
     , gegl { version = [ 0, 4 ], patch = 16 }
@@ -4987,7 +4987,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , recordproto [ 1, 14, 2 ]
     , renderproto [ 0, 11, 1 ]
     , ruby { version = [ 2, 7 ], patch = 0 }
-    , rustc [ 1, 41, 1 ]
+    , rustc [ 1, 42, 0 ]
     , scour [ 0, 37 ]
     , scrnsaverproto [ 1, 2, 2 ]
     , sdl2 [ 2, 0, 10 ]
