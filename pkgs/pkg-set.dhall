@@ -2685,6 +2685,8 @@ let libarchive =
             , prelude.unbounded "bzip2"
             , prelude.unbounded "zlib"
             ]
+          , installCommand =
+              prelude.installWithBinaries [ "bin/bsdtar", "bin/bsdcpio" ]
           }
 
 let pygobject =
