@@ -5,14 +5,14 @@ jobs:
       - uses: "actions/checkout@v1"
       - uses: "actions/setup-haskell@v1"
         with:
-          cabal-version: "3.0"
-          ghc-version: "8.8.1"
-      - name: "Install dhall"
+          cabal-version: '3.0'
+          ghc-version: '8.8.3'
+      - name: Install dhall
         run: |
           cabal update
           cd "$(mktemp -d /tmp/dhall-XXX)"
           cabal install dhall
-      - name: "Check Dhall"
+      - name: Check Dhall
         run: |
           export PATH=$HOME/.cabal/bin:$PATH
           dhall --file pkgs/pkg-set.dhall
@@ -20,7 +20,7 @@ jobs:
           dhall --file dhall/cpkg-types.dhall
           dhall --file dhall-ci.dhall
           dhall --file haskell-ci.dhall
-name: "Dhall CI"
+name: Dhall CI
 on:
   - push
   - pull_request
