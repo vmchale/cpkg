@@ -4763,7 +4763,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , cimg [ 2, 7, 0 ]
     , clang [ 9, 0, 0 ]
     , clzip [ 1, 11 ]
-    , cmake { version = [ 3, 16 ], patch = 5 }
+    , cmake { version = [ 3, 17 ], patch = 0 }
     , cmark [ 0, 29, 0 ]
     , compositeproto [ 0, 4 ]
     , coreutils [ 8, 31 ]
