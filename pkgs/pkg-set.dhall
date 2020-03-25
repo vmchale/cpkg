@@ -5,12 +5,6 @@ let concatMapSep =
 let concat =
       https://raw.githubusercontent.com/dhall-lang/dhall-lang/dbcf50c27b1592a6acfd38cb3ba976e3a36b74fe/Prelude/Text/concat sha256:731265b0288e8a905ecff95c97333ee2db614c39d69f1514cb8eed9259745fc0
 
-let concatMapText =
-      https://raw.githubusercontent.com/dhall-lang/dhall-lang/9f259cd68870b912fbf2f2a08cd63dc3ccba9dc3/Prelude/Text/concatMap sha256:7a0b0b99643de69d6f94ba49441cd0fa0507cbdfa8ace0295f16097af37e226f
-
-let not =
-      https://raw.githubusercontent.com/dhall-lang/dhall-lang/9f259cd68870b912fbf2f2a08cd63dc3ccba9dc3/Prelude/Bool/not sha256:723df402df24377d8a853afed08d9d69a0a6d86e2e5b2bac8960b0d4756c7dc4
-
 let types =
       ../dhall/cpkg-types.dhall sha256:caef717db41539eb7ded38d8cd676ba998bd387171ba3fd2db7fea9e8ee8f361
 
@@ -4756,7 +4750,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , atk { version = [ 2, 33 ], patch = 3 }
     , ats [ 0, 4, 0 ]
     , autoconf [ 2, 69 ]
-    , automake [ 1, 16, 1 ]
+    , automake [ 1, 16, 2 ]
     , babl { version = [ 0, 1 ], patch = 68 }
     , bash [ 5, 0, 16 ]
     , bash-completion [ 2, 9 ]
@@ -4810,7 +4804,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , gperf [ 3, 1 ]
     , gperftools [ 2, 7 ]
     , giflib [ 5, 1, 4 ]
-    , git [ 2, 25, 2 ]
+    , git [ 2, 26, 0 ]
     , glib { version = [ 2, 64 ], patch = 1 }
     , glib-networking { version = [ 2, 61 ], patch = 2 }
     , glproto [ 1, 4, 17 ]
