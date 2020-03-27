@@ -10,6 +10,7 @@ import qualified Codec.Compression.GZip      as Gzip
 import qualified Codec.Compression.Lzma      as Lzma
 import qualified Codec.Compression.Zstd.Lazy as Zstd
 import qualified Codec.Lzip                  as Lzip
+import           Control.Exception           (throw)
 import qualified Data.ByteString.Lazy        as BSL
 import           System.Directory
 
@@ -34,9 +35,7 @@ getCompressor Zstd = Zstd.decompress
 
 archiveResponse :: TarCompress -> FilePath -> BSL.ByteString -> IO ()
 archiveResponse compressScheme dirName =
-    fmap (either showError id) . Archive.runArchiveM . Archive.unpackToDirLazy dirName . getCompressor compressScheme
-
-    where showError = error . show
+    fmap (either throw id) . Archive.runArchiveM . Archive.unpackToDirLazy dirName . getCompressor compressScheme
 
 zipResponse :: FilePath -> BSL.ByteString -> IO ()
 zipResponse dirName response = withCurrentDirectory dirName $ do
