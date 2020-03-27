@@ -4832,7 +4832,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , inputproto [ 2, 3, 2 ]
     , intltool [ 0, 51, 0 ]
     , itstool [ 2, 0, 6 ]
-    , jemalloc [ 5, 2, 0 ]
+    , jemalloc [ 5, 2, 1 ]
     , joe [ 4, 6 ]
     , json-c { version = [ 0, 13, 1 ], dateStr = "20180305" }
     , kbproto [ 1, 0, 7 ]
