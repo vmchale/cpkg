@@ -4845,7 +4845,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , libassuan [ 2, 5, 3 ]
     , libatomic_ops [ 7, 6, 10 ]
     , libav [ 12, 3 ]
-    , libboost [ 1, 69, 0 ]
+    , libboost [ 1, 72, 0 ]
     , libcds [ 2, 3, 2 ]
     , libcroco { version = [ 0, 6 ], patch = 12 }
     , libdatrie [ 0, 2, 12 ]
