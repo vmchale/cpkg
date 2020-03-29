@@ -97,7 +97,7 @@ library
         filemanip -any,
         network-uri -any,
         megaparsec -any,
-        libarchive >=2.2.1.0,
+        libarchive >=2.2.5.0,
         dir-traverse >=0.2.1.0,
         composition-prelude >=1.5.2.0,
         lzlib >=0.3.0.0,

@@ -35,7 +35,7 @@ getCompressor Zstd = Zstd.decompress
 
 archiveResponse :: TarCompress -> FilePath -> BSL.ByteString -> IO ()
 archiveResponse compressScheme dirName =
-    fmap (either throw id) . Archive.runArchiveM . Archive.unpackToDirLazy dirName . getCompressor compressScheme
+    Archive.throwArchiveM . Archive.unpackToDirLazy dirName . getCompressor compressScheme
 
 zipResponse :: FilePath -> BSL.ByteString -> IO ()
 zipResponse dirName response = withCurrentDirectory dirName $ do
