@@ -1,5 +1,9 @@
 # cpkg
 
+## 0.2.5.0
+
+  * Add `package set:` info to `dhall --version`
+
 ## 0.2.4.2
 
   * Support `aarch64`
