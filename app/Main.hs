@@ -53,7 +53,8 @@ wrapper = info (helper <*> versionInfo <*> userCmd)
     <> header "cpkg - a build tool for C")
 
 versionInfo :: Parser (a -> a)
-versionInfo = infoOption ("cpkg version: " ++ V.showVersion cpkgVersion ++ "\n" ++ "dhall version: " ++ dhallVersionString) (short 'V' <> long "version" <> help "Show version")
+versionInfo = infoOption vStr (short 'V' <> long "version" <> help "Show version")
+    where vStr = "cpkg version: " ++ V.showVersion cpkgVersion ++ "\ndhall version: " ++ dhallVersionString ++ "\npackage set: " ++ T.unpack defaultPackageSetHash
 
 dumpTarget :: Parser DumpTarget
 dumpTarget = hsubparser
