@@ -44,6 +44,8 @@ module Package.C (
                  , parseTriple
                  , parseTripleIO
                  , parseHostIO
+                 -- * Version
+                 , defaultPackageSetHash
                  ) where
 
 import           Package.C.Build

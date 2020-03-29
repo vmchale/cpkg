@@ -6,6 +6,7 @@ module Package.C.PackageSet ( PackageSet (..)
                             , pkgsM
                             , displayPackageSet
                             , displayPackage
+                            , defaultPackageSetHash
                             ) where
 
 import           CPkgPrelude
@@ -22,9 +23,13 @@ import           Package.C.Error
 import           Package.C.Type
 import           Package.C.Type.Tree
 
+defaultPackageSetHash :: T.Text
+defaultPackageSetHash = "sha256:d7a4c0c2794bb50e0e2e5d1721c5c51944ff6ab4887bde10c28b1fe37f07a1b8"
+
 defaultPackageSetDhall :: Maybe String -> IO PackageSetDhall
 defaultPackageSetDhall (Just pkSet) = input auto (T.pack pkSet)
-defaultPackageSetDhall Nothing      = input auto "https://raw.githubusercontent.com/vmchale/cpkg/bcb5f6f9aa4e61d9c809940d6c861ec57df20580/pkgs/pkg-set.dhall sha256:d7a4c0c2794bb50e0e2e5d1721c5c51944ff6ab4887bde10c28b1fe37f07a1b8"
+defaultPackageSetDhall Nothing      = input auto ("https://raw.githubusercontent.com/vmchale/cpkg/bcb5f6f9aa4e61d9c809940d6c861ec57df20580/pkgs/pkg-set.dhall " <> defaultPackageSetHash)
+
 
 displayPackageSet :: Maybe String -> IO ()
 displayPackageSet = putDoc . pretty <=< defaultPackageSetDhall
