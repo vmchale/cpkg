@@ -4982,7 +4982,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , readline [ 8, 0 ]
     , recordproto [ 1, 14, 2 ]
     , renderproto [ 0, 11, 1 ]
-    , ruby { version = [ 2, 7 ], patch = 0 }
+    , ruby { version = [ 2, 7 ], patch = 1 }
     , rustc [ 1, 42, 0 ]
     , scour [ 0, 37 ]
     , scrnsaverproto [ 1, 2, 2 ]
