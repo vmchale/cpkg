@@ -99,15 +99,15 @@ let Command =
       | Patch : { patchContents : Text }
       >
 
-in  { OS = OS
-    , BuildVars = BuildVars
-    , VersionBound = VersionBound
-    , Dep = Dep
-    , Arch = Arch
-    , Manufacturer = Manufacturer
-    , ABI = ABI
-    , TargetTriple = TargetTriple
-    , Command = Command
-    , EnvVar = EnvVar
-    , Proc = Proc
+in  { OS
+    , BuildVars
+    , VersionBound
+    , Dep
+    , Arch
+    , Manufacturer
+    , ABI
+    , TargetTriple
+    , Command
+    , EnvVar
+    , Proc
     }

@@ -5,11 +5,9 @@ let concatMapSep =
 let concat =
       https://raw.githubusercontent.com/dhall-lang/dhall-lang/dbcf50c27b1592a6acfd38cb3ba976e3a36b74fe/Prelude/Text/concat sha256:731265b0288e8a905ecff95c97333ee2db614c39d69f1514cb8eed9259745fc0
 
-let types =
-      ../dhall/cpkg-types.dhall sha256:caef717db41539eb7ded38d8cd676ba998bd387171ba3fd2db7fea9e8ee8f361
+let types = ../dhall/cpkg-types.dhall
 
-let prelude =
-      ../dhall/cpkg-prelude.dhall sha256:908d9f80be0c4bc294b5bb4ae3e3b9245659800c20ea3510518d1b1b649ffaaf
+let prelude = ../dhall/cpkg-prelude.dhall
 
 let gpgPackage =
         λ(x : { name : Text, version : List Natural })
@@ -1028,7 +1026,7 @@ let lua =
                 λ(cfg : types.BuildVars)
               → let cc = prelude.mkCCArg cfg
 
-                let ldflags = (prelude.mkLDFlags cfg.linkDirs).value
+                let ldflags = (prelude.mkLDFlags cfg.linkDirs cfg).value
 
                 let cflags = (prelude.mkCFlags cfg).value
 
@@ -1240,7 +1238,7 @@ let gtk2 =
             →   prelude.defaultPath cfg
               # [ { var = "LDFLAGS"
                   , value =
-                          (prelude.mkLDFlags cfg.linkDirs).value
+                          (prelude.mkLDFlags cfg.linkDirs cfg).value
                       ++  " -lpcre -lfribidi"
                   }
                 , prelude.mkCFlags cfg
@@ -1491,7 +1489,7 @@ let gdk-pixbuf =
                             , prelude.mkPy3Path cfg.linkDirs
                             , prelude.libPath cfg
                             , prelude.mkLDRunPath cfg.linkDirs
-                            , prelude.mkLDFlags cfg.linkDirs
+                            , prelude.mkLDFlags cfg.linkDirs cfg
                             , prelude.mkCFlags cfg
                             ]
                           , arguments = [ "install" ]
@@ -1712,7 +1710,7 @@ let glib =
                             (   [ prelude.mkPkgConfigVar cfg.linkDirs
                                 , { var = "LDFLAGS"
                                   , value =
-                                      (prelude.mkLDFlags cfg.linkDirs).value
+                                      (prelude.mkLDFlags cfg.linkDirs cfg).value
                                   }
                                 , prelude.mkPy3Path cfg.linkDirs
                                 , prelude.libPath cfg
@@ -2320,7 +2318,7 @@ let libsepol =
                             ]
                       , environment = Some
                           (   prelude.defaultPath cfg
-                            # [ prelude.mkLDFlags cfg.linkDirs
+                            # [ prelude.mkLDFlags cfg.linkDirs cfg
                               , prelude.mkCFlags cfg
                               , prelude.mkPkgConfigVar cfg.linkDirs
                               ]
@@ -2359,7 +2357,7 @@ let libselinux =
                             ]
                       , environment = Some
                           (   prelude.defaultPath cfg
-                            # [ prelude.mkLDFlags cfg.linkDirs
+                            # [ prelude.mkLDFlags cfg.linkDirs cfg
                               , prelude.mkCFlags cfg
                               , prelude.mkPkgConfigVar cfg.linkDirs
                               , prelude.libPath cfg
@@ -2998,6 +2996,7 @@ let feh =
                                         ).value} -DPACKAGE=\\\"feh\\\" -DPREFIX=\\\"${cfg.installDir}\\\" -DVERSION=\\\"${prelude.showVersion
                                                                                                                             v}\\\" ${( prelude.mkLDFlags
                                                                                                                                          cfg.linkDirs
+                                                                                                                                         cfg
                                                                                                                                      ).value}"
                             , "feh"
                             ]
@@ -4252,7 +4251,9 @@ let ats =
                                 , arguments =
                                   [ "CFLAGS=${( prelude.mkCFlags cfg
                                               ).value} -I${buildDir}/src/CBOOT/ccomp/runtime -I${buildDir}/src/CBOOT"
-                                  , "LDFLAGS='${( prelude.mkLDFlags cfg.linkDirs
+                                  , "LDFLAGS='${( prelude.mkLDFlags
+                                                    cfg.linkDirs
+                                                    cfg
                                                 ).value}'"
                                   ]
                                 , environment = Some (prelude.buildEnv cfg)
