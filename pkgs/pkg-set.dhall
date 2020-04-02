@@ -29,9 +29,6 @@ let gnupg =
             , prelude.lowerBound { name = "libassuan", lower = [ 2, 5, 0 ] }
             , prelude.lowerBound { name = "libksba", lower = [ 1, 3, 4 ] }
             ]
-          , configureCommand =
-              prelude.configureMkExes
-                [ "tests/inittests", "tests/runtest", "tests/pkits/inittests" ]
           , installCommand = prelude.installWithBinaries [ "bin/gpg" ]
           }
 
@@ -68,7 +65,6 @@ let musl =
               "https://www.musl-libc.org/releases/musl-${prelude.showVersion
                                                            v}.tar.gz"
           , installCommand = prelude.installWithBinaries [ "bin/musl-gcc" ]
-          , configureCommand = prelude.configureMkExes [ "tools/install.sh" ]
           }
 
 let binutils =
@@ -77,7 +73,6 @@ let binutils =
         ⫽ { pkgUrl =
               "https://ftp.wayne.edu/gnu/binutils/binutils-${prelude.showVersion
                                                                v}.tar.xz"
-          , configureCommand = prelude.configureMkExes [ "mkinstalldirs" ]
           , installCommand =
               prelude.installWithBinaries
                 [ "bin/ar"
@@ -95,9 +90,7 @@ let binutils =
 let bison =
         λ(v : List Natural)
       →   prelude.makeGnuExe { name = "bison", version = v }
-        ⫽ { configureCommand =
-              prelude.configureMkExes [ "build-aux/move-if-change" ]
-          , buildCommand =
+        ⫽ { buildCommand =
                 λ(cfg : types.BuildVars)
               → prelude.generalBuild
                   prelude.singleThreaded
@@ -189,10 +182,7 @@ let fltk =
 let gawk =
         λ(v : List Natural)
       →   prelude.makeGnuExe { name = "gawk", version = v }
-        ⫽ { configureCommand =
-              prelude.configureMkExes
-                [ "install-sh", "extension/build-aux/install-sh" ]
-          , installCommand =
+        ⫽ { installCommand =
               prelude.installWithBinaries [ "bin/gawk", "bin/awk" ]
           }
 
@@ -221,7 +211,6 @@ let git =
         ⫽ { pkgUrl =
               "https://mirrors.edge.kernel.org/pub/software/scm/git/git-${prelude.showVersion
                                                                             v}.tar.xz"
-          , configureCommand = prelude.configureMkExes [ "check_bindir" ]
           , installCommand = prelude.installWithBinaries [ "bin/git" ]
           , pkgBuildDeps = [ prelude.unbounded "gettext" ]
           }
@@ -551,8 +540,6 @@ let valgrind =
               →   prelude.installWithBinaries [ "bin/valgrind" ] cfg
                 # prelude.symlinkManpages
                     [ { file = "share/man/man1/pdfgrep.1", section = 1 } ]
-          , configureCommand =
-              prelude.configureMkExes [ "auxprogs/make_or_upd_vgversion_h" ]
           }
 
 let vim =
@@ -673,7 +660,6 @@ let wget =
                                                      v}.tar.gz"
           , pkgDeps = [ prelude.unbounded "gnutls" ]
           , pkgBuildDeps = [ prelude.unbounded "perl" ]
-          , configureCommand = prelude.configureMkExes [ "doc/texi2pod.pl" ]
           , installCommand = prelude.installWithWrappers [ "wget" ]
           }
 
@@ -1175,8 +1161,6 @@ let freetype-shared =
         in    prelude.simplePackage x
             ⫽ { pkgUrl =
                   "https://download.savannah.gnu.org/releases/freetype/freetype-${versionString}.tar.gz"
-              , configureCommand =
-                  prelude.configureMkExes [ "builds/unix/configure" ]
               , pkgSubdir = "freetype-${versionString}"
               , pkgBuildDeps = [ prelude.unbounded "sed" ]
               , installCommand =
@@ -1312,7 +1296,7 @@ let gtk2 =
 let mkXProto =
         λ(name : Text)
       → λ(v : List Natural)
-      →   prelude.simplePackage { name = name, version = v }
+      →   prelude.simplePackage { name, version = v }
         ⫽ { pkgUrl =
               "https://www.x.org/releases/individual/proto/${name}-${prelude.showVersion
                                                                        v}.tar.bz2"
@@ -1473,7 +1457,7 @@ let intltool =
                                   # [ prelude.mkPerlLib
                                         { libDirs = cfg.linkDirs
                                         , perlVersion = [ 5, 30, 1 ]
-                                        , cfg = cfg
+                                        , cfg
                                         }
                                     ]
                                 )
@@ -2107,7 +2091,7 @@ let xorgConfigure =
 let mkXLib =
         λ(name : Text)
       → λ(v : List Natural)
-      →   prelude.simplePackage { name = name, version = v }
+      →   prelude.simplePackage { name, version = v }
         ⫽ { pkgUrl =
               "https://www.x.org/releases/individual/lib/${name}-${prelude.showVersion
                                                                      v}.tar.bz2"
@@ -2129,7 +2113,7 @@ let libXau =
 let mkXUtil =
         λ(name : Text)
       → λ(v : List Natural)
-      →   prelude.simplePackage { name = name, version = v }
+      →   prelude.simplePackage { name, version = v }
         ⫽ { pkgUrl =
               "https://www.x.org/releases/individual/util/${name}-${prelude.showVersion
                                                                       v}.tar.bz2"
@@ -2417,8 +2401,7 @@ let mkGnomeNinja =
 
         let fullVersion = versionString ++ "." ++ Natural/show x.patch
 
-        in    prelude.ninjaPackage
-                { name = name, version = prelude.fullVersion x }
+        in    prelude.ninjaPackage { name, version = prelude.fullVersion x }
             ⫽ { pkgUrl =
                   "http://ftp.gnome.org/pub/gnome/sources/${name}/${versionString}/${name}-${fullVersion}.tar.xz"
               }
@@ -2503,8 +2486,7 @@ let mkGnomeSimple =
 
         let fullVersion = versionString ++ "." ++ Natural/show x.patch
 
-        in    prelude.simplePackage
-                { name = name, version = prelude.fullVersion x }
+        in    prelude.simplePackage { name, version = prelude.fullVersion x }
             ⫽ { pkgUrl =
                   "http://ftp.gnome.org/pub/gnome/sources/${name}/${versionString}/${name}-${fullVersion}.tar.xz"
               }
@@ -2561,7 +2543,6 @@ let graphviz =
       →   prelude.simplePackage { name = "graphviz", version = v }
         ⫽ { pkgUrl =
               "https://graphviz.gitlab.io/pub/graphviz/stable/SOURCES/graphviz.tar.gz"
-          , configureCommand = prelude.configureMkExes [ "iffe" ]
           , pkgDeps = [ prelude.unbounded "perl" ]
           , installCommand = prelude.installWithBinaries [ "bin/dot" ]
           }
@@ -2583,8 +2564,6 @@ let swig =
         ⫽ { pkgUrl =
               "https://downloads.sourceforge.net/swig/swig-${prelude.showVersion
                                                                v}.tar.gz"
-          , configureCommand =
-              prelude.configureMkExes [ "Tools/config/install-sh" ]
           , installCommand = prelude.installWithBinaries [ "bin/swig" ]
           }
 
@@ -2830,8 +2809,7 @@ let mkGimpPackage =
 
         let fullVersion = versionString ++ "." ++ Natural/show x.patch
 
-        in    prelude.simplePackage
-                { name = name, version = prelude.fullVersion x }
+        in    prelude.simplePackage { name, version = prelude.fullVersion x }
             ⫽ { pkgUrl =
                   "https://download.gimp.org/pub/${name}/${versionString}/${name}-${fullVersion}.tar.bz2"
               }
@@ -3090,15 +3068,6 @@ let jemalloc =
         in    prelude.simplePackage { name = "jemalloc", version = v }
             ⫽ { pkgUrl =
                   "https://github.com/jemalloc/jemalloc/releases/download/${versionString}/jemalloc-${versionString}.tar.bz2"
-              , configureCommand =
-                  prelude.configureMkExes
-                    [ "include/jemalloc/internal/private_symbols.sh"
-                    , "include/jemalloc/internal/public_namespace.sh"
-                    , "include/jemalloc/internal/public_unnamespace.sh"
-                    , "include/jemalloc/jemalloc_rename.sh"
-                    , "include/jemalloc/jemalloc_mangle.sh"
-                    , "include/jemalloc/jemalloc.sh"
-                    ]
               }
 
 let gperftools =
@@ -3234,7 +3203,6 @@ let gnome-doc-utils =
             , prelude.unbounded "gettext"
             , prelude.unbounded "python2"
             ]
-          , configureCommand = prelude.configureMkExes [ "py-compile" ]
           }
 
 let itstool =
@@ -3433,8 +3401,6 @@ let libpsl =
         in    prelude.simplePackage { name = "libpsl", version = v }
             ⫽ { pkgUrl =
                   "https://github.com/rockdaboot/libpsl/releases/download/libpsl-${versionString}/libpsl-${versionString}.tar.gz"
-              , configureCommand =
-                  prelude.configureMkExes [ "src/psl-make-dafsa" ]
               }
 
 let krb5 =
@@ -3445,9 +3411,6 @@ let krb5 =
             ⫽ { pkgUrl =
                   "https://kerberos.org/dist/krb5/${versionString}/krb5-${versionString}.tar.gz"
               , pkgSubdir = "krb5-${versionString}/src"
-              , configureCommand =
-                  prelude.configureMkExes
-                    [ "config/move-if-changed", "config/mkinstalldirs" ]
               , pkgBuildDeps = [ prelude.unbounded "bison" ]
               }
 
@@ -3459,8 +3422,6 @@ let vala =
             [ prelude.lowerBound { name = "glib", lower = [ 2, 40, 0 ] }
             , prelude.lowerBound { name = "graphviz", lower = [ 2, 15 ] }
             ]
-          , configureCommand =
-              prelude.configureMkExes [ "build-aux/git-version-gen" ]
           }
 
 let htop =
@@ -3472,8 +3433,6 @@ let htop =
                   "https://hisham.hm/htop/releases/${versionString}/htop-${versionString}.tar.gz"
               , pkgDeps = [ prelude.unbounded "ncurses" ]
               , pkgBuildDeps = [ prelude.unbounded "python3" ]
-              , configureCommand =
-                  prelude.configureMkExes [ "scripts/MakeHeader.py" ]
               , installCommand = prelude.installWithBinaries [ "bin/htop" ]
               }
 
@@ -3507,7 +3466,6 @@ let ctags =
         ⫽ { pkgUrl =
               "http://prdownloads.sourceforge.net/ctags/ctags-${prelude.showVersion
                                                                   v}.tar.gz"
-          , configureCommand = prelude.configureMkExes [ "mkinstalldirs" ]
           , installCommand = prelude.installWithBinaries [ "bin/ctags" ]
           }
 
@@ -3517,7 +3475,6 @@ let tcc =
         ⫽ { pkgUrl =
               "http://download.savannah.gnu.org/releases/tinycc/tcc-${prelude.showVersion
                                                                         v}.tar.bz2"
-          , configureCommand = prelude.configureMkExes [ "texi2pod.pl" ]
           , pkgBuildDeps =
             [ prelude.unbounded "perl", prelude.unbounded "texinfo" ]
           , installCommand = prelude.installWithBinaries [ "bin/tcc" ]
@@ -4327,8 +4284,6 @@ let libav =
       →   prelude.simplePackage { name = "libav", version = v }
         ⫽ { pkgUrl =
               "https://libav.org/releases/libav-${prelude.showVersion v}.tar.xz"
-          , configureCommand =
-              prelude.configureMkExes [ "version.sh", "doc/texi2pod.pl" ]
           , pkgBuildDeps =
             [ prelude.unbounded "nasm", prelude.unbounded "perl" ]
           , installCommand =
