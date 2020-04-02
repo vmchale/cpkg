@@ -4703,7 +4703,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , apr-util [ 1, 6, 1 ]
     , at-spi-atk { version = [ 2, 33 ], patch = 2 }
     , at-spi-core { version = [ 2, 33 ], patch = 2 }
-    , atk { version = [ 2, 33 ], patch = 3 }
+    , atk { version = [ 2, 36 ], patch = 0 }
     , ats [ 0, 4, 0 ]
     , autoconf [ 2, 69 ]
     , automake [ 1, 16, 2 ]
