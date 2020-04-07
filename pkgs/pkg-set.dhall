@@ -4830,7 +4830,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , libpsl [ 0, 21, 0 ]
     , libpthread-stubs [ 0, 4 ]
     , libraw [ 0, 19, 2 ]
-    , librsvg { version = [ 2, 45 ], patch = 8 }
+    , librsvg { version = [ 2, 48 ], patch = 2 }
     , libsamplerate [ 0, 1, 9 ]
     , libsass [ 3, 6, 2 ]
     , libselinux [ 3, 0 ]
