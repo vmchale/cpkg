@@ -1312,7 +1312,7 @@ let gtk2 =
 let mkXProto =
         λ(name : Text)
       → λ(v : List Natural)
-      →   prelude.simplePackage { name = name, version = v }
+      →   prelude.simplePackage { name, version = v }
         ⫽ { pkgUrl =
               "https://www.x.org/releases/individual/proto/${name}-${prelude.showVersion
                                                                        v}.tar.bz2"
@@ -1473,7 +1473,7 @@ let intltool =
                                   # [ prelude.mkPerlLib
                                         { libDirs = cfg.linkDirs
                                         , perlVersion = [ 5, 30, 1 ]
-                                        , cfg = cfg
+                                        , cfg
                                         }
                                     ]
                                 )
@@ -2107,7 +2107,7 @@ let xorgConfigure =
 let mkXLib =
         λ(name : Text)
       → λ(v : List Natural)
-      →   prelude.simplePackage { name = name, version = v }
+      →   prelude.simplePackage { name, version = v }
         ⫽ { pkgUrl =
               "https://www.x.org/releases/individual/lib/${name}-${prelude.showVersion
                                                                      v}.tar.bz2"
@@ -2129,7 +2129,7 @@ let libXau =
 let mkXUtil =
         λ(name : Text)
       → λ(v : List Natural)
-      →   prelude.simplePackage { name = name, version = v }
+      →   prelude.simplePackage { name, version = v }
         ⫽ { pkgUrl =
               "https://www.x.org/releases/individual/util/${name}-${prelude.showVersion
                                                                       v}.tar.bz2"
@@ -2417,8 +2417,7 @@ let mkGnomeNinja =
 
         let fullVersion = versionString ++ "." ++ Natural/show x.patch
 
-        in    prelude.ninjaPackage
-                { name = name, version = prelude.fullVersion x }
+        in    prelude.ninjaPackage { name, version = prelude.fullVersion x }
             ⫽ { pkgUrl =
                   "http://ftp.gnome.org/pub/gnome/sources/${name}/${versionString}/${name}-${fullVersion}.tar.xz"
               }
@@ -2503,8 +2502,7 @@ let mkGnomeSimple =
 
         let fullVersion = versionString ++ "." ++ Natural/show x.patch
 
-        in    prelude.simplePackage
-                { name = name, version = prelude.fullVersion x }
+        in    prelude.simplePackage { name, version = prelude.fullVersion x }
             ⫽ { pkgUrl =
                   "http://ftp.gnome.org/pub/gnome/sources/${name}/${versionString}/${name}-${fullVersion}.tar.xz"
               }
@@ -2830,8 +2828,7 @@ let mkGimpPackage =
 
         let fullVersion = versionString ++ "." ++ Natural/show x.patch
 
-        in    prelude.simplePackage
-                { name = name, version = prelude.fullVersion x }
+        in    prelude.simplePackage { name, version = prelude.fullVersion x }
             ⫽ { pkgUrl =
                   "https://download.gimp.org/pub/${name}/${versionString}/${name}-${fullVersion}.tar.bz2"
               }
@@ -4742,6 +4739,36 @@ let smake =
                     ]
           }
 
+let busybox =
+        λ(v : List Natural)
+      →   prelude.simplePackage { name = "busybox", version = v }
+        ⫽ { pkgUrl =
+              "https://www.busybox.net/downloads/busybox-${prelude.showVersion
+                                                             v}.tar.bz2"
+          , configureCommand =
+                λ(cfg : types.BuildVars)
+              → [ prelude.call
+                    (   prelude.defaultCall
+                      ⫽ { program = "make"
+                        , arguments = [ "defconfig" ]
+                        , environment = Some (prelude.buildEnv cfg)
+                        }
+                    )
+                ]
+          , installCommand =
+                λ(cfg : types.BuildVars)
+              → [ prelude.call
+                    (   prelude.defaultCall
+                      ⫽ { program = "make"
+                        , arguments =
+                          [ "CONFIG_PREFIX=${cfg.installDir}", "install" ]
+                        , environment = Some (prelude.buildEnv cfg)
+                        }
+                    )
+                , prelude.symlinkBinary "bin/busybox"
+                ]
+          }
+
 in  [ alsa-lib [ 1, 1, 9 ]
     , apr [ 1, 7, 0 ]
     , apr-util [ 1, 6, 1 ]
@@ -4757,6 +4784,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , binutils [ 2, 33, 1 ]
     , bison [ 3, 5 ]
     , blas [ 3, 8, 0 ]
+    , busybox [ 1, 31, 1 ]
     , bzip2 [ 1, 0, 8 ]
     , cairo [ 1, 16, 0 ]
     , chickenScheme [ 5, 0, 0 ]
