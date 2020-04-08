@@ -17,8 +17,7 @@ let mapOptional =
 let not =
       https://raw.githubusercontent.com/dhall-lang/dhall-lang/9f259cd68870b912fbf2f2a08cd63dc3ccba9dc3/Prelude/Bool/not sha256:723df402df24377d8a853afed08d9d69a0a6d86e2e5b2bac8960b0d4756c7dc4
 
-let types =
-      ../dhall/cpkg-types.dhall sha256:caef717db41539eb7ded38d8cd676ba998bd387171ba3fd2db7fea9e8ee8f361
+let types = ../dhall/cpkg-types.dhall
 
 let showVersion = concatMapSep "." Natural Natural/show
 
@@ -170,19 +169,17 @@ let defaultCall =
 
 let call = types.Command.Call
 
-let symlinkBinary = λ(file : Text) → types.Command.SymlinkBinary { file = file }
+let symlinkBinary = λ(file : Text) → types.Command.SymlinkBinary { file }
 
 let symlinkManpage = types.Command.SymlinkManpage
 
 let symlink =
         λ(tgt : Text)
       → λ(lnk : Text)
-      → types.Command.Symlink { tgt = tgt, linkName = lnk }
+      → types.Command.Symlink { tgt, linkName = lnk }
 
 let copyFile =
-        λ(src : Text)
-      → λ(dest : Text)
-      → types.Command.CopyFile { src = src, dest = dest }
+      λ(src : Text) → λ(dest : Text) → types.Command.CopyFile { src, dest }
 
 let symlinkBinaries = map Text types.Command symlinkBinary
 
@@ -234,6 +231,7 @@ let isMac =
 let mkLDFlagsGeneral =
         λ(libDirs : List Text)
       → λ(linkLibs : List Text)
+      → λ(cfg : types.BuildVars)
       → let flag0 = concatMapSep " " Text (λ(dir : Text) → "-L${dir}") libDirs
 
         let flag1 = concatMapText Text (λ(dir : Text) → " -l${dir}") linkLibs
@@ -241,7 +239,9 @@ let mkLDFlagsGeneral =
         let flag2 =
               concatMapText
                 Text
-                (λ(dir : Text) → " -Wl,-rpath-link,${dir}")
+                (   λ(dir : Text)
+                  → if isMac cfg.buildOS then "" else " -Wl,-rpath-link,${dir}"
+                )
                 libDirs
 
         in  { var = "LDFLAGS", value = flag0 ++ flag1 ++ flag2 }
@@ -382,13 +382,13 @@ let configEnv =
         λ(linkLibs : List Text)
       → λ(cfg : types.BuildVars)
       →   defaultPath cfg
-        # [ mkLDFlagsGeneral cfg.linkDirs linkLibs
+        # [ mkLDFlagsGeneral cfg.linkDirs linkLibs cfg
           , mkCFlags cfg
           , mkPkgConfigVar (cfg.shareDirs # cfg.linkDirs)
           , libPath cfg
           , mkLDRunPath cfg.linkDirs
           , mkPerlLib
-              { libDirs = cfg.linkDirs, perlVersion = [ 5, 30, 1 ], cfg = cfg }
+              { libDirs = cfg.linkDirs, perlVersion = [ 5, 30, 1 ], cfg }
           ]
 
 let buildEnv =
@@ -396,9 +396,9 @@ let buildEnv =
       →   defaultPath cfg
         # [ mkPkgConfigVar (cfg.shareDirs # cfg.linkDirs)
           , mkPerlLib
-              { libDirs = cfg.linkDirs, perlVersion = [ 5, 30, 1 ], cfg = cfg }
+              { libDirs = cfg.linkDirs, perlVersion = [ 5, 30, 1 ], cfg }
           , mkLDPath cfg.linkDirs
-          , mkLDFlagsGeneral cfg.linkDirs ([] : List Text)
+          , mkLDFlagsGeneral cfg.linkDirs ([] : List Text) cfg
           ]
 
 let configSome =
@@ -429,7 +429,7 @@ let generalConfigure =
 
         in  [ call
                 (   defaultCall
-                  ⫽ { program = program
+                  ⫽ { program
                     , arguments =
                         modifyProg
                           (   modifyArgs [ "--prefix=${cfg.installDir}" ]
@@ -471,7 +471,7 @@ let configureMkExesExtraFlags =
 
 let configureMkExes =
         λ(bins : List Text)
-      → configureMkExesExtraFlags { bins = bins, extraFlags = [] : List Text }
+      → configureMkExesExtraFlags { bins, extraFlags = [] : List Text }
 
 let generalBuild =
         λ(cpus : types.BuildVars → Natural)
@@ -826,7 +826,7 @@ let mesonEnv =
               , mkPy3Path cfg.linkDirs
               , libPath cfg
               , mkLDRunPath cfg.linkDirs
-              , mkLDFlags cfg.linkDirs
+              , mkLDFlags cfg.linkDirs cfg
               , mkCFlags cfg
               , mkLDPreload cfg.preloadLibs
               ]
@@ -878,7 +878,7 @@ let ninjaBuildWith =
                             , mkPy3Path cfg.linkDirs
                             , libPath cfg
                             , mkLDRunPath cfg.linkDirs
-                            , mkLDFlagsGeneral cfg.linkDirs linkLibs
+                            , mkLDFlagsGeneral cfg.linkDirs linkLibs cfg
                             , mkCFlags cfg
                             ]
                           # defaultPath cfg
@@ -901,7 +901,7 @@ let ninjaInstall =
                         , mkPy3Path cfg.linkDirs
                         , libPath cfg
                         , mkLDRunPath cfg.linkDirs
-                        , mkLDFlags cfg.linkDirs
+                        , mkLDFlags cfg.linkDirs cfg
                         , mkCFlags cfg
                         ]
                       # defaultPath cfg
@@ -1074,17 +1074,14 @@ let preloadEnv =
       → λ(cfg : types.BuildVars)
       → Some
           (   defaultPath cfg
-            # [ mkLDFlags cfg.linkDirs
+            # [ mkLDFlags cfg.linkDirs cfg
               , mkCFlags cfg
               , mkPkgConfigVar cfg.linkDirs
               , libPath cfg
               , mkXdgDataDirs cfg.shareDirs
               , mkLDPreload cfg.preloadLibs
               , mkPerlLib
-                  { libDirs = cfg.linkDirs
-                  , perlVersion = [ 5, 30, 1 ]
-                  , cfg = cfg
-                  }
+                  { libDirs = cfg.linkDirs, perlVersion = [ 5, 30, 1 ], cfg }
               ]
           )
 
@@ -1228,123 +1225,123 @@ let installPrefix =
             )
         ]
 
-in  { showVersion = showVersion
-    , makeGnuLibrary = makeGnuLibrary
-    , makeGnuExe = makeGnuExe
-    , defaultPackage = defaultPackage
-    , unbounded = unbounded
-    , lowerBound = lowerBound
-    , upperBound = upperBound
-    , makeExe = makeExe
-    , printArch = printArch
-    , printManufacturer = printManufacturer
-    , printOS = printOS
-    , printTargetTriple = printTargetTriple
-    , call = call
-    , mkExe = mkExe
-    , mkExes = mkExes
-    , createDir = createDir
-    , mkHost = mkHost
-    , defaultConfigure = defaultConfigure
-    , defaultBuild = defaultBuild
-    , defaultInstall = defaultInstall
-    , cmakeConfigure = cmakeConfigure
-    , cmakeConfigureGeneral = cmakeConfigureGeneral
-    , cmakeConfigureWithFlags = cmakeConfigureWithFlags
-    , cmakeBuild = cmakeBuild
-    , cmakeInstall = cmakeInstall
-    , cmakePackage = cmakePackage
-    , autogenConfigure = autogenConfigure
-    , defaultCall = defaultCall
-    , defaultEnv = defaultEnv
-    , maybeAppend = maybeAppend
-    , mkCFlags = mkCFlags
-    , mkLDFlags = mkLDFlags
-    , mkLDFlagsGeneral = mkLDFlagsGeneral
-    , mkLDPath = mkLDPath
-    , mkLDRunPath = mkLDRunPath
-    , mkStaPath = mkStaPath
-    , libPath = libPath
-    , mkPyPath = mkPyPath
-    , mkPy3Path = mkPy3Path
-    , mkIncludePath = mkIncludePath
-    , isUnix = isUnix
-    , defaultPath = defaultPath
-    , simplePackage = simplePackage
-    , symlinkBinary = symlinkBinary
-    , symlinkManpage = symlinkManpage
-    , symlink = symlink
-    , symlinkBinaries = symlinkBinaries
-    , symlinkManpages = symlinkManpages
-    , installWithBinaries = installWithBinaries
-    , installWithManpages = installWithManpages
-    , configureMkExes = configureMkExes
-    , generalConfigure = generalConfigure
-    , configureWithFlags = configureWithFlags
-    , configureMkExesExtraFlags = configureMkExesExtraFlags
-    , writeFile = writeFile
-    , cmakeInstallWithBinaries = cmakeInstallWithBinaries
-    , copyFile = copyFile
-    , mkPathVar = mkPathVar
-    , mkPkgConfigVar = mkPkgConfigVar
-    , fullVersion = fullVersion
-    , mesonConfigure = mesonConfigure
-    , mesonConfigureGeneral = mesonConfigureGeneral
-    , mesonEnv = mesonEnv
-    , mesonConfigureWithFlags = mesonConfigureWithFlags
-    , ninjaBuild = ninjaBuild
-    , ninjaInstall = ninjaInstall
-    , ninjaInstallWithPkgConfig = ninjaInstallWithPkgConfig
-    , ninjaPackage = ninjaPackage
-    , doNothing = doNothing
-    , perlConfigure = perlConfigure
-    , copyFiles = copyFiles
-    , mkPerlLib = mkPerlLib
-    , mesonMoves = mesonMoves
-    , python3Build = python3Build
-    , python3Install = python3Install
-    , python3Package = python3Package
-    , mkLDPreload = mkLDPreload
-    , configureLinkExtraLibs = configureLinkExtraLibs
-    , mkXdgDataDirs = mkXdgDataDirs
-    , buildWith = buildWith
-    , installWith = installWith
-    , mkCCVar = mkCCVar
-    , squishVersion = squishVersion
-    , osCfg = osCfg
-    , archCfg = archCfg
-    , mkCCArg = mkCCArg
-    , mkFRCArg = mkFRCArg
-    , mesonCfgFile = mesonCfgFile
-    , python2Package = python2Package
-    , configEnv = configEnv
-    , configSome = configSome
-    , preloadEnv = preloadEnv
-    , preloadCfg = preloadCfg
-    , printEnvVar = printEnvVar
-    , mkPyWrapper = mkPyWrapper
-    , mkPy3Wrapper = mkPy3Wrapper
-    , mkPy2Wrapper = mkPy2Wrapper
-    , installWithPyWrappers = installWithPyWrappers
-    , installWithPy3Wrappers = installWithPy3Wrappers
-    , cmakeConfigureNinja = cmakeConfigureNinja
-    , mkLDPathWrapper = mkLDPathWrapper
-    , mkLDPathWrappers = mkLDPathWrappers
-    , installWithWrappers = installWithWrappers
-    , cmakeEnv = cmakeEnv
-    , cmakeSome = cmakeSome
-    , underscoreVersion = underscoreVersion
-    , isX64 = isX64
-    , configWithEnv = configWithEnv
-    , buildEnv = buildEnv
-    , patch = patch
-    , mkAclocalPath = mkAclocalPath
-    , configureWithPatches = configureWithPatches
-    , configureWithPatch = configureWithPatch
-    , installPrefix = installPrefix
-    , unixPath = unixPath
-    , generalBuild = generalBuild
-    , defaultCpus = defaultCpus
-    , singleThreaded = singleThreaded
-    , libSuffix = libSuffix
+in  { showVersion
+    , makeGnuLibrary
+    , makeGnuExe
+    , defaultPackage
+    , unbounded
+    , lowerBound
+    , upperBound
+    , makeExe
+    , printArch
+    , printManufacturer
+    , printOS
+    , printTargetTriple
+    , call
+    , mkExe
+    , mkExes
+    , createDir
+    , mkHost
+    , defaultConfigure
+    , defaultBuild
+    , defaultInstall
+    , cmakeConfigure
+    , cmakeConfigureGeneral
+    , cmakeConfigureWithFlags
+    , cmakeBuild
+    , cmakeInstall
+    , cmakePackage
+    , autogenConfigure
+    , defaultCall
+    , defaultEnv
+    , maybeAppend
+    , mkCFlags
+    , mkLDFlags
+    , mkLDFlagsGeneral
+    , mkLDPath
+    , mkLDRunPath
+    , mkStaPath
+    , libPath
+    , mkPyPath
+    , mkPy3Path
+    , mkIncludePath
+    , isUnix
+    , defaultPath
+    , simplePackage
+    , symlinkBinary
+    , symlinkManpage
+    , symlink
+    , symlinkBinaries
+    , symlinkManpages
+    , installWithBinaries
+    , installWithManpages
+    , configureMkExes
+    , generalConfigure
+    , configureWithFlags
+    , configureMkExesExtraFlags
+    , writeFile
+    , cmakeInstallWithBinaries
+    , copyFile
+    , mkPathVar
+    , mkPkgConfigVar
+    , fullVersion
+    , mesonConfigure
+    , mesonConfigureGeneral
+    , mesonEnv
+    , mesonConfigureWithFlags
+    , ninjaBuild
+    , ninjaInstall
+    , ninjaInstallWithPkgConfig
+    , ninjaPackage
+    , doNothing
+    , perlConfigure
+    , copyFiles
+    , mkPerlLib
+    , mesonMoves
+    , python3Build
+    , python3Install
+    , python3Package
+    , mkLDPreload
+    , configureLinkExtraLibs
+    , mkXdgDataDirs
+    , buildWith
+    , installWith
+    , mkCCVar
+    , squishVersion
+    , osCfg
+    , archCfg
+    , mkCCArg
+    , mkFRCArg
+    , mesonCfgFile
+    , python2Package
+    , configEnv
+    , configSome
+    , preloadEnv
+    , preloadCfg
+    , printEnvVar
+    , mkPyWrapper
+    , mkPy3Wrapper
+    , mkPy2Wrapper
+    , installWithPyWrappers
+    , installWithPy3Wrappers
+    , cmakeConfigureNinja
+    , mkLDPathWrapper
+    , mkLDPathWrappers
+    , installWithWrappers
+    , cmakeEnv
+    , cmakeSome
+    , underscoreVersion
+    , isX64
+    , configWithEnv
+    , buildEnv
+    , patch
+    , mkAclocalPath
+    , configureWithPatches
+    , configureWithPatch
+    , installPrefix
+    , unixPath
+    , generalBuild
+    , defaultCpus
+    , singleThreaded
+    , libSuffix
     }

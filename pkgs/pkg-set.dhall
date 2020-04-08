@@ -5,11 +5,9 @@ let concatMapSep =
 let concat =
       https://raw.githubusercontent.com/dhall-lang/dhall-lang/dbcf50c27b1592a6acfd38cb3ba976e3a36b74fe/Prelude/Text/concat sha256:731265b0288e8a905ecff95c97333ee2db614c39d69f1514cb8eed9259745fc0
 
-let types =
-      ../dhall/cpkg-types.dhall sha256:caef717db41539eb7ded38d8cd676ba998bd387171ba3fd2db7fea9e8ee8f361
+let types = ../dhall/cpkg-types.dhall
 
-let prelude =
-      ../dhall/cpkg-prelude.dhall sha256:908d9f80be0c4bc294b5bb4ae3e3b9245659800c20ea3510518d1b1b649ffaaf
+let prelude = ../dhall/cpkg-prelude.dhall
 
 let gpgPackage =
         λ(x : { name : Text, version : List Natural })
@@ -29,9 +27,6 @@ let gnupg =
             , prelude.lowerBound { name = "libassuan", lower = [ 2, 5, 0 ] }
             , prelude.lowerBound { name = "libksba", lower = [ 1, 3, 4 ] }
             ]
-          , configureCommand =
-              prelude.configureMkExes
-                [ "tests/inittests", "tests/runtest", "tests/pkits/inittests" ]
           , installCommand = prelude.installWithBinaries [ "bin/gpg" ]
           }
 
@@ -68,7 +63,6 @@ let musl =
               "https://www.musl-libc.org/releases/musl-${prelude.showVersion
                                                            v}.tar.gz"
           , installCommand = prelude.installWithBinaries [ "bin/musl-gcc" ]
-          , configureCommand = prelude.configureMkExes [ "tools/install.sh" ]
           }
 
 let binutils =
@@ -77,7 +71,6 @@ let binutils =
         ⫽ { pkgUrl =
               "https://ftp.wayne.edu/gnu/binutils/binutils-${prelude.showVersion
                                                                v}.tar.xz"
-          , configureCommand = prelude.configureMkExes [ "mkinstalldirs" ]
           , installCommand =
               prelude.installWithBinaries
                 [ "bin/ar"
@@ -95,9 +88,7 @@ let binutils =
 let bison =
         λ(v : List Natural)
       →   prelude.makeGnuExe { name = "bison", version = v }
-        ⫽ { configureCommand =
-              prelude.configureMkExes [ "build-aux/move-if-change" ]
-          , buildCommand =
+        ⫽ { buildCommand =
                 λ(cfg : types.BuildVars)
               → prelude.generalBuild
                   prelude.singleThreaded
@@ -189,10 +180,7 @@ let fltk =
 let gawk =
         λ(v : List Natural)
       →   prelude.makeGnuExe { name = "gawk", version = v }
-        ⫽ { configureCommand =
-              prelude.configureMkExes
-                [ "install-sh", "extension/build-aux/install-sh" ]
-          , installCommand =
+        ⫽ { installCommand =
               prelude.installWithBinaries [ "bin/gawk", "bin/awk" ]
           }
 
@@ -221,7 +209,6 @@ let git =
         ⫽ { pkgUrl =
               "https://mirrors.edge.kernel.org/pub/software/scm/git/git-${prelude.showVersion
                                                                             v}.tar.xz"
-          , configureCommand = prelude.configureMkExes [ "check_bindir" ]
           , installCommand = prelude.installWithBinaries [ "bin/git" ]
           , pkgBuildDeps = [ prelude.unbounded "gettext" ]
           }
@@ -551,8 +538,6 @@ let valgrind =
               →   prelude.installWithBinaries [ "bin/valgrind" ] cfg
                 # prelude.symlinkManpages
                     [ { file = "share/man/man1/pdfgrep.1", section = 1 } ]
-          , configureCommand =
-              prelude.configureMkExes [ "auxprogs/make_or_upd_vgversion_h" ]
           }
 
 let vim =
@@ -673,7 +658,6 @@ let wget =
                                                      v}.tar.gz"
           , pkgDeps = [ prelude.unbounded "gnutls" ]
           , pkgBuildDeps = [ prelude.unbounded "perl" ]
-          , configureCommand = prelude.configureMkExes [ "doc/texi2pod.pl" ]
           , installCommand = prelude.installWithWrappers [ "wget" ]
           }
 
@@ -1042,7 +1026,7 @@ let lua =
                 λ(cfg : types.BuildVars)
               → let cc = prelude.mkCCArg cfg
 
-                let ldflags = (prelude.mkLDFlags cfg.linkDirs).value
+                let ldflags = (prelude.mkLDFlags cfg.linkDirs cfg).value
 
                 let cflags = (prelude.mkCFlags cfg).value
 
@@ -1175,8 +1159,6 @@ let freetype-shared =
         in    prelude.simplePackage x
             ⫽ { pkgUrl =
                   "https://download.savannah.gnu.org/releases/freetype/freetype-${versionString}.tar.gz"
-              , configureCommand =
-                  prelude.configureMkExes [ "builds/unix/configure" ]
               , pkgSubdir = "freetype-${versionString}"
               , pkgBuildDeps = [ prelude.unbounded "sed" ]
               , installCommand =
@@ -1256,7 +1238,7 @@ let gtk2 =
             →   prelude.defaultPath cfg
               # [ { var = "LDFLAGS"
                   , value =
-                          (prelude.mkLDFlags cfg.linkDirs).value
+                          (prelude.mkLDFlags cfg.linkDirs cfg).value
                       ++  " -lpcre -lfribidi"
                   }
                 , prelude.mkCFlags cfg
@@ -1507,7 +1489,7 @@ let gdk-pixbuf =
                             , prelude.mkPy3Path cfg.linkDirs
                             , prelude.libPath cfg
                             , prelude.mkLDRunPath cfg.linkDirs
-                            , prelude.mkLDFlags cfg.linkDirs
+                            , prelude.mkLDFlags cfg.linkDirs cfg
                             , prelude.mkCFlags cfg
                             ]
                           , arguments = [ "install" ]
@@ -1728,7 +1710,7 @@ let glib =
                             (   [ prelude.mkPkgConfigVar cfg.linkDirs
                                 , { var = "LDFLAGS"
                                   , value =
-                                      (prelude.mkLDFlags cfg.linkDirs).value
+                                      (prelude.mkLDFlags cfg.linkDirs cfg).value
                                   }
                                 , prelude.mkPy3Path cfg.linkDirs
                                 , prelude.libPath cfg
@@ -2336,7 +2318,7 @@ let libsepol =
                             ]
                       , environment = Some
                           (   prelude.defaultPath cfg
-                            # [ prelude.mkLDFlags cfg.linkDirs
+                            # [ prelude.mkLDFlags cfg.linkDirs cfg
                               , prelude.mkCFlags cfg
                               , prelude.mkPkgConfigVar cfg.linkDirs
                               ]
@@ -2375,7 +2357,7 @@ let libselinux =
                             ]
                       , environment = Some
                           (   prelude.defaultPath cfg
-                            # [ prelude.mkLDFlags cfg.linkDirs
+                            # [ prelude.mkLDFlags cfg.linkDirs cfg
                               , prelude.mkCFlags cfg
                               , prelude.mkPkgConfigVar cfg.linkDirs
                               , prelude.libPath cfg
@@ -2559,7 +2541,6 @@ let graphviz =
       →   prelude.simplePackage { name = "graphviz", version = v }
         ⫽ { pkgUrl =
               "https://graphviz.gitlab.io/pub/graphviz/stable/SOURCES/graphviz.tar.gz"
-          , configureCommand = prelude.configureMkExes [ "iffe" ]
           , pkgDeps = [ prelude.unbounded "perl" ]
           , installCommand = prelude.installWithBinaries [ "bin/dot" ]
           }
@@ -2581,8 +2562,6 @@ let swig =
         ⫽ { pkgUrl =
               "https://downloads.sourceforge.net/swig/swig-${prelude.showVersion
                                                                v}.tar.gz"
-          , configureCommand =
-              prelude.configureMkExes [ "Tools/config/install-sh" ]
           , installCommand = prelude.installWithBinaries [ "bin/swig" ]
           }
 
@@ -3017,6 +2996,7 @@ let feh =
                                         ).value} -DPACKAGE=\\\"feh\\\" -DPREFIX=\\\"${cfg.installDir}\\\" -DVERSION=\\\"${prelude.showVersion
                                                                                                                             v}\\\" ${( prelude.mkLDFlags
                                                                                                                                          cfg.linkDirs
+                                                                                                                                         cfg
                                                                                                                                      ).value}"
                             , "feh"
                             ]
@@ -3087,15 +3067,6 @@ let jemalloc =
         in    prelude.simplePackage { name = "jemalloc", version = v }
             ⫽ { pkgUrl =
                   "https://github.com/jemalloc/jemalloc/releases/download/${versionString}/jemalloc-${versionString}.tar.bz2"
-              , configureCommand =
-                  prelude.configureMkExes
-                    [ "include/jemalloc/internal/private_symbols.sh"
-                    , "include/jemalloc/internal/public_namespace.sh"
-                    , "include/jemalloc/internal/public_unnamespace.sh"
-                    , "include/jemalloc/jemalloc_rename.sh"
-                    , "include/jemalloc/jemalloc_mangle.sh"
-                    , "include/jemalloc/jemalloc.sh"
-                    ]
               }
 
 let gperftools =
@@ -3231,7 +3202,6 @@ let gnome-doc-utils =
             , prelude.unbounded "gettext"
             , prelude.unbounded "python2"
             ]
-          , configureCommand = prelude.configureMkExes [ "py-compile" ]
           }
 
 let itstool =
@@ -3430,8 +3400,6 @@ let libpsl =
         in    prelude.simplePackage { name = "libpsl", version = v }
             ⫽ { pkgUrl =
                   "https://github.com/rockdaboot/libpsl/releases/download/libpsl-${versionString}/libpsl-${versionString}.tar.gz"
-              , configureCommand =
-                  prelude.configureMkExes [ "src/psl-make-dafsa" ]
               }
 
 let krb5 =
@@ -3442,9 +3410,6 @@ let krb5 =
             ⫽ { pkgUrl =
                   "https://kerberos.org/dist/krb5/${versionString}/krb5-${versionString}.tar.gz"
               , pkgSubdir = "krb5-${versionString}/src"
-              , configureCommand =
-                  prelude.configureMkExes
-                    [ "config/move-if-changed", "config/mkinstalldirs" ]
               , pkgBuildDeps = [ prelude.unbounded "bison" ]
               }
 
@@ -3456,8 +3421,6 @@ let vala =
             [ prelude.lowerBound { name = "glib", lower = [ 2, 40, 0 ] }
             , prelude.lowerBound { name = "graphviz", lower = [ 2, 15 ] }
             ]
-          , configureCommand =
-              prelude.configureMkExes [ "build-aux/git-version-gen" ]
           }
 
 let htop =
@@ -3469,8 +3432,6 @@ let htop =
                   "https://hisham.hm/htop/releases/${versionString}/htop-${versionString}.tar.gz"
               , pkgDeps = [ prelude.unbounded "ncurses" ]
               , pkgBuildDeps = [ prelude.unbounded "python3" ]
-              , configureCommand =
-                  prelude.configureMkExes [ "scripts/MakeHeader.py" ]
               , installCommand = prelude.installWithBinaries [ "bin/htop" ]
               }
 
@@ -3504,7 +3465,6 @@ let ctags =
         ⫽ { pkgUrl =
               "http://prdownloads.sourceforge.net/ctags/ctags-${prelude.showVersion
                                                                   v}.tar.gz"
-          , configureCommand = prelude.configureMkExes [ "mkinstalldirs" ]
           , installCommand = prelude.installWithBinaries [ "bin/ctags" ]
           }
 
@@ -3514,7 +3474,6 @@ let tcc =
         ⫽ { pkgUrl =
               "http://download.savannah.gnu.org/releases/tinycc/tcc-${prelude.showVersion
                                                                         v}.tar.bz2"
-          , configureCommand = prelude.configureMkExes [ "texi2pod.pl" ]
           , pkgBuildDeps =
             [ prelude.unbounded "perl", prelude.unbounded "texinfo" ]
           , installCommand = prelude.installWithBinaries [ "bin/tcc" ]
@@ -4292,7 +4251,9 @@ let ats =
                                 , arguments =
                                   [ "CFLAGS=${( prelude.mkCFlags cfg
                                               ).value} -I${buildDir}/src/CBOOT/ccomp/runtime -I${buildDir}/src/CBOOT"
-                                  , "LDFLAGS='${( prelude.mkLDFlags cfg.linkDirs
+                                  , "LDFLAGS='${( prelude.mkLDFlags
+                                                    cfg.linkDirs
+                                                    cfg
                                                 ).value}'"
                                   ]
                                 , environment = Some (prelude.buildEnv cfg)
@@ -4324,8 +4285,6 @@ let libav =
       →   prelude.simplePackage { name = "libav", version = v }
         ⫽ { pkgUrl =
               "https://libav.org/releases/libav-${prelude.showVersion v}.tar.xz"
-          , configureCommand =
-              prelude.configureMkExes [ "version.sh", "doc/texi2pod.pl" ]
           , pkgBuildDeps =
             [ prelude.unbounded "nasm", prelude.unbounded "perl" ]
           , installCommand =
@@ -4774,7 +4733,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , apr-util [ 1, 6, 1 ]
     , at-spi-atk { version = [ 2, 33 ], patch = 2 }
     , at-spi-core { version = [ 2, 33 ], patch = 2 }
-    , atk { version = [ 2, 33 ], patch = 3 }
+    , atk { version = [ 2, 36 ], patch = 0 }
     , ats [ 0, 4, 0 ]
     , autoconf [ 2, 69 ]
     , automake [ 1, 16, 2 ]
@@ -4902,7 +4861,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , libpsl [ 0, 21, 0 ]
     , libpthread-stubs [ 0, 4 ]
     , libraw [ 0, 19, 2 ]
-    , librsvg { version = [ 2, 45 ], patch = 8 }
+    , librsvg { version = [ 2, 48 ], patch = 2 }
     , libsamplerate [ 0, 1, 9 ]
     , libsass [ 3, 6, 2 ]
     , libselinux [ 3, 0 ]
