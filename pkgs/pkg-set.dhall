@@ -4719,7 +4719,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , cimg [ 2, 7, 0 ]
     , clang [ 9, 0, 0 ]
     , clzip [ 1, 11 ]
-    , cmake { version = [ 3, 17 ], patch = 0 }
+    , cmake { version = [ 3, 17 ], patch = 1 }
     , cmark [ 0, 29, 0 ]
     , compositeproto [ 0, 4 ]
     , coreutils [ 8, 31 ]
@@ -4761,7 +4761,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , gperftools [ 2, 7 ]
     , giflib [ 5, 1, 4 ]
     , git [ 2, 26, 0 ]
-    , glib { version = [ 2, 64 ], patch = 1 }
+    , glib { version = [ 2, 64 ], patch = 2 }
     , glib-networking { version = [ 2, 61 ], patch = 2 }
     , glproto [ 1, 4, 17 ]
     , glu [ 9, 0, 0 ]
@@ -4830,7 +4830,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , libpsl [ 0, 21, 0 ]
     , libpthread-stubs [ 0, 4 ]
     , libraw [ 0, 19, 2 ]
-    , librsvg { version = [ 2, 48 ], patch = 2 }
+    , librsvg { version = [ 2, 48 ], patch = 3 }
     , libsamplerate [ 0, 1, 9 ]
     , libsass [ 3, 6, 2 ]
     , libselinux [ 3, 0 ]
@@ -4916,7 +4916,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , pcre [ 8, 44 ]
     , pcre2 [ 10, 33 ]
     , pdfgrep [ 2, 1, 2 ]
-    , perl5 [ 5, 30, 1 ]
+    , perl5 [ 5, 30, 2 ]
     , phash [ 0, 9, 6 ]
     , pixman [ 0, 38, 4 ]
     , pkg-config [ 0, 29, 2 ]
