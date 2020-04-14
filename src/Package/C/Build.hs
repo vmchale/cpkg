@@ -27,6 +27,16 @@ import           System.Process.Ext
 envVarSplit :: EnvVar -> (String, String)
 envVarSplit (EnvVar ev x) = (ev, x)
 
+replaceSymlink :: FilePath -> FilePath -> IO ()
+replaceSymlink actual link = do
+    bf <- doesFileExist link
+    if bf
+        then removeFile link
+        else do
+            bd <- doesDirectoryExist link
+            when bd $ removeDirectoryLink link
+    createFileLink actual link
+
 stepToProc :: FilePath -- ^ Package build directory
            -> FilePath -- ^ Package install directory
            -> Command
@@ -46,18 +56,18 @@ stepToProc _ p (SymlinkBinary file') = do
     binDir <- (</> "bin") <$> globalPkgDir
     let actualBin = p </> file'
     liftIO $ createDirectoryIfMissing True binDir
-    liftIO $ createFileLink actualBin (binDir </> takeFileName file')
+    liftIO $ replaceSymlink actualBin (binDir </> takeFileName file')
 stepToProc _ p (SymlinkManpage file' sec) = do
     manDir <- (</> ("share" </> "man" </> "man" ++ show sec)) <$> globalPkgDir
     let actualMan = p </> file'
     liftIO $ createDirectoryIfMissing True manDir
-    liftIO $ createFileLink actualMan (manDir </> takeFileName file')
+    liftIO $ replaceSymlink actualMan (manDir </> takeFileName file')
 stepToProc _ p (Symlink tgt' lnk) = do
     let linkAbs = p </> lnk
     putDiagnostic ("Creating directory" ++ takeDirectory linkAbs ++ "...")
     liftIO $ createDirectoryIfMissing True (takeDirectory linkAbs)
     -- TODO: diagnostics for symlinks
-    liftIO $ createFileLink (p </> tgt') linkAbs
+    liftIO $ replaceSymlink (p </> tgt') linkAbs
 stepToProc dir' _ (Write out fp) = do
     let fpAbs = dir' </> fp
     putDiagnostic ("Writing\n" ++ T.unpack out ++ "\n in file" ++ fpAbs)
