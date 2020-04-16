@@ -4791,7 +4791,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , gperf [ 3, 1 ]
     , gperftools [ 2, 7 ]
     , giflib [ 5, 1, 4 ]
-    , git [ 2, 26, 0 ]
+    , git [ 2, 26, 1 ]
     , glib { version = [ 2, 64 ], patch = 2 }
     , glib-networking { version = [ 2, 61 ], patch = 2 }
     , glproto [ 1, 4, 17 ]
@@ -4802,7 +4802,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , gobject-introspection { version = [ 1, 62 ], patch = 0 }
     , gnome-doc-utils { version = [ 0, 20 ], patch = 10 }
     , gnupg [ 2, 2, 20 ]
-    , gnutls { version = [ 3, 6 ], patch = [ 11, 1 ] }
+    , gnutls { version = [ 3, 6 ], patch = [ 13 ] }
     , graphviz [ 2, 40, 1 ]
     , grep [ 3, 3 ]
     , gsl [ 2, 6 ]
