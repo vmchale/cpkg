@@ -4728,6 +4728,19 @@ let busybox =
                 ]
           }
 
+let tarlz =
+        λ(v : List Natural)
+      →   prelude.simplePackage { name = "tarlz", version = v }
+        ⫽ { pkgUrl =
+              "http://download.savannah.gnu.org/releases/lzip/tarlz/tarlz-${prelude.showVersion
+                                                                              v}.tar.lz"
+          , installCommand =
+                λ(cfg : types.BuildVars)
+              →   prelude.installWithBinaries [ "bin/tarlz" ] cfg
+                # prelude.symlinkManpages
+                    [ { file = "share/man/man1/tarlz.1", section = 1 } ]
+          }
+
 in  [ alsa-lib [ 1, 1, 9 ]
     , apr [ 1, 7, 0 ]
     , apr-util [ 1, 6, 1 ]
@@ -4983,6 +4996,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , swig [ 3, 0, 12 ]
     , swi-prolog [ 8, 0, 3 ]
     , tar [ 1, 32 ]
+    , tarlz [ 0, 16 ]
     , tcc [ 0, 9, 27 ]
     , texinfo [ 6, 6 ]
     , tesseract [ 4, 0, 0 ]
