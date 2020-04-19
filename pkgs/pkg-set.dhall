@@ -4763,7 +4763,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , cimg [ 2, 7, 0 ]
     , clang [ 9, 0, 0 ]
     , clzip [ 1, 11 ]
-    , cmake { version = [ 3, 17 ], patch = 0 }
+    , cmake { version = [ 3, 17 ], patch = 1 }
     , cmark [ 0, 29, 0 ]
     , compositeproto [ 0, 4 ]
     , coreutils [ 8, 31 ]
@@ -4804,8 +4804,8 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , gperf [ 3, 1 ]
     , gperftools [ 2, 7 ]
     , giflib [ 5, 1, 4 ]
-    , git [ 2, 26, 0 ]
-    , glib { version = [ 2, 64 ], patch = 1 }
+    , git [ 2, 26, 1 ]
+    , glib { version = [ 2, 64 ], patch = 2 }
     , glib-networking { version = [ 2, 61 ], patch = 2 }
     , glproto [ 1, 4, 17 ]
     , glu [ 9, 0, 0 ]
@@ -4815,12 +4815,12 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , gobject-introspection { version = [ 1, 62 ], patch = 0 }
     , gnome-doc-utils { version = [ 0, 20 ], patch = 10 }
     , gnupg [ 2, 2, 20 ]
-    , gnutls { version = [ 3, 6 ], patch = [ 11, 1 ] }
+    , gnutls { version = [ 3, 6 ], patch = [ 13 ] }
     , graphviz [ 2, 40, 1 ]
     , grep [ 3, 3 ]
     , gsl [ 2, 6 ]
     , gtk2 { version = [ 2, 24 ], patch = 32 }
-    , gtk3 { version = [ 3, 24 ], patch = 14 }
+    , gtk3 { version = [ 3, 24 ], patch = 18 }
     , gzip [ 1, 10 ]
     , harfbuzz [ 2, 6, 4 ]
     , htop [ 2, 2, 0 ]
@@ -4874,7 +4874,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , libpsl [ 0, 21, 0 ]
     , libpthread-stubs [ 0, 4 ]
     , libraw [ 0, 19, 2 ]
-    , librsvg { version = [ 2, 48 ], patch = 2 }
+    , librsvg { version = [ 2, 48 ], patch = 3 }
     , libsamplerate [ 0, 1, 9 ]
     , libsass [ 3, 6, 2 ]
     , libselinux [ 3, 0 ]
@@ -4960,7 +4960,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , pcre [ 8, 44 ]
     , pcre2 [ 10, 33 ]
     , pdfgrep [ 2, 1, 2 ]
-    , perl5 [ 5, 30, 1 ]
+    , perl5 [ 5, 30, 2 ]
     , phash [ 0, 9, 6 ]
     , pixman [ 0, 38, 4 ]
     , pkg-config [ 0, 29, 2 ]
