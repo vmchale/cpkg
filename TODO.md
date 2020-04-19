@@ -190,6 +190,7 @@
 - [ ] wxWidgets/erlang
 - [ ] http://download.savannah.gnu.org/releases/lzip/tarlz/
 - [ ] https://github.com/NLnetLabs/unbound
+- [ ] https://github.com/google/brotli/releases
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in

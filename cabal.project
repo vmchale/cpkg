@@ -3,3 +3,11 @@ constraints: cpkg +development
            , zlib +pkg-config
 
 max-backjumps: 40000
+
+allow-newer:
+  serialise:ghc-prim
+  haskeline:base
+  cborg-json:base
+  cborg:ghc-prim
+  dhall:template-haskell
+  polyparse:base
