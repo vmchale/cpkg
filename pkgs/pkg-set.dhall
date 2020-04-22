@@ -4798,7 +4798,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , gdb [ 8, 3, 1 ]
     , gdk-pixbuf { version = [ 2, 38 ], patch = 1 }
     , gegl { version = [ 0, 4 ], patch = 16 }
-    , gettext [ 0, 20, 1 ]
+    , gettext [ 0, 20, 2 ]
     , gexiv2 { version = [ 0, 12 ], patch = 0 }
     , ghc [ 8, 8, 3 ]
     , gperf [ 3, 1 ]
