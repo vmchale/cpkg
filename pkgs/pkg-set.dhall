@@ -4143,7 +4143,7 @@ let r =
 
         in    prelude.simplePackage { name = "r", version = v }
             ⫽ { pkgUrl =
-                  "https://cran.r-project.org/src/base/R-3/R-${versionString}.tar.gz"
+                  "https://cran.r-project.org/src/base/R-4/R-${versionString}.tar.gz"
               , pkgSubdir = "R-${versionString}"
               , pkgDeps =
                 [ prelude.unbounded "readline"
