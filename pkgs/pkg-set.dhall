@@ -4695,6 +4695,12 @@ let smake =
                     [ { file = "opt/schily/share/man/man1/smake.1"
                       , section = 1
                       }
+                    , { file = "opt/schily/share/man/man5/makefiles.5"
+                      , section = 5
+                      }
+                    , { file = "opt/schily/share/man/man5/makerules.5"
+                      , section = 5
+                      }
                     ]
           }
 
