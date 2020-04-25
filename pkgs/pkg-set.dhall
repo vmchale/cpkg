@@ -490,7 +490,7 @@ let perl5 =
                                                      (prelude.osCfg cfg)}"
 
                             in    prelude.installWithBinaries
-                                    [ "bin/perl", "bin/cpan" ]
+                                    [ "bin/perl", "bin/cpan", "bin/ptar" ]
                                     cfg
                                 # [ prelude.symlink
                                       "lib/${prelude.showVersion
