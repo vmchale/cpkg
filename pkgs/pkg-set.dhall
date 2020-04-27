@@ -490,7 +490,7 @@ let perl5 =
                                                      (prelude.osCfg cfg)}"
 
                             in    prelude.installWithBinaries
-                                    [ "bin/perl", "bin/cpan" ]
+                                    [ "bin/perl", "bin/cpan", "bin/ptar" ]
                                     cfg
                                 # [ prelude.symlink
                                       "lib/${prelude.showVersion
@@ -4143,7 +4143,7 @@ let r =
 
         in    prelude.simplePackage { name = "r", version = v }
             ⫽ { pkgUrl =
-                  "https://cran.r-project.org/src/base/R-3/R-${versionString}.tar.gz"
+                  "https://cran.r-project.org/src/base/R-4/R-${versionString}.tar.gz"
               , pkgSubdir = "R-${versionString}"
               , pkgDeps =
                 [ prelude.unbounded "readline"
@@ -4694,6 +4694,12 @@ let smake =
                 # prelude.symlinkManpages
                     [ { file = "opt/schily/share/man/man1/smake.1"
                       , section = 1
+                      }
+                    , { file = "opt/schily/share/man/man5/makefiles.5"
+                      , section = 5
+                      }
+                    , { file = "opt/schily/share/man/man5/makerules.5"
+                      , section = 5
                       }
                     ]
           }
