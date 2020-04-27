@@ -4751,7 +4751,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , autoconf [ 2, 69 ]
     , automake [ 1, 16, 2 ]
     , babl { version = [ 0, 1 ], patch = 68 }
-    , bash [ 5, 0, 16 ]
+    , bash [ 5, 0, 17 ]
     , bash-completion [ 2, 9 ]
     , binutils [ 2, 33, 1 ]
     , bison [ 3, 5 ]
@@ -4874,7 +4874,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , libpsl [ 0, 21, 0 ]
     , libpthread-stubs [ 0, 4 ]
     , libraw [ 0, 19, 2 ]
-    , librsvg { version = [ 2, 48 ], patch = 3 }
+    , librsvg { version = [ 2, 48 ], patch = 4 }
     , libsamplerate [ 0, 1, 9 ]
     , libsass [ 3, 6, 2 ]
     , libselinux [ 3, 0 ]
