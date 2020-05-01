@@ -70,7 +70,7 @@ let binutils =
       →   prelude.makeGnuExe { name = "binutils", version = v }
         ⫽ { pkgUrl =
               "https://ftp.wayne.edu/gnu/binutils/binutils-${prelude.showVersion
-                                                               v}.tar.xz"
+                                                               v}.tar.lz"
           , installCommand =
               prelude.installWithBinaries
                 [ "bin/ar"
@@ -4759,7 +4759,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , babl { version = [ 0, 1 ], patch = 68 }
     , bash [ 5, 0, 17 ]
     , bash-completion [ 2, 9 ]
-    , binutils [ 2, 33, 1 ]
+    , binutils [ 2, 34 ]
     , bison [ 3, 5 ]
     , blas [ 3, 8, 0 ]
     , busybox [ 1, 31, 1 ]
