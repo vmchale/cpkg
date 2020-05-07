@@ -1140,7 +1140,6 @@ let readline =
         ⫽ { pkgUrl =
               "https://ftp.gnu.org/gnu/readline/readline-${prelude.showVersion
                                                              v}.tar.gz"
-          , pkgBuildDeps = [ prelude.unbounded "make" ]
           }
 
 let pixman =
@@ -3682,7 +3681,7 @@ let gcc =
 
         in    prelude.simplePackage { name = "gcc", version = v }
             ⫽ { pkgUrl =
-                  "https://ftp.wayne.edu/gnu/gcc/gcc-${versionString}/gcc-${versionString}.tar.xz"
+                  "https://ftp.gnu.org/gnu/gcc/gcc-${versionString}/gcc-${versionString}.tar.xz"
               , configureCommand =
                     λ(cfg : types.BuildVars)
                   →   [ prelude.call
@@ -4800,7 +4799,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , fribidi [ 1, 0, 9 ]
     , gawk [ 5, 0, 1 ]
     , gc [ 8, 0, 4 ]
-    , gcc [ 9, 3, 0 ]
+    , gcc [ 10, 1, 0 ]
     , gdb [ 8, 3, 1 ]
     , gdk-pixbuf { version = [ 2, 38 ], patch = 1 }
     , gegl { version = [ 0, 4 ], patch = 16 }
