@@ -11,10 +11,15 @@ jobs:
           make -j
           sudo make install
       - uses: "actions/checkout@v1"
-      - uses: "actions/setup-haskell@v1"
+      - id: setup-haskell-cabal
+        uses: "actions/setup-haskell@v1.1"
         with:
           cabal-version: "${{ matrix.cabal }}"
           ghc-version: "${{ matrix.ghc }}"
+      - uses: "actions/cache@v1"
+        with:
+          key: "${{ runner.os }}-${{ matrix.ghc }}-cabal"
+          path: "${{ steps.setup-haskell-cabal.outputs.cabal-store }}"
       - name: Install dependencies
         run: |
           cabal update
@@ -28,7 +33,7 @@ jobs:
     strategy:
       matrix:
         cabal:
-          - '3.0'
+          - '3.2'
         ghc:
           - '8.4.4'
           - '8.6.5'

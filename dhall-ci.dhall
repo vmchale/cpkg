@@ -1,5 +1,5 @@
 let dhallCi =
-      https://raw.githubusercontent.com/vmchale/github-actions-dhall/master/dhall-ci.dhall sha256:2a8e60c47ac16cfe0bd02d9a348b175b841095e62918448ce9b3bf65fe8cfe78
+      https://raw.githubusercontent.com/vmchale/github-actions-dhall/master/dhall-ci.dhall sha256:e5a66a2eed19fea8ee8d397ea25218b32fbab2abed758d31b7a2fe0fdea6f433
 
 in      dhallCi.dhallCi
           [ "pkgs/pkg-set.dhall"

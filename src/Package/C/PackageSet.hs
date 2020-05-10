@@ -28,7 +28,7 @@ defaultPackageSetHash = "sha256:4e933beb267d7c5b55afca08137f204f3555ef82a5763c61
 
 defaultPackageSetDhall :: Maybe String -> IO PackageSetDhall
 defaultPackageSetDhall (Just pkSet) = input auto (T.pack pkSet)
-defaultPackageSetDhall Nothing      = input auto ("https://raw.githubusercontent.com/vmchale/cpkg/776390d3ae9041a6b343ab5321b8486d3947e040/pkgs/pkg-set.dhall " <> defaultPackageSetHash)
+defaultPackageSetDhall Nothing      = input auto ("https://raw.githubusercontent.com/vmchale/cpkg/80d61a9f060f5b950e72f4d30a4c51b83bb2d729/pkgs/pkg-set.dhall " <> defaultPackageSetHash)
 
 
 displayPackageSet :: Maybe String -> IO ()
