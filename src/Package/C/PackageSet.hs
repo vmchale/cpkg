@@ -24,7 +24,7 @@ import           Package.C.Type
 import           Package.C.Type.Tree
 
 defaultPackageSetHash :: T.Text
-defaultPackageSetHash = "sha256:93cbf84fb5e9d7b9419c156145b5c91be8e1800c36c9641b7c8513f4213b6f2b"
+defaultPackageSetHash = "sha256:4e933beb267d7c5b55afca08137f204f3555ef82a5763c617782026fc2898fde"
 
 defaultPackageSetDhall :: Maybe String -> IO PackageSetDhall
 defaultPackageSetDhall (Just pkSet) = input auto (T.pack pkSet)
