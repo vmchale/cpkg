@@ -378,8 +378,8 @@ let ncurses =
         λ(v : List Natural)
       →   prelude.simplePackage { name = "ncurses", version = v }
         ⫽ { pkgUrl =
-              "https://ftp.wayne.edu/gnu/ncurses/ncurses-${prelude.showVersion
-                                                             v}.tar.gz"
+              "https://ftp.gnu.org/gnu/ncurses/ncurses-${prelude.showVersion
+                                                     v}.tar.gz"
           , configureCommand =
                 λ(cfg : types.BuildVars)
               → let crossArgs =

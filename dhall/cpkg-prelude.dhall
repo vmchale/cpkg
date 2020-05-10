@@ -564,7 +564,7 @@ let makeGnuExe =
         λ(pkg : { name : Text, version : List Natural })
       →   simplePackage pkg
         ⫽ { pkgUrl =
-              "https://ftp.wayne.edu/gnu/${pkg.name}/${pkg.name}-${showVersion
+              "https://ftp.gnu.org/gnu/${pkg.name}/${pkg.name}-${showVersion
                                                                      pkg.version}.tar.xz"
           , installCommand = installWithBinaries [ "bin/${pkg.name}" ]
           }
