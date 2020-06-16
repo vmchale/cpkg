@@ -101,7 +101,7 @@ library
         dir-traverse >=0.2.1.0,
         composition-prelude >=1.5.2.0,
         lzlib >=0.3.0.0,
-        dhall >=1.27.0,
+        dhall >=1.29.0,
         zstd -any
 
     if (flag(development) && impl(ghc <=8.2))
@@ -127,7 +127,7 @@ executable cpkg
         optparse-applicative -any,
         directory -any,
         text -any,
-        dhall >=1.26.1
+        dhall >=1.29.0
 
     if (flag(development) && impl(ghc <=8.2))
         ghc-options: -Werror
