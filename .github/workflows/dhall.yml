@@ -1,31 +1,32 @@
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    "runs-on": "ubuntu-18.04"
     steps:
-      - uses: "actions/checkout@v1"
-      - id: setup-haskell-cabal
-        uses: "actions/setup-haskell@v1.1"
-        with:
-          cabal-version: '3.2'
-          ghc-version: '8.8.3'
-      - uses: "actions/cache@v1"
-        with:
-          key: "${{ runner.os }}-${{ matrix.ghc }}-cabal"
-          path: "${{ steps.setup-haskell-cabal.outputs.cabal-store }}"
-      - name: Install dhall
-        run: |
-          cabal update
-          cd "$(mktemp -d /tmp/dhall-XXX)"
-          cabal install dhall
-      - name: Check Dhall
-        run: |
-          export PATH=$HOME/.cabal/bin:$PATH
-          dhall --file pkgs/pkg-set.dhall
-          dhall --file dhall/cpkg-prelude.dhall
-          dhall --file dhall/cpkg-types.dhall
-          dhall --file dhall-ci.dhall
-          dhall --file haskell-ci.dhall
+    - uses: "actions/checkout@v1"
+    - id: "setup-haskell-cabal"
+      uses: "actions/setup-haskell@v1.1"
+      with:
+        "cabal-version": '3.2'
+        "enable-stack": false
+        "ghc-version": '8.8.3'
+    - uses: "actions/cache@v1"
+      with:
+        key: "${{ runner.os }}-${{ matrix.ghc }}-cabal"
+        path: "${{ steps.setup-haskell-cabal.outputs.cabal-store }}"
+    - name: Install dhall
+      run: |
+        cabal update
+        cd "$(mktemp -d /tmp/dhall-XXX)"
+        cabal install dhall
+    - name: Check Dhall
+      run: |
+        export PATH=$HOME/.cabal/bin:$PATH
+        dhall --file pkgs/pkg-set.dhall
+        dhall --file dhall/cpkg-prelude.dhall
+        dhall --file dhall/cpkg-types.dhall
+        dhall --file dhall-ci.dhall
+        dhall --file haskell-ci.dhall
 name: Dhall CI
 on:
-  - push
-  - pull_request
+- push
+- pull_request

@@ -1,5 +1,5 @@
 let haskellCi =
-      https://raw.githubusercontent.com/vmchale/github-actions-dhall/master/haskell-ci.dhall sha256:ef332e5a6a293a84ebc6b52fe5889f7000b4621378970dc304671125d4a5259c
+      https://raw.githubusercontent.com/vmchale/github-actions-dhall/master/haskell-ci.dhall sha256:abbcf1ffd0630835e80fe7c953e6fd2cacc8f8a2f70a0250b7e8f5a68171b232
 
 let concatMapSep =
       https://raw.githubusercontent.com/dhall-lang/dhall-lang/9f259cd68870b912fbf2f2a08cd63dc3ccba9dc3/Prelude/Text/concatMapSep sha256:c272aca80a607bc5963d1fcb38819e7e0d3e72ac4d02b1183b1afb6a91340840
@@ -24,7 +24,7 @@ let installLibarchive =
               }
 
 in    haskellCi.generalCi
-        ([ installLibarchive [ 3, 4, 2 ] ] # haskellCi.matrixSteps)
+        ([ installLibarchive [ 3, 4, 3 ] ] # haskellCi.matrixSteps)
         ( Some
             { ghc =
               [ haskellCi.GHC.GHC844
