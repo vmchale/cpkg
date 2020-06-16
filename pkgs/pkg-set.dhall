@@ -4579,14 +4579,20 @@ let zstd =
         let versionString = prelude.showVersion v
 
         in    prelude.simplePackage { name = "zstd", version = v }
-            ⫽ prelude.cmakePackage
             ⫽ { pkgUrl =
                   "https://github.com/facebook/zstd/releases/download/v${versionString}/zstd-${versionString}.tar.zst"
-              , pkgSubdir = "zstd-${versionString}/build/cmake"
+              , configureCommand = prelude.doNothing
               , installCommand =
                   λ(cfg : types.BuildVars) →
-                      prelude.cmakeInstall cfg
-                    # [ prelude.symlinkBinary "bin/zstd" ]
+                      [ prelude.call
+                          { program = "make"
+                          , arguments =
+                            [ "PREFIX=${cfg.installDir}", "install" ]
+                          , environment = Some (prelude.buildEnv cfg)
+                          , procDir = None Text
+                          }
+                      , prelude.symlinkBinary "bin/zstd"
+                      ]
                     # prelude.symlinkManpages
                         [ { file = "share/man/man1/zstd.1", section = 1 } ]
               }
