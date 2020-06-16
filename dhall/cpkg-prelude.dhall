@@ -12,7 +12,7 @@ let map =
       https://raw.githubusercontent.com/dhall-lang/dhall-lang/9f259cd68870b912fbf2f2a08cd63dc3ccba9dc3/Prelude/List/map sha256:dd845ffb4568d40327f2a817eb42d1c6138b929ca758d50bc33112ef3c885680
 
 let mapOptional =
-      https://raw.githubusercontent.com/dhall-lang/dhall-lang/9f259cd68870b912fbf2f2a08cd63dc3ccba9dc3/Prelude/Optional/map sha256:e7f44219250b89b094fbf9996e04b5daafc0902d864113420072ae60706ac73d
+      https://raw.githubusercontent.com/dhall-lang/dhall-lang/bf757ba1ee526714278568012c6bc98d7ea9757e/Prelude/Optional/map sha256:501534192d988218d43261c299cc1d1e0b13d25df388937add784778ab0054fa
 
 let not =
       https://raw.githubusercontent.com/dhall-lang/dhall-lang/9f259cd68870b912fbf2f2a08cd63dc3ccba9dc3/Prelude/Bool/not sha256:723df402df24377d8a853afed08d9d69a0a6d86e2e5b2bac8960b0d4756c7dc4
@@ -25,7 +25,7 @@ let maybeAppend =
       λ(a : Type) →
       λ(x : Optional a) →
       λ(xs : List a) →
-        Optional/fold a x (List a) (λ(x : a) → xs # [ x ]) xs
+        merge { Some = λ(x : a) → xs # [ x ], None = xs } x
 
 let printArch =
       λ(arch : types.Arch) →
@@ -117,12 +117,9 @@ let printABI =
 let printTargetTriple =
       λ(t : types.TargetTriple) →
             "${printArch t.arch}-${printOS t.os}"
-        ++  Optional/fold
-              types.ABI
+        ++  merge
+              { Some = λ(abi : types.ABI) → "-${printABI abi}", None = "" }
               t.abi
-              Text
-              (λ(abi : types.ABI) → "-${printABI abi}")
-              ""
 
 let mkHost =
       mapOptional
@@ -271,21 +268,17 @@ let mkStaPath =
 
 let osCfg =
       λ(cfg : types.BuildVars) →
-        Optional/fold
-          types.TargetTriple
+        merge
+          { Some = λ(tgt : types.TargetTriple) → tgt.os, None = cfg.buildOS }
           cfg.targetTriple
-          types.OS
-          (λ(tgt : types.TargetTriple) → tgt.os)
-          cfg.buildOS
 
 let archCfg =
       λ(cfg : types.BuildVars) →
-        Optional/fold
-          types.TargetTriple
+        merge
+          { Some = λ(tgt : types.TargetTriple) → tgt.arch
+          , None = cfg.buildArch
+          }
           cfg.targetTriple
-          types.Arch
-          (λ(tgt : types.TargetTriple) → tgt.arch)
-          cfg.buildArch
 
 let mkPerlLib =
       λ ( x
@@ -311,12 +304,9 @@ let mkPerlLib =
                 x.libDirs
 
         let major =
-              Optional/fold
-                Natural
+              merge
+                { Some = Natural/show, None = "" }
                 (List/head Natural x.perlVersion)
-                Text
-                Natural/show
-                ""
 
         in  { var = "PERL${major}LIB", value = flag }
 
@@ -598,26 +588,25 @@ let cmakeConfigureGeneral =
       λ(flags : List Text) →
       λ(cfg : types.BuildVars) →
         let host =
-              Optional/fold
-                types.TargetTriple
+              merge
+                { Some =
+                    λ(tgt : types.TargetTriple) →
+                      [ "-DCMAKE_C_COMPILER=${printTargetTriple tgt}-gcc"
+                      , "-DCMAKE_CXX_COMPILER=${printTargetTriple tgt}-g++"
+                      ]
+                , None =
+                  [ "-DCMAKE_C_COMPILER=gcc", "-DCMAKE_CXX_COMPILER=g++" ]
+                }
                 cfg.targetTriple
-                (List Text)
-                ( λ(tgt : types.TargetTriple) →
-                    [ "-DCMAKE_C_COMPILER=${printTargetTriple tgt}-gcc"
-                    , "-DCMAKE_CXX_COMPILER=${printTargetTriple tgt}-g++"
-                    ]
-                )
-                [ "-DCMAKE_C_COMPILER=gcc", "-DCMAKE_CXX_COMPILER=g++" ]
 
         let system =
-              Optional/fold
-                types.TargetTriple
+              merge
+                { Some =
+                    λ(tgt : types.TargetTriple) →
+                      [ "-DCMAKE_SYSTEM_NAME=${printCMakeOS tgt.os}" ]
+                , None = [] : List Text
+                }
                 cfg.targetTriple
-                (List Text)
-                ( λ(tgt : types.TargetTriple) →
-                    [ "-DCMAKE_SYSTEM_NAME=${printCMakeOS tgt.os}" ]
-                )
-                ([] : List Text)
 
         in  [ createDir "build"
             , call
@@ -654,26 +643,24 @@ let cmakeConfigure = cmakeConfigureWithFlags ([] : List Text)
 let cmakeConfigureNinja =
       λ(cfg : types.BuildVars) →
         let host =
-              Optional/fold
-                types.TargetTriple
+              merge
+                { Some =
+                    λ(tgt : types.TargetTriple) →
+                      [ "-DCMAKE_C_COMPILER=${printTargetTriple tgt}-gcc"
+                      , "-DCMAKE_CXX_COMPILER=${printTargetTriple tgt}-g++"
+                      ]
+                , None = [] : List Text
+                }
                 cfg.targetTriple
-                (List Text)
-                ( λ(tgt : types.TargetTriple) →
-                    [ "-DCMAKE_C_COMPILER=${printTargetTriple tgt}-gcc"
-                    , "-DCMAKE_CXX_COMPILER=${printTargetTriple tgt}-g++"
-                    ]
-                )
-                ([] : List Text)
 
         let system =
-              Optional/fold
-                types.TargetTriple
+              merge
+                { Some =
+                    λ(tgt : types.TargetTriple) →
+                      [ "-DCMAKE_SYSTEM_NAME=${printCMakeOS tgt.os}" ]
+                , None = [] : List Text
+                }
                 cfg.targetTriple
-                (List Text)
-                ( λ(tgt : types.TargetTriple) →
-                    [ "-DCMAKE_SYSTEM_NAME=${printCMakeOS tgt.os}" ]
-                )
-                ([] : List Text)
 
         in  [ createDir "build"
             , call
@@ -772,12 +759,12 @@ let mkPy3Path = mkPyPath [ 3, 8 ]
 let mesonCfgFile =
       λ(cfg : types.BuildVars) →
         let prefix =
-              Optional/fold
-                types.TargetTriple
+              merge
+                { Some =
+                    λ(tgt : types.TargetTriple) → "${printTargetTriple tgt}-"
+                , None = ""
+                }
                 cfg.targetTriple
-                Text
-                (λ(tgt : types.TargetTriple) → "${printTargetTriple tgt}-")
-                ""
 
         in      ''
                 [binaries]
@@ -933,12 +920,9 @@ let pythonBuild =
       λ(version : List Natural) →
       λ(cfg : types.BuildVars) →
         let major =
-              Optional/fold
-                Natural
+              merge
+                { Some = Natural/show, None = "" }
                 (List/head Natural version)
-                Text
-                Natural/show
-                ""
 
         let versionString = showVersion version
 
@@ -966,12 +950,9 @@ let pythonInstall =
       λ(version : List Natural) →
       λ(cfg : types.BuildVars) →
         let major =
-              Optional/fold
-                Natural
+              merge
+                { Some = Natural/show, None = "" }
                 (List/head Natural version)
-                Text
-                Natural/show
-                ""
 
         let versionString = showVersion version
 
@@ -1004,12 +985,9 @@ let pythonPackage =
       λ(pyVersion : List Natural) →
       λ(x : { name : Text, version : List Natural }) →
         let major =
-              Optional/fold
-                Natural
+              merge
+                { Some = Natural/show, None = "" }
                 (List/head Natural pyVersion)
-                Text
-                Natural/show
-                ""
 
         in    simplePackage x
             ⫽ { configureCommand = doNothing
@@ -1028,34 +1006,35 @@ let python2Package = pythonPackage [ 2, 7 ]
 
 let mkCCVar =
       λ(cfg : types.BuildVars) →
-        Optional/fold
-          types.TargetTriple
+        merge
+          { Some =
+              λ(tgt : types.TargetTriple) →
+                [ { var = "CC", value = "${printTargetTriple tgt}-gcc" } ]
+          , None = [] : List types.EnvVar
+          }
           cfg.targetTriple
-          (List types.EnvVar)
-          ( λ(tgt : types.TargetTriple) →
-              [ { var = "CC", value = "${printTargetTriple tgt}-gcc" } ]
-          )
-          ([] : List types.EnvVar)
 
 let squishVersion = concatMapText Natural Natural/show
 
 let mkCCArg =
       λ(cfg : types.BuildVars) →
-        Optional/fold
-          types.TargetTriple
+        merge
+          { Some =
+              λ(tgt : types.TargetTriple) →
+                [ "CC=${printTargetTriple tgt}-gcc" ]
+          , None = [] : List Text
+          }
           cfg.targetTriple
-          (List Text)
-          (λ(tgt : types.TargetTriple) → [ "CC=${printTargetTriple tgt}-gcc" ])
-          ([] : List Text)
 
 let mkFRCArg =
       λ(cfg : types.BuildVars) →
-        Optional/fold
-          types.TargetTriple
+        merge
+          { Some =
+              λ(tgt : types.TargetTriple) →
+                [ "CC=${printTargetTriple tgt}-gcc" ]
+          , None = [] : List Text
+          }
           cfg.targetTriple
-          (List Text)
-          (λ(tgt : types.TargetTriple) → [ "CC=${printTargetTriple tgt}-gcc" ])
-          ([] : List Text)
 
 let preloadEnv =
       λ(_ : List Text) →
