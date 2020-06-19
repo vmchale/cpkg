@@ -24,11 +24,11 @@ import           Package.C.Type
 import           Package.C.Type.Tree
 
 defaultPackageSetHash :: T.Text
-defaultPackageSetHash = "sha256:4e933beb267d7c5b55afca08137f204f3555ef82a5763c617782026fc2898fde"
+defaultPackageSetHash = "sha256:a3898bfbcc705d1561ff41fc01b6eee94f3eb344f1451917c75402a9865c4cf9"
 
 defaultPackageSetDhall :: Maybe String -> IO PackageSetDhall
 defaultPackageSetDhall (Just pkSet) = input auto (T.pack pkSet)
-defaultPackageSetDhall Nothing      = input auto ("https://raw.githubusercontent.com/vmchale/cpkg/80d61a9f060f5b950e72f4d30a4c51b83bb2d729/pkgs/pkg-set.dhall " <> defaultPackageSetHash)
+defaultPackageSetDhall Nothing      = input auto ("https://raw.githubusercontent.com/vmchale/cpkg/c6522de9a876e1fa3141752d61bff2272d92075c/pkgs/pkg-set.dhall " <> defaultPackageSetHash)
 
 
 displayPackageSet :: Maybe String -> IO ()
