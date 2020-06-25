@@ -191,6 +191,7 @@
 - [ ] http://download.savannah.gnu.org/releases/lzip/tarlz/
 - [ ] https://github.com/NLnetLabs/unbound
 - [ ] https://github.com/google/brotli/releases
+- [ ] https://www.gnu.org/software/gsl/
 # Documentation
 - [ ] Write a manpage
 - [ ] Documentation in

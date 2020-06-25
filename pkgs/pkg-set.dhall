@@ -4925,7 +4925,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , p11kit [ 0, 23, 16, 1 ]
     , pango { version = [ 1, 43 ], patch = 0 }
     , pari [ 2, 11, 1 ]
-    , patch [ 2, 7 ]
+    , patch [ 2, 7, 6 ]
     , pcre [ 8, 44 ]
     , pcre2 [ 10, 33 ]
     , pdfgrep [ 2, 1, 2 ]
