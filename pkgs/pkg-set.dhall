@@ -4625,6 +4625,7 @@ let star =
                           }
                       )
                   , prelude.symlinkBinary "opt/schily/bin/star"
+                  , prelude.symlinkBinary "opt/schily/bin/spax"
                   ]
                 # prelude.symlinkManpages
                     [ { file = "opt/schily/share/man/man1/star.1", section = 1 }
@@ -4944,7 +4945,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , qrencode [ 4, 0, 2 ]
     , qt { version = [ 5, 13 ], patch = 0 }
     , quazip [ 0, 8, 1 ]
-    , r [ 4, 0, 0 ]
+    , r [ 4, 0, 2 ]
     , ragel [ 6, 10 ]
     , randrproto [ 1, 5, 0 ]
     , re2c [ 1, 1, 1 ]
