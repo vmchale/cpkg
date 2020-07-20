@@ -1952,7 +1952,7 @@ let re2c =
 
         in    prelude.simplePackage { name = "re2c", version = v }
             ⫽ { pkgUrl =
-                  "https://github.com/skvadrik/re2c/releases/download/${versionString}/re2c-${versionString}.tar.gz"
+                  "https://github.com/skvadrik/re2c/releases/download/${versionString}/re2c-${versionString}.tar.xz"
               }
 
 let chickenScheme =
@@ -4948,7 +4948,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , r [ 4, 0, 2 ]
     , ragel [ 6, 10 ]
     , randrproto [ 1, 5, 0 ]
-    , re2c [ 1, 1, 1 ]
+    , re2c [ 2, 0 ]
     , readline [ 8, 0 ]
     , recordproto [ 1, 14, 2 ]
     , renderproto [ 0, 11, 1 ]
