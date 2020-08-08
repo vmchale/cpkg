@@ -4717,7 +4717,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , at-spi-atk { version = [ 2, 33 ], patch = 2 }
     , at-spi-core { version = [ 2, 33 ], patch = 2 }
     , atk { version = [ 2, 36 ], patch = 0 }
-    , ats [ 0, 4, 0 ]
+    , ats [ 0, 4, 2 ]
     , autoconf [ 2, 69 ]
     , automake [ 1, 16, 2 ]
     , babl { version = [ 0, 1 ], patch = 68 }
@@ -4966,7 +4966,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , swig [ 3, 0, 12 ]
     , swi-prolog [ 8, 0, 3 ]
     , tar [ 1, 32 ]
-    , tarlz [ 0, 16 ]
+    , tarlz [ 0, 17 ]
     , tcc [ 0, 9, 27 ]
     , texinfo [ 6, 6 ]
     , tesseract [ 4, 0, 0 ]
