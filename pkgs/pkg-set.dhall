@@ -2516,9 +2516,14 @@ let graphviz =
       λ(v : List Natural) →
           prelude.simplePackage { name = "graphviz", version = v }
         ⫽ { pkgUrl =
-              "https://graphviz.gitlab.io/pub/graphviz/stable/SOURCES/graphviz.tar.gz"
+              "https://www2.graphviz.org/Packages/stable/portable_source/graphviz-${prelude.showVersion
+                                                                                      v}.tar.gz"
           , pkgDeps = [ prelude.unbounded "perl" ]
-          , installCommand = prelude.installWithBinaries [ "bin/dot" ]
+          , installCommand =
+              λ(cfg : types.BuildVars) →
+                  prelude.installWithBinaries [ "bin/dot" ] cfg
+                # prelude.symlinkManpages
+                    [ { file = "share/man/man1/dot.1", section = 1 } ]
           }
 
 let wayland =
@@ -4786,7 +4791,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , gnome-doc-utils { version = [ 0, 20 ], patch = 10 }
     , gnupg [ 2, 2, 20 ]
     , gnutls { version = [ 3, 6 ], patch = [ 13 ] }
-    , graphviz [ 2, 40, 1 ]
+    , graphviz [ 2, 44, 1 ]
     , grep [ 3, 3 ]
     , gsl [ 2, 6 ]
     , gtk2 { version = [ 2, 24 ], patch = 32 }
@@ -4916,7 +4921,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , ncurses [ 6, 2 ]
     , nginx [ 1, 15, 7 ]
     , ninja [ 1, 9, 0 ]
-    , node [ 12, 18, 2 ]
+    , node [ 12, 18, 3 ]
     , npth [ 1, 6 ]
     , nspr [ 4, 20 ]
     , openblas [ 0, 3, 2 ]
