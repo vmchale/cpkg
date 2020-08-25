@@ -4741,7 +4741,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , cmake { version = [ 3, 17 ], patch = 2 }
     , cmark [ 0, 29, 0 ]
     , compositeproto [ 0, 4 ]
-    , coreutils [ 8, 31 ]
+    , coreutils [ 8, 32 ]
     , ctags [ 5, 8 ]
     , curl [ 7, 66, 0 ]
     , damageproto [ 1, 2, 1 ]
