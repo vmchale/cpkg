@@ -27,6 +27,6 @@ jobs:
         dhall --file dhall-ci.dhall
         dhall --file haskell-ci.dhall
 name: Dhall CI
-on:
+'on':
 - push
 - pull_request
