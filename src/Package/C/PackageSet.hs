@@ -17,7 +17,7 @@ import qualified Data.Text                             as T
 import           Data.Text.Prettyprint.Doc
 import           Data.Text.Prettyprint.Doc.Custom
 import           Data.Text.Prettyprint.Doc.Render.Text
-import           Dhall
+import           Dhall                                 hiding (maybe)
 import qualified Package.C.Dhall.Type                  as Dhall
 import           Package.C.Error
 import           Package.C.Type
@@ -81,6 +81,4 @@ pkgs pkId set@(PackageSet pset) = do
 pkgsM :: PackId -> Maybe String -> IO (DepTree CPkg)
 pkgsM pkId pkSet = do
     pks <- pkgs pkId . packageSetDhallToPackageSet <$> defaultPackageSetDhall pkSet
-    case pks of
-        Just x  -> pure x
-        Nothing -> unfoundPackage
+    maybe unfoundPackage pure pks
