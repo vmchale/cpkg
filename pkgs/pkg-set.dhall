@@ -850,7 +850,17 @@ let giflib =
           prelude.simplePackage { name = "giflib", version = v }
         ⫽ { pkgUrl =
               "https://downloads.sourceforge.net/giflib/giflib-${prelude.showVersion
-                                                                   v}.tar.bz2"
+                                                                   v}.tar.gz"
+          , configureCommand = prelude.doNothing
+          , installCommand =
+              λ(cfg : types.BuildVars) →
+                [ prelude.call
+                    { program = "make"
+                    , arguments = [ "PREFIX=${cfg.installDir}", "install" ]
+                    , environment = Some (prelude.buildEnv cfg)
+                    , procDir = None Text
+                    }
+                ]
           }
 
 let emacs =
@@ -4781,7 +4791,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , ghc [ 8, 8, 3 ]
     , gperf [ 3, 1 ]
     , gperftools [ 2, 7 ]
-    , giflib [ 5, 1, 4 ]
+    , giflib [ 5, 2, 1 ]
     , git [ 2, 26, 2 ]
     , glib { version = [ 2, 66 ], patch = 0 }
     , glib-networking { version = [ 2, 61 ], patch = 2 }
