@@ -285,8 +285,9 @@ let harfbuzz =
       in  λ(v : List Natural) →
               prelude.simplePackage { name = "harfbuzz", version = v }
             ⫽ { pkgUrl =
-                  "https://www.freedesktop.org/software/harfbuzz/release/harfbuzz-${prelude.showVersion
-                                                                                      v}.tar.xz"
+                  let versionString = prelude.showVersion v
+
+                  in  "https://github.com/harfbuzz/harfbuzz/releases/download/${versionString}/harfbuzz-${versionString}.tar.xz"
               , pkgDeps =
                 [ prelude.unbounded "freetype-prebuild"
                 , prelude.unbounded "glib"
@@ -329,20 +330,20 @@ let harfbuzz =
 
 let libjpeg-turbo =
       λ(v : List Natural) →
-          prelude.cmakePackage
-        ⫽ { pkgName = "libjpeg-turbo"
-          , pkgVersion = v
-          , pkgUrl =
-              "https://ayera.dl.sourceforge.net/project/libjpeg-turbo/${prelude.showVersion
-                                                                          v}/libjpeg-turbo-${prelude.showVersion
-                                                                                               v}.tar.gz"
-          , pkgSubdir = "libjpeg-turbo-${prelude.showVersion v}"
-          , pkgBuildDeps =
-            [ prelude.unbounded "cmake"
-            , prelude.unbounded "nasm"
-            , prelude.unbounded "make"
-            ]
-          }
+        let versionString = prelude.showVersion v
+
+        in    prelude.cmakePackage
+            ⫽ { pkgName = "libjpeg-turbo"
+              , pkgVersion = v
+              , pkgUrl =
+                  "https://downloads.sourceforge.net/libjpeg-turbo/${versionString}/libjpeg-turbo-${versionString}.tar.gz"
+              , pkgSubdir = "libjpeg-turbo-${versionString}"
+              , pkgBuildDeps =
+                [ prelude.unbounded "cmake"
+                , prelude.unbounded "nasm"
+                , prelude.unbounded "make"
+                ]
+              }
 
 let libuv =
       λ(v : List Natural) →
@@ -364,15 +365,15 @@ let libuv =
 
 let nasm =
       λ(v : List Natural) →
-          prelude.simplePackage { name = "nasm", version = v }
-        ⫽ { pkgUrl =
-              "http://www.nasm.us/pub/nasm/releasebuilds/${prelude.showVersion
-                                                             v}.02/nasm-${prelude.showVersion
-                                                                            v}.02.tar.xz"
-          , pkgSubdir = "nasm-${prelude.showVersion v}.02"
-          , installCommand =
-              prelude.installWithBinaries [ "bin/nasm", "bin/ndisasm" ]
-          }
+        let versionString = "2.15.05"
+
+        in    prelude.simplePackage { name = "nasm", version = v }
+            ⫽ { pkgUrl =
+                  "https://www.nasm.us/pub/nasm/releasebuilds/${versionString}/nasm-${versionString}.tar.xz"
+              , pkgSubdir = "nasm-${versionString}"
+              , installCommand =
+                  prelude.installWithBinaries [ "bin/nasm", "bin/ndisasm" ]
+              }
 
 let ncurses =
       λ(v : List Natural) →
@@ -3693,42 +3694,44 @@ let ruby =
 
 let poppler =
       λ(v : List Natural) →
-          prelude.simplePackage { name = "poppler", version = v }
-        ⫽ prelude.cmakePackage
-        ⫽ { pkgUrl =
-              "https://poppler.freedesktop.org/poppler-${prelude.showVersion
-                                                           v}.tar.xz"
-          , pkgDeps =
-            [ prelude.unbounded "fontconfig"
-            , prelude.unbounded "libopenjpeg"
-            , prelude.unbounded "libjpeg-turbo"
-            , prelude.unbounded "libjpeg"
-            , prelude.unbounded "freetype"
-            , prelude.unbounded "zlib"
-            , prelude.unbounded "libpng"
-            , prelude.unbounded "libiconv"
-            , prelude.unbounded "harfbuzz"
-            , prelude.unbounded "glib"
-            ]
-          , installCommand =
-              λ(cfg : types.BuildVars) →
-                  prelude.cmakeInstall cfg
-                # prelude.mkLDPathWrappers
-                    cfg
-                    [ "pdfdetach"
-                    , "pdffonts"
-                    , "pdfimages"
-                    , "pdfinfo"
-                    , "pdfseparate"
-                    , "pdfsig"
-                    , "pdftocairo"
-                    , "pdftohtml"
-                    , "pdftoppm"
-                    , "pdftops"
-                    , "pdftotext"
-                    , "pdfunite"
-                    ]
-          }
+        let versionString = "20.09.0"
+
+        in    prelude.simplePackage { name = "poppler", version = v }
+            ⫽ prelude.cmakePackage
+            ⫽ { pkgUrl =
+                  "https://poppler.freedesktop.org/poppler-${versionString}.tar.xz"
+              , pkgSubdir = "poppler-${versionString}"
+              , pkgDeps =
+                [ prelude.unbounded "fontconfig"
+                , prelude.unbounded "libopenjpeg"
+                , prelude.unbounded "libjpeg-turbo"
+                , prelude.unbounded "libjpeg"
+                , prelude.unbounded "freetype"
+                , prelude.unbounded "zlib"
+                , prelude.unbounded "libpng"
+                , prelude.unbounded "libiconv"
+                , prelude.unbounded "harfbuzz"
+                , prelude.unbounded "glib"
+                ]
+              , installCommand =
+                  λ(cfg : types.BuildVars) →
+                      prelude.cmakeInstall cfg
+                    # prelude.mkLDPathWrappers
+                        cfg
+                        [ "pdfdetach"
+                        , "pdffonts"
+                        , "pdfimages"
+                        , "pdfinfo"
+                        , "pdfseparate"
+                        , "pdfsig"
+                        , "pdftocairo"
+                        , "pdftohtml"
+                        , "pdftoppm"
+                        , "pdftops"
+                        , "pdftotext"
+                        , "pdfunite"
+                        ]
+              }
 
 let tesseract =
       λ(v : List Natural) →
@@ -4728,7 +4731,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , babl { version = [ 0, 1 ], patch = 68 }
     , bash [ 5, 0, 17 ]
     , bash-completion [ 2, 9 ]
-    , binutils [ 2, 33, 1 ]
+    , binutils [ 2, 35, 1 ]
     , bison [ 3, 5 ]
     , blas [ 3, 8, 0 ]
     , busybox [ 1, 31, 1 ]
@@ -4738,7 +4741,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , cimg [ 2, 7, 0 ]
     , clang [ 9, 0, 0 ]
     , clzip [ 1, 11 ]
-    , cmake { version = [ 3, 17 ], patch = 2 }
+    , cmake { version = [ 3, 18 ], patch = 2 }
     , cmark [ 0, 29, 0 ]
     , compositeproto [ 0, 4 ]
     , coreutils [ 8, 32 ]
@@ -4764,8 +4767,8 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , fossil [ 2, 10 ]
     , flex [ 2, 6, 3 ]
     , fltk [ 1, 3, 5 ]
-    , freetype-prebuild [ 2, 10, 1 ]
-    , freetype [ 2, 10, 1 ]
+    , freetype-prebuild [ 2, 10, 2 ]
+    , freetype [ 2, 10, 2 ]
     , fribidi [ 1, 0, 9 ]
     , gawk [ 5, 0, 1 ]
     , gc [ 8, 0, 4 ]
@@ -4780,7 +4783,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , gperftools [ 2, 7 ]
     , giflib [ 5, 1, 4 ]
     , git [ 2, 26, 2 ]
-    , glib { version = [ 2, 64 ], patch = 2 }
+    , glib { version = [ 2, 66 ], patch = 0 }
     , glib-networking { version = [ 2, 61 ], patch = 2 }
     , glproto [ 1, 4, 17 ]
     , glu [ 9, 0, 0 ]
@@ -4797,7 +4800,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , gtk2 { version = [ 2, 24 ], patch = 32 }
     , gtk3 { version = [ 3, 24 ], patch = 18 }
     , gzip [ 1, 10 ]
-    , harfbuzz [ 2, 6, 4 ]
+    , harfbuzz [ 2, 7, 2 ]
     , htop [ 2, 2, 0 ]
     , hugs
     , icu [ 64, 2 ]
@@ -4830,13 +4833,13 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , libevent [ 2, 1, 10 ]
     , libexif [ 0, 6, 21 ]
     , libffi [ 3, 3 ]
-    , libgcrypt [ 1, 8, 5 ]
+    , libgcrypt [ 1, 8, 6 ]
     , libglade { version = [ 2, 6 ], patch = 4 }
-    , libgpgError [ 1, 37 ]
+    , libgpgError [ 1, 39 ]
     , libICE [ 1, 0, 9 ]
     , libiconv [ 1, 16 ]
     , libjpeg [ 9 ]
-    , libjpeg-turbo [ 2, 0, 4 ]
+    , libjpeg-turbo [ 2, 0, 5 ]
     , libksba [ 1, 3, 5 ]
     , libmp3lame [ 3, 100 ]
     , libmypaint [ 1, 3, 0 ]
@@ -4909,7 +4912,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , memcached [ 1, 5, 18 ]
     , mercury
     , mesa [ 19, 0, 5 ]
-    , meson [ 0, 51, 2 ]
+    , meson [ 0, 55, 3 ]
     , mosh [ 1, 3, 2 ]
     , motif [ 2, 3, 8 ]
     , mpc [ 1, 1, 0 ]
@@ -4917,10 +4920,10 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , mpg123 [ 1, 25, 12 ]
     , musl [ 1, 1, 20 ]
     , nano [ 4, 3 ]
-    , nasm [ 2, 14 ]
+    , nasm [ 2, 15, 5 ]
     , ncurses [ 6, 2 ]
     , nginx [ 1, 15, 7 ]
-    , ninja [ 1, 9, 0 ]
+    , ninja [ 1, 10, 1 ]
     , node [ 12, 18, 3 ]
     , npth [ 1, 6 ]
     , nspr [ 4, 20 ]
@@ -4939,14 +4942,14 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , phash [ 0, 9, 6 ]
     , pixman [ 0, 38, 4 ]
     , pkg-config [ 0, 29, 2 ]
-    , poppler [ 0, 84, 0 ]
+    , poppler [ 20, 9, 0 ]
     , postgresql [ 12, 2 ]
     , protobuf [ 3, 8, 0 ]
     , pycairo [ 1, 18, 1 ]
     , pygobject { version = [ 2, 28 ], patch = 7 }
     , pygtk { version = [ 2, 24 ], patch = 0 }
     , python [ 2, 7, 17 ]
-    , python [ 3, 8, 2 ]
+    , python [ 3, 8, 5 ]
     , qrencode [ 4, 1, 0 ]
     , qt { version = [ 5, 13 ], patch = 0 }
     , quazip [ 0, 8, 1 ]
