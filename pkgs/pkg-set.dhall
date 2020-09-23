@@ -698,6 +698,7 @@ let cairo =
                 , prelude.lowerBound
                     { name = "fontconfig", lower = [ 2, 2, 95 ] }
                 , prelude.unbounded "libXext"
+                , prelude.unbounded "lzo"
                 ]
               , installCommand =
                   λ(cfg : types.BuildVars) →
@@ -1134,6 +1135,7 @@ let readline =
         ⫽ { pkgUrl =
               "https://ftp.gnu.org/gnu/readline/readline-${prelude.showVersion
                                                              v}.tar.gz"
+          , pkgBuildDeps = [ prelude.unbounded "make" ]
           }
 
 let pixman =
@@ -3901,10 +3903,7 @@ let make =
           prelude.makeGnuExe { name = "make", version = v }
         ⫽ { pkgUrl =
               "https://ftp.wayne.edu/gnu/make/make-${prelude.showVersion
-                                                       v}.tar.bz2"
-          , configureCommand =
-              prelude.configureWithPatch
-                ./patches/make.patch sha256:56f3260d302d1ecd0173ab6e5ccc0e4806fb8f0bc6aa68a1d7ef4fca77d85572 as Text
+                                                       v}.tar.lz"
           , buildCommand =
               λ(cfg : types.BuildVars) →
                 [ prelude.call
@@ -4729,6 +4728,14 @@ let tarlz =
                     [ { file = "share/man/man1/tarlz.1", section = 1 } ]
           }
 
+let lzo =
+      λ(v : List Natural) →
+          prelude.simplePackage { name = "lzo", version = v }
+        ⫽ { pkgUrl =
+              "http://www.oberhumer.com/opensource/lzo/download/lzo-${prelude.showVersion
+                                                                        v}.tar.gz"
+          }
+
 in  [ alsa-lib [ 1, 1, 9 ]
     , apr [ 1, 7, 0 ]
     , apr-util [ 1, 6, 1 ]
@@ -4782,11 +4789,11 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , fribidi [ 1, 0, 9 ]
     , gawk [ 5, 0, 1 ]
     , gc [ 8, 0, 4 ]
-    , gcc [ 10, 1, 0 ]
+    , gcc [ 10, 2, 0 ]
     , gdb [ 8, 3, 1 ]
     , gdk-pixbuf { version = [ 2, 38 ], patch = 1 }
     , gegl { version = [ 0, 4 ], patch = 16 }
-    , gettext [ 0, 20, 2 ]
+    , gettext [ 0, 21 ]
     , gexiv2 { version = [ 0, 12 ], patch = 0 }
     , ghc [ 8, 8, 3 ]
     , gperf [ 3, 1 ]
@@ -4846,7 +4853,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , libgcrypt [ 1, 8, 6 ]
     , libglade { version = [ 2, 6 ], patch = 4 }
     , libgpgError [ 1, 39 ]
-    , libICE [ 1, 0, 9 ]
+    , libICE [ 1, 0, 10 ]
     , libiconv [ 1, 16 ]
     , libjpeg [ 9 ]
     , libjpeg-turbo [ 2, 0, 5 ]
@@ -4881,7 +4888,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , libthai [ 0, 1, 28 ]
     , libvorbis [ 1, 3, 6 ]
     , libvpx [ 1, 8, 2 ]
-    , libX11 [ 1, 6, 8 ]
+    , libX11 [ 1, 6, 12 ]
     , libXau [ 1, 0, 9 ]
     , libXaw [ 1, 0, 13 ]
     , libXaw3d [ 1, 6, 3 ]
@@ -4896,7 +4903,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , libXinerama [ 1, 1, 4 ]
     , libxml2 [ 2, 9, 9 ]
     , libXmu [ 1, 1, 3 ]
-    , libXpm [ 3, 5, 12 ]
+    , libXpm [ 3, 5, 13 ]
     , libXScrnSaver [ 1, 2, 3 ]
     , libxshmfence [ 1, 3 ]
     , libxslt [ 1, 1, 33 ]
@@ -4914,9 +4921,10 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , lzip [ 1, 21 ]
     , lziprecover [ 1, 21 ]
     , lzlib [ 1, 11 ]
+    , lzo [ 2, 10 ]
     , m17n [ 1, 8, 0 ]
     , m4 [ 1, 4, 18 ]
-    , make [ 4, 2, 1 ]
+    , make [ 4, 3 ]
     , mako [ 1, 0, 7 ]
     , markupSafe [ 1, 0 ]
     , memcached [ 1, 5, 18 ]
@@ -4934,7 +4942,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , ncurses [ 6, 2 ]
     , nginx [ 1, 15, 7 ]
     , ninja [ 1, 10, 1 ]
-    , node [ 12, 18, 3 ]
+    , node [ 12, 18, 4 ]
     , npth [ 1, 6 ]
     , nspr [ 4, 20 ]
     , openblas [ 0, 3, 2 ]
@@ -4946,11 +4954,11 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , pari [ 2, 11, 1 ]
     , patch [ 2, 7, 6 ]
     , pcre [ 8, 44 ]
-    , pcre2 [ 10, 33 ]
+    , pcre2 [ 10, 35 ]
     , pdfgrep [ 2, 1, 2 ]
     , perl5 [ 5, 30, 2 ]
     , phash [ 0, 9, 6 ]
-    , pixman [ 0, 38, 4 ]
+    , pixman [ 0, 40, 0 ]
     , pkg-config [ 0, 29, 2 ]
     , poppler [ 20, 9, 0 ]
     , postgresql [ 12, 2 ]
@@ -4991,7 +4999,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , time [ 1, 9 ]
     , unistring [ 0, 9, 10 ]
     , utf8proc [ 2, 4, 0 ]
-    , util-linux { version = [ 2, 34 ] }
+    , util-linux { version = [ 2, 36 ] }
     , util-macros [ 1, 19, 2 ]
     , vala { version = [ 0, 45 ], patch = 3 }
     , valgrind [ 3, 16, 1 ]
