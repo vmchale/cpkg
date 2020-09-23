@@ -1613,7 +1613,7 @@ let fribidi =
         ⫽ { pkgUrl =
               "https://github.com/fribidi/fribidi/releases/download/v${prelude.showVersion
                                                                          v}/fribidi-${prelude.showVersion
-                                                                                        v}.tar.bz2"
+                                                                                        v}.tar.xz"
           }
 
 let gobject-introspection =
@@ -1634,7 +1634,6 @@ let gobject-introspection =
                 , prelude.unbounded "bison"
                 , prelude.unbounded "flex"
                 , prelude.unbounded "pkg-config"
-                , prelude.unbounded "glibc"
                 ]
               , pkgDeps =
                 [ prelude.lowerBound { name = "glib", lower = [ 2, 58, 0 ] } ]
@@ -3596,8 +3595,8 @@ let clang =
             ⫽ { pkgUrl =
                   "http://releases.llvm.org/${versionString}/cfe-${versionString}.src.tar.xz"
               , pkgSubdir = "cfe-${versionString}.src"
-              , buildCommand = slowBuild
               , pkgDeps = [ prelude.unbounded "llvm" ]
+              , buildCommand = slowBuild
               , installCommand =
                   λ(cfg : types.BuildVars) →
                       prelude.cmakeInstall cfg
@@ -4121,7 +4120,7 @@ let r =
 
         in    prelude.simplePackage { name = "r", version = v }
             ⫽ { pkgUrl =
-                  "https://cran.r-project.org/src/base/R-4/R-${versionString}.tar.gz"
+                  "https://repo.miserver.it.umich.edu/cran/src/base/R-4/R-${versionString}.tar.gz"
               , pkgSubdir = "R-${versionString}"
               , pkgDeps =
                 [ prelude.unbounded "readline"
@@ -4734,6 +4733,7 @@ let lzo =
         ⫽ { pkgUrl =
               "http://www.oberhumer.com/opensource/lzo/download/lzo-${prelude.showVersion
                                                                         v}.tar.gz"
+          , pkgBuildDeps = [ prelude.unbounded "binutils" ]
           }
 
 in  [ alsa-lib [ 1, 1, 9 ]
@@ -4765,7 +4765,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , ctags [ 5, 8 ]
     , curl [ 7, 66, 0 ]
     , damageproto [ 1, 2, 1 ]
-    , dbus [ 1, 13, 12 ]
+    , dbus [ 1, 13, 18 ]
     , diffutils [ 3, 7 ]
     , dri2proto [ 2, 8 ]
     , eigen [ 3, 3, 7 ]
@@ -4786,7 +4786,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , fltk [ 1, 3, 5 ]
     , freetype-prebuild [ 2, 10, 2 ]
     , freetype [ 2, 10, 2 ]
-    , fribidi [ 1, 0, 9 ]
+    , fribidi [ 1, 0, 10 ]
     , gawk [ 5, 0, 1 ]
     , gc [ 8, 0, 4 ]
     , gcc [ 10, 2, 0 ]
@@ -4807,7 +4807,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , json-glib { version = [ 1, 4 ], patch = 4 }
     , glibc [ 2, 30 ]
     , gmp [ 6, 2, 0 ]
-    , gobject-introspection { version = [ 1, 62 ], patch = 0 }
+    , gobject-introspection { version = [ 1, 66 ], patch = 0 }
     , gnome-doc-utils { version = [ 0, 20 ], patch = 10 }
     , gnupg [ 2, 2, 20 ]
     , gnutls { version = [ 3, 6 ], patch = [ 13 ] }
