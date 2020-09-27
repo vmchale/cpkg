@@ -4775,6 +4775,83 @@ let bytestructures =
           , pkgDeps = [ prelude.unbounded "guile" ]
           }
 
+let guile-git =
+      λ(v : List Natural) →
+          prelude.simplePackage { name = "guile-git", version = v }
+        ⫽ { pkgUrl =
+              let versionString = prelude.showVersion v
+
+              in  "https://gitlab.com/guile-git/guile-git/uploads/4c563d8e7e1ff84396abe8ca7011bcaf/guile-git-${versionString}.tar.gz"
+          , pkgDeps =
+            [ prelude.unbounded "guile"
+            , prelude.unbounded "bytestructures"
+            , prelude.unbounded "libgit2"
+            ]
+          }
+
+let guile-json =
+      λ(v : List Natural) →
+          prelude.simplePackage { name = "guile-json", version = v }
+        ⫽ { pkgUrl =
+              "http://download.savannah.gnu.org/releases/guile-json/guile-json-${prelude.showVersion
+                                                                                   v}.tar.gz"
+          , pkgDeps = [ prelude.unbounded "guile" ]
+          }
+
+let guileConfigure =
+      λ(cfg : types.BuildVars) →
+          [ prelude.call
+              { program = "autoreconf"
+              , arguments = [ "-i" ]
+              , environment = Some
+                [ { var = "PATH"
+                  , value =
+                          prelude.mkPathVar cfg.binDirs
+                      ++  ":/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+                  }
+                , prelude.mkAclocalPath cfg.shareDirs
+                ]
+              , procDir = None Text
+              }
+          ]
+        # prelude.defaultConfigure cfg
+
+let guile-sqlite3 =
+      λ(v : List Natural) →
+          prelude.simplePackage { name = "guile-sqlite3", version = v }
+        ⫽ { pkgUrl =
+              "https://notabug.org/guile-sqlite3/guile-sqlite3/archive/v${prelude.showVersion
+                                                                            v}.tar.gz"
+          , pkgSubdir = "guile-sqlite3"
+          , pkgBuildDeps =
+            [ prelude.unbounded "automake"
+            , prelude.unbounded "m4"
+            , prelude.unbounded "pkg-config"
+            , prelude.unbounded "grep"
+            ]
+          , pkgDeps = [ prelude.unbounded "guile", prelude.unbounded "sqlite" ]
+          , configureCommand = guileConfigure
+          }
+
+let guile-gcrypt =
+      λ(v : List Natural) →
+          prelude.simplePackage { name = "guile-gcrypt", version = v }
+        ⫽ { pkgUrl =
+              "https://notabug.org/cwebber/guile-gcrypt/archive/v${prelude.showVersion
+                                                                     v}.tar.gz"
+          , pkgSubdir = "guile-gcrypt"
+          , pkgBuildDeps =
+            [ prelude.unbounded "texinfo"
+            , prelude.unbounded "automake"
+            , prelude.unbounded "grep"
+            , prelude.unbounded "m4"
+            , prelude.unbounded "pkg-config"
+            ]
+          , pkgDeps =
+            [ prelude.unbounded "guile", prelude.unbounded "libgcrypt" ]
+          , configureCommand = guileConfigure
+          }
+
 in  [ alsa-lib [ 1, 1, 9 ]
     , apr [ 1, 7, 0 ]
     , apr-util [ 1, 6, 1 ]
@@ -4852,11 +4929,15 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , gnupg [ 2, 2, 20 ]
     , gnutls { version = [ 3, 6 ], patch = [ 15 ] }
     , graphviz [ 2, 44, 1 ]
-    , grep [ 3, 3 ]
+    , grep [ 3, 4 ]
     , gsl [ 2, 6 ]
     , gtk2 { version = [ 2, 24 ], patch = 32 }
     , gtk3 { version = [ 3, 24 ], patch = 18 }
     , guile [ 3, 0, 4 ]
+    , guile-gcrypt [ 0, 3, 0 ]
+    , guile-git [ 0, 3, 0 ]
+    , guile-json [ 4, 3, 2 ]
+    , guile-sqlite3 [ 0, 1, 2 ]
     , gzip [ 1, 10 ]
     , harfbuzz [ 2, 7, 2 ]
     , htop [ 2, 2, 0 ]
@@ -5029,7 +5110,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , sed [ 4, 7 ]
     , shared-mime-info [ 1, 10 ]
     , smake [ 1, 2, 5 ]
-    , sqlite { version = [ 3, 30, 1 ] }
+    , sqlite { version = [ 3, 33, 0 ] }
     , star [ 1, 6 ]
     , subversion [ 1, 12, 2 ]
     , swig [ 3, 0, 12 ]
@@ -5037,7 +5118,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , tar [ 1, 32 ]
     , tarlz [ 0, 17 ]
     , tcc [ 0, 9, 27 ]
-    , texinfo [ 6, 6 ]
+    , texinfo [ 6, 7 ]
     , tesseract [ 4, 0, 0 ]
     , time [ 1, 9 ]
     , unistring [ 0, 9, 10 ]
