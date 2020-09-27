@@ -366,16 +366,26 @@ let mkLDPreload =
 
         in  { var = "LD_PRELOAD", value = flag }
 
-let mkGuilePath =
+let mkGuileEnv =
       λ(libs : List Text) →
-        let flag =
+      λ(share : List Text) →
+        let flag0 =
               concatMapSep
                 ":"
                 Text
                 (λ(lib : Text) → "${lib}/guile/3.0/site-ccache")
                 libs
 
-        in  { var = "GUILE_LOAD_COMPILED_PATH", value = flag }
+        let flag1 =
+              concatMapSep
+                ":"
+                Text
+                (λ(dir : Text) → "${dir}/guile/site/3.0")
+                share
+
+        in  [ { var = "GUILE_LOAD_COMPILED_PATH", value = flag0 }
+            , { var = "GUILE_LOAD_PATH", value = flag1 }
+            ]
 
 let configEnv =
       λ(linkLibs : List Text) →
@@ -386,10 +396,10 @@ let configEnv =
           , mkPkgConfigVar (cfg.shareDirs # cfg.linkDirs)
           , libPath cfg
           , mkLDRunPath cfg.linkDirs
-          , mkGuilePath cfg.linkDirs
           , mkPerlLib
               { libDirs = cfg.linkDirs, perlVersion = [ 5, 30, 2 ], cfg }
           ]
+        # mkGuileEnv cfg.linkDirs cfg.shareDirs
 
 let buildEnv =
       λ(cfg : types.BuildVars) →
@@ -400,6 +410,7 @@ let buildEnv =
           , mkLDPath cfg.linkDirs
           , mkLDFlagsGeneral cfg.linkDirs ([] : List Text) cfg
           ]
+        # mkGuileEnv cfg.linkDirs cfg.shareDirs
 
 let configSome =
       λ(linkLibs : List Text) →
