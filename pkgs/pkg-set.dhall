@@ -665,6 +665,7 @@ let gnutls =
                 , prelude.unbounded "unistring"
                 , prelude.lowerBound { name = "libtasn1", lower = [ 4, 9 ] }
                 , prelude.lowerBound { name = "p11-kit", lower = [ 0, 23, 1 ] }
+                , prelude.unbounded "guile"
                 ]
               , configureCommand =
                   prelude.configureLinkExtraLibs [ "nettle", "hogweed" ]
@@ -1076,9 +1077,9 @@ let p11kit =
       λ(v : List Natural) →
           prelude.simplePackage { name = "p11-kit", version = v }
         ⫽ { pkgUrl =
-              "https://github.com/p11-glue/p11-kit/releases/download/${prelude.showVersion
-                                                                         v}/p11-kit-${prelude.showVersion
-                                                                                        v}.tar.gz"
+              let versionString = prelude.showVersion v
+
+              in  "https://github.com/p11-glue/p11-kit/releases/download/${versionString}/p11-kit-${versionString}.tar.xz"
           , pkgDeps =
             [ prelude.lowerBound { name = "libffi", lower = [ 3, 0, 0 ] }
             , prelude.unbounded "libtasn1"
@@ -4754,6 +4755,26 @@ let guile =
           , pkgDeps = [ prelude.unbounded "unistring", prelude.unbounded "gc" ]
           }
 
+let libgit2 =
+      λ(v : List Natural) →
+          prelude.simplePackage { name = "libgit2", version = v }
+        ⫽ prelude.cmakePackage
+        ⫽ { pkgUrl =
+              let versionString = prelude.showVersion v
+
+              in  "https://github.com/libgit2/libgit2/releases/download/v${versionString}/libgit2-${versionString}.tar.gz"
+          }
+
+let bytestructures =
+      λ(v : List Natural) →
+          prelude.simplePackage { name = "bytestructures", version = v }
+        ⫽ { pkgUrl =
+              let versionString = prelude.showVersion v
+
+              in  "https://github.com/TaylanUB/scheme-bytestructures/releases/download/v${versionString}/bytestructures-${versionString}.tar.gz"
+          , pkgDeps = [ prelude.unbounded "guile" ]
+          }
+
 in  [ alsa-lib [ 1, 1, 9 ]
     , apr [ 1, 7, 0 ]
     , apr-util [ 1, 6, 1 ]
@@ -4770,6 +4791,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , bison [ 3, 5 ]
     , blas [ 3, 8, 0 ]
     , busybox [ 1, 31, 1 ]
+    , bytestructures [ 1, 0, 7 ]
     , bzip2 [ 1, 0, 8 ]
     , cairo [ 1, 16, 0 ]
     , chickenScheme [ 5, 0, 0 ]
@@ -4814,11 +4836,10 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , gettext [ 0, 21 ]
     , gexiv2 { version = [ 0, 12 ], patch = 0 }
     , ghc [ 8, 8, 3 ]
-    , guile [ 3, 0, 4 ]
     , gperf [ 3, 1 ]
     , gperftools [ 2, 7 ]
     , giflib [ 5, 2, 1 ]
-    , git [ 2, 26, 2 ]
+    , git [ 2, 28, 0 ]
     , glib { version = [ 2, 66 ], patch = 0 }
     , glib-networking { version = [ 2, 61 ], patch = 2 }
     , glproto [ 1, 4, 17 ]
@@ -4829,12 +4850,13 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , gobject-introspection { version = [ 1, 66 ], patch = 0 }
     , gnome-doc-utils { version = [ 0, 20 ], patch = 10 }
     , gnupg [ 2, 2, 20 ]
-    , gnutls { version = [ 3, 6 ], patch = [ 13 ] }
+    , gnutls { version = [ 3, 6 ], patch = [ 15 ] }
     , graphviz [ 2, 44, 1 ]
     , grep [ 3, 3 ]
     , gsl [ 2, 6 ]
     , gtk2 { version = [ 2, 24 ], patch = 32 }
     , gtk3 { version = [ 3, 24 ], patch = 18 }
+    , guile [ 3, 0, 4 ]
     , gzip [ 1, 10 ]
     , harfbuzz [ 2, 7, 2 ]
     , htop [ 2, 2, 0 ]
@@ -4870,6 +4892,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , libexif [ 0, 6, 21 ]
     , libffi [ 3, 3 ]
     , libgcrypt [ 1, 8, 6 ]
+    , libgit2 [ 1, 0, 1 ]
     , libglade { version = [ 2, 6 ], patch = 4 }
     , libgpgError [ 1, 39 ]
     , libICE [ 1, 0, 10 ]
@@ -4879,7 +4902,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , libksba [ 1, 3, 5 ]
     , libmp3lame [ 3, 100 ]
     , libmypaint [ 1, 3, 0 ]
-    , libnettle [ 3, 5, 1 ]
+    , libnettle [ 3, 6 ]
     , libogg [ 1, 3, 4 ]
     , libopenjpeg [ 2, 3, 1 ]
     , libotf [ 0, 9, 16 ]
@@ -4898,7 +4921,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , libsoup { version = [ 2, 67 ], patch = 3 }
     , libspng [ 0, 5, 0 ]
     , libssh2 [ 1, 8, 0 ]
-    , libtasn1 [ 4, 15, 0 ]
+    , libtasn1 [ 4, 16, 0 ]
     , libtiff [ 4, 0, 10 ]
     , libtool [ 2, 4, 6 ]
     , libuv [ 1, 24, 0 ]
@@ -4968,7 +4991,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , opencv [ 4, 2, 0 ]
     , openssh [ 7, 9 ]
     , openssl [ 1, 1, 1 ]
-    , p11kit [ 0, 23, 16, 1 ]
+    , p11kit [ 0, 23, 21 ]
     , pango { version = [ 1, 43 ], patch = 0 }
     , pari [ 2, 11, 1 ]
     , patch [ 2, 7, 6 ]
