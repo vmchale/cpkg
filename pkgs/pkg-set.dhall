@@ -1563,7 +1563,7 @@ let ninja =
               , configureCommand = ninjaConfigure
               , buildCommand = prelude.doNothing
               , installCommand = ninjaInstall
-              , pkgBuildDeps = [ prelude.unbounded "python2" ]
+              , pkgBuildDeps = [ prelude.unbounded "python3" ]
               }
 
 let fontconfig =
@@ -2422,7 +2422,7 @@ let libdrm =
           prelude.ninjaPackage { name = "libdrm", version = v }
         ⫽ { pkgUrl =
               "https://dri.freedesktop.org/libdrm/libdrm-${prelude.showVersion
-                                                             v}.tar.bz2"
+                                                             v}.tar.xz"
           , pkgDeps =
             [ prelude.unbounded "libpciaccess", prelude.unbounded "cairo" ]
           , installCommand =
@@ -4736,6 +4736,24 @@ let lzo =
           , pkgBuildDeps = [ prelude.unbounded "binutils" ]
           }
 
+let rlwrap =
+      λ(v : List Natural) →
+        let versionString = prelude.showVersion v
+
+        in    prelude.simplePackage { name = "rlwrap", version = v }
+            ⫽ { pkgUrl =
+                  "https://github.com/hanslub42/rlwrap/releases/download/v${versionString}/rlwrap-${versionString}.tar.gz"
+              }
+
+let guile =
+      λ(v : List Natural) →
+          prelude.simplePackage { name = "guile", version = v }
+        ⫽ { pkgUrl =
+              "https://ftp.gnu.org/gnu/guile/guile-${prelude.showVersion
+                                                       v}.tar.gz"
+          , pkgDeps = [ prelude.unbounded "unistring", prelude.unbounded "gc" ]
+          }
+
 in  [ alsa-lib [ 1, 1, 9 ]
     , apr [ 1, 7, 0 ]
     , apr-util [ 1, 6, 1 ]
@@ -4796,6 +4814,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , gettext [ 0, 21 ]
     , gexiv2 { version = [ 0, 12 ], patch = 0 }
     , ghc [ 8, 8, 3 ]
+    , guile [ 3, 0, 4 ]
     , gperf [ 3, 1 ]
     , gperftools [ 2, 7 ]
     , giflib [ 5, 2, 1 ]
@@ -4844,7 +4863,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , libcds [ 2, 3, 2 ]
     , libcroco { version = [ 0, 6 ], patch = 12 }
     , libdatrie [ 0, 2, 12 ]
-    , libdrm [ 2, 4, 96 ]
+    , libdrm [ 2, 4, 102 ]
     , libepoxy [ 1, 5, 3 ]
     , libev [ 4, 25 ]
     , libevent [ 2, 1, 10 ]
@@ -4864,7 +4883,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , libogg [ 1, 3, 4 ]
     , libopenjpeg [ 2, 3, 1 ]
     , libotf [ 0, 9, 16 ]
-    , libpciaccess [ 0, 14 ]
+    , libpciaccess [ 0, 16 ]
     , libpng [ 1, 6, 37 ]
     , libpsl [ 0, 21, 0 ]
     , libpthread-stubs [ 0, 4 ]
@@ -4925,11 +4944,11 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , m17n [ 1, 8, 0 ]
     , m4 [ 1, 4, 18 ]
     , make [ 4, 3 ]
-    , mako [ 1, 0, 7 ]
+    , mako [ 1, 1, 3 ]
     , markupSafe [ 1, 0 ]
     , memcached [ 1, 5, 18 ]
     , mercury
-    , mesa [ 19, 0, 5 ]
+    , mesa [ 19, 0, 8 ]
     , meson [ 0, 55, 3 ]
     , mosh [ 1, 3, 2 ]
     , motif [ 2, 3, 8 ]
@@ -4978,6 +4997,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , readline [ 8, 0 ]
     , recordproto [ 1, 14, 2 ]
     , renderproto [ 0, 11, 1 ]
+    , rlwrap [ 0, 43 ]
     , ruby { version = [ 2, 7 ], patch = 1 }
     , rustc [ 1, 42, 0 ]
     , scour [ 0, 37 ]
