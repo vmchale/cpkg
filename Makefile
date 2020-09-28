@@ -1,12 +1,4 @@
-.PHONY: ci
+.PHONY: docs
 
-ci: .github/workflows/dhall.yml .github/workflows/haskell.yml
-
-.github/workflows:
-	mkdir -p $@
-
-.github/workflows/dhall.yml: dhall-ci.dhall .github/workflows
-	dhall-to-yaml-ng --file $< --output $@
-
-.github/workflows/haskell.yml: haskell-ci.dhall .github/workflows
-	dhall-to-yaml-ng --file $< --output $@
+docs:
+	dhall-docs --input dhall --output-link docs
