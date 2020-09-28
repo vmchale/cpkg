@@ -4333,7 +4333,7 @@ let ghc =
 
         in    prelude.simplePackage { name = "ghc", version = v }
             ⫽ { pkgUrl =
-                  "https://downloads.haskell.org/~ghc/${versionString}/ghc-${versionString}-x86_64-deb9-linux.tar.xz"
+                  "https://downloads.haskell.org/~ghc/${versionString}/ghc-${versionString}-x86_64-deb10-linux.tar.xz"
               , buildCommand = prelude.doNothing
               }
 
@@ -4912,7 +4912,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , gegl { version = [ 0, 4 ], patch = 16 }
     , gettext [ 0, 21 ]
     , gexiv2 { version = [ 0, 12 ], patch = 0 }
-    , ghc [ 8, 8, 3 ]
+    , ghc [ 8, 10, 2 ]
     , gperf [ 3, 1 ]
     , gperftools [ 2, 7 ]
     , giflib [ 5, 2, 1 ]
