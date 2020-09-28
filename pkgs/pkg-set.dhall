@@ -4929,7 +4929,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , gnupg [ 2, 2, 20 ]
     , gnutls { version = [ 3, 6 ], patch = [ 15 ] }
     , graphviz [ 2, 44, 1 ]
-    , grep [ 3, 4 ]
+    , grep [ 3, 5 ]
     , gsl [ 2, 6 ]
     , gtk2 { version = [ 2, 24 ], patch = 32 }
     , gtk3 { version = [ 3, 24 ], patch = 18 }
