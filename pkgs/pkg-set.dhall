@@ -5103,7 +5103,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , renderproto [ 0, 11, 1 ]
     , rlwrap [ 0, 43 ]
     , ruby { version = [ 2, 7 ], patch = 1 }
-    , rustc [ 1, 42, 0 ]
+    , rustc [ 1, 46, 0 ]
     , scour [ 0, 37 ]
     , scrnsaverproto [ 1, 2, 2 ]
     , sdl2 [ 2, 0, 10 ]
