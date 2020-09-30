@@ -4852,6 +4852,34 @@ let guile-gcrypt =
           , configureCommand = guileConfigure
           }
 
+let pax =
+      λ(v : Natural) →
+          prelude.simplePackage { name = "pax", version = [ v ] }
+        ⫽ { pkgUrl =
+              "http://www.mirbsd.org/MirOS/dist/mir/cpio/paxmirabilis-${Natural/show
+                                                                          v}.tgz"
+          , pkgSubdir = "pax"
+          , configureCommand = prelude.doNothing
+          , buildCommand =
+              λ(_ : types.BuildVars) →
+                [ prelude.mkExe "Build.sh"
+                , prelude.call
+                    { program = "./Build.sh"
+                    , arguments = [] : List Text
+                    , environment = None (List types.EnvVar)
+                    , procDir = None Text
+                    }
+                ]
+          , installCommand =
+              λ(_ : types.BuildVars) →
+                  [ prelude.copyFile "pax" "bin/pax"
+                  , prelude.copyFile "pax.1" "share/man/man1/pax.1"
+                  , prelude.symlinkBinary "bin/pax"
+                  ]
+                # prelude.symlinkManpages
+                    [ { file = "share/man/man1/pax.1", section = 1 } ]
+          }
+
 in  [ alsa-lib [ 1, 1, 9 ]
     , apr [ 1, 7, 0 ]
     , apr-util [ 1, 6, 1 ]
@@ -5076,6 +5104,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , pango { version = [ 1, 43 ], patch = 0 }
     , pari [ 2, 11, 1 ]
     , patch [ 2, 7, 6 ]
+    , pax 20200904
     , pcre [ 8, 44 ]
     , pcre2 [ 10, 35 ]
     , pdfgrep [ 2, 1, 2 ]
