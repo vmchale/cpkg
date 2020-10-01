@@ -4873,11 +4873,21 @@ let pax =
           , installCommand =
               λ(_ : types.BuildVars) →
                   [ prelude.copyFile "pax" "bin/pax"
+                  , prelude.copyFile "tar" "bin/tar"
+                  , prelude.copyFile "cpio" "bin/cpio"
                   , prelude.copyFile "pax.1" "share/man/man1/pax.1"
                   , prelude.symlinkBinary "bin/pax"
                   ]
                 # prelude.symlinkManpages
                     [ { file = "share/man/man1/pax.1", section = 1 } ]
+          }
+
+let cpio =
+      λ(v : List Natural) →
+          prelude.makeGnuExe { name = "cpio", version = v }
+        ⫽ { pkgUrl =
+              "https://ftp.gnu.org/gnu/cpio/cpio-${prelude.showVersion
+                                                     v}.tar.bz2"
           }
 
 in  [ alsa-lib [ 1, 1, 9 ]
@@ -4907,6 +4917,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , cmark [ 0, 29, 0 ]
     , compositeproto [ 0, 4 ]
     , coreutils [ 8, 32 ]
+    , cpio [ 2, 13 ]
     , ctags [ 5, 8 ]
     , curl [ 7, 66, 0 ]
     , damageproto [ 1, 2, 1 ]
