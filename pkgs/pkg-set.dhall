@@ -3835,7 +3835,7 @@ let ffmpeg =
           prelude.simplePackage { name = "ffmpeg", version = v }
         ⫽ { pkgUrl =
               "https://ffmpeg.org/releases/ffmpeg-${prelude.showVersion
-                                                      v}.tar.bz2"
+                                                      v}.tar.xz"
           , pkgBuildDeps = [ prelude.unbounded "nasm" ]
           , configureCommand =
               prelude.configureWithFlags
@@ -4932,7 +4932,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , expat [ 2, 2, 9 ]
     , fdk-aac [ 2, 0, 1 ]
     , feh [ 3, 2, 1 ]
-    , ffmpeg [ 4, 2, 2 ]
+    , ffmpeg [ 4, 3, 1 ]
     , fftw [ 3, 3, 8 ]
     , findutils [ 4, 7, 0 ]
     , fixesproto [ 5, 0 ]
@@ -5048,8 +5048,8 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , libwebp [ 1, 0, 3 ]
     , libSM [ 1, 2, 3 ]
     , libthai [ 0, 1, 28 ]
-    , libvorbis [ 1, 3, 6 ]
-    , libvpx [ 1, 8, 2 ]
+    , libvorbis [ 1, 3, 7 ]
+    , libvpx [ 1, 9, 0 ]
     , libX11 [ 1, 6, 12 ]
     , libXau [ 1, 0, 9 ]
     , libXaw [ 1, 0, 13 ]
