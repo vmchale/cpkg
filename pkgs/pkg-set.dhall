@@ -144,7 +144,7 @@ let curl =
               "https://curl.haxx.se/download/curl-${prelude.showVersion
                                                       v}.tar.xz"
           , installCommand = prelude.installWithBinaries [ "bin/curl" ]
-          , pkgDeps = [ prelude.unbounded "zlib" ]
+          , pkgDeps = [ prelude.unbounded "zlib", prelude.unbounded "brotli" ]
           }
 
 let dbus =
@@ -4890,6 +4890,15 @@ let cpio =
                                                      v}.tar.bz2"
           }
 
+let brotli =
+      λ(v : List Natural) →
+          prelude.simplePackage { name = "brotli", version = v }
+        ⫽ prelude.cmakePackage
+        ⫽ { pkgUrl =
+              "https://github.com/google/brotli/archive/v${prelude.showVersion
+                                                             v}.tar.gz"
+          }
+
 in  [ alsa-lib [ 1, 1, 9 ]
     , apr [ 1, 7, 0 ]
     , apr-util [ 1, 6, 1 ]
@@ -4905,6 +4914,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , binutils [ 2, 35, 1 ]
     , bison [ 3, 5 ]
     , blas [ 3, 8, 0 ]
+    , brotli [ 1, 0, 9 ]
     , busybox [ 1, 31, 1 ]
     , bytestructures [ 1, 0, 7 ]
     , bzip2 [ 1, 0, 8 ]
@@ -4919,7 +4929,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , coreutils [ 8, 32 ]
     , cpio [ 2, 13 ]
     , ctags [ 5, 8 ]
-    , curl [ 7, 66, 0 ]
+    , curl [ 7, 72, 0 ]
     , damageproto [ 1, 2, 1 ]
     , dbus [ 1, 13, 18 ]
     , diffutils [ 3, 7 ]
