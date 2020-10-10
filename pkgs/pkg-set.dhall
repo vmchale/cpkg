@@ -1701,7 +1701,6 @@ let glib =
                                   , value =
                                       (prelude.mkLDFlags cfg.linkDirs cfg).value
                                   }
-                                , prelude.mkPy3Path cfg.linkDirs
                                 , prelude.libPath cfg
                                 , prelude.mkCFlags cfg
                                 , prelude.mkPkgConfigVar cfg.linkDirs
@@ -4899,6 +4898,28 @@ let brotli =
                                                              v}.tar.gz"
           }
 
+let audacity =
+      λ(v : List Natural) →
+        let versionString = prelude.showVersion v
+
+        in    prelude.simplePackage { name = "audacity", version = v }
+            ⫽ prelude.cmakePackage
+            ⫽ { pkgUrl =
+                  "https://github.com/audacity/audacity/archive/Audacity-${versionString}.tar.gz"
+              , pkgSubdir = "audacity-Audacity-${versionString}"
+              , pkgDeps = [ prelude.unbounded "gtk2" ]
+              }
+
+let wxwidgets =
+      λ(v : List Natural) →
+        let versionString = prelude.showVersion v
+
+        in    prelude.simplePackage { name = "wxWidgets", version = v }
+            ⫽ { pkgUrl =
+                  "https://github.com/wxWidgets/wxWidgets/releases/download/v${versionString}/wxWidgets-${versionString}.tar.bz2"
+              , pkgDeps = [ prelude.unbounded "gtk3" ]
+              }
+
 in  [ alsa-lib [ 1, 1, 9 ]
     , apr [ 1, 7, 0 ]
     , apr-util [ 1, 6, 1 ]
@@ -4906,6 +4927,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , at-spi-core { version = [ 2, 33 ], patch = 2 }
     , atk { version = [ 2, 36 ], patch = 0 }
     , ats [ 0, 4, 2 ]
+    , audacity [ 2, 4, 2 ]
     , autoconf [ 2, 69 ]
     , automake [ 1, 16, 2 ]
     , babl { version = [ 0, 1 ], patch = 68 }
@@ -5114,7 +5136,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , ncurses [ 6, 2 ]
     , nginx [ 1, 15, 7 ]
     , ninja [ 1, 10, 1 ]
-    , node [ 12, 18, 4 ]
+    , node [ 12, 19, 0 ]
     , npth [ 1, 6 ]
     , nspr [ 4, 20 ]
     , openblas [ 0, 3, 2 ]
@@ -5136,11 +5158,11 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , poppler [ 20, 9, 0 ]
     , postgresql [ 12, 2 ]
     , protobuf [ 3, 8, 0 ]
-    , pycairo [ 1, 18, 1 ]
+    , pycairo [ 1, 20, 0 ]
     , pygobject { version = [ 2, 28 ], patch = 7 }
     , pygtk { version = [ 2, 24 ], patch = 0 }
     , python [ 2, 7, 17 ]
-    , python [ 3, 8, 5 ]
+    , python [ 3, 9, 0 ]
     , qrencode [ 4, 1, 0 ]
     , qt { version = [ 5, 13 ], patch = 0 }
     , quazip [ 0, 8, 1 ]
@@ -5181,6 +5203,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , wayland [ 1, 17, 0 ]
     , wget [ 1, 20, 3 ]
     , which [ 2, 21 ]
+    , wxwidgets [ 3, 1, 4 ]
     , xcb-proto [ 1, 13 ]
     , xextproto [ 7, 3, 0 ]
     , xf86vidmodeproto [ 2, 3, 1 ]

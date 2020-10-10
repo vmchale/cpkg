@@ -777,7 +777,7 @@ let mkPyPath =
 
         in  { var = "PYTHONPATH", value = flag }
 
-let mkPy3Path = mkPyPath [ 3, 8 ]
+let mkPy3Path = mkPyPath [ 3, 9 ]
 
 let mesonCfgFile =
       λ(cfg : types.BuildVars) →
@@ -1019,11 +1019,11 @@ let pythonPackage =
               , pkgBuildDeps = [ unbounded "python${major}" ]
               }
 
-let python3Build = pythonBuild [ 3, 8 ]
+let python3Build = pythonBuild [ 3, 9 ]
 
-let python3Install = pythonInstall [ 3, 8 ]
+let python3Install = pythonInstall [ 3, 9 ]
 
-let python3Package = pythonPackage [ 3, 8 ]
+let python3Package = pythonPackage [ 3, 9 ]
 
 let python2Package = pythonPackage [ 2, 7 ]
 
@@ -1111,7 +1111,7 @@ let mkPyWrapper =
             , symlinkBinary wrapped
             ]
 
-let mkPy3Wrapper = mkPyWrapper [ 3, 8 ]
+let mkPy3Wrapper = mkPyWrapper [ 3, 9 ]
 
 let mkPy2Wrapper = mkPyWrapper [ 2, 7 ]
 
@@ -1126,7 +1126,7 @@ let installWithPyWrappers =
             (λ(bin : Text) → mkPyWrapper version bin cfg)
             binNames
 
-let installWithPy3Wrappers = installWithPyWrappers [ 3, 8 ]
+let installWithPy3Wrappers = installWithPyWrappers [ 3, 9 ]
 
 let mkLDPathWrapper =
       λ(cfg : types.BuildVars) →
