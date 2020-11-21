@@ -372,7 +372,14 @@ let nasm =
                   "https://www.nasm.us/pub/nasm/releasebuilds/${versionString}/nasm-${versionString}.tar.xz"
               , pkgSubdir = "nasm-${versionString}"
               , installCommand =
-                  prelude.installWithBinaries [ "bin/nasm", "bin/ndisasm" ]
+                  λ(cfg : types.BuildVars) →
+                      prelude.installWithBinaries
+                        [ "bin/nasm", "bin/ndisasm" ]
+                        cfg
+                    # prelude.symlinkManpages
+                        [ { file = "share/man/man1/nasm.1", section = 1 }
+                        , { file = "share/man/man1/ndisasm.1", section = 1 }
+                        ]
               }
 
 let ncurses =
