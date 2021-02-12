@@ -4749,7 +4749,7 @@ let rlwrap =
 
         in    prelude.simplePackage { name = "rlwrap", version = v }
             ⫽ { pkgUrl =
-                  "https://github.com/hanslub42/rlwrap/releases/download/v${versionString}/rlwrap-${versionString}.tar.gz"
+                  "https://github.com/hanslub42/rlwrap/releases/download/${versionString}/rlwrap-${versionString}.tar.gz"
               }
 
 let guile =
@@ -4952,7 +4952,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , cimg [ 2, 7, 0 ]
     , clang [ 9, 0, 0 ]
     , clzip [ 1, 11 ]
-    , cmake { version = [ 3, 18 ], patch = 2 }
+    , cmake { version = [ 3, 19 ], patch = 1 }
     , cmark [ 0, 29, 0 ]
     , compositeproto [ 0, 4 ]
     , coreutils [ 8, 32 ]
@@ -5143,7 +5143,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , ncurses [ 6, 2 ]
     , nginx [ 1, 15, 7 ]
     , ninja [ 1, 10, 1 ]
-    , node [ 14, 15, 0 ]
+    , node [ 14, 15, 4 ]
     , npth [ 1, 6 ]
     , nspr [ 4, 20 ]
     , openblas [ 0, 3, 2 ]
@@ -5180,7 +5180,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , readline [ 8, 0 ]
     , recordproto [ 1, 14, 2 ]
     , renderproto [ 0, 11, 1 ]
-    , rlwrap [ 0, 43 ]
+    , rlwrap [ 0, 44 ]
     , ruby { version = [ 2, 7 ], patch = 1 }
     , rustc [ 1, 46, 0 ]
     , scour [ 0, 37 ]
