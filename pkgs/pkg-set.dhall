@@ -4927,6 +4927,19 @@ let wxwidgets =
               , pkgDeps = [ prelude.unbounded "gtk3" ]
               }
 
+let yasm =
+      λ(v : List Natural) →
+          prelude.simplePackage { name = "yasm", version = v }
+        ⫽ { pkgUrl =
+              "http://www.tortall.net/projects/yasm/releases/yasm-${prelude.showVersion
+                                                                      v}.tar.gz"
+          , installCommand =
+              λ(cfg : types.BuildVars) →
+                  prelude.installWithBinaries [ "bin/yasm" ] cfg
+                # prelude.symlinkManpages
+                    [ { file = "share/man/man1/yasm.1", section = 1 } ]
+          }
+
 in  [ alsa-lib [ 1, 1, 9 ]
     , apr [ 1, 7, 0 ]
     , apr-util [ 1, 6, 1 ]
@@ -5219,6 +5232,7 @@ in  [ alsa-lib [ 1, 1, 9 ]
     , xproto [ 7, 0, 31 ]
     , xtrans [ 1, 4, 0 ]
     , xz [ 5, 2, 5 ]
+    , yasm [ 1, 3, 0 ]
     , zlib [ 1, 2, 11 ]
     , zstd [ 1, 4, 5 ]
     ]
