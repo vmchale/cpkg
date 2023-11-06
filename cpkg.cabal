@@ -1,6 +1,6 @@
 cabal-version:      1.18
 name:               cpkg
-version:            0.2.5.7
+version:            0.2.5.8
 license:            BSD3
 license-file:       LICENSE
 copyright:          Copyright: (c) 2018-2020 Vanessa McHale
@@ -83,7 +83,7 @@ library
         bz2 >=0.1.1.0,
         lzma -any,
         zip-archive -any,
-        prettyprinter -any,
+        prettyprinter >=1.7.0,
         http-client -any,
         http-client-tls -any,
         directory >=1.3.1.0,

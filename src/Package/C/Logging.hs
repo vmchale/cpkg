@@ -5,6 +5,7 @@ module Package.C.Logging ( putNormal
                          , putLoud
                          ) where
 
+import           Control.Monad            (when)
 import           Control.Monad.Reader
 import           Package.C.Type.Verbosity
 

@@ -1,5 +1,9 @@
 # cpkg
 
+## 0.2.5.8
+
+  * Fix something for `base` 4.18.*
+
 ## 0.2.5.0
 
   * Add `package set:` info to `dhall --version`
